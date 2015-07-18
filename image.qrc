@@ -12,5 +12,6 @@
         <file>image/tileIcon/rule_summary.png</file>
         <file>image/tileIcon/start_game.png</file>
         <file>image/tileIcon/start_server.png</file>
+        <file>image/mogara/enter_icon.png</file>
     </qresource>
 </RCC>

@@ -285,6 +285,7 @@ Rectangle {
                                     font.pixelSize: Device.gu(16)
                                     wrapMode: TextInput.Wrap
                                     verticalAlignment: TextInput.AlignVCenter
+                                    clip: true
                                 }
 
                                 Image {

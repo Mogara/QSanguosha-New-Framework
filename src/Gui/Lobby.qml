@@ -222,6 +222,7 @@ Rectangle {
                             color: "#000000"
                             font.pixelSize: Device.gu(16)
                             wrapMode: TextInput.Wrap
+                            inputMethodHints: Qt.ImhDigitsOnly
                             verticalAlignment: TextInput.AlignVCenter
                             horizontalAlignment: TextInput.AlignHCenter
                             validator: IntValidator {

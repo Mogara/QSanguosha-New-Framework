@@ -5,6 +5,7 @@
         <file>src/Gui/Splash.qml</file>
         <file>src/Gui/StartScene.qml</file>
         <file>src/Gui/Lobby.qml</file>
+        <file>src/Gui/Dialog/StartServerDialog.qml</file>
         <file>src/main.qml</file>
     </qresource>
 </RCC>

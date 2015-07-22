@@ -2,7 +2,11 @@ TEMPLATE = app
 
 QT += qml quick
 
-SOURCES += src/main.cpp
+SOURCES += src/main.cpp \
+    src/Gui/Dialog/startserverdialog.cpp
+
+HEADERS += \
+    src/Gui/Dialog/startserverdialog.h
 
 RESOURCES += image.qrc
 
@@ -46,6 +50,7 @@ QML_FILES = src/Client/ClientSettings.qml \
             src/Gui/Splash.qml \
             src/Gui/StartScene.qml \
             src/Gui/Lobby.qml \
+            src/Gui/Dialog/StartServerDialog.qml \
             src/main.qml
 
 # Create the resource file

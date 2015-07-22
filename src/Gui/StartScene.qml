@@ -48,14 +48,13 @@ Image {
         TileButton {
             text: name
             iconSource: "image://tileicon/" + icon
-
-            Component {
-                id:dialog
-
-                Dialog {  }
+            onClicked: {
+                var dialog = icon.substr(0, 1).toUpperCase() + icon.substr(1);
+                dialog = dialog.replace(/\_([a-z])/g, function(str, group1){
+                    return group1.toUpperCase();
+                });
+                dialogLoader.setSource("Dialog/" + dialog + "Dialog.qml");
             }
-
-            onClicked: dialogLoader.sourceComponent = dialog
         }
     }
 

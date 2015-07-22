@@ -5,12 +5,16 @@ QT += qml quick
 SOURCES += src/main.cpp \
     src/Gui/Dialog/startserverdialog.cpp \
     src/Gui/Dialog/startgamedialog.cpp \
-    src/Gui/lobby.cpp
+    src/Gui/lobby.cpp \
+    src/Client/client.cpp
 
 HEADERS += \
     src/Gui/Dialog/startserverdialog.h \
     src/Gui/Dialog/startgamedialog.h \
-    src/Gui/lobby.h
+    src/Gui/lobby.h \
+    src/Client/client.h
+
+INCLUDEPATH += src
 
 RESOURCES += image.qrc
 

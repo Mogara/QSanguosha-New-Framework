@@ -17,35 +17,35 @@
     Mogara
     *********************************************************************/
 
-#ifndef STARTGAMEDIALOG_H
-#define STARTGAMEDIALOG_H
+#include "client.h"
+#include <QtQml>
 
-#include <cglobal.h>
-#include <QQuickItem>
+Client *ClientInstance = NULL;
 
-class Client;
-
-class StartGameDialog : public QQuickItem
+Client::Client(QObject *parent)
+    : CClient(parent)
 {
-    Q_OBJECT
+}
 
-public:
-    StartGameDialog(QQuickItem *parent = 0);
+static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
+{
+    return Client::instance();
+}
 
-    Q_INVOKABLE void signup(const QString &screenName, const QString &avatar);
-    Q_INVOKABLE void connectToServer(const QString &server, ushort port);
+void Client::Init()
+{
+    ClientInstance = new Client(qApp);
+    qmlRegisterSingletonType<Client>("Sanguosha", 1, 0, "Client", ClientInstanceCallback);
+}
+C_INITIALIZE_CLASS(Client)
 
-signals:
-    void serverConnected();
+Client *Client::instance()
+{
+    return ClientInstance;
+}
 
-protected:
-    C_DECLARE_INITIALIZER(StartGameDialog)
-
-    void onServerConnected();
-
-    Client *m_client;
-    QString m_screenName;
-    QString m_avatar;
-};
-
-#endif // STARTGAMEDIALOG_H
+Client::~Client()
+{
+    if (ClientInstance == this)
+        ClientInstance = NULL;
+}

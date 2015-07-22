@@ -18,14 +18,14 @@
     *********************************************************************/
 
 #include "startgamedialog.h"
-
-#include <cclient.h>
+#include "Client/client.h"
 
 StartGameDialog::StartGameDialog(QQuickItem *parent)
     : QQuickItem(parent)
-    , m_client(NULL)
+    , m_client(Client::instance())
 {
-
+    connect(m_client, &CClient::connected, this, &StartGameDialog::onServerConnected);
+    connect(m_client, &CClient::connected, this, &StartGameDialog::serverConnected);
 }
 
 void StartGameDialog::signup(const QString &screenName, const QString &avatar)
@@ -36,9 +36,6 @@ void StartGameDialog::signup(const QString &screenName, const QString &avatar)
 
 void StartGameDialog::connectToServer(const QString &server, ushort port)
 {
-    m_client = new CClient(qApp);
-    connect(m_client, &CClient::connected, this, &StartGameDialog::onServerConnected);
-    connect(m_client, &CClient::connected, this, &StartGameDialog::serverConnected);
     QHostAddress host(server);
     m_client->connectToHost(host, port);
 }

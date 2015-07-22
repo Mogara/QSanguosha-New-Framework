@@ -17,35 +17,20 @@
     Mogara
     *********************************************************************/
 
-#ifndef STARTGAMEDIALOG_H
-#define STARTGAMEDIALOG_H
+#ifndef CLIENT_H
+#define CLIENT_H
 
-#include <cglobal.h>
-#include <QQuickItem>
+#include <cclient.h>
 
-class Client;
-
-class StartGameDialog : public QQuickItem
+class Client : public CClient
 {
-    Q_OBJECT
-
 public:
-    StartGameDialog(QQuickItem *parent = 0);
+    static Client *instance();
+    ~Client();
 
-    Q_INVOKABLE void signup(const QString &screenName, const QString &avatar);
-    Q_INVOKABLE void connectToServer(const QString &server, ushort port);
-
-signals:
-    void serverConnected();
-
-protected:
-    C_DECLARE_INITIALIZER(StartGameDialog)
-
-    void onServerConnected();
-
-    Client *m_client;
-    QString m_screenName;
-    QString m_avatar;
+private:
+    Client(QObject *parent = 0);
+    C_DECLARE_INITIALIZER(Client)
 };
 
-#endif // STARTGAMEDIALOG_H
+#endif // CLIENT_H

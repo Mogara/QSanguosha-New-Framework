@@ -49,6 +49,7 @@ public:
 
     Q_INVOKABLE void createRoom();
     Q_INVOKABLE void speakToServer(const QString &text);
+    Q_INVOKABLE void updateRoomList();
 
 signals:
     void messageLogged(const QString &message);
@@ -59,7 +60,7 @@ signals:
     void userAvatarChanged();
     void userNameChanged();
 
-    void roomAdded(uint id, const QString &name, uint playerNum, uint capacity);
+    void roomAdded(const QVariant &room);
     void roomRemoved(uint id);
     void roomListCleared();
 

@@ -51,9 +51,17 @@ void Lobby::speakToServer(const QString &text)
     m_client->speakToServer(text);
 }
 
+void Lobby::updateRoomList()
+{
+    m_client->fetchRoomList();
+}
+
 void Lobby::onRoomListUpdated(const QVariant &list)
 {
-    C_UNUSED(list);
+    emit roomListCleared();
+    const QVariantList rooms = list.toList();
+    foreach (const QVariant &room, rooms)
+        emit roomAdded(room);
 }
 
 void Lobby::onPlayerAdded(const CClientPlayer *player)

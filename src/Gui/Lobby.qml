@@ -8,6 +8,25 @@ Lobby {
     anchors.fill: parent
 
     onMessageLogged: chatLog.append(message);
+    onRoomListCleared: roomList.clear();
+    onRoomAdded: {
+        var info = {
+            rid: room.id,
+            name: room.name,
+            playerNum: room.playerNum,
+            capacity: room.capacity
+        };
+        roomList.append(info);
+    }
+    Component.onCompleted: roomListUpdater.start();
+
+    Timer {
+        id: roomListUpdater
+        interval: 10000
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: updateRoomList();
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -16,11 +35,6 @@ Lobby {
 
     ListModel {
         id: roomList
-        ListElement {rid: 1234; name: "Rara's Room";  playerNum: 3; capacity: 8}
-        ListElement {rid: 1234; name: "Rara's Room";  playerNum: 3; capacity: 8}
-        ListElement {rid: 1234; name: "Rara's Room";  playerNum: 3; capacity: 8}
-        ListElement {rid: 1234; name: "Rara's Room";  playerNum: 3; capacity: 8}
-        ListElement {rid: 1234; name: "Rara's Room";  playerNum: 3; capacity: 8}
     }
 
     RowLayout {

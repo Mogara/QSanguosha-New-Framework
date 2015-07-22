@@ -20,6 +20,7 @@
 #include "startserverdialog.h"
 
 #include <cserver.h>
+#include <croom.h>
 #include <cserverplayer.h>
 
 StartServerDialog::StartServerDialog(QQuickItem *parent)
@@ -42,12 +43,14 @@ void StartServerDialog::createServer()
     emit messageLogged(tr("The server is listening on port %1").arg(port));
 
     connect(m_server, &CServer::playerAdded, this, &StartServerDialog::onPlayerAdded);
+    connect(m_server, &CServer::roomCreated, this, &StartServerDialog::onRoomCreated);
 }
 
 void StartServerDialog::onPlayerAdded(CServerPlayer *player)
 {
-    emit messageLogged(tr("New player: %1(%2)").arg(player->screenName()).arg(player->id()));
+    emit messageLogged(tr("Player %1(%2) logged in.").arg(player->screenName()).arg(player->id()));
     connect(player, &CServerPlayer::networkDelayChanged, this, &StartServerDialog::onPlayerNetworkDelayChanged);
+    connect(player, &CServerPlayer::disconnected, this, &StartServerDialog::onPlayerRemoved);
     player->updateNetworkDelay();
 }
 
@@ -57,6 +60,29 @@ void StartServerDialog::onPlayerNetworkDelayChanged()
     if(player == NULL)
         return;
     emit messageLogged(tr("Player %1(%2) Network Delay: %3").arg(player->screenName()).arg(player->id()).arg(player->networkDelay()));
+}
+
+void StartServerDialog::onPlayerRemoved()
+{
+    CServerPlayer *player = qobject_cast<CServerPlayer *>(sender());
+    if(player == NULL)
+        return;
+    emit messageLogged(tr("Player %1(%2) logged out.").arg(player->screenName()).arg(player->id()));
+}
+
+void StartServerDialog::onRoomCreated(CRoom *room)
+{
+    connect(room, &CRoom::abandoned, this, &StartServerDialog::onRoomAbandoned);
+    CServerPlayer *owner = room->owner();
+    emit messageLogged(tr("%1(%2) created a new room(%3)").arg(owner->screenName()).arg(owner->id()).arg(room->id()));
+}
+
+void StartServerDialog::onRoomAbandoned()
+{
+    CRoom *room = qobject_cast<CRoom *>(sender());
+    if(room == NULL)
+        return;
+    emit messageLogged(tr("Room(%1) became empty and thus closed.").arg(room->id()));
 }
 
 void StartServerDialog::Init()

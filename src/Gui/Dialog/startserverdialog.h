@@ -25,6 +25,7 @@
 
 class CServer;
 class CServerPlayer;
+class CRoom;
 
 class StartServerDialog : public QQuickItem
 {
@@ -42,7 +43,10 @@ protected:
     C_DECLARE_INITIALIZER(StartServerDialog)
 
     void onPlayerAdded(CServerPlayer *player);
+    void onPlayerRemoved();
     void onPlayerNetworkDelayChanged();
+    void onRoomCreated(CRoom *room);
+    void onRoomAbandoned();
 
     CServer *m_server;
 };

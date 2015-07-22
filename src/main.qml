@@ -63,7 +63,7 @@ Item {
         Connections {
             target: splashLoader.item
             onDisappearing: startSceneLoader.source = "Gui/StartScene.qml";
-            onDisappeared: splashLoader.source = ""
+            onDisappeared: splashLoader.source = "";
         }
     }
 
@@ -75,8 +75,7 @@ Item {
     Loader {
         id: dialogLoader
         z: 100
-        width: parent.width
-        height: parent.height
+        anchors.fill: parent
         onSourceChanged: startSceneLoader.visible = (sourceComponent == undefined);
     }
 }

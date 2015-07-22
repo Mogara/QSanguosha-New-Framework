@@ -60,14 +60,14 @@ Image {
 
     ListModel {
         id: buttons
-        ListElement { name: qsTr("start_game"); icon: "start_game" }
-        ListElement { name: qsTr("start_server"); icon: "start_server" }
-        ListElement { name: qsTr("pc_console_start"); icon: "pc_console_start" }
-        ListElement { name: qsTr("replay"); icon: "replay" }
-        ListElement { name: qsTr("configure"); icon: "configure" }
-        ListElement { name: qsTr("general_overview"); icon: "general_overview" }
-        ListElement { name: qsTr("card_overview"); icon: "card_overview" }
-        ListElement { name: qsTr("about"); icon: "about" }
+        ListElement { name: qsTr("Start Game"); icon: "start_game" }
+        ListElement { name: qsTr("Start Server"); icon: "start_server" }
+        ListElement { name: qsTr("PC Console Start"); icon: "pc_console_start" }
+        ListElement { name: qsTr("Replay"); icon: "replay" }
+        ListElement { name: qsTr("Configure"); icon: "configure" }
+        ListElement { name: qsTr("General Overview"); icon: "general_overview" }
+        ListElement { name: qsTr("Card Overview"); icon: "card_overview" }
+        ListElement { name: qsTr("About"); icon: "about" }
     }
 
     Timer {

@@ -77,5 +77,6 @@ Item {
         z: 100
         width: parent.width
         height: parent.height
+        onSourceChanged: startSceneLoader.visible = (sourceComponent == undefined);
     }
 }

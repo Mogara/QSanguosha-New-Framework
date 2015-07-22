@@ -3,10 +3,12 @@ TEMPLATE = app
 QT += qml quick
 
 SOURCES += src/main.cpp \
-    src/Gui/Dialog/startserverdialog.cpp
+    src/Gui/Dialog/startserverdialog.cpp \
+    src/Gui/Dialog/startgamedialog.cpp
 
 HEADERS += \
-    src/Gui/Dialog/startserverdialog.h
+    src/Gui/Dialog/startserverdialog.h \
+    src/Gui/Dialog/startgamedialog.h
 
 RESOURCES += image.qrc
 
@@ -45,13 +47,15 @@ LIBS += -l$$qtLibraryTarget(Cardirector)
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH = $$PWD
 
-QML_FILES = src/Client/ClientSettings.qml \
-            src/Gui/McdSplash.qml \
-            src/Gui/Splash.qml \
-            src/Gui/StartScene.qml \
-            src/Gui/Lobby.qml \
-            src/Gui/Dialog/StartServerDialog.qml \
-            src/main.qml
+QML_FILES = \
+    src/Client/ClientSettings.qml \
+    src/Gui/McdSplash.qml \
+    src/Gui/Splash.qml \
+    src/Gui/StartScene.qml \
+    src/Gui/Lobby.qml \
+    src/Gui/Dialog/StartGameDialog.qml \
+    src/Gui/Dialog/StartServerDialog.qml \
+    src/main.qml
 
 # Create the resource file
 GENERATED_RESOURCE_FILE = qml.qrc

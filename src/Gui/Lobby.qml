@@ -7,6 +7,8 @@ import Sanguosha 1.0
 Lobby {
     anchors.fill: parent
 
+    onMessageLogged: chatLog.append(message);
+
     Rectangle {
         anchors.fill: parent
         color: "#696367"
@@ -83,7 +85,6 @@ Lobby {
                 spacing: Device.gu(10)
 
                 ColumnLayout {
-                    id: chatLog
                     spacing: 0
 
                     Rectangle {
@@ -143,6 +144,18 @@ Lobby {
                         color: "#DDDDDB"
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+
+                        TextEdit {
+                            id: chatLog
+                            anchors.fill: parent
+                            anchors.margins: Device.gu(20)
+                            font.pixelSize: Device.gu(20)
+                            clip: true
+                            readOnly: true
+                            selectByKeyboard: true
+                            selectByMouse: true
+                            wrapMode: TextEdit.WordWrap
+                        }
                     }
 
                     Rectangle {
@@ -185,23 +198,18 @@ Lobby {
                         Layout.fillWidth: true
                         height: Device.gu(60)
 
-                        Rectangle {
+                        MetroButton {
                             width: Device.gu(80)
                             height: Device.gu(36)
-                            color: "#A46061"
+                            backgroundColor: "#A46061"
                             anchors.bottom: parent.bottom
                             anchors.right: parent.right
                             anchors.bottomMargin: Device.gu(10)
                             anchors.rightMargin: Device.gu(10)
-
-                            Text {
-                                anchors.fill: parent
-                                text: qsTr("Join")
-                                color: "#EDC5C5"
-                                font.pixelSize: Device.gu(18)
-                                verticalAlignment: Text.AlignVCenter
-                                horizontalAlignment: Text.AlignHCenter
-                            }
+                            text: qsTr("Join")
+                            textColor: "#EDC5C5"
+                            textFont.pixelSize: Device.gu(18)
+                            border.width: 0
                         }
                     }
                 }
@@ -238,34 +246,25 @@ Lobby {
                         }
                     }
 
-                    Rectangle {
+                    MetroButton {
                         Layout.fillWidth: true
                         Layout.preferredHeight: Device.gu(45)
-                        color: "#455473"
-
-                        Text {
-                            anchors.fill: parent
-                            text: qsTr("Join")
-                            color: "#D2BDFF"
-                            font.pixelSize: Device.gu(28)
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                        }
+                        backgroundColor: "#455473"
+                        textColor: "#D2BDFF"
+                        text: qsTr("Join")
+                        textFont.pixelSize: Device.gu(28)
+                        border.width: 0
                     }
 
-                    Rectangle {
+                    MetroButton {
                         Layout.fillWidth: true
                         Layout.preferredHeight: Device.gu(55)
-                        color: "#A46061"
-
-                        Text {
-                            anchors.fill: parent
-                            text: qsTr("Create")
-                            color: "#EDC5C5"
-                            font.pixelSize: Device.gu(28)
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-                        }
+                        backgroundColor: "#A46061"
+                        textColor: "#EDC5C5"
+                        text: qsTr("Create")
+                        textFont.pixelSize: Device.gu(28)
+                        border.width: 0
+                        onClicked: createRoom();
                     }
                 }
 
@@ -287,6 +286,7 @@ Lobby {
                                 color: "#F6F6F6"
 
                                 TextInput {
+                                    id: chatInput
                                     anchors.fill: parent
                                     anchors.margins: Device.gu(4)
                                     color: "#000000"
@@ -294,6 +294,12 @@ Lobby {
                                     wrapMode: TextInput.Wrap
                                     verticalAlignment: TextInput.AlignVCenter
                                     clip: true
+                                    onAccepted: send();
+
+                                    function send(){
+                                        speakToServer(text);
+                                        text = "";
+                                    }
                                 }
 
                                 Image {
@@ -302,6 +308,11 @@ Lobby {
                                     height: Device.gu(22)
                                     x: parent.width - width
                                     y: parent.height + Device.gu(5)
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: chatInput.send();
+                                    }
                                 }
                             }
 
@@ -315,16 +326,20 @@ Lobby {
                             Layout.preferredWidth: Device.gu(110)
 
                             Rectangle {
-                                id: avatar
                                 Layout.preferredWidth: Device.gu(110)
                                 Layout.preferredHeight: Device.gu(110)
                                 color: "white"
+
+                                Image {
+                                    anchors.fill: parent
+                                    source: userAvatar
+                                }
                             }
 
                             Text {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: Device.gu(16)
-                                text: "Ami"
+                                text: userName
                                 font.pixelSize: Device.gu(16)
                                 color: "#535351"
                                 horizontalAlignment: Text.AlignHCenter

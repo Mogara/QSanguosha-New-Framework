@@ -25,7 +25,7 @@ StartGameDialog::StartGameDialog(QQuickItem *parent)
     , m_client(Client::instance())
 {
     connect(m_client, &CClient::connected, this, &StartGameDialog::onServerConnected);
-    connect(m_client, &CClient::connected, this, &StartGameDialog::serverConnected);
+    connect(m_client, &CClient::loggedIn, this, &StartGameDialog::lobbyEntered);
 }
 
 void StartGameDialog::signup(const QString &screenName, const QString &avatar)

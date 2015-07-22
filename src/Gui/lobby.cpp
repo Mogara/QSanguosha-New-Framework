@@ -18,23 +18,62 @@
     *********************************************************************/
 
 #include "lobby.h"
+#include "Client/client.h"
+
+#include <cclientplayer.h>
 
 Lobby::Lobby(QQuickItem *parent)
     : QQuickItem(parent)
+    , m_client(Client::instance())
     , m_currentRoomId(0)
     , m_currentRoomName(tr("QSanguosha Lobby"))
     , m_currentRoomLogo("image://mogara/logo")
 {
+    CClientPlayer *self = m_client->self();
+    if (self) {
+        m_userAvatar = self->avatar();
+        m_userName = self->screenName();
+    }
+    foreach (const CClientPlayer *player, m_client->players())
+        connect(player, &CClientPlayer::speak, this, &Lobby::onPlayerSpeaking);
+    connect(m_client, &Client::roomListUpdated, this, &Lobby::onRoomListUpdated);
+    connect(m_client, &Client::playerAdded, this, &Lobby::onPlayerAdded);
+    connect(m_client, &Client::playerRemoved, this, &Lobby::onPlayerRemoved);
 }
 
 void Lobby::createRoom()
 {
-
+    m_client->createRoom();
 }
 
 void Lobby::speakToServer(const QString &text)
 {
+    m_client->speakToServer(text);
+}
 
+void Lobby::onRoomListUpdated(const QVariant &list)
+{
+    C_UNUSED(list);
+}
+
+void Lobby::onPlayerAdded(const CClientPlayer *player)
+{
+    connect(player, &CClientPlayer::speak, this, &Lobby::onPlayerSpeaking);
+    emit messageLogged(tr("Player %1(%2) logged in.").arg(player->screenName()).arg(player->id()));
+}
+
+void Lobby::onPlayerRemoved(const CClientPlayer *player)
+{
+    disconnect(player, &CClientPlayer::speak, this, &Lobby::onPlayerSpeaking);
+    emit messageLogged(tr("Player %1(%2) logged out.").arg(player->screenName()).arg(player->id()));
+}
+
+void Lobby::onPlayerSpeaking(const QString &message)
+{
+    CClientPlayer *player = qobject_cast<CClientPlayer *>(sender());
+    if (player == NULL)
+        return;
+    emit messageLogged(tr("%1(%2): %3").arg(player->screenName()).arg(player->id()).arg(message));
 }
 
 void Lobby::setCurrentRoomId(uint id)
@@ -53,6 +92,18 @@ void Lobby::setCurrentRoomLogo(const QUrl &url)
 {
     m_currentRoomLogo = url;
     emit currentRoomLogoChanged();
+}
+
+void Lobby::setUserAvatar(const QUrl &avatar)
+{
+    m_userAvatar = avatar;
+    emit userAvatarChanged();
+}
+
+void Lobby::setUserName(const QString &name)
+{
+    m_userName = name;
+    emit userNameChanged();
 }
 
 void Lobby::Init()

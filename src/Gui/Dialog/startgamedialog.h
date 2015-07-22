@@ -36,7 +36,7 @@ public:
     Q_INVOKABLE void connectToServer(const QString &server, ushort port);
 
 signals:
-    void serverConnected();
+    void lobbyEntered();
 
 protected:
     C_DECLARE_INITIALIZER(StartGameDialog)

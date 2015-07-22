@@ -6,7 +6,7 @@ import Sanguosha.Dialogs 1.0
 
 StartGameDialog {
 
-    onServerConnected: dialogLoader.setSource("../Lobby.qml");
+    onLobbyEntered: dialogLoader.setSource("../Lobby.qml");
 
     Image {
         source: config.backgroundImage

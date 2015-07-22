@@ -4,8 +4,6 @@ import "Client"
 
 Item {
     id: root
-    width: preferredSize.width
-    height: preferredSize.height
 
     ClientSettings {
         id: config

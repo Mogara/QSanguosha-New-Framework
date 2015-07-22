@@ -2,10 +2,15 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Cardirector.Gui 1.0
 import Cardirector.Device 1.0
+import Sanguosha 1.0
 
-Rectangle {
+Lobby {
     anchors.fill: parent
-    color: "#696367"
+
+    Rectangle {
+        anchors.fill: parent
+        color: "#696367"
+    }
 
     ListModel {
         id: roomList
@@ -29,8 +34,10 @@ Rectangle {
             spacing: Device.gu(10)
             model: roomList
             delegate: Component {
-                Rectangle {
-                    color: "#3A5D59"
+                TileButton {
+                    backgroundColor: "#3A5D59"
+                    border.color: Qt.rgba(0, 0, 0, 0)
+                    text: ""
                     width: Device.gu(160)
                     height: Device.gu(60)
 
@@ -112,17 +119,17 @@ Rectangle {
                         }
 
                         Image{
-                            source: "file:///F:/Takashiro/Project/QSanguosha/rara.png"
+                            id: roomLogo
+                            source: currentRoomLogo
                             width: Device.gu(100)
                             height: Device.gu(100)
                             x: Device.gu(20)
                             y: -height / 2
-                            id: roomOwnerAvatar
                         }
 
                         Text {
-                            text: "Rara's Room"
-                            anchors.left: roomOwnerAvatar.right
+                            text: currentRoomName
+                            anchors.left: roomLogo.right
                             anchors.bottom: parent.bottom
                             anchors.leftMargin: Device.gu(10)
                             anchors.bottomMargin: Device.gu(10)

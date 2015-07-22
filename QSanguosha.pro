@@ -4,11 +4,13 @@ QT += qml quick
 
 SOURCES += src/main.cpp \
     src/Gui/Dialog/startserverdialog.cpp \
-    src/Gui/Dialog/startgamedialog.cpp
+    src/Gui/Dialog/startgamedialog.cpp \
+    src/Gui/lobby.cpp
 
 HEADERS += \
     src/Gui/Dialog/startserverdialog.h \
-    src/Gui/Dialog/startgamedialog.h
+    src/Gui/Dialog/startgamedialog.h \
+    src/Gui/lobby.h
 
 RESOURCES += image.qrc
 

@@ -25,18 +25,11 @@
 Lobby::Lobby(QQuickItem *parent)
     : QQuickItem(parent)
     , m_client(Client::instance())
-    , m_currentRoomId(0)
-    , m_currentRoomName(tr("QSanguosha Lobby"))
-    , m_currentRoomLogo("image://mogara/logo")
 {
-    CClientPlayer *self = m_client->self();
-    if (self) {
-        m_userAvatar = self->avatar();
-        m_userName = self->screenName();
-    }
     foreach (const CClientPlayer *player, m_client->players())
         connect(player, &CClientPlayer::speak, this, &Lobby::onPlayerSpeaking);
     connect(m_client, &Client::roomListUpdated, this, &Lobby::onRoomListUpdated);
+    connect(m_client, &Client::roomEntered, this, &Lobby::onRoomEntered);
     connect(m_client, &Client::playerAdded, this, &Lobby::onPlayerAdded);
     connect(m_client, &Client::playerRemoved, this, &Lobby::onPlayerRemoved);
 }
@@ -56,12 +49,37 @@ void Lobby::updateRoomList()
     m_client->fetchRoomList();
 }
 
+void Lobby::enterRoom(uint id)
+{
+    m_client->enterRoom(id);
+}
+
+void Lobby::componentComplete()
+{
+    QQuickItem::componentComplete();
+    CClientPlayer *self = m_client->self();
+    if (self) {
+        setProperty("userAvatar", self->avatar());
+        setProperty("userName", self->screenName());
+    }
+}
+
 void Lobby::onRoomListUpdated(const QVariant &list)
 {
     emit roomListCleared();
     const QVariantList rooms = list.toList();
     foreach (const QVariant &room, rooms)
         emit roomAdded(room);
+}
+
+void Lobby::onRoomEntered(const QVariant &config)
+{
+    QVariantMap info = config.toMap();
+    if (!info.isEmpty()) {
+        //setProperty("roomId", info["id"]);
+        setProperty("roomName", info["name"]);
+        setProperty("chatLog", "");
+    }
 }
 
 void Lobby::onPlayerAdded(const CClientPlayer *player)
@@ -82,36 +100,6 @@ void Lobby::onPlayerSpeaking(const QString &message)
     if (player == NULL)
         return;
     emit messageLogged(tr("%1(%2): %3").arg(player->screenName()).arg(player->id()).arg(message));
-}
-
-void Lobby::setCurrentRoomId(uint id)
-{
-    m_currentRoomId = id;
-    emit currentRoomIdChanged();
-}
-
-void Lobby::setCurrentRoomName(const QString &name)
-{
-    m_currentRoomName = name;
-    emit currentRoomNameChanged();
-}
-
-void Lobby::setCurrentRoomLogo(const QUrl &url)
-{
-    m_currentRoomLogo = url;
-    emit currentRoomLogoChanged();
-}
-
-void Lobby::setUserAvatar(const QUrl &avatar)
-{
-    m_userAvatar = avatar;
-    emit userAvatarChanged();
-}
-
-void Lobby::setUserName(const QString &name)
-{
-    m_userName = name;
-    emit userNameChanged();
 }
 
 void Lobby::Init()

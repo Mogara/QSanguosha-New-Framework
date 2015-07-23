@@ -6,8 +6,13 @@ import Sanguosha 1.0
 
 Lobby {
     anchors.fill: parent
+    property alias roomName: roomNameItem.text
+    property alias roomLogo: roomLogoItem.source
+    property alias chatLog: chatLogItem.text
+    property alias userAvatar: userAvatarItem.source
+    property alias userName: userNameItem.text
 
-    onMessageLogged: chatLog.append(message);
+    onMessageLogged: chatLogItem.append(message);
     onRoomListCleared: roomList.clear();
     onRoomAdded: {
         var info = {
@@ -75,7 +80,7 @@ Lobby {
                         }
 
                         Text {
-                            text: playerNum + "/" + capacity
+                            text: playerNum + "/" + (capacity > 0 ? capacity : "∞")
                             color: "#82906D"
                             font.pixelSize: Device.gu(18)
                             x: parent.width - width
@@ -134,8 +139,8 @@ Lobby {
                         }
 
                         Image{
-                            id: roomLogo
-                            source: currentRoomLogo
+                            id: roomLogoItem
+                            source: "image://mogara/logo"
                             width: Device.gu(100)
                             height: Device.gu(100)
                             x: Device.gu(20)
@@ -143,8 +148,9 @@ Lobby {
                         }
 
                         Text {
-                            text: currentRoomName
-                            anchors.left: roomLogo.right
+                            id: roomNameItem
+                            text: qsTr("QSanguosha Lobby")
+                            anchors.left: roomLogoItem.right
                             anchors.bottom: parent.bottom
                             anchors.leftMargin: Device.gu(10)
                             anchors.bottomMargin: Device.gu(10)
@@ -160,7 +166,7 @@ Lobby {
                         Layout.fillHeight: true
 
                         TextEdit {
-                            id: chatLog
+                            id: chatLogItem
                             anchors.fill: parent
                             anchors.margins: Device.gu(20)
                             font.pixelSize: Device.gu(20)
@@ -345,15 +351,15 @@ Lobby {
                                 color: "white"
 
                                 Image {
+                                    id: userAvatarItem
                                     anchors.fill: parent
-                                    source: userAvatar
                                 }
                             }
 
                             Text {
+                                id: userNameItem
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: Device.gu(16)
-                                text: userName
                                 font.pixelSize: Device.gu(16)
                                 color: "#535351"
                                 horizontalAlignment: Text.AlignHCenter

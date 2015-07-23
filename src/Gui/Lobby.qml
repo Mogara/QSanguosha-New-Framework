@@ -14,15 +14,36 @@ Lobby {
     property alias userName: userNameItem.text
 
     onMessageLogged: chatLogItem.append(message);
-    onRoomListCleared: roomList.clear();
-    onRoomAdded: {
-        var info = {
-            rid: room.id,
-            name: room.name,
-            playerNum: room.playerNum,
-            capacity: room.capacity
-        };
-        roomList.append(info);
+    onRoomListUpdated: {
+        var room, i, item;
+        var roomMap = {};
+        for (i in rooms)
+            roomMap[rooms[i].id] = rooms[i];
+
+        for (i = 0; i < roomList.count; i++) {
+            item = roomList.get(i);
+            room = roomMap[item.rid];
+            if (room === undefined) {
+                roomList.remove(i);
+                i--;
+            } else {
+                item.name = room.name;
+                item.playerNum = room.playerNum;
+                item.capacity = room.capacity;
+                delete roomMap[item.rid];
+            }
+        }
+
+        for (i in roomMap) {
+            room = roomMap[i];
+            var info = {
+                rid: room.id,
+                name: room.name,
+                playerNum: room.playerNum,
+                capacity: room.capacity
+            };
+            roomList.append(info);
+        }
     }
     onRoomIdChanged: {
         if (roomId > 0) {

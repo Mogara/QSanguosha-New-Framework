@@ -41,10 +41,7 @@ public:
 
 signals:
     void messageLogged(const QString &message);
-
-    void roomAdded(const QVariant &room);
-    void roomRemoved(uint id);
-    void roomListCleared();
+    void roomListUpdated(const QVariant &rooms);
 
 protected:
     C_DECLARE_INITIALIZER(Lobby)
@@ -52,7 +49,6 @@ protected:
     Q_INVOKABLE void onCreateButtonClicked();
     Q_INVOKABLE void onRoomListItemClicked(uint id);
 
-    void onRoomListUpdated(const QVariant &list);
     void onRoomEntered(const QVariant &config);
     void onPlayerAdded(const CClientPlayer *player);
     void onPlayerRemoved(const CClientPlayer *player);

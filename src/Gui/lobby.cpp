@@ -26,7 +26,7 @@ Lobby::Lobby(QQuickItem *parent)
     : QQuickItem(parent)
     , m_client(Client::instance())
 {
-    connect(m_client, &Client::roomListUpdated, this, &Lobby::onRoomListUpdated);
+    connect(m_client, &Client::roomListUpdated, this, &Lobby::roomListUpdated);
     connect(m_client, &Client::roomEntered, this, &Lobby::onRoomEntered);
     connect(m_client, &Client::playerAdded, this, &Lobby::onPlayerAdded);
     connect(m_client, &Client::playerRemoved, this, &Lobby::onPlayerRemoved);
@@ -58,14 +58,6 @@ void Lobby::onCreateButtonClicked()
 void Lobby::onRoomListItemClicked(uint id)
 {
     m_client->enterRoom(id);
-}
-
-void Lobby::onRoomListUpdated(const QVariant &list)
-{
-    emit roomListCleared();
-    const QVariantList rooms = list.toList();
-    foreach (const QVariant &room, rooms)
-        emit roomAdded(room);
 }
 
 void Lobby::onRoomEntered(const QVariant &config)

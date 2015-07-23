@@ -40,6 +40,9 @@ void StartServerDialog::createServer()
         return;
     }
 
+    CRoom *lobby = m_server->lobby();
+    lobby->setName(tr("QSanguosha Lobby"));
+
     emit messageLogged(tr("The server is listening on port %1").arg(port));
 
     connect(m_server, &CServer::playerAdded, this, &StartServerDialog::onPlayerAdded);

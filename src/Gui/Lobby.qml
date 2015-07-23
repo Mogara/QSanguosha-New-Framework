@@ -6,6 +6,7 @@ import Sanguosha 1.0
 
 Lobby {
     anchors.fill: parent
+    property int roomId: 0
     property alias roomName: roomNameItem.text
     property alias roomLogo: roomLogoItem.source
     property alias chatLog: chatLogItem.text
@@ -23,14 +24,14 @@ Lobby {
         };
         roomList.append(info);
     }
-    Component.onCompleted: roomListUpdater.start();
-
-    Timer {
-        id: roomListUpdater
-        interval: 10000
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: updateRoomList();
+    onRoomIdChanged: {
+        if (roomId > 0) {
+            roomListShowAnimation.stop();
+            roomListHideAnimation.start();
+        } else {
+            roomListHideAnimation.stop();
+            roomListShowAnimation.start();
+        }
     }
 
     Rectangle {
@@ -51,6 +52,7 @@ Lobby {
             id: roomView
             Layout.preferredWidth: Device.gu(160)
             Layout.fillHeight: true
+            clip: true
             x: Device.gu(10)
             spacing: Device.gu(10)
             model: roomList
@@ -87,8 +89,38 @@ Lobby {
                             y: parent.height - height
                         }
                     }
+
+                    onClicked: onRoomListItemClicked(rid);
                 }
             }
+
+            PropertyAnimation {
+                id: roomListHideAnimation
+                target: roomView
+                property: "Layout.preferredWidth"
+                from: Device.gu(160)
+                to: 0
+                onStarted: roomListUpdater.stop();
+            }
+
+            PropertyAnimation {
+                id: roomListShowAnimation
+                target: roomView
+                property: "Layout.preferredWidth"
+                from: 0
+                to: Device.gu(160)
+                onStarted: roomListUpdater.start();
+            }
+
+            Timer {
+                id: roomListUpdater
+                interval: 10000
+                repeat: true
+                triggeredOnStart: true
+                onTriggered: updateRoomList();
+            }
+
+            Component.onCompleted: roomListUpdater.start();
         }
 
         ColumnLayout {
@@ -281,10 +313,10 @@ Lobby {
                         Layout.preferredHeight: Device.gu(55)
                         backgroundColor: "#A46061"
                         textColor: "#EDC5C5"
-                        text: qsTr("Create")
+                        text: roomId <= 0 ? qsTr("Create") : qsTr("Exit")
                         textFont.pixelSize: Device.gu(28)
                         border.width: 0
-                        onClicked: createRoom();
+                        onClicked: onCreateButtonClicked();
                     }
                 }
 

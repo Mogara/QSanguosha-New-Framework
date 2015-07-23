@@ -38,7 +38,6 @@ public:
     Q_INVOKABLE void createRoom();
     Q_INVOKABLE void speakToServer(const QString &text);
     Q_INVOKABLE void updateRoomList();
-    Q_INVOKABLE void enterRoom(uint id);
 
 signals:
     void messageLogged(const QString &message);
@@ -50,7 +49,9 @@ signals:
 protected:
     C_DECLARE_INITIALIZER(Lobby)
 
-    void componentComplete();
+    Q_INVOKABLE void onCreateButtonClicked();
+    Q_INVOKABLE void onRoomListItemClicked(uint id);
+
     void onRoomListUpdated(const QVariant &list);
     void onRoomEntered(const QVariant &config);
     void onPlayerAdded(const CClientPlayer *player);

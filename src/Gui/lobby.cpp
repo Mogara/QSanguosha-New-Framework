@@ -26,8 +26,6 @@ Lobby::Lobby(QQuickItem *parent)
     : QQuickItem(parent)
     , m_client(Client::instance())
 {
-    foreach (const CClientPlayer *player, m_client->players())
-        connect(player, &CClientPlayer::speak, this, &Lobby::onPlayerSpeaking);
     connect(m_client, &Client::roomListUpdated, this, &Lobby::onRoomListUpdated);
     connect(m_client, &Client::roomEntered, this, &Lobby::onRoomEntered);
     connect(m_client, &Client::playerAdded, this, &Lobby::onPlayerAdded);
@@ -49,19 +47,17 @@ void Lobby::updateRoomList()
     m_client->fetchRoomList();
 }
 
-void Lobby::enterRoom(uint id)
+void Lobby::onCreateButtonClicked()
 {
-    m_client->enterRoom(id);
+    if (property("roomId").toUInt() == 0)
+        m_client->createRoom();
+    else
+        m_client->exitRoom();
 }
 
-void Lobby::componentComplete()
+void Lobby::onRoomListItemClicked(uint id)
 {
-    QQuickItem::componentComplete();
-    CClientPlayer *self = m_client->self();
-    if (self) {
-        setProperty("userAvatar", self->avatar());
-        setProperty("userName", self->screenName());
-    }
+    m_client->enterRoom(id);
 }
 
 void Lobby::onRoomListUpdated(const QVariant &list)
@@ -76,10 +72,19 @@ void Lobby::onRoomEntered(const QVariant &config)
 {
     QVariantMap info = config.toMap();
     if (!info.isEmpty()) {
-        //setProperty("roomId", info["id"]);
+        setProperty("roomId", info["id"]);
         setProperty("roomName", info["name"]);
         setProperty("chatLog", "");
     }
+
+    CClientPlayer *self = m_client->self();
+    if (self) {
+        setProperty("userAvatar", self->avatar());
+        setProperty("userName", self->screenName());
+    }
+
+    foreach (const CClientPlayer *player, m_client->players())
+        connect(player, &CClientPlayer::speak, this, &Lobby::onPlayerSpeaking, Qt::UniqueConnection);
 }
 
 void Lobby::onPlayerAdded(const CClientPlayer *player)

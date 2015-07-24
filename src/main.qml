@@ -1,6 +1,7 @@
 import QtQuick 2.4
 import Cardirector.Resource 1.0
 import "Client"
+import "utility.js" as Utility
 
 Item {
     id: root
@@ -38,20 +39,6 @@ Item {
     }
 
     Loader {
-        id: splashLoader
-        anchors.fill: parent
-        z: 100
-        focus: true
-        source: "Gui/Splash.qml"
-
-        Connections {
-            target: splashLoader.item
-            onDisappearing: startSceneLoader.source = "Gui/StartScene.qml";
-            onDisappeared: splashLoader.source = "";
-        }
-    }
-
-    Loader {
         id: startSceneLoader
         anchors.fill: parent
     }
@@ -61,5 +48,25 @@ Item {
         z: 100
         anchors.fill: parent
         onSourceChanged: startSceneLoader.visible = (source == "");
+    }
+
+    Loader {
+        id: splashLoader
+        anchors.fill: parent
+        focus: true
+    }
+
+    Component.onCompleted: {
+        if (Qt.application.arguments.contains("--skip-splash")) {
+            startSceneLoader.source = "Gui/StartScene.qml";
+        } else {
+            splashLoader.source = "Gui/Splash.qml";
+            splashLoader.item.disappearing.connect(function(){
+                startSceneLoader.source = "Gui/StartScene.qml";
+            });
+            splashLoader.item.disappeared.connect(function(){
+                splashLoader.source = "";
+            });
+        }
     }
 }

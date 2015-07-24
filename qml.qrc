@@ -6,6 +6,7 @@
         <file>src/Gui/Lobby.qml</file>
         <file>src/Gui/Dialog/StartGameDialog.qml</file>
         <file>src/Gui/Dialog/StartServerDialog.qml</file>
+        <file>src/utility.js</file>
         <file>src/main.qml</file>
     </qresource>
 </RCC>

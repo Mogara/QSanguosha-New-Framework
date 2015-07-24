@@ -60,6 +60,7 @@ QML_FILES = \
     src/Gui/Lobby.qml \
     src/Gui/Dialog/StartGameDialog.qml \
     src/Gui/Dialog/StartServerDialog.qml \
+    src/utility.js \
     src/main.qml
 
 # Create the resource file

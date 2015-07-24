@@ -107,7 +107,7 @@ StartGameDialog {
             }
             MetroButton {
                 text: qsTr("Cancel")
-                onClicked: dialogLoader.sourceComponent = undefined;
+                onClicked: dialogLoader.source = "";
             }
         }
     }

@@ -76,6 +76,6 @@ Item {
         id: dialogLoader
         z: 100
         anchors.fill: parent
-        onSourceChanged: startSceneLoader.visible = (sourceComponent == undefined);
+        onSourceChanged: startSceneLoader.visible = (source == "");
     }
 }

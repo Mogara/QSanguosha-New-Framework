@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>src/Client/ClientSettings.qml</file>
-        <file>src/Gui/McdSplash.qml</file>
         <file>src/Gui/Splash.qml</file>
         <file>src/Gui/StartScene.qml</file>
         <file>src/Gui/Lobby.qml</file>

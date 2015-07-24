@@ -38,22 +38,6 @@ Item {
     }
 
     Loader {
-        id: mSplashLoader
-        source: "Gui/McdSplash.qml"
-        anchors.fill: parent
-        z: 1000
-        focus: true
-
-        Connections {
-            target: mSplashLoader.item
-            onDisappearing: {
-                mSplashLoader.source = "";
-                splashLoader.item.animationRunning = true;
-            }
-        }
-    }
-
-    Loader {
         id: splashLoader
         anchors.fill: parent
         z: 100

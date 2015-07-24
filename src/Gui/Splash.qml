@@ -15,6 +15,14 @@ Rectangle {
     signal disappearing
     signal disappeared
 
+    //Cardirector Splash
+    Splash {
+        onDisappearing: {
+            visible = false;
+            splash.animationRunning = true;
+        }
+    }
+
     //---------------Logo-------------------
     Image {
         id: logo

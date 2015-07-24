@@ -55,7 +55,6 @@ QML_IMPORT_PATH = $$PWD
 
 QML_FILES = \
     src/Client/ClientSettings.qml \
-    src/Gui/McdSplash.qml \
     src/Gui/Splash.qml \
     src/Gui/StartScene.qml \
     src/Gui/Lobby.qml \

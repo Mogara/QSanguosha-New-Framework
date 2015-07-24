@@ -34,9 +34,12 @@ void StartGameDialog::signup(const QString &screenName, const QString &avatar)
     m_avatar = avatar;
 }
 
-void StartGameDialog::connectToServer(const QString &server, ushort port)
+void StartGameDialog::connectToServer(const QString &serverAddress)
 {
-    QHostAddress host(server);
+    int colon = serverAddress.lastIndexOf(':');
+    QString ip = serverAddress.mid(0, colon);
+    ushort port = serverAddress.mid(colon + 1).toUShort();
+    QHostAddress host(ip);
     m_client->connectToHost(host, port);
 }
 

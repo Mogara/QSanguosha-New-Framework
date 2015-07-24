@@ -59,13 +59,12 @@ Item {
     Component.onCompleted: {
         var skip_splash = false;
         for (var i = 0; i < Qt.application.arguments.length; i++) {
+            var schema = "qsanguosha://";
             var arg = Qt.application.arguments[i];
-            if (arg.substr(0, 13).toLowerCase() === "qsanguosha://") {
+            if (arg.substr(0, schema.length).toLowerCase() === schema) {
                 dialogLoader.setSource("Gui/Dialog/StartGameDialog.qml");
-                arg = arg.substr(13).split("/");
-                arg = arg[0].split(":");
-                dialogLoader.item.serverIp = arg[0];
-                dialogLoader.item.serverPort = arg[1];
+                arg = arg.substr(schema.length, arg.indexOf("/", schema.length) - schema.length);
+                dialogLoader.item.serverAddress = arg;
                 dialogLoader.item.accepted();
                 skip_splash = true;
                 break;

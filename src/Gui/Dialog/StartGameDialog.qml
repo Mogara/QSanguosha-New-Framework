@@ -10,15 +10,14 @@ StartGameDialog {
     signal accepted
     signal rejected
 
-    property alias serverIp: serverIpInput.text
-    property alias serverPort: serverPortInput.text
+    property alias serverAddress: serverAddressInput.text
     property alias screenName: screenNameInput.text
 
     onLobbyEntered: dialogLoader.setSource("../Lobby.qml");
 
     onAccepted: {
         signup(screenName, "");
-        connectToServer(serverIp, parseInt(serverPort, 10));
+        connectToServer(serverAddress);
     }
 
     onRejected: dialogLoader.source = "";
@@ -38,7 +37,7 @@ StartGameDialog {
             columns: 2
 
             Text {
-                text: qsTr("Server IP")
+                text: qsTr("Server Address")
                 color: "white"
                 font.pixelSize: Device.gu(20)
                 width: Device.gu(50)
@@ -50,40 +49,13 @@ StartGameDialog {
                 Layout.fillWidth: true
                 height: Device.gu(42)
                 TextInput {
-                    id: serverIpInput
+                    id: serverAddressInput
                     anchors.fill: parent
                     anchors.margins: Device.gu(11)
                     font.pixelSize: Device.gu(20)
                     color: "white"
                     clip: true
-                    text: "127.0.0.1"
-                }
-            }
-
-            Text {
-                color: "white"
-                text: qsTr("Server Port")
-                font.pixelSize: Device.gu(20)
-                width: Device.gu(50)
-                height: Device.gu(22)
-            }
-
-            Rectangle {
-                color: Qt.rgba(0xFF, 0xFF, 0xFF, 0.3)
-                Layout.fillWidth: true
-                height: Device.gu(42)
-                TextInput {
-                    id: serverPortInput
-                    anchors.fill: parent
-                    anchors.margins: Device.gu(11)
-                    font.pixelSize: Device.gu(20)
-                    color: "white"
-                    clip: true
-                    text: "5927"
-                    validator: IntValidator {
-                        bottom: 1
-                        top: 65535
-                    }
+                    text: "127.0.0.1:5927"
                 }
             }
 

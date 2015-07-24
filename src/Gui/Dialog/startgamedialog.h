@@ -33,7 +33,7 @@ public:
     StartGameDialog(QQuickItem *parent = 0);
 
     Q_INVOKABLE void signup(const QString &screenName, const QString &avatar);
-    Q_INVOKABLE void connectToServer(const QString &server, ushort port);
+    Q_INVOKABLE void connectToServer(const QString &serverAddress);
 
 signals:
     void lobbyEntered();

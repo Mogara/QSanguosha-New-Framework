@@ -5,8 +5,23 @@ import Cardirector.Device 1.0
 import Sanguosha.Dialogs 1.0
 
 StartGameDialog {
+    id: startGameDialog
+
+    signal accepted
+    signal rejected
+
+    property alias serverIp: serverIpInput.text
+    property alias serverPort: serverPortInput.text
+    property alias screenName: screenNameInput.text
 
     onLobbyEntered: dialogLoader.setSource("../Lobby.qml");
+
+    onAccepted: {
+        signup(screenName, "");
+        connectToServer(serverIp, parseInt(serverPort, 10));
+    }
+
+    onRejected: dialogLoader.source = "";
 
     Image {
         source: config.backgroundImage
@@ -100,14 +115,11 @@ StartGameDialog {
 
             MetroButton {
                 text: qsTr("Connect")
-                onClicked: {
-                    signup(screenNameInput.text, "");
-                    connectToServer(serverIpInput.text, parseInt(serverPortInput.text, 10));
-                }
+                onClicked: startGameDialog.accepted();
             }
             MetroButton {
                 text: qsTr("Cancel")
-                onClicked: dialogLoader.source = "";
+                onClicked: startGameDialog.rejected();
             }
         }
     }

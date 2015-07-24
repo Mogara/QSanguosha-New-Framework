@@ -17,7 +17,7 @@ Lobby {
     onRoomListUpdated: {
         var room, i, item;
         var roomMap = {};
-        for (i in rooms)
+        for (i = 0; i < rooms.length; i++)
             roomMap[rooms[i].id] = rooms[i];
 
         for (i = 0; i < roomList.count; i++) {

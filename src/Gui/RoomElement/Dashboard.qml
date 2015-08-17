@@ -4,14 +4,15 @@ import Cardirector.Device 1.0
 import Cardirector.Resource 1.0
 
 RowLayout {
-    property alias headGeneralName: headGeneralItem.name
+    property alias headGeneralName: headGeneralItem.generalName
     property alias headGeneralAvatar: headGeneralItem.avatar
     property alias headGeneralKingdom: headGeneralItem.kingdom
-    property alias deputyGeneralName: deputyGeneralItem.name
+    property alias deputyGeneralName: deputyGeneralItem.generalName
     property alias deputyGeneralAvatar: deputyGeneralItem.avatar
     property alias deputyGeneralKingdom: deputyGeneralItem.kingdom
     property int seatNumber: 0
     property alias handcardNum : handcardNumItem.value
+    property string playerRole: "unknown"
 
     spacing: 0
     Layout.fillHeight: false
@@ -80,6 +81,12 @@ RowLayout {
                 }
 
                 Image {
+                    source: "image://root/role/" + playerRole
+                    x: Device.gu(70)
+                    y: Device.gu(3)
+                }
+
+                Image {
                     x: Device.gu(71)
                     y: Device.gu(117)
                     source: seatNumber > 0 ? "image://dashboard/seatnum/" + seatNumber : ""
@@ -111,6 +118,7 @@ RowLayout {
             id: headGeneralItem
             y: -Device.gu(4)
             avatar: "huangyueying"
+            generalPosition: "head"
         }
 
         DashboardGeneral {
@@ -118,6 +126,7 @@ RowLayout {
             x: Device.gu(128)
             y: -Device.gu(4)
             avatar: "zhugeliang"
+            generalPosition: "deputy"
         }
     }
 }

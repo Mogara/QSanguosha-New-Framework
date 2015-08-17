@@ -58,6 +58,27 @@ RowLayout {
                 id: platter
                 source: "image://dashboard/platter"
 
+                IrregularButton {
+                    name: "platter/confirm"
+                    enabled: false
+                    x: Device.gu(6)
+                    y: Device.gu(3)
+                }
+
+                IrregularButton {
+                    name: "platter/cancel"
+                    enabled: false
+                    x: Device.gu(6)
+                    y: Device.gu(79)
+                }
+
+                IrregularButton {
+                    name: "platter/discard"
+                    enabled: false
+                    x: Device.gu(67)
+                    y: Device.gu(37)
+                }
+
                 Image {
                     x: Device.gu(71)
                     y: Device.gu(117)

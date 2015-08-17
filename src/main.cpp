@@ -15,7 +15,7 @@
     See the LICENSE file for more details.
 
     Mogara
-    *********************************************************************/
+*********************************************************************/
 
 #include <QGuiApplication>
 #include <QLocale>

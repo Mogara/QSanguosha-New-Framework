@@ -15,7 +15,7 @@
     See the LICENSE file for more details.
 
     Mogara
-    *********************************************************************/
+*********************************************************************/
 
 #ifndef STARTGAMEDIALOG_H
 #define STARTGAMEDIALOG_H

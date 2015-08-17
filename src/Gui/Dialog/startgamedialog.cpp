@@ -15,7 +15,7 @@
     See the LICENSE file for more details.
 
     Mogara
-    *********************************************************************/
+*********************************************************************/
 
 #include "startgamedialog.h"
 #include "Client/client.h"

@@ -15,7 +15,7 @@
     See the LICENSE file for more details.
 
     Mogara
-    *********************************************************************/
+*********************************************************************/
 
 #ifndef STARTSERVERDIALOG_H
 #define STARTSERVERDIALOG_H

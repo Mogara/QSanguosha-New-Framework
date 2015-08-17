@@ -1,6 +1,7 @@
 TEMPLATE = app
 
 QT += qml quick
+#CONFIG += embeded_resource
 
 SOURCES += src/main.cpp \
     src/Gui/Dialog/startserverdialog.cpp \
@@ -19,8 +20,6 @@ HEADERS += \
     src/core/gameplayer.h
 
 INCLUDEPATH += src
-
-RESOURCES += image.qrc
 
 INCLUDEPATH += Cardirector/include
 LIBS += -L"$$_PRO_FILE_PWD_/Cardirector/lib"
@@ -86,7 +85,12 @@ RESOURCE_CONTENT += \
 
 write_file($$GENERATED_RESOURCE_FILE, RESOURCE_CONTENT)|error("Aborting.")
 
-RESOURCES += $$GENERATED_RESOURCE_FILE
+CONFIG(embeded_resource){
+    RESOURCES += \
+        image.qrc \
+        $$GENERATED_RESOURCE_FILE
+    DEFINES += EMBEDED_RESOURCE
+}
 
 lupdate_only {
     SOURCES += $$QML_FILES

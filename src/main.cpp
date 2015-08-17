@@ -40,7 +40,11 @@ int main(int argc, char *argv[])
     app.installTranslator(&translator);
 
     CMainWindow window;
+#ifdef EMBEDED_RESOURCE
     window.setSource(QUrl(QStringLiteral("qrc:/src/main.qml")));
+#else
+    window.setSource(QUrl(QStringLiteral("src/main.qml")));
+#endif
     window.show();
 
     cRegisterUrlScheme(window.title());

@@ -16,7 +16,7 @@ Item {
 
         function imagePath(imageId, requestedSize)
         {
-            return ":/image/mogara/" + imageId + ".png";
+            return "image/mogara/" + imageId + ".png";
         }
     }
 
@@ -26,7 +26,7 @@ Item {
         function imagePath(imageId, requestedSize) {
             // We prefer to using compact pictures as background to save storage space
             // @todo: consider supporting more common image formats
-            return ":/image/background/" + imageId + ".jpg";
+            return "image/background/" + imageId + ".jpg";
         }
     }
 
@@ -34,7 +34,7 @@ Item {
         providerId: "tileicon"
 
         function imagePath(imageId, requestedSize) {
-            return ":/image/tileIcon/" + imageId + ".png"
+            return "image/tileIcon/" + imageId + ".png"
         }
     }
 
@@ -73,7 +73,7 @@ Item {
         }
 
         if (skip_splash || Qt.application.arguments.contains("--skip-splash")) {
-            startSceneLoader.source = "Gui/StartScene.qml";
+            startSceneLoader.source = "Gui/Startcene.qml";
         } else {
             splashLoader.source = "Gui/Splash.qml";
             splashLoader.item.disappearing.connect(function(){

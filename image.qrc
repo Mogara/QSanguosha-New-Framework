@@ -13,5 +13,15 @@
         <file>image/tileIcon/start_game.png</file>
         <file>image/tileIcon/start_server.png</file>
         <file>image/mogara/enter_icon.png</file>
+        <file>image/background/table.jpg</file>
+        <file>image/roomscene/dashboard/avatar.png</file>
+        <file>image/roomscene/dashboard/base.png</file>
+        <file>image/roomscene/dashboard/equip.png</file>
+        <file>image/roomscene/dashboard/hand.png</file>
+        <file>image/roomscene/dashboard/hpbase.png</file>
+        <file>image/roomscene/dashboard/platter.png</file>
+        <file>image/roomscene/photo/circle-photo.png</file>
+        <file>image/roomscene/photo/faceturned.png</file>
+        <file>image/roomscene/photo/photo-back.png</file>
     </qresource>
 </RCC>

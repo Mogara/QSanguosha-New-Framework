@@ -63,6 +63,12 @@ QML_FILES = \
     src/Gui/Lobby.qml \
     src/Gui/Dialog/StartGameDialog.qml \
     src/Gui/Dialog/StartServerDialog.qml \
+    src/Gui/RoomScene.qml \
+    src/Gui/RoomElement/ChatBox.qml \
+    src/Gui/RoomElement/Dashboard.qml \
+    src/Gui/RoomElement/LogBox.qml \
+    src/Gui/RoomElement/RoleComboBox.qml \
+    src/Gui/RoomElement/Photo.qml \
     src/utility.js \
     src/main.qml
 

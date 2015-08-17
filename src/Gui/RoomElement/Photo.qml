@@ -2,6 +2,7 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Cardirector.Device 1.0
 import Cardirector.Resource 1.0
+import QtGraphicalEffects 1.0
 
 Item {
     property string headGeneral: "anjiang"
@@ -9,10 +10,11 @@ Item {
     property alias screenName: screenNameItem.text
     property int maxHp: 5
     property alias faceTurned: faceTurnedCover.visible
+    property string kingdom: "qun"
+    property alias handcardNum: handcardNumText.text
 
     width: Device.gu(157)
     height: Device.gu(181)
-    clip: true
 
     ImageProvider {
         id: roomSceneImage
@@ -34,34 +36,32 @@ Item {
         }
     }
 
-    RowLayout {
-        anchors.fill: parent
+    Item {
+        width: deputyGeneral != "" ? Device.gu(75) : Device.gu(155)
+        height: Device.gu(182)
 
-        Item {
-            width: Device.gu(75)
-            height: Device.gu(181)
-
-            Image {
-                anchors.fill: parent
-                fillMode: Image.PreserveAspectCrop
-                source: "image://general/fullphoto/" + headGeneral
-            }
+        Image {
+            anchors.fill: parent
+            fillMode: Image.PreserveAspectCrop
+            source: "image://general/fullphoto/" + headGeneral
         }
+    }
 
-        Item {
-            width: Device.gu(75)
-            height: Device.gu(181)
+    Item {
+        x: Device.gu(80)
+        width: Device.gu(75)
+        height: Device.gu(182)
 
-            Image {
-                anchors.fill: parent
-                fillMode: Image.PreserveAspectCrop
-                source: "image://general/fullphoto/" + deputyGeneral
-            }
+        Image {
+            anchors.fill: parent
+            fillMode: Image.PreserveAspectCrop
+            source: "image://general/fullphoto/" + deputyGeneral
         }
     }
 
     Image {
         source: "image://photo/circle-photo"
+        visible: deputyGeneral != ""
     }
 
     Image {
@@ -76,11 +76,89 @@ Item {
         source: "image://photo/photo-back"
     }
 
+    Image {
+        x: Device.gu(-10)
+        y: Device.gu(110)
+        source: "image://photo/handcard/" + kingdom
+
+        Text {
+            id: handcardNumText
+            anchors.fill: parent
+            color: "white"
+            text: "0"
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+        }
+
+        Glow {
+            anchors.fill: handcardNumText
+            spread: Device.gu(0.8)
+            radius: Device.gu(2.0)
+            samples: 8
+            color: "#000"
+            source: handcardNumText
+        }
+    }
+
     Text {
         id: screenNameItem
         color: "white"
         font.pixelSize: Device.gu(12)
         x: Device.gu(5)
         y: Device.gu(3)
+    }
+
+    Text {
+        id: headGeneralNameItem
+        text: "暗将"
+        color: "white"
+        y: Device.gu(30)
+        font.pixelSize: Device.gu(18)
+        font.family: "隶书"
+        font.weight: Font.Bold
+        width: Device.gu(32)
+        wrapMode: Text.WrapAnywhere
+        lineHeight: 1.5
+        horizontalAlignment: Text.AlignHCenter
+    }
+
+    Glow {
+        source: headGeneralNameItem
+        anchors.fill: headGeneralNameItem
+        color: "black"
+        spread: 0.7
+        radius: Device.gu(12)
+        samples: 24
+    }
+
+    Text {
+        id: deputyGeneralNameItem
+        text: "暗将"
+        color: "white"
+        x: Device.gu(80)
+        y: Device.gu(30)
+        font.pixelSize: Device.gu(18)
+        font.family: "隶书"
+        font.weight: Font.Bold
+        width: Device.gu(32)
+        wrapMode: Text.WrapAnywhere
+        lineHeight: 1.5
+        horizontalAlignment: Text.AlignHCenter
+    }
+
+    Glow {
+        source: deputyGeneralNameItem
+        anchors.fill: deputyGeneralNameItem
+        color: "black"
+        spread: 0.7
+        radius: Device.gu(12)
+        samples: 24
+    }
+
+    RoleComboBox {
+        x: parent.width - width - Device.gu(5)
+        y: Device.gu(1)
+        width: Device.gu(22)
+        height: Device.gu(22)
     }
 }

@@ -11,7 +11,7 @@ Image {
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 0
+        spacing: Device.gu(3)
 
         RowLayout {
             spacing: 1
@@ -29,7 +29,7 @@ Image {
             ColumnLayout {
                 spacing: 1
                 Layout.fillWidth: false
-                Layout.preferredWidth: Device.gu(240)
+                Layout.preferredWidth: Device.gu(275)
 
                 LogBox {
                     Layout.fillWidth: true

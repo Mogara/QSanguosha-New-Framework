@@ -1,7 +1,6 @@
 TEMPLATE = app
 
 QT += qml quick
-#CONFIG += embeded_resource
 
 SOURCES += src/main.cpp \
     src/Gui/Dialog/startserverdialog.cpp \
@@ -47,6 +46,7 @@ macx {
 }
 
 android {
+    CONFIG += embeded_resource
     QT += androidextras
     ANDROID_EXTRA_LIBS += $$PWD/Cardirector/lib/libCardirector.so
 }

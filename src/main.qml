@@ -11,6 +11,16 @@ Item {
     }
 
     ImageProvider {
+        id: rootImage
+        providerId: "root"
+
+        function imagePath(imageId, requestedSize)
+        {
+            return "image/" + imageId + ".png";
+        }
+    }
+
+    ImageProvider {
         id: mogaraImage
         providerId: "mogara"
 

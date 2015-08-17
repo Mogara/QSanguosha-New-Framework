@@ -11,7 +11,7 @@ Item {
     property int maxHp: 5
     property alias faceTurned: faceTurnedCover.visible
     property string kingdom: "qun"
-    property alias handcardNum: handcardNumText.text
+    property alias handcardNum: handcardNumItem.value
 
     width: Device.gu(157)
     height: Device.gu(181)
@@ -76,28 +76,11 @@ Item {
         source: "image://photo/photo-back"
     }
 
-    Image {
+    HandcardNumber {
+        id: handcardNumItem
         x: Device.gu(-10)
         y: Device.gu(110)
-        source: "image://photo/handcard/" + kingdom
-
-        Text {
-            id: handcardNumText
-            anchors.fill: parent
-            color: "white"
-            text: "0"
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-        }
-
-        Glow {
-            anchors.fill: handcardNumText
-            spread: Device.gu(0.8)
-            radius: Device.gu(2.0)
-            samples: 8
-            color: "#000"
-            source: handcardNumText
-        }
+        kingdom: parent.kingdom
     }
 
     Text {

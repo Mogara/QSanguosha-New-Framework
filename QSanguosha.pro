@@ -66,6 +66,8 @@ QML_FILES = \
     src/Gui/RoomScene.qml \
     src/Gui/RoomElement/ChatBox.qml \
     src/Gui/RoomElement/Dashboard.qml \
+    src/Gui/RoomElement/DashboardGeneral.qml \
+    src/Gui/RoomElement/HandcardNumber.qml \
     src/Gui/RoomElement/LogBox.qml \
     src/Gui/RoomElement/RoleComboBox.qml \
     src/Gui/RoomElement/Photo.qml \

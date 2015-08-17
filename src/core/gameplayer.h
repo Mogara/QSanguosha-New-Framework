@@ -29,7 +29,29 @@ class GamePlayer : public CAbstractGamePlayer
     Q_PROPERTY(int hp READ hp WRITE setHp)
     Q_PROPERTY(int maxHp READ maxHp WRITE setMaxHp)
 
+    Q_ENUMS(Phase)
+    Q_ENUMS(Area)
+    Q_ENUMS(Role)
+
 public:
+    enum Phase
+    {
+        InvalidPhase, RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive
+    };
+
+    enum Area
+    {
+        UnknownArea,
+        HandArea, EquipArea, DelayedTrickArea, JudgeArea,
+        DiscardPile, DrawPileTop, DrawPileBottom,
+        SpecialArea, TableArea, WuguArea
+    };
+
+    enum Role
+    {
+        Lord, Loyalist, Rebel, Renegade
+    };
+
     GamePlayer(QObject *parent = 0);
 
     int hp() const { return m_hp; }
@@ -37,6 +59,9 @@ public:
 
     int maxHp() const { return m_maxHp; }
     void setMaxHp(int maxHp) { m_maxHp = maxHp; }
+
+    int lostHp() const { return maxHp() - qMax(hp(), 0); }
+    bool isWounded() const { return hp() < 0 || hp() < maxHp(); }
 
 protected:
     int m_hp;

@@ -30,6 +30,7 @@ Lobby::Lobby(QQuickItem *parent)
     connect(m_client, &Client::roomEntered, this, &Lobby::onRoomEntered);
     connect(m_client, &Client::playerAdded, this, &Lobby::onPlayerAdded);
     connect(m_client, &Client::playerRemoved, this, &Lobby::onPlayerRemoved);
+    connect(m_client, &Client::systemMessage, this, &Lobby::onSystemMessageReceived);
 }
 
 void Lobby::createRoom()
@@ -58,6 +59,12 @@ void Lobby::onCreateButtonClicked()
 void Lobby::onRoomListItemClicked(uint id)
 {
     m_client->enterRoom(id);
+}
+
+void Lobby::onReadyButtonClicked()
+{
+    //@to-do: Get ready or start game
+    m_client->startGame();
 }
 
 void Lobby::onRoomEntered(const QVariant &config)
@@ -97,6 +104,11 @@ void Lobby::onPlayerSpeaking(const QString &message)
     if (player == NULL)
         return;
     emit messageLogged(tr("%1(%2): %3").arg(player->screenName()).arg(player->id()).arg(message));
+}
+
+void Lobby::onSystemMessageReceived(const QString &message)
+{
+    emit messageLogged(tr("System: %1").arg(message));
 }
 
 void Lobby::Init()

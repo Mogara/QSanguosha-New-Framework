@@ -279,10 +279,11 @@ Lobby {
                             anchors.right: parent.right
                             anchors.bottomMargin: Device.gu(10)
                             anchors.rightMargin: Device.gu(10)
-                            text: qsTr("Join")
+                            text: qsTr("Ready")
                             textColor: "#EDC5C5"
                             textFont.pixelSize: Device.gu(18)
                             border.width: 0
+                            onClicked: onReadyButtonClicked();
                         }
                     }
                 }

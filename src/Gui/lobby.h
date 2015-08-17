@@ -48,11 +48,13 @@ protected:
 
     Q_INVOKABLE void onCreateButtonClicked();
     Q_INVOKABLE void onRoomListItemClicked(uint id);
+    Q_INVOKABLE void onReadyButtonClicked();
 
     void onRoomEntered(const QVariant &config);
     void onPlayerAdded(const CClientPlayer *player);
     void onPlayerRemoved(const CClientPlayer *player);
     void onPlayerSpeaking(const QString &message);
+    void onSystemMessageReceived(const QString &message);
 
     Client *m_client;
 };

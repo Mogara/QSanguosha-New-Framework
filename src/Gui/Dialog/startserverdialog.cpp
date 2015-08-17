@@ -22,6 +22,7 @@
 #include <cserver.h>
 #include <croom.h>
 #include <cserverplayer.h>
+#include <core/gamelogic.h>
 
 StartServerDialog::StartServerDialog(QQuickItem *parent)
     : QQuickItem(parent)
@@ -75,6 +76,7 @@ void StartServerDialog::onPlayerRemoved()
 
 void StartServerDialog::onRoomCreated(CRoom *room)
 {
+    room->setGameLogic(new GameLogic(room));
     connect(room, &CRoom::abandoned, this, &StartServerDialog::onRoomAbandoned);
     CServerPlayer *owner = room->owner();
     emit messageLogged(tr("%1(%2) created a new room(%3)").arg(owner->screenName()).arg(owner->id()).arg(room->id()));

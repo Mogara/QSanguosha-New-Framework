@@ -6,13 +6,17 @@ SOURCES += src/main.cpp \
     src/Gui/Dialog/startserverdialog.cpp \
     src/Gui/Dialog/startgamedialog.cpp \
     src/Gui/lobby.cpp \
-    src/Client/client.cpp
+    src/Client/client.cpp \
+    src/core/gamelogic.cpp \
+    src/core/gameplayer.cpp
 
 HEADERS += \
     src/Gui/Dialog/startserverdialog.h \
     src/Gui/Dialog/startgamedialog.h \
     src/Gui/lobby.h \
-    src/Client/client.h
+    src/Client/client.h \
+    src/core/gamelogic.h \
+    src/core/gameplayer.h
 
 INCLUDEPATH += src
 

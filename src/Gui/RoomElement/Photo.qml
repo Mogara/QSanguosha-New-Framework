@@ -2,7 +2,6 @@ import QtQuick 2.4
 import QtQuick.Layouts 1.1
 import Cardirector.Device 1.0
 import Cardirector.Resource 1.0
-import QtGraphicalEffects 1.0
 
 Item {
     property string headGeneral: "anjiang"
@@ -124,7 +123,7 @@ Item {
         y: Device.gu(3)
     }
 
-    Text {
+    GlowText {
         id: headGeneralNameItem
         text: "暗将"
         color: "white"
@@ -136,18 +135,14 @@ Item {
         wrapMode: Text.WrapAnywhere
         lineHeight: 1.5
         horizontalAlignment: Text.AlignHCenter
+
+        glow.color: "black"
+        glow.spread: 0.7
+        glow.radius: Device.gu(12)
+        glow.samples: 24
     }
 
-    Glow {
-        source: headGeneralNameItem
-        anchors.fill: headGeneralNameItem
-        color: "black"
-        spread: 0.7
-        radius: Device.gu(12)
-        samples: 24
-    }
-
-    Text {
+    GlowText {
         id: deputyGeneralNameItem
         text: "暗将"
         color: "white"
@@ -160,15 +155,11 @@ Item {
         wrapMode: Text.WrapAnywhere
         lineHeight: 1.5
         horizontalAlignment: Text.AlignHCenter
-    }
 
-    Glow {
-        source: deputyGeneralNameItem
-        anchors.fill: deputyGeneralNameItem
-        color: "black"
-        spread: 0.7
-        radius: Device.gu(12)
-        samples: 24
+        glow.color: "black"
+        glow.spread: 0.7
+        glow.radius: Device.gu(12)
+        glow.samples: 24
     }
 
     RoleComboBox {

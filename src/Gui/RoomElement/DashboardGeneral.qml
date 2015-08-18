@@ -1,5 +1,4 @@
 import QtQuick 2.4
-import QtGraphicalEffects 1.0
 import Cardirector.Device 1.0
 
 Item {
@@ -30,21 +29,17 @@ Item {
         Item {
             x: nameItem.text.length >= 3 ? Device.gu(26) : Device.gu(28)
 
-            Text {
+            GlowText {
                 id: nameItem
                 font.family: "隶书"
                 font.pixelSize: Device.gu(18)
                 color: "white"
                 font.letterSpacing: text.length < 3 ? 9 : 0
-            }
 
-            Glow {
-                source: nameItem
-                anchors.fill: nameItem
-                spread: 0.9
-                radius: Device.gu(0.9)
-                samples: 4
-                color: "#222222"
+                glow.spread: 0.9
+                glow.radius: Device.gu(0.9)
+                glow.samples: 4
+                glow.color: "#222222"
             }
 
             transform: Scale {

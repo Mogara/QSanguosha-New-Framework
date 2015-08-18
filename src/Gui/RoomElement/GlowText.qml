@@ -7,6 +7,8 @@ Item {
     property alias font: textItem.font
     property alias horizontalAlignment: textItem.horizontalAlignment
     property alias verticalAlignment: textItem.verticalAlignment
+    property alias wrapMode: textItem.wrapMode
+    property alias lineHeight: textItem.lineHeight
     property alias glow: glowItem
 
     width: textItem.implicitWidth

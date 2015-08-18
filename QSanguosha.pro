@@ -67,6 +67,7 @@ QML_FILES = \
     src/Gui/RoomElement/ChatBox.qml \
     src/Gui/RoomElement/Dashboard.qml \
     src/Gui/RoomElement/DashboardGeneral.qml \
+    src/Gui/RoomElement/GlowText.qml \
     src/Gui/RoomElement/HandcardNumber.qml \
     src/Gui/RoomElement/HpBar.qml \
     src/Gui/RoomElement/IrregularButton.qml \

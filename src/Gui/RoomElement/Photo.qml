@@ -87,7 +87,7 @@ Item {
 
     Item {
         width: Device.gu(17)
-        height: Device.gu(6 + 15 * maxHp)
+        height: Device.gu(maxHp > 5 ? 72 : 6 + 15 * maxHp)
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Device.gu(1)

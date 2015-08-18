@@ -68,8 +68,10 @@ QML_FILES = \
     src/Gui/RoomElement/Dashboard.qml \
     src/Gui/RoomElement/DashboardGeneral.qml \
     src/Gui/RoomElement/HandcardNumber.qml \
+    src/Gui/RoomElement/HpBar.qml \
     src/Gui/RoomElement/IrregularButton.qml \
     src/Gui/RoomElement/LogBox.qml \
+    src/Gui/RoomElement/Magatama.qml \
     src/Gui/RoomElement/RoleComboBox.qml \
     src/Gui/RoomElement/Photo.qml \
     src/utility.js \

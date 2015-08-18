@@ -8,11 +8,13 @@ Item {
     property string headGeneral: "anjiang"
     property string deputyGeneral: "anjiang"
     property alias screenName: screenNameItem.text
-    property int maxHp: 5
     property alias faceTurned: faceTurnedCover.visible
     property string kingdom: "qun"
     property alias handcardNum: handcardNumItem.value
+    property alias maxHp: hpBar.maxValue
+    property alias hp: hpBar.value
 
+    id: root
     width: Device.gu(157)
     height: Device.gu(181)
 
@@ -81,6 +83,37 @@ Item {
         x: Device.gu(-10)
         y: Device.gu(110)
         kingdom: parent.kingdom
+    }
+
+    Item {
+        width: Device.gu(17)
+        height: Device.gu(6 + 15 * maxHp)
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: Device.gu(1)
+        anchors.rightMargin: Device.gu(2)
+        clip: true
+
+        Image {
+            source: "image://root/magatama/bg"
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+        }
+
+        HpBar {
+            id: hpBar
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: Device.gu(3)
+            maxValue: 4
+
+            transform: Scale {
+                origin.x: hpBar.width / 2
+                origin.y: hpBar.height
+                xScale: Device.gu(15) / hpBar.width
+                yScale: xScale
+            }
+        }
     }
 
     Text {

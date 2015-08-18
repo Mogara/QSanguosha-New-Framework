@@ -13,6 +13,8 @@ RowLayout {
     property int seatNumber: 0
     property alias handcardNum : handcardNumItem.value
     property string playerRole: "unknown"
+    property alias hp: hpBar.value
+    property alias maxHp: hpBar.maxValue
 
     spacing: 0
     Layout.fillHeight: false
@@ -108,6 +110,15 @@ RowLayout {
             source: "image://dashboard/hpbase"
             anchors.bottom: parent.bottom
             anchors.left: deputyGeneralItem.right
+
+            HpBar {
+                id: hpBar
+                anchors.bottom: parent.bottom
+                transform: Scale {
+                    xScale: hpBar.parent.width / hpBar.width
+                    yScale: xScale
+                }
+            }
         }
 
         Image {

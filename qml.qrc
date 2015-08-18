@@ -11,8 +11,10 @@
         <file>src/Gui/RoomElement/Dashboard.qml</file>
         <file>src/Gui/RoomElement/DashboardGeneral.qml</file>
         <file>src/Gui/RoomElement/HandcardNumber.qml</file>
+        <file>src/Gui/RoomElement/HpBar.qml</file>
         <file>src/Gui/RoomElement/IrregularButton.qml</file>
         <file>src/Gui/RoomElement/LogBox.qml</file>
+        <file>src/Gui/RoomElement/Magatama.qml</file>
         <file>src/Gui/RoomElement/RoleComboBox.qml</file>
         <file>src/Gui/RoomElement/Photo.qml</file>
         <file>src/utility.js</file>

@@ -8,7 +8,7 @@ SOURCES += src/main.cpp \
     src/Gui/lobby.cpp \
     src/Client/client.cpp \
     src/core/gamelogic.cpp \
-    src/core/gameplayer.cpp
+    src/core/player.cpp
 
 HEADERS += \
     src/Gui/Dialog/startserverdialog.h \
@@ -16,7 +16,7 @@ HEADERS += \
     src/Gui/lobby.h \
     src/Client/client.h \
     src/core/gamelogic.h \
-    src/core/gameplayer.h
+    src/core/player.h
 
 INCLUDEPATH += src
 

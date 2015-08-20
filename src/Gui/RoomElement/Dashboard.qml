@@ -12,7 +12,7 @@ RowLayout {
     property alias deputyGeneralKingdom: deputyGeneralItem.kingdom
     property int seatNumber: 0
     property alias handcardNum : handcardNumItem.value
-    property string playerRole: "unknown"
+    property string userRole: "unknown"
     property alias hp: hpBar.value
     property alias maxHp: hpBar.maxValue
 
@@ -83,7 +83,7 @@ RowLayout {
                 }
 
                 Image {
-                    source: "image://root/role/" + playerRole
+                    source: "image://root/role/" + userRole
                     x: Device.gu(70)
                     y: Device.gu(3)
                 }

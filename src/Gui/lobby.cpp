@@ -20,7 +20,7 @@
 #include "lobby.h"
 #include "Client/client.h"
 
-#include <cclientplayer.h>
+#include <cclientuser.h>
 
 Lobby::Lobby(QQuickItem *parent)
     : QQuickItem(parent)
@@ -28,8 +28,8 @@ Lobby::Lobby(QQuickItem *parent)
 {
     connect(m_client, &Client::roomListUpdated, this, &Lobby::roomListUpdated);
     connect(m_client, &Client::roomEntered, this, &Lobby::onRoomEntered);
-    connect(m_client, &Client::playerAdded, this, &Lobby::onPlayerAdded);
-    connect(m_client, &Client::playerRemoved, this, &Lobby::onPlayerRemoved);
+    connect(m_client, &Client::userAdded, this, &Lobby::onUserAdded);
+    connect(m_client, &Client::userRemoved, this, &Lobby::onUserRemoved);
     connect(m_client, &Client::systemMessage, this, &Lobby::onSystemMessageReceived);
 }
 
@@ -76,34 +76,34 @@ void Lobby::onRoomEntered(const QVariant &config)
         setProperty("chatLog", "");
     }
 
-    CClientPlayer *self = m_client->self();
+    CClientUser *self = m_client->self();
     if (self) {
         setProperty("userAvatar", self->avatar());
         setProperty("userName", self->screenName());
     }
 
-    foreach (const CClientPlayer *player, m_client->players())
-        connect(player, &CClientPlayer::speak, this, &Lobby::onPlayerSpeaking, Qt::UniqueConnection);
+    foreach (const CClientUser *user, m_client->users())
+        connect(user, &CClientUser::speak, this, &Lobby::onUserSpeaking, Qt::UniqueConnection);
 }
 
-void Lobby::onPlayerAdded(const CClientPlayer *player)
+void Lobby::onUserAdded(const CClientUser *user)
 {
-    connect(player, &CClientPlayer::speak, this, &Lobby::onPlayerSpeaking);
-    emit messageLogged(tr("Player %1(%2) logged in.").arg(player->screenName()).arg(player->id()));
+    connect(user, &CClientUser::speak, this, &Lobby::onUserSpeaking);
+    emit messageLogged(tr("User %1(%2) logged in.").arg(user->screenName()).arg(user->id()));
 }
 
-void Lobby::onPlayerRemoved(const CClientPlayer *player)
+void Lobby::onUserRemoved(const CClientUser *user)
 {
-    disconnect(player, &CClientPlayer::speak, this, &Lobby::onPlayerSpeaking);
-    emit messageLogged(tr("Player %1(%2) logged out.").arg(player->screenName()).arg(player->id()));
+    disconnect(user, &CClientUser::speak, this, &Lobby::onUserSpeaking);
+    emit messageLogged(tr("User %1(%2) logged out.").arg(user->screenName()).arg(user->id()));
 }
 
-void Lobby::onPlayerSpeaking(const QString &message)
+void Lobby::onUserSpeaking(const QString &message)
 {
-    CClientPlayer *player = qobject_cast<CClientPlayer *>(sender());
-    if (player == NULL)
+    CClientUser *user = qobject_cast<CClientUser *>(sender());
+    if (user == NULL)
         return;
-    emit messageLogged(tr("%1(%2): %3").arg(player->screenName()).arg(player->id()).arg(message));
+    emit messageLogged(tr("%1(%2): %3").arg(user->screenName()).arg(user->id()).arg(message));
 }
 
 void Lobby::onSystemMessageReceived(const QString &message)

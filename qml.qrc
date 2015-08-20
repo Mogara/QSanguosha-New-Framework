@@ -10,6 +10,7 @@
         <file>src/Gui/RoomElement/ChatBox.qml</file>
         <file>src/Gui/RoomElement/Dashboard.qml</file>
         <file>src/Gui/RoomElement/DashboardGeneral.qml</file>
+        <file>src/Gui/RoomElement/GlowText.qml</file>
         <file>src/Gui/RoomElement/HandcardNumber.qml</file>
         <file>src/Gui/RoomElement/HpBar.qml</file>
         <file>src/Gui/RoomElement/IrregularButton.qml</file>

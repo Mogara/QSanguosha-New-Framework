@@ -17,12 +17,12 @@
     Mogara
 *********************************************************************/
 
-#ifndef CGAMEPLAYER_H
-#define CGAMEPLAYER_H
+#ifndef PLAYER_H
+#define PLAYER_H
 
-#include <cabstractgameplayer.h>
+#include <cabstractplayer.h>
 
-class GamePlayer : public CAbstractGamePlayer
+class Player : public CAbstractPlayer
 {
     Q_OBJECT
 
@@ -52,7 +52,7 @@ public:
         Lord, Loyalist, Rebel, Renegade
     };
 
-    GamePlayer(QObject *parent = 0);
+    Player(QObject *parent = 0);
 
     int hp() const { return m_hp; }
     void setHp(int hp) { m_hp = hp; }
@@ -68,4 +68,4 @@ protected:
     int m_maxHp;
 };
 
-#endif // CGAMEPLAYER_H
+#endif // PLAYER_H

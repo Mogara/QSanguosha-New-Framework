@@ -23,10 +23,10 @@
 #include <cglobal.h>
 #include <QQuickItem>
 
-#include <cclientplayer.h>
+#include <cclientuser.h>
 
 class Client;
-class CClientPlayer;
+class CClientUser;
 
 class Lobby : public QQuickItem
 {
@@ -51,9 +51,9 @@ protected:
     Q_INVOKABLE void onReadyButtonClicked();
 
     void onRoomEntered(const QVariant &config);
-    void onPlayerAdded(const CClientPlayer *player);
-    void onPlayerRemoved(const CClientPlayer *player);
-    void onPlayerSpeaking(const QString &message);
+    void onUserAdded(const CClientUser *user);
+    void onUserRemoved(const CClientUser *user);
+    void onUserSpeaking(const QString &message);
     void onSystemMessageReceived(const QString &message);
 
     Client *m_client;

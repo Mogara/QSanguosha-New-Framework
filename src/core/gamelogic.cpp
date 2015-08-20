@@ -1,5 +1,5 @@
 #include "gamelogic.h"
-#include "gameplayer.h"
+#include "player.h"
 
 #include <croom.h>
 #include <cserver.h>
@@ -10,9 +10,9 @@ GameLogic::GameLogic(CRoom *parent)
 
 }
 
-CAbstractGamePlayer *GameLogic::createPlayer()
+CAbstractPlayer *GameLogic::createPlayer()
 {
-    return new GamePlayer(this);
+    return new Player(this);
 }
 
 void GameLogic::run()

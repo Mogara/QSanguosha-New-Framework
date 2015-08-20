@@ -21,7 +21,7 @@
 
 #include <cserver.h>
 #include <croom.h>
-#include <cserverplayer.h>
+#include <cserveruser.h>
 #include <core/gamelogic.h>
 
 StartServerDialog::StartServerDialog(QQuickItem *parent)
@@ -46,39 +46,39 @@ void StartServerDialog::createServer()
 
     emit messageLogged(tr("The server is listening on port %1").arg(port));
 
-    connect(m_server, &CServer::playerAdded, this, &StartServerDialog::onPlayerAdded);
+    connect(m_server, &CServer::userAdded, this, &StartServerDialog::onUserAdded);
     connect(m_server, &CServer::roomCreated, this, &StartServerDialog::onRoomCreated);
 }
 
-void StartServerDialog::onPlayerAdded(CServerPlayer *player)
+void StartServerDialog::onUserAdded(CServerUser *user)
 {
-    emit messageLogged(tr("Player %1(%2) logged in.").arg(player->screenName()).arg(player->id()));
-    connect(player, &CServerPlayer::networkDelayChanged, this, &StartServerDialog::onPlayerNetworkDelayChanged);
-    connect(player, &CServerPlayer::disconnected, this, &StartServerDialog::onPlayerRemoved);
-    player->updateNetworkDelay();
+    emit messageLogged(tr("User %1(%2) logged in.").arg(user->screenName()).arg(user->id()));
+    connect(user, &CServerUser::networkDelayChanged, this, &StartServerDialog::onUserNetworkDelayChanged);
+    connect(user, &CServerUser::disconnected, this, &StartServerDialog::onUserRemoved);
+    user->updateNetworkDelay();
 }
 
-void StartServerDialog::onPlayerNetworkDelayChanged()
+void StartServerDialog::onUserNetworkDelayChanged()
 {
-    CServerPlayer *player = qobject_cast<CServerPlayer *>(sender());
-    if(player == NULL)
+    CServerUser *user = qobject_cast<CServerUser *>(sender());
+    if(user == NULL)
         return;
-    emit messageLogged(tr("Player %1(%2) Network Delay: %3").arg(player->screenName()).arg(player->id()).arg(player->networkDelay()));
+    emit messageLogged(tr("User %1(%2) Network Delay: %3").arg(user->screenName()).arg(user->id()).arg(user->networkDelay()));
 }
 
-void StartServerDialog::onPlayerRemoved()
+void StartServerDialog::onUserRemoved()
 {
-    CServerPlayer *player = qobject_cast<CServerPlayer *>(sender());
-    if(player == NULL)
+    CServerUser *user = qobject_cast<CServerUser *>(sender());
+    if(user == NULL)
         return;
-    emit messageLogged(tr("Player %1(%2) logged out.").arg(player->screenName()).arg(player->id()));
+    emit messageLogged(tr("User %1(%2) logged out.").arg(user->screenName()).arg(user->id()));
 }
 
 void StartServerDialog::onRoomCreated(CRoom *room)
 {
     room->setGameLogic(new GameLogic(room));
     connect(room, &CRoom::abandoned, this, &StartServerDialog::onRoomAbandoned);
-    CServerPlayer *owner = room->owner();
+    CServerUser *owner = room->owner();
     emit messageLogged(tr("%1(%2) created a new room(%3)").arg(owner->screenName()).arg(owner->id()).arg(room->id()));
 }
 

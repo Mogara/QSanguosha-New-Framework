@@ -65,22 +65,4 @@ Column {
             glow.samples: hpItem.glow.samples
         }
     }
-
-    Timer {
-        repeat: true
-        running: true
-        interval: 1000
-        onTriggered: {
-            if (value <= 0) {
-                maxValue--;
-                if (maxValue < 0) {
-                    maxValue = 8;
-                }
-
-                value = maxValue;
-            } else {
-                value--;
-            }
-        }
-    }
 }

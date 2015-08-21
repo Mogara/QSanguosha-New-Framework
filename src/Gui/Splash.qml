@@ -16,12 +16,12 @@ Rectangle {
     signal disappeared
 
     //Cardirector Splash
-    Splash {
+    /*Splash {
         onDisappearing: {
             visible = false;
             splash.animationRunning = true;
         }
-    }
+    }*/
 
     //---------------Logo-------------------
     Image {
@@ -102,6 +102,8 @@ Rectangle {
 
     SequentialAnimation {
         id: animation
+        running: true
+
         NumberAnimation {
             target: logo
             property: "anchors.horizontalCenterOffset"

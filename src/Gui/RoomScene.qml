@@ -116,7 +116,7 @@ Image {
         ];
 
         var roomAreaPadding = Device.gu(10);
-        var item, region, i, subindex;
+        var item, region, i, subindex, x, y;
 
         for (i = 0; i < playerNum - 1; i++)
             regions[seatIndex[i]].players.push(i);
@@ -126,13 +126,15 @@ Image {
             region = regions[seatIndex[i]];
             subindex = region.players.indexOf(i);
             if (seatIndex[i] === 1 || seatIndex[i] === 7)
-                item.x = region.left + (region.right - region.left) / region.players.length / 2 * (subindex * 2 + 1) - item.width / 2;
+                x = region.left + (region.right - region.left) / region.players.length / 2 * (subindex * 2 + 1) - item.width / 2;
             else
-                item.x = (region.left + region.right - item.width) / 2;
+                x = (region.left + region.right - item.width) / 2;
             if ((seatIndex[i] >= 0 && seatIndex[i] <= 2) || seatIndex[i] === 7)
-                item.y = (region.top + region.bottom - item.height) / 2;
+                y = (region.top + region.bottom - item.height) / 2;
             else
-                item.y = region.top + (region.bottom - region.top) / region.players.length / 2 * (subindex * 2 + 1) - item.height / 2;
+                y = region.top + (region.bottom - region.top) / region.players.length / 2 * (subindex * 2 + 1) - item.height / 2;
+            item.x = Math.round(x);
+            item.y = Math.round(y);
         }
     }
 }

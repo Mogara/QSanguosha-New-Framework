@@ -31,7 +31,7 @@ Item {
 
             GlowText {
                 id: nameItem
-                font.family: "隶书"
+                font.family: "LiSu"
                 font.pixelSize: Device.gu(18)
                 color: "white"
                 font.letterSpacing: text.length < 3 ? 9 : 0

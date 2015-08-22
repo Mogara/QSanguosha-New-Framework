@@ -119,7 +119,7 @@ Item {
         color: "white"
         y: Device.gu(30)
         font.pixelSize: Device.gu(18)
-        font.family: "隶书"
+        font.family: "LiSu"
         font.weight: Font.Bold
         width: Device.gu(32)
         wrapMode: Text.WrapAnywhere
@@ -139,7 +139,7 @@ Item {
         x: Device.gu(80)
         y: Device.gu(30)
         font.pixelSize: Device.gu(18)
-        font.family: "隶书"
+        font.family: "LiSu"
         font.weight: Font.Bold
         width: Device.gu(32)
         wrapMode: Text.WrapAnywhere
@@ -155,7 +155,5 @@ Item {
     RoleComboBox {
         x: parent.width - width - Device.gu(5)
         y: Device.gu(1)
-        width: Device.gu(22)
-        height: Device.gu(22)
     }
 }

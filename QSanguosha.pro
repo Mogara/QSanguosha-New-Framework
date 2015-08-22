@@ -74,6 +74,7 @@ QML_FILES = \
     src/Gui/RoomElement/LogBox.qml \
     src/Gui/RoomElement/Magatama.qml \
     src/Gui/RoomElement/RoleComboBox.qml \
+    src/Gui/RoomElement/SimpleRoleIcon.qml \
     src/Gui/RoomElement/Photo.qml \
     src/utility.js \
     src/main.qml

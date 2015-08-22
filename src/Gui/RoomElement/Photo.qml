@@ -27,16 +27,6 @@ Item {
         }
     }
 
-    ImageProvider {
-        id: generalImage
-        providerId: "general"
-
-        function imagePath(imageId, requestedSize)
-        {
-            return "image/general/" + imageId + ".png";
-        }
-    }
-
     Item {
         width: deputyGeneral != "" ? Device.gu(75) : Device.gu(155)
         height: Device.gu(182)

@@ -45,8 +45,4 @@ void StartGameDialog::onServerConnected()
     m_client->signup("", "", m_screenName, m_avatar);
 }
 
-void StartGameDialog::Init()
-{
-    qmlRegisterType<StartGameDialog>("Sanguosha.Dialogs", 1, 0, "StartGameDialog");
-}
-C_INITIALIZE_CLASS(StartGameDialog)
+C_REGISTER_QMLTYPE("Sanguosha.Dialogs", 1, 0, StartGameDialog)

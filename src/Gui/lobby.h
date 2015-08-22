@@ -44,8 +44,6 @@ signals:
     void roomListUpdated(const QVariant &rooms);
 
 protected:
-    C_DECLARE_INITIALIZER(Lobby)
-
     Q_INVOKABLE void onCreateButtonClicked();
     Q_INVOKABLE void onRoomListItemClicked(uint id);
     Q_INVOKABLE void onReadyButtonClicked();

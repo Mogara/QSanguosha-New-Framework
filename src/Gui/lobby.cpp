@@ -111,8 +111,4 @@ void Lobby::onSystemMessageReceived(const QString &message)
     emit messageLogged(tr("System: %1").arg(message));
 }
 
-void Lobby::Init()
-{
-    qmlRegisterType<Lobby>("Sanguosha", 1, 0, "Lobby");
-}
-C_INITIALIZE_CLASS(Lobby)
+C_REGISTER_QMLTYPE("Sanguosha", 1, 0, Lobby)

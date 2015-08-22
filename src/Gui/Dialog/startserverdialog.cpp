@@ -90,8 +90,4 @@ void StartServerDialog::onRoomAbandoned()
     emit messageLogged(tr("Room(%1) became empty and thus closed.").arg(room->id()));
 }
 
-void StartServerDialog::Init()
-{
-    qmlRegisterType<StartServerDialog>("Sanguosha.Dialogs", 1, 0, "StartServerDialog");
-}
-C_INITIALIZE_CLASS(StartServerDialog)
+C_REGISTER_QMLTYPE("Sanguosha.Dialogs", 1, 0, StartServerDialog)

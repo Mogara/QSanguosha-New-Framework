@@ -39,8 +39,6 @@ signals:
     void lobbyEntered();
 
 protected:
-    C_DECLARE_INITIALIZER(StartGameDialog)
-
     void onServerConnected();
 
     Client *m_client;

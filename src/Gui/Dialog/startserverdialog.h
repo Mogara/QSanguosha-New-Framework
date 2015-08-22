@@ -40,8 +40,6 @@ signals:
     void messageLogged(const QString &message);
 
 protected:
-    C_DECLARE_INITIALIZER(StartServerDialog)
-
     void onUserAdded(CServerUser *user);
     void onUserRemoved();
     void onUserNetworkDelayChanged();

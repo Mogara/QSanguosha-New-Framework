@@ -101,7 +101,7 @@ Image {
             [3, 3, 7, 7, 7, 7, 7, 4, 4]
         ];
         var seatIndex = regularSeatIndex[playerNum - 2];
-        var horizontalBorder = roomArea.height * 0.32;
+        var horizontalBorder = roomArea.height * 0.4;
         var sideWidth = playerNum < 9 ? 0.2 : 0.15;
         var verticalBorders = [roomArea.width * sideWidth, roomArea.width * (1 - sideWidth)];
         var regions = [
@@ -116,7 +116,7 @@ Image {
         ];
 
         var roomAreaPadding = Device.gu(10);
-        var item, region, i, subindex, x, y;
+        var item, region, i, subindex, x, y, spacing;
 
         for (i = 0; i < playerNum - 1; i++)
             regions[seatIndex[i]].players.push(i);
@@ -125,14 +125,22 @@ Image {
             item = photos.itemAt(i);
             region = regions[seatIndex[i]];
             subindex = region.players.indexOf(i);
-            if (seatIndex[i] === 1 || seatIndex[i] === 7)
-                x = region.left + (region.right - region.left) / region.players.length / 2 * (subindex * 2 + 1) - item.width / 2;
-            else
+            if (seatIndex[i] === 1 || seatIndex[i] === 7) {
+                if (playerNum === 6 || playerNum === 10) {
+                    spacing = ((region.right - region.left) - region.players.length * item.width) / (region.players.length + 1);
+                    x = region.left + spacing * (subindex + 1) + item.width * subindex;
+                } else {
+                    x = region.left + (region.right - region.left) / region.players.length / 2 * (subindex * 2 + 1) - item.width / 2;
+                }
+            } else {
                 x = (region.left + region.right - item.width) / 2;
-            if ((seatIndex[i] >= 0 && seatIndex[i] <= 2) || seatIndex[i] === 7)
+            }
+            if ((seatIndex[i] >= 0 && seatIndex[i] <= 2) || seatIndex[i] === 7) {
                 y = (region.top + region.bottom - item.height) / 2;
-            else
-                y = region.top + (region.bottom - region.top) / region.players.length / 2 * (subindex * 2 + 1) - item.height / 2;
+            } else {
+                spacing = ((region.bottom - region.top) - region.players.length * item.height) / (region.players.length + 1);
+                y = region.top + spacing * (subindex + 1) + item.height * subindex;
+            }
             item.x = Math.round(x);
             item.y = Math.round(y);
         }

@@ -17,6 +17,7 @@
         <file>src/Gui/RoomElement/LogBox.qml</file>
         <file>src/Gui/RoomElement/Magatama.qml</file>
         <file>src/Gui/RoomElement/RoleComboBox.qml</file>
+        <file>src/Gui/RoomElement/SimpleRoleIcon.qml</file>
         <file>src/Gui/RoomElement/Photo.qml</file>
         <file>src/utility.js</file>
         <file>src/main.qml</file>

@@ -15,7 +15,7 @@
     See the LICENSE file for more details.
 
     Mogara
-    *********************************************************************/
+*********************************************************************/
 
 #ifndef LOBBY_H
 #define LOBBY_H
@@ -23,10 +23,10 @@
 #include <cglobal.h>
 #include <QQuickItem>
 
-#include <cclientplayer.h>
+#include <cclientuser.h>
 
 class Client;
-class CClientPlayer;
+class CClientUser;
 
 class Lobby : public QQuickItem
 {
@@ -44,15 +44,15 @@ signals:
     void roomListUpdated(const QVariant &rooms);
 
 protected:
-    C_DECLARE_INITIALIZER(Lobby)
-
     Q_INVOKABLE void onCreateButtonClicked();
     Q_INVOKABLE void onRoomListItemClicked(uint id);
+    Q_INVOKABLE void onReadyButtonClicked();
 
     void onRoomEntered(const QVariant &config);
-    void onPlayerAdded(const CClientPlayer *player);
-    void onPlayerRemoved(const CClientPlayer *player);
-    void onPlayerSpeaking(const QString &message);
+    void onUserAdded(const CClientUser *user);
+    void onUserRemoved(const CClientUser *user);
+    void onUserSpeaking(const QString &message);
+    void onSystemMessageReceived(const QString &message);
 
     Client *m_client;
 };

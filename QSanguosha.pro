@@ -6,17 +6,19 @@ SOURCES += src/main.cpp \
     src/Gui/Dialog/startserverdialog.cpp \
     src/Gui/Dialog/startgamedialog.cpp \
     src/Gui/lobby.cpp \
-    src/Client/client.cpp
+    src/Client/client.cpp \
+    src/core/gamelogic.cpp \
+    src/core/player.cpp
 
 HEADERS += \
     src/Gui/Dialog/startserverdialog.h \
     src/Gui/Dialog/startgamedialog.h \
     src/Gui/lobby.h \
-    src/Client/client.h
+    src/Client/client.h \
+    src/core/gamelogic.h \
+    src/core/player.h
 
 INCLUDEPATH += src
-
-RESOURCES += image.qrc
 
 INCLUDEPATH += Cardirector/include
 LIBS += -L"$$_PRO_FILE_PWD_/Cardirector/lib"
@@ -44,6 +46,7 @@ macx {
 }
 
 android {
+    CONFIG += embeded_resource
     QT += androidextras
     ANDROID_EXTRA_LIBS += $$PWD/Cardirector/lib/libCardirector.so
 }
@@ -60,6 +63,19 @@ QML_FILES = \
     src/Gui/Lobby.qml \
     src/Gui/Dialog/StartGameDialog.qml \
     src/Gui/Dialog/StartServerDialog.qml \
+    src/Gui/RoomScene.qml \
+    src/Gui/RoomElement/ChatBox.qml \
+    src/Gui/RoomElement/Dashboard.qml \
+    src/Gui/RoomElement/DashboardGeneral.qml \
+    src/Gui/RoomElement/GlowText.qml \
+    src/Gui/RoomElement/HandcardNumber.qml \
+    src/Gui/RoomElement/HpBar.qml \
+    src/Gui/RoomElement/IrregularButton.qml \
+    src/Gui/RoomElement/LogBox.qml \
+    src/Gui/RoomElement/Magatama.qml \
+    src/Gui/RoomElement/RoleComboBox.qml \
+    src/Gui/RoomElement/SimpleRoleIcon.qml \
+    src/Gui/RoomElement/Photo.qml \
     src/utility.js \
     src/main.qml
 
@@ -82,7 +98,12 @@ RESOURCE_CONTENT += \
 
 write_file($$GENERATED_RESOURCE_FILE, RESOURCE_CONTENT)|error("Aborting.")
 
-RESOURCES += $$GENERATED_RESOURCE_FILE
+CONFIG(embeded_resource){
+    RESOURCES += \
+        image.qrc \
+        $$GENERATED_RESOURCE_FILE
+    DEFINES += EMBEDED_RESOURCE
+}
 
 lupdate_only {
     SOURCES += $$QML_FILES

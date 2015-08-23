@@ -15,7 +15,7 @@
     See the LICENSE file for more details.
 
     Mogara
-    *********************************************************************/
+*********************************************************************/
 
 #ifndef STARTGAMEDIALOG_H
 #define STARTGAMEDIALOG_H
@@ -39,8 +39,6 @@ signals:
     void lobbyEntered();
 
 protected:
-    C_DECLARE_INITIALIZER(StartGameDialog)
-
     void onServerConnected();
 
     Client *m_client;

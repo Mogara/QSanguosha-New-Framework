@@ -6,6 +6,19 @@
         <file>src/Gui/Lobby.qml</file>
         <file>src/Gui/Dialog/StartGameDialog.qml</file>
         <file>src/Gui/Dialog/StartServerDialog.qml</file>
+        <file>src/Gui/RoomScene.qml</file>
+        <file>src/Gui/RoomElement/ChatBox.qml</file>
+        <file>src/Gui/RoomElement/Dashboard.qml</file>
+        <file>src/Gui/RoomElement/DashboardGeneral.qml</file>
+        <file>src/Gui/RoomElement/GlowText.qml</file>
+        <file>src/Gui/RoomElement/HandcardNumber.qml</file>
+        <file>src/Gui/RoomElement/HpBar.qml</file>
+        <file>src/Gui/RoomElement/IrregularButton.qml</file>
+        <file>src/Gui/RoomElement/LogBox.qml</file>
+        <file>src/Gui/RoomElement/Magatama.qml</file>
+        <file>src/Gui/RoomElement/RoleComboBox.qml</file>
+        <file>src/Gui/RoomElement/SimpleRoleIcon.qml</file>
+        <file>src/Gui/RoomElement/Photo.qml</file>
         <file>src/utility.js</file>
         <file>src/main.qml</file>
     </qresource>

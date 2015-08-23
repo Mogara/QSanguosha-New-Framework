@@ -15,7 +15,7 @@
     See the LICENSE file for more details.
 
     Mogara
-    *********************************************************************/
+*********************************************************************/
 
 #ifndef STARTSERVERDIALOG_H
 #define STARTSERVERDIALOG_H
@@ -24,7 +24,7 @@
 #include <QQuickItem>
 
 class CServer;
-class CServerPlayer;
+class CServerUser;
 class CRoom;
 
 class StartServerDialog : public QQuickItem
@@ -40,11 +40,9 @@ signals:
     void messageLogged(const QString &message);
 
 protected:
-    C_DECLARE_INITIALIZER(StartServerDialog)
-
-    void onPlayerAdded(CServerPlayer *player);
-    void onPlayerRemoved();
-    void onPlayerNetworkDelayChanged();
+    void onUserAdded(CServerUser *user);
+    void onUserRemoved();
+    void onUserNetworkDelayChanged();
     void onRoomCreated(CRoom *room);
     void onRoomAbandoned();
 

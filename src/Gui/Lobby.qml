@@ -28,7 +28,7 @@ Lobby {
                 i--;
             } else {
                 item.name = room.name;
-                item.playerNum = room.playerNum;
+                item.userNum = room.userNum;
                 item.capacity = room.capacity;
                 delete roomMap[item.rid];
             }
@@ -39,7 +39,7 @@ Lobby {
             var info = {
                 rid: room.id,
                 name: room.name,
-                playerNum: room.playerNum,
+                userNum: room.userNum,
                 capacity: room.capacity
             };
             roomList.append(info);
@@ -103,7 +103,7 @@ Lobby {
                         }
 
                         Text {
-                            text: playerNum + "/" + (capacity > 0 ? capacity : "∞")
+                            text: userNum + "/" + (capacity > 0 ? capacity : "∞")
                             color: "#82906D"
                             font.pixelSize: Device.gu(18)
                             x: parent.width - width
@@ -279,10 +279,11 @@ Lobby {
                             anchors.right: parent.right
                             anchors.bottomMargin: Device.gu(10)
                             anchors.rightMargin: Device.gu(10)
-                            text: qsTr("Join")
+                            text: qsTr("Ready")
                             textColor: "#EDC5C5"
                             textFont.pixelSize: Device.gu(18)
                             border.width: 0
+                            onClicked: onReadyButtonClicked();
                         }
                     }
                 }

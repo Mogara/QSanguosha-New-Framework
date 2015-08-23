@@ -15,12 +15,12 @@
     See the LICENSE file for more details.
 
     Mogara
-    *********************************************************************/
+*********************************************************************/
 
 #include "client.h"
 #include <QtQml>
 
-Client *ClientInstance = NULL;
+static Client *ClientInstance = NULL;
 
 Client::Client(QObject *parent)
     : CClient(parent)
@@ -29,7 +29,7 @@ Client::Client(QObject *parent)
 
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
-    return Client::instance();
+    return ClientInstance;
 }
 
 void Client::Init()

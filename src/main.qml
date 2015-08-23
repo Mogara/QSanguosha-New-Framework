@@ -11,12 +11,22 @@ Item {
     }
 
     ImageProvider {
+        id: rootImage
+        providerId: "root"
+
+        function imagePath(imageId, requestedSize)
+        {
+            return "image/" + imageId + ".png";
+        }
+    }
+
+    ImageProvider {
         id: mogaraImage
         providerId: "mogara"
 
         function imagePath(imageId, requestedSize)
         {
-            return ":/image/mogara/" + imageId + ".png";
+            return "image/mogara/" + imageId + ".png";
         }
     }
 
@@ -26,7 +36,7 @@ Item {
         function imagePath(imageId, requestedSize) {
             // We prefer to using compact pictures as background to save storage space
             // @todo: consider supporting more common image formats
-            return ":/image/background/" + imageId + ".jpg";
+            return "image/background/" + imageId + ".jpg";
         }
     }
 
@@ -34,7 +44,7 @@ Item {
         providerId: "tileicon"
 
         function imagePath(imageId, requestedSize) {
-            return ":/image/tileIcon/" + imageId + ".png"
+            return "image/tileIcon/" + imageId + ".png"
         }
     }
 

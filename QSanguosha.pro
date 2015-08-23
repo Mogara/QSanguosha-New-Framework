@@ -64,6 +64,7 @@ QML_FILES = \
     ui-script/Gui/Dialog/StartGameDialog.qml \
     ui-script/Gui/Dialog/StartServerDialog.qml \
     ui-script/Gui/RoomScene.qml \
+    ui-script/Gui/RoomElement/CardItem.qml \
     ui-script/Gui/RoomElement/ChatBox.qml \
     ui-script/Gui/RoomElement/Dashboard.qml \
     ui-script/Gui/RoomElement/DashboardGeneral.qml \

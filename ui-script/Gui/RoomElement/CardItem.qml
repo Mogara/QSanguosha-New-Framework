@@ -71,7 +71,6 @@ Item {
         x: Device.gu(4)
         y: parent.height - height - Device.gu(6)
         width: root.width - x * 2
-        text: "一号位对二号位使用"
         color: "white"
         wrapMode: Text.WrapAnywhere
         horizontalAlignment: Text.AlignHCenter

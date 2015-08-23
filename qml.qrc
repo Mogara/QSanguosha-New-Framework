@@ -1,25 +1,26 @@
 <RCC>
     <qresource prefix="/">
-        <file>src/Client/ClientSettings.qml</file>
-        <file>src/Gui/Splash.qml</file>
-        <file>src/Gui/StartScene.qml</file>
-        <file>src/Gui/Lobby.qml</file>
-        <file>src/Gui/Dialog/StartGameDialog.qml</file>
-        <file>src/Gui/Dialog/StartServerDialog.qml</file>
-        <file>src/Gui/RoomScene.qml</file>
-        <file>src/Gui/RoomElement/ChatBox.qml</file>
-        <file>src/Gui/RoomElement/Dashboard.qml</file>
-        <file>src/Gui/RoomElement/DashboardGeneral.qml</file>
-        <file>src/Gui/RoomElement/GlowText.qml</file>
-        <file>src/Gui/RoomElement/HandcardNumber.qml</file>
-        <file>src/Gui/RoomElement/HpBar.qml</file>
-        <file>src/Gui/RoomElement/IrregularButton.qml</file>
-        <file>src/Gui/RoomElement/LogBox.qml</file>
-        <file>src/Gui/RoomElement/Magatama.qml</file>
-        <file>src/Gui/RoomElement/RoleComboBox.qml</file>
-        <file>src/Gui/RoomElement/SimpleRoleIcon.qml</file>
-        <file>src/Gui/RoomElement/Photo.qml</file>
-        <file>src/utility.js</file>
-        <file>src/main.qml</file>
+        <file>ui-script/Client/ClientSettings.qml</file>
+        <file>ui-script/Gui/Splash.qml</file>
+        <file>ui-script/Gui/StartScene.qml</file>
+        <file>ui-script/Gui/Lobby.qml</file>
+        <file>ui-script/Gui/Dialog/StartGameDialog.qml</file>
+        <file>ui-script/Gui/Dialog/StartServerDialog.qml</file>
+        <file>ui-script/Gui/RoomScene.qml</file>
+        <file>ui-script/Gui/RoomElement/CardItem.qml</file>
+        <file>ui-script/Gui/RoomElement/ChatBox.qml</file>
+        <file>ui-script/Gui/RoomElement/Dashboard.qml</file>
+        <file>ui-script/Gui/RoomElement/DashboardGeneral.qml</file>
+        <file>ui-script/Gui/RoomElement/GlowText.qml</file>
+        <file>ui-script/Gui/RoomElement/HandcardNumber.qml</file>
+        <file>ui-script/Gui/RoomElement/HpBar.qml</file>
+        <file>ui-script/Gui/RoomElement/IrregularButton.qml</file>
+        <file>ui-script/Gui/RoomElement/LogBox.qml</file>
+        <file>ui-script/Gui/RoomElement/Magatama.qml</file>
+        <file>ui-script/Gui/RoomElement/RoleComboBox.qml</file>
+        <file>ui-script/Gui/RoomElement/SimpleRoleIcon.qml</file>
+        <file>ui-script/Gui/RoomElement/Photo.qml</file>
+        <file>ui-script/utility.js</file>
+        <file>ui-script/main.qml</file>
     </qresource>
 </RCC>

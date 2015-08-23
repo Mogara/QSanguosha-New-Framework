@@ -66,9 +66,12 @@ QML_FILES = \
     ui-script/Gui/RoomScene.qml \
     ui-script/Gui/RoomElement/CardItem.qml \
     ui-script/Gui/RoomElement/ChatBox.qml \
+    ui-script/Gui/RoomElement/ChooseGeneralBox.qml \
     ui-script/Gui/RoomElement/Dashboard.qml \
-    ui-script/Gui/RoomElement/DashboardGeneral.qml \
+    ui-script/Gui/RoomElement/GeneralAvatar.qml \
+    ui-script/Gui/RoomElement/GeneralCardItem.qml \
     ui-script/Gui/RoomElement/GlowText.qml \
+    ui-script/Gui/RoomElement/GraphicsBox.qml \
     ui-script/Gui/RoomElement/HandcardNumber.qml \
     ui-script/Gui/RoomElement/HpBar.qml \
     ui-script/Gui/RoomElement/IrregularButton.qml \

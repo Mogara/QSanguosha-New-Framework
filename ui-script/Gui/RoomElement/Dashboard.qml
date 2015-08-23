@@ -125,14 +125,14 @@ RowLayout {
             source: "image://dashboard/avatarbg"
         }
 
-        DashboardGeneral {
+        GeneralAvatar {
             id: headGeneralItem
             y: -Device.gu(4)
             avatar: "huangyueying"
             generalPosition: "head"
         }
 
-        DashboardGeneral {
+        GeneralAvatar {
             id: deputyGeneralItem
             x: Device.gu(128)
             y: -Device.gu(4)

@@ -16,6 +16,7 @@ Item {
     property bool autoBack: true
     property alias glow: glowItem
     property alias footnote: footnoteItem.text
+    property alias card: cardItem
 
     signal toggleDiscards()
     signal clicked()
@@ -23,7 +24,7 @@ Item {
     signal thrown()
     signal released()
     signal entered()
-    signal left()
+    signal exited()
     signal movementAnimationFinished()
     signal generalChanged()
     signal hoverChanged(bool enter)
@@ -44,13 +45,13 @@ Item {
 
     Image {
         id: cardItem
-        source: "image://root/card/" + name
+        source: name != "" ? "image://root/card/" + name : ""
         anchors.fill: parent
     }
 
     Image {
         id: suitItem
-        source: "image://root/card/suit/" + suit
+        source: suit != "" ? "image://root/card/suit/" + suit : ""
         x: Device.gu(3)
         y: Device.gu(19)
         width: Device.gu(21)
@@ -88,12 +89,20 @@ Item {
         hoverEnabled: true
 
         onReleased: {
+            parent.released();
             if (autoBack)
                 goBackAnimation.start();
         }
 
-        onEntered: glow.visible = true;
-        onExited: glow.visible = false;
+        onEntered: {
+            parent.entered();
+            glow.visible = true;
+        }
+
+        onExited: {
+            parent.exited();
+            glow.visible = false;
+        }
     }
 
     ParallelAnimation {
@@ -134,6 +143,11 @@ Item {
             x = homeX;
             y = homeY;
         }
+    }
+
+    Component.onCompleted: {
+        x = homeX;
+        y = homeY;
     }
 }
 

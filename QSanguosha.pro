@@ -3,20 +3,20 @@ TEMPLATE = app
 QT += qml quick
 
 SOURCES += src/main.cpp \
-    src/Gui/Dialog/startserverdialog.cpp \
-    src/Gui/Dialog/startgamedialog.cpp \
-    src/Gui/lobby.cpp \
-    src/Client/client.cpp \
+    src/client/client.cpp \
     src/core/gamelogic.cpp \
-    src/core/player.cpp
+    src/core/player.cpp \
+    src/gui/dialog/startserverdialog.cpp \
+    src/gui/dialog/startgamedialog.cpp \
+    src/gui/lobby.cpp
 
 HEADERS += \
-    src/Gui/Dialog/startserverdialog.h \
-    src/Gui/Dialog/startgamedialog.h \
-    src/Gui/lobby.h \
-    src/Client/client.h \
+    src/client/client.h \
     src/core/gamelogic.h \
-    src/core/player.h
+    src/core/player.h \
+    src/gui/dialog/startserverdialog.h \
+    src/gui/dialog/startgamedialog.h \
+    src/gui/lobby.h
 
 INCLUDEPATH += src
 
@@ -57,27 +57,27 @@ LIBS += -l$$qtLibraryTarget(Cardirector)
 QML_IMPORT_PATH = $$PWD
 
 QML_FILES = \
-    src/Client/ClientSettings.qml \
-    src/Gui/Splash.qml \
-    src/Gui/StartScene.qml \
-    src/Gui/Lobby.qml \
-    src/Gui/Dialog/StartGameDialog.qml \
-    src/Gui/Dialog/StartServerDialog.qml \
-    src/Gui/RoomScene.qml \
-    src/Gui/RoomElement/ChatBox.qml \
-    src/Gui/RoomElement/Dashboard.qml \
-    src/Gui/RoomElement/DashboardGeneral.qml \
-    src/Gui/RoomElement/GlowText.qml \
-    src/Gui/RoomElement/HandcardNumber.qml \
-    src/Gui/RoomElement/HpBar.qml \
-    src/Gui/RoomElement/IrregularButton.qml \
-    src/Gui/RoomElement/LogBox.qml \
-    src/Gui/RoomElement/Magatama.qml \
-    src/Gui/RoomElement/RoleComboBox.qml \
-    src/Gui/RoomElement/SimpleRoleIcon.qml \
-    src/Gui/RoomElement/Photo.qml \
-    src/utility.js \
-    src/main.qml
+    ui-script/Client/ClientSettings.qml \
+    ui-script/Gui/Splash.qml \
+    ui-script/Gui/StartScene.qml \
+    ui-script/Gui/Lobby.qml \
+    ui-script/Gui/Dialog/StartGameDialog.qml \
+    ui-script/Gui/Dialog/StartServerDialog.qml \
+    ui-script/Gui/RoomScene.qml \
+    ui-script/Gui/RoomElement/ChatBox.qml \
+    ui-script/Gui/RoomElement/Dashboard.qml \
+    ui-script/Gui/RoomElement/DashboardGeneral.qml \
+    ui-script/Gui/RoomElement/GlowText.qml \
+    ui-script/Gui/RoomElement/HandcardNumber.qml \
+    ui-script/Gui/RoomElement/HpBar.qml \
+    ui-script/Gui/RoomElement/IrregularButton.qml \
+    ui-script/Gui/RoomElement/LogBox.qml \
+    ui-script/Gui/RoomElement/Magatama.qml \
+    ui-script/Gui/RoomElement/RoleComboBox.qml \
+    ui-script/Gui/RoomElement/SimpleRoleIcon.qml \
+    ui-script/Gui/RoomElement/Photo.qml \
+    ui-script/utility.js \
+    ui-script/main.qml
 
 # Create the resource file
 GENERATED_RESOURCE_FILE = qml.qrc

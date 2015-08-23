@@ -6,7 +6,7 @@ Item {
     property string suit: "heart"
     property int number: 2
     property string name: "slash"
-    readonly property string color: (suit == "heart" || suit == "club") ? "red" : "black"
+    readonly property string color: (suit == "heart" || suit == "diamond") ? "red" : "black"
     property int homeX: 0
     property int homeY: 0
     property real homeOpacity: 1.0

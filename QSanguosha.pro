@@ -114,7 +114,9 @@ lupdate_only {
     SOURCES += $$QML_FILES
 }
 
-TRANSLATIONS += translations/zh_CN.ts
+TRANSLATIONS += \
+    translations/zh_CN.ts \
+    translations/en_US.ts
 
 OTHER_FILES += src/resource/android/AndroidManifest.xml
 

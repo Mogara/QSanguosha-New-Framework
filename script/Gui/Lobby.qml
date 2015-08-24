@@ -103,7 +103,7 @@ Lobby {
                         }
 
                         Text {
-                            text: userNum + "/" + (capacity > 0 ? capacity : "∞")
+                            text: userNum + "/" + (capacity > 0 ? capacity : qsTr("unlimited"))
                             color: "#82906D"
                             font.pixelSize: Device.gu(18)
                             x: parent.width - width

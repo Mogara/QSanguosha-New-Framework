@@ -79,6 +79,7 @@ void StartServerDialog::onRoomCreated(CRoom *room)
     room->setGameLogic(new GameLogic(room));
     connect(room, &CRoom::abandoned, this, &StartServerDialog::onRoomAbandoned);
     CServerUser *owner = room->owner();
+    room->setName(tr("%1's Room").arg(owner->screenName()));
     emit messageLogged(tr("%1(%2) created a new room(%3)").arg(owner->screenName()).arg(owner->id()).arg(room->id()));
 }
 

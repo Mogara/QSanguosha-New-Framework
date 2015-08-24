@@ -4,8 +4,8 @@ import Cardirector.Device 1.0
 import Cardirector.Resource 1.0
 
 Item {
-    property string headGeneral: "anjiang"
-    property string deputyGeneral: "anjiang"
+    property string headGeneral: "blank"
+    property string deputyGeneral: ""
     property alias screenName: screenNameItem.text
     property alias faceTurned: faceTurnedCover.visible
     property string kingdom: "qun"
@@ -87,6 +87,7 @@ Item {
             source: "image://root/magatama/bg"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
+            visible: hpBar.visible
         }
 
         HpBar {
@@ -94,7 +95,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             anchors.bottomMargin: Device.gu(3)
-            maxValue: 4
+            visible: false
 
             transform: Scale {
                 origin.x: hpBar.width / 2
@@ -115,7 +116,6 @@ Item {
 
     GlowText {
         id: headGeneralNameItem
-        text: "暗将"
         color: "white"
         y: Device.gu(30)
         font.pixelSize: Device.gu(18)
@@ -134,7 +134,6 @@ Item {
 
     GlowText {
         id: deputyGeneralNameItem
-        text: "暗将"
         color: "white"
         x: Device.gu(80)
         y: Device.gu(30)

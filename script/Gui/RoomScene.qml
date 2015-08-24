@@ -72,6 +72,20 @@ Image {
         }
     }
 
+    Loader {
+        id: dialogLoader
+
+        onSourceChanged: {
+            if (item === null)
+                return;
+            item.x = (roomArea.width - item.width) / 2;
+            item.y = (roomArea.height - item.height) / 2;
+            item.finished.connect(function(){
+                dialogLoader.source = "";
+            });
+        }
+    }
+
     onPlayerNumChanged: arrangePhotos();
 
     function arrangePhotos()

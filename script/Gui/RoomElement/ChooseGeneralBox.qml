@@ -9,8 +9,8 @@ GraphicsBox {
         id: generalList
     }
 
+    id: root
     title.text: qsTr("Please choose 2 generals of the same kingdom")
-
     width: generalArea.width + body.anchors.leftMargin + body.anchors.rightMargin
     height: body.implicitHeight + body.anchors.topMargin + body.anchors.bottomMargin
 
@@ -85,6 +85,8 @@ GraphicsBox {
                 text: qsTr("Fight")
                 width: Device.gu(120)
                 height: Device.gu(35)
+
+                onClicked: root.finished();
             }
         }
     }

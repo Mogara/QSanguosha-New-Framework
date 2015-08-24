@@ -4,6 +4,7 @@ import Cardirector.Device 1.0
 
 Item {
     property alias title: titleItem
+    signal finished()
 
     id: root
 

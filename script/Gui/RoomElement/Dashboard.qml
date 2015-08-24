@@ -16,6 +16,11 @@ RowLayout {
     property alias hp: hpBar.value
     property alias maxHp: hpBar.maxValue
 
+    signal accepted()
+    signal rejected()
+    signal finished()
+
+    id: root
     spacing: 0
     Layout.fillHeight: false
     Layout.preferredHeight: Device.gu(150)
@@ -62,24 +67,33 @@ RowLayout {
                 source: "image://dashboard/platter"
 
                 IrregularButton {
+                    id: acceptButton
                     name: "platter/confirm"
                     enabled: false
                     x: Device.gu(6)
                     y: Device.gu(3)
+
+                    onClicked: root.accepted();
                 }
 
                 IrregularButton {
+                    id: rejectButton
                     name: "platter/cancel"
                     enabled: false
                     x: Device.gu(6)
                     y: Device.gu(79)
+
+                    onClicked: root.rejected();
                 }
 
                 IrregularButton {
+                    id: finishButton
                     name: "platter/discard"
                     enabled: false
                     x: Device.gu(67)
                     y: Device.gu(37)
+
+                    onClicked: root.finished();
                 }
 
                 Image {

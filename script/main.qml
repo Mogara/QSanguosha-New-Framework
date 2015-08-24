@@ -1,4 +1,5 @@
 import QtQuick 2.4
+import QtMultimedia 5.4
 import Cardirector.Resource 1.0
 import "Client"
 import "utility.js" as Utility
@@ -16,7 +17,10 @@ Item {
 
         function imagePath(imageId, requestedSize)
         {
-            return "image/" + imageId + ".png";
+            if (imageId.indexOf('.') === -1)
+                return "image/" + imageId + ".png";
+            else
+                return "image/" + imageId;
         }
     }
 

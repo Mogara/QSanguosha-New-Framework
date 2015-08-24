@@ -41,9 +41,9 @@ int main(int argc, char *argv[])
 
     CMainWindow window;
 #ifdef EMBEDED_RESOURCE
-    window.setSource(QUrl(QStringLiteral("qrc:/ui-script/main.qml")));
+    window.setSource(QUrl(QStringLiteral("qrc:/script/main.qml")));
 #else
-    window.setSource(QUrl(QStringLiteral("ui-script/main.qml")));
+    window.setSource(QUrl(QStringLiteral("script/main.qml")));
 #endif
     window.show();
 

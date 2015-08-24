@@ -85,28 +85,37 @@ QML_FILES = \
     script/main.qml
 
 # Create the resource file
-GENERATED_RESOURCE_FILE = qml.qrc
-
-INCLUDED_RESOURCE_FILES = $$QML_FILES
-
-RESOURCE_CONTENT = \
-    "<RCC>" \
-    "    <qresource prefix=\"/\">"
-
-for(resourcefile, INCLUDED_RESOURCE_FILES) {
-    RESOURCE_CONTENT += "        <file>$$resourcefile</file>"
-}
-
-RESOURCE_CONTENT += \
-    "    </qresource>" \
-    "</RCC>"
-
-write_file($$GENERATED_RESOURCE_FILE, RESOURCE_CONTENT)|error("Aborting.")
-
 CONFIG(embeded_resource){
+    !build_pass{
+        defineTest(generate_qrc){
+            qrc_path = $$1
+            qrc_contents = $$2
+
+            resource_content = \
+                "<RCC>" \
+                "    <qresource prefix=\"/\">"
+
+            for(resource_file, qrc_contents) {
+                resource_content += "        <file>$$relative_path($$resource_file)</file>"
+            }
+
+            resource_content += \
+                "    </qresource>" \
+                "</RCC>"
+
+            write_file($$qrc_path, resource_content) | error("Aborting.")
+        }
+
+        generate_qrc("qml.qrc", $$QML_FILES)
+
+        equals(QMAKE_HOST.os, Windows): MCD_LS = "dir /A:-D /B /S image"
+        equals(QMAKE_HOST.os, Linux): MCD_LS = "find image -type f"
+        defined(MCD_LS, var): generate_qrc("image.qrc", $$system($$MCD_LS))
+    }
+
     RESOURCES += \
         image.qrc \
-        $$GENERATED_RESOURCE_FILE
+        qml.qrc
     DEFINES += EMBEDED_RESOURCE
 }
 

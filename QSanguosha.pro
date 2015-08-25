@@ -20,6 +20,8 @@ HEADERS += \
 
 INCLUDEPATH += src
 
+DEFINES += MCD_STATIC
+#DEFINES += MCD_BUILD
 INCLUDEPATH += Cardirector/include
 LIBS += -L"$$_PRO_FILE_PWD_/Cardirector/lib"
 
@@ -33,8 +35,10 @@ defineTest(copy) {
 }
 
 win32 {
-    CONFIG(debug, debug|release): copy(Cardirector/bin/Cardirectord.dll, $$_PRO_FILE_PWD_/)
-    else:copy(Cardirector/bin/Cardirector.dll, $$_PRO_FILE_PWD_/)
+    !contains(DEFINES, MCD_STATIC){
+        CONFIG(debug, debug|release): copy(Cardirector/bin/Cardirectord.dll, $$_PRO_FILE_PWD_/)
+        else:copy(Cardirector/bin/Cardirector.dll, $$_PRO_FILE_PWD_/)
+    }
 
     RC_FILE = src/resource/icons/icon.rc
 

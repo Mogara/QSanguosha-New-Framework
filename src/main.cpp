@@ -27,6 +27,8 @@
 
 int main(int argc, char *argv[])
 {
+    MCD_INIT_GUI;
+
     CExceptionHandler eh("./dmp");
 
     QGuiApplication app(argc, argv);

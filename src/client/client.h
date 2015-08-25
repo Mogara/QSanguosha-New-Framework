@@ -30,7 +30,6 @@ public:
 
 private:
     Client(QObject *parent = 0);
-    C_DECLARE_INITIALIZER(Client)
 };
 
 #endif // CLIENT_H

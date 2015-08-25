@@ -19,29 +19,32 @@
 
 #include "client.h"
 #include <QtQml>
+#include <QCoreApplication>
 
 static Client *ClientInstance = NULL;
+
+static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
+{
+    return Client::instance();
+}
+
+static void initClientInstance()
+{
+    qmlRegisterSingletonType<Client>("Sanguosha", 1, 0, "Client", ClientInstanceCallback);
+}
+
+Q_COREAPP_STARTUP_FUNCTION(initClientInstance)
 
 Client::Client(QObject *parent)
     : CClient(parent)
 {
+    ClientInstance = this;
 }
-
-static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
-{
-    return ClientInstance;
-}
-
-void Client::Init()
-{
-    ClientInstance = new Client(qApp);
-    qmlRegisterSingletonType<Client>("Sanguosha", 1, 0, "Client", ClientInstanceCallback);
-}
-C_INITIALIZE_CLASS(Client)
 
 Client *Client::instance()
 {
-    return ClientInstance;
+    static Client *client = new Client(qApp);
+    return client;
 }
 
 Client::~Client()

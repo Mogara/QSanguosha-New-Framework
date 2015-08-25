@@ -28,7 +28,9 @@ public:
     GameLogic(CRoom *parent = 0);
 
 protected:
-    CAbstractPlayer *createPlayer();
+    CAbstractPlayer *createPlayer(CServerUser *user);
+    CAbstractPlayer *createPlayer(CRobot *robot);
+
     void run();
 };
 

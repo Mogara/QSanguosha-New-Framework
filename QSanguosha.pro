@@ -81,6 +81,7 @@ QML_FILES = \
     script/Gui/RoomElement/IrregularButton.qml \
     script/Gui/RoomElement/LogBox.qml \
     script/Gui/RoomElement/Magatama.qml \
+    script/Gui/RoomElement/PixmapAnimation.qml \
     script/Gui/RoomElement/RoleComboBox.qml \
     script/Gui/RoomElement/SimpleRoleIcon.qml \
     script/Gui/RoomElement/Photo.qml \

@@ -12,6 +12,12 @@ Image {
     id: roomScene
     source: config.tableImage
     anchors.fill: parent
+    focus: true
+
+    MouseArea {
+        anchors.fill: parent
+        onPressed: parent.forceActiveFocus();
+    }
 
     ImageProvider {
         id: generalImage

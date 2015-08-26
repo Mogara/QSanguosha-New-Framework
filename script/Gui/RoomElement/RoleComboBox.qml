@@ -35,13 +35,22 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: expandingBox.visible = true;
+        onClicked: {
+            expandingBox.forceActiveFocus();
+            expandingBox.visible = true;
+        }
     }
 
     Image {
         id: expandingBox
         source: "image://root/role/expanding"
+        focus: true
         visible: false
+
+        onActiveFocusChanged: {
+            if (!activeFocus)
+                visible = false;
+        }
 
         Image {
             source: "image://root/role/expandingmask/wei"
@@ -74,30 +83,21 @@ Item {
         MouseArea {
             width: parent.width / 2
             height: parent.height / 2
-            onClicked: {
-                wei.included = !wei.included;
-                expandingBox.visible = false;
-            }
+            onClicked: wei.included = !wei.included;
         }
 
         MouseArea {
             width: parent.width / 2
             height: parent.height / 2
             x: parent.width / 2
-            onClicked: {
-                qun.included = !qun.included;
-                expandingBox.visible = false;
-            }
+            onClicked: qun.included = !qun.included;
         }
 
         MouseArea {
             width: parent.width / 2
             height: parent.height / 2
             y: parent.height / 2
-            onClicked: {
-                shu.included = !shu.included;
-                expandingBox.visible = false;
-            }
+            onClicked: shu.included = !shu.included;
         }
 
         MouseArea {
@@ -105,10 +105,7 @@ Item {
             height: parent.height / 2
             x: parent.width / 2
             y: parent.height / 2
-            onClicked: {
-                wu.included = !wu.included;
-                expandingBox.visible = false;
-            }
+            onClicked: wu.included = !wu.included;
         }
     }
 }

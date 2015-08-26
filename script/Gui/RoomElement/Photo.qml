@@ -46,7 +46,7 @@ Item {
         Image {
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
-            source: "image://general/fullphoto/" + deputyGeneral
+            source: deputyGeneral != "" ? "image://general/fullphoto/" + deputyGeneral : ""
         }
     }
 

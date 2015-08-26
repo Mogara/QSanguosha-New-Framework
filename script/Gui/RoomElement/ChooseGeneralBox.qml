@@ -4,6 +4,8 @@ import Cardirector.Device 1.0
 
 GraphicsBox {
     property alias model: generalList
+    property string headGeneral: ""
+    property string deputyGeneral: ""
 
     ListModel {
         id: generalList
@@ -27,18 +29,20 @@ GraphicsBox {
             z: 1
 
             Repeater {
-                model: generalList
+                id: generalMagnetList
+                model: generalList.count
 
-                GeneralCardItem {
-                    name: model.name
-                    kingdom: model.kingdom
-                    homeX: Device.gu((index % Math.ceil(generalList.count / (generalList.count >= 5 ? 2 : 1))) * 98 + (generalList.count >= 5 && index > generalList.count / 2 && generalList.count % 2 == 1 ? 50 : 0))
-                    homeY: generalList.count < 5 ? 0 : (index < generalList.count / 2 ? 0 : Device.gu(135))
+                Item {
+                    width: Device.gu(93)
+                    height: Device.gu(130)
+                    x: Device.gu((index % Math.ceil(generalList.count / (generalList.count >= 5 ? 2 : 1))) * 98 + (generalList.count >= 5 && index > generalList.count / 2 && generalList.count % 2 == 1 ? 50 : 0))
+                    y: generalList.count < 5 ? 0 : (index < generalList.count / 2 ? 0 : Device.gu(135))
                 }
             }
         }
 
         Item {
+            id: splitLine
             width: parent.width - Device.gu(80)
             height: Device.gu(6)
             anchors.horizontalCenter: parent.horizontalCenter
@@ -56,6 +60,7 @@ GraphicsBox {
             height: Device.gu(145)
 
             Rectangle {
+                id: headGeneralItem
                 color: "#1D1E19"
                 radius: Device.gu(3)
                 width: Device.gu(93)
@@ -65,6 +70,7 @@ GraphicsBox {
             }
 
             Rectangle {
+                id: deputyGeneralItem
                 color: "#1D1E19"
                 radius: Device.gu(3)
                 width: Device.gu(93)
@@ -85,8 +91,95 @@ GraphicsBox {
                 text: qsTr("Fight")
                 width: Device.gu(120)
                 height: Device.gu(35)
+                enabled: headGeneral != "" && deputyGeneral != ""
 
                 onClicked: root.finished();
+            }
+        }
+    }
+
+    Repeater {
+        id: generalCardList
+        model: generalList
+
+        GeneralCardItem {
+            name: model.name
+            kingdom: model.kingdom
+
+            onClicked: {
+                var pos;
+                if (headGeneral == name) {
+                    headGeneral = "";
+                } else if (deputyGeneral == name) {
+                    deputyGeneral = "";
+                } else {
+                    if (headGeneral == "") {
+                        headGeneral = name;
+                    } else if (deputyGeneral == "") {
+                        deputyGeneral = name;
+                    }
+                }
+            }
+
+            onReleased: {
+                if (y < splitLine.y) {
+                    if (headGeneral == name)
+                        headGeneral = "";
+                    else if (deputyGeneral == name)
+                        deputyGeneral = "";
+                } else {
+                    if (headGeneral == "") {
+                        headGeneral = name;
+                    } else if (deputyGeneral == "") {
+                        deputyGeneral = name;
+                    } else {
+                        var horizontalCenter = x + width / 2;
+                        if (horizontalCenter > deputyGeneralItem.x && headGeneral === name) {
+                            headGeneral = deputyGeneral;
+                            deputyGeneral = name;
+                        } else if (horizontalCenter < headGeneralItem.x + headGeneralItem.width && deputyGeneral === name) {
+                            deputyGeneral = headGeneral;
+                            headGeneral = name;
+                        }
+                    }
+                }
+            }
+        }
+
+        Component.onCompleted: {
+            var card, magnet, pos;
+            for (var i = 0; i < generalList.count; i++) {
+                card = generalCardList.itemAt(i);
+                magnet = generalMagnetList.itemAt(i);
+                pos = mapFromItem(generalMagnetList.parent, magnet.x, magnet.y);
+                card.homeX = pos.x;
+                card.homeY = pos.y;
+                card.goBack(true);
+            }
+        }
+    }
+
+    onHeadGeneralChanged: arrangeCards();
+    onDeputyGeneralChanged: arrangeCards();
+    function arrangeCards()
+    {
+        var item, pos;
+        for (var i = 0; i < generalList.count; i++)
+        {
+            item = generalCardList.itemAt(i);
+            if (headGeneral === item.name) {
+                pos = root.mapFromItem(resultArea, headGeneralItem.x, headGeneralItem.y);
+            } else if (deputyGeneral === item.name) {
+                pos = root.mapFromItem(resultArea, deputyGeneralItem.x, deputyGeneralItem.y);
+            } else {
+                var magnet = generalMagnetList.itemAt(i);
+                pos = root.mapFromItem(generalMagnetList.parent, magnet.x, magnet.y);
+            }
+
+            if (item.homeX !== pos.x || item.homeY !== item.y) {
+                item.homeX = pos.x;
+                item.homeY = pos.y;
+                item.goBack(true);
             }
         }
     }

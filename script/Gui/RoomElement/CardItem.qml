@@ -60,7 +60,7 @@ Item {
 
     Image {
         id: numberItem
-        source: "image://root/card/number/" + color + "/" + number
+        source: (color != "" && number > 0) ? "image://root/card/number/" + color + "/" + number : ""
         x: Device.gu(0)
         y: Device.gu(2)
         width: Device.gu(27)
@@ -103,6 +103,8 @@ Item {
             parent.exited();
             glow.visible = false;
         }
+
+        onClicked: parent.clicked();
     }
 
     ParallelAnimation {
@@ -138,6 +140,7 @@ Item {
     function goBack(animated)
     {
         if (animated) {
+            goBackAnimation.stop();
             goBackAnimation.start();
         } else {
             x = homeX;

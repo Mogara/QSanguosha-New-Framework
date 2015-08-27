@@ -93,7 +93,7 @@ GraphicsBox {
                 height: Device.gu(35)
                 enabled: headGeneral != "" && deputyGeneral != ""
 
-                onClicked: root.finished();
+                onClicked: close();
             }
         }
     }

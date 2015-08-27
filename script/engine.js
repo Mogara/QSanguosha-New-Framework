@@ -7,3 +7,9 @@ var kingdomColor = {
     qun : "#8A807A",
     god : "#96943D"
 };
+
+function translate(text)
+{
+    //@todo:
+    return text;
+}

@@ -4,7 +4,8 @@ import Cardirector.Device 1.0
 
 Item {
     property alias title: titleItem
-    signal finished()
+    signal accepted() //Read result
+    signal finished() //Close the box
 
     id: root
 
@@ -33,6 +34,7 @@ Item {
         id: titleItem
         color: "#E4D5A0"
         width: parent.width
+        height: Device.gu(32)
         font.pixelSize: Device.gu(18)
         horizontalAlignment: Text.AlignHCenter
         x: Device.gu(6)
@@ -47,5 +49,11 @@ Item {
         anchors.fill: parent
         drag.target: parent
         drag.axis: Drag.XAndYAxis
+    }
+
+    function close()
+    {
+        accepted();
+        finished();
     }
 }

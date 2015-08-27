@@ -71,6 +71,7 @@ QML_FILES = \
     script/Gui/RoomElement/CardItem.qml \
     script/Gui/RoomElement/ChatBox.qml \
     script/Gui/RoomElement/ChooseGeneralBox.qml \
+    script/Gui/RoomElement/ChooseOptionBox.qml \
     script/Gui/RoomElement/Dashboard.qml \
     script/Gui/RoomElement/GeneralAvatar.qml \
     script/Gui/RoomElement/GeneralCardItem.qml \

@@ -15,6 +15,9 @@ RowLayout {
     property string userRole: "unknown"
     property alias hp: hpBar.value
     property alias maxHp: hpBar.maxValue
+    property alias acceptButton: acceptButtonItem
+    property alias rejectButton: rejectButtonItem
+    property alias finishButton: finishButtonItem
 
     signal accepted()
     signal rejected()
@@ -67,7 +70,7 @@ RowLayout {
                 source: "image://dashboard/platter"
 
                 IrregularButton {
-                    id: acceptButton
+                    id: acceptButtonItem
                     name: "platter/confirm"
                     enabled: false
                     x: Device.gu(6)
@@ -77,7 +80,7 @@ RowLayout {
                 }
 
                 IrregularButton {
-                    id: rejectButton
+                    id: rejectButtonItem
                     name: "platter/cancel"
                     enabled: false
                     x: Device.gu(6)
@@ -87,7 +90,7 @@ RowLayout {
                 }
 
                 IrregularButton {
-                    id: finishButton
+                    id: finishButtonItem
                     name: "platter/discard"
                     enabled: false
                     x: Device.gu(67)

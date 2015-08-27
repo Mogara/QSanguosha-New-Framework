@@ -20,7 +20,7 @@ Item {
             onEntered: mouseState = "hover";
             onExited: mouseState = "normal";
             onPressed: mouseState = "down";
-            onReleased: mouseState = "normal";
+            onReleased: mouseState = containsMouse ? "hover" : "normal";
         }
     }
 }

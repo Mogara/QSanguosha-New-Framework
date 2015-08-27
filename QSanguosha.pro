@@ -77,6 +77,7 @@ QML_FILES = \
     script/Gui/RoomElement/GeneralCardItem.qml \
     script/Gui/RoomElement/GlowText.qml \
     script/Gui/RoomElement/GraphicsBox.qml \
+    script/Gui/RoomElement/GuanxingBox.qml \
     script/Gui/RoomElement/HandcardNumber.qml \
     script/Gui/RoomElement/HpBar.qml \
     script/Gui/RoomElement/IrregularButton.qml \

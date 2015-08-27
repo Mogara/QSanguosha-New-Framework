@@ -5,7 +5,7 @@ Image {
     property string kingdom
     property int value
 
-    source: "image://root/roomscene/handcard/" + (kingdom != "" ? kingdom : "qun")
+    source: "image://root/handcard/" + (kingdom != "" ? kingdom : "qun")
 
     GlowText {
         id: handcardNumText

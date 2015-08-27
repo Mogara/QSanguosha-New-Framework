@@ -34,7 +34,7 @@ RowLayout {
 
         function imagePath(imageId, requestedSize)
         {
-            return "image/roomscene/dashboard/" + imageId + ".png";
+            return "image/dashboard/" + imageId + ".png";
         }
     }
 

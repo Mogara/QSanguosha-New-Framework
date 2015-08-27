@@ -23,7 +23,7 @@ Item {
 
         function imagePath(imageId, requestedSize)
         {
-            return "image/roomscene/photo/" + imageId + ".png";
+            return "image/photo/" + imageId + ".png";
         }
     }
 

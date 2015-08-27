@@ -84,8 +84,8 @@ Image {
         onSourceChanged: {
             if (item === null)
                 return;
-            item.x = (roomArea.width - item.width) / 2;
-            item.y = (roomArea.height - item.height) / 2;
+            item.x = Math.round((roomArea.width - item.width) / 2);
+            item.y = Math.round(roomArea.height * 0.67 - item.height / 2);
             item.finished.connect(function(){
                 dialogLoader.source = "";
             });

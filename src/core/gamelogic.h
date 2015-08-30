@@ -29,7 +29,7 @@ public:
 
 protected:
     CAbstractPlayer *createPlayer(CServerUser *user);
-    CAbstractPlayer *createPlayer(CRobot *robot);
+    CAbstractPlayer *createPlayer(CServerRobot *robot);
 
     void run();
 };

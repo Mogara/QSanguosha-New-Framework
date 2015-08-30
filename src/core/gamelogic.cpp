@@ -35,7 +35,7 @@ CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
     return new Player(this);
 }
 
-CAbstractPlayer *GameLogic::createPlayer(CRobot *robot)
+CAbstractPlayer *GameLogic::createPlayer(CServerRobot *robot)
 {
     C_UNUSED(robot);
     return new Player(this);

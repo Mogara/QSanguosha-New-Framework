@@ -18,7 +18,7 @@
 *********************************************************************/
 
 #include "lobby.h"
-#include "Client/client.h"
+#include "client/client.h"
 
 #include <cclientuser.h>
 

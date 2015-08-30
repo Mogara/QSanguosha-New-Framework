@@ -8,7 +8,7 @@ Item {
     property string deputyGeneral: ""
     property alias screenName: screenNameItem.text
     property alias faceTurned: faceTurnedCover.visible
-    property string userRole: "god"
+    property string userRole: "unknown"
     property alias handcardNum: handcardNumItem.value
     property alias maxHp: hpBar.maxValue
     property alias hp: hpBar.value

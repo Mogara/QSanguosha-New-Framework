@@ -8,7 +8,7 @@ Item {
     property string deputyGeneral: ""
     property alias screenName: screenNameItem.text
     property alias faceTurned: faceTurnedCover.visible
-    property string kingdom: "qun"
+    property string userRole: "god"
     property alias handcardNum: handcardNumItem.value
     property alias maxHp: hpBar.maxValue
     property alias hp: hpBar.value
@@ -71,7 +71,7 @@ Item {
         id: handcardNumItem
         x: Device.gu(-10)
         y: Device.gu(110)
-        kingdom: parent.kingdom
+        kingdom: parent.userRole
     }
 
     Item {

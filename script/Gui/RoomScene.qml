@@ -4,6 +4,7 @@ import Cardirector.Gui 1.0
 import Cardirector.Device 1.0
 import Cardirector.Resource 1.0
 import "RoomElement"
+import "../engine.js" as Engine
 
 Image {
     property int playerNum: 8
@@ -75,6 +76,7 @@ Image {
         }
 
         Dashboard {
+            id: dashboard
         }
     }
 
@@ -164,5 +166,29 @@ Image {
             item.x = Math.round(x);
             item.y = Math.round(y);
         }
+    }
+
+    function showIndicatorLine(from, tos)
+    {
+        var component = Qt.createComponent("RoomElement/IndicatorLine.qml");
+        if (component.status !== Component.Ready)
+            return;
+
+        var fromItem = (from <= 0) ? dashboard : photos.itemAt(from - 1);
+        var fromPos = mapFromItem(fromItem, fromItem.width / 2, fromItem.height / 2);
+
+        var end = [];
+        for (var i = 0; i < tos.length; i++) {
+            if (from === tos[i])
+                continue;
+            var to = tos[i];
+            var toItem = (to <= 0) ? dashboard : photos.itemAt(to - 1);
+            var toPos = mapFromItem(toItem, toItem.width / 2, toItem.height / 2);
+            end.push(toPos);
+        }
+
+        var color = Engine.kingdomColor[fromItem.userRole];
+        var line = component.createObject(root, {start: fromPos, end: end, color: color});
+        line.running = true;
     }
 }

@@ -80,6 +80,7 @@ QML_FILES = \
     script/Gui/RoomElement/GuanxingBox.qml \
     script/Gui/RoomElement/HandcardNumber.qml \
     script/Gui/RoomElement/HpBar.qml \
+    script/Gui/RoomElement/IndicatorLine.qml \
     script/Gui/RoomElement/IrregularButton.qml \
     script/Gui/RoomElement/LogBox.qml \
     script/Gui/RoomElement/Magatama.qml \

@@ -1,7 +1,7 @@
 /********************************************************************
     Copyright (c) 2013-2015 - Mogara
 
-    This file is part of Cardirector.
+    This file is part of QSanguosha.
 
     This game engine is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License as

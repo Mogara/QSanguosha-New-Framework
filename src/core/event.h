@@ -1,0 +1,42 @@
+/********************************************************************
+    Copyright (c) 2013-2015 - Mogara
+
+    This file is part of QSanguosha.
+
+    This game engine is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation; either version 3.0
+    of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+    See the LICENSE file for more details.
+
+    Mogara
+*********************************************************************/
+
+#ifndef EVENT_H
+#define EVENT_H
+
+class EventHandler;
+class Player;
+
+#include <QList>
+
+struct Event
+{
+    Event();
+    Event(const EventHandler *handler);
+    Event(const EventHandler *handler, Player *owner);
+
+    bool isValid() { return handler != NULL; }
+
+    const EventHandler *handler;
+    Player *owner;
+    QList<Player *> to;
+};
+
+#endif // EVENT_H
+

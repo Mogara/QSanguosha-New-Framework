@@ -4,16 +4,25 @@ QT += qml quick
 
 SOURCES += src/main.cpp \
     src/client/client.cpp \
+    src/core/event.cpp \
+    src/core/eventhandler.cpp \
     src/core/gamelogic.cpp \
+    src/core/gamerule.cpp \
     src/core/player.cpp \
+    src/core/skill.cpp \
     src/gui/dialog/startserverdialog.cpp \
     src/gui/dialog/startgamedialog.cpp \
     src/gui/lobby.cpp
 
 HEADERS += \
     src/client/client.h \
+    src/core/event.h \
+    src/core/eventhandler.h \
+    src/core/eventtype.h \
     src/core/gamelogic.h \
+    src/core/gamerule.h \
     src/core/player.h \
+    src/core/skill.h \
     src/gui/dialog/startserverdialog.h \
     src/gui/dialog/startgamedialog.h \
     src/gui/lobby.h

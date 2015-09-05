@@ -20,6 +20,9 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+class EventHandler;
+class General;
+
 #include <cabstractplayer.h>
 
 class Player : public CAbstractPlayer
@@ -55,17 +58,65 @@ public:
     Player(QObject *parent = 0);
 
     int hp() const { return m_hp; }
-    void setHp(int hp) { m_hp = hp; }
+    void setHp(int hp);
 
     int maxHp() const { return m_maxHp; }
-    void setMaxHp(int maxHp) { m_maxHp = maxHp; }
+    void setMaxHp(int maxHp);
 
     int lostHp() const { return maxHp() - qMax(hp(), 0); }
     bool isWounded() const { return hp() < 0 || hp() < maxHp(); }
+    bool isAlive() const { return m_alive; }
+    bool isDead() const { return !m_alive; }
+
+    bool hasSkill(const EventHandler *skill) const;
+    bool hasShownSkill(const EventHandler *skill) const;
+
+    void setRemoved(bool removed) { m_removed = removed; }
+    bool isRemoved() const { return m_removed; }
+
+    void setNext(Player *next) { m_next = next; }
+    Player *next() const { return m_next; }
+    Player *next(bool ignoreRemoved) const;
+    Player *nextAlive(int step = 1, bool ignoreRemoved = true) const;
+
+    void setPhase(Phase phase);
+    Phase phase() const { return m_phase; }
+
+    //Alias of head general.
+    const General *general() const { return headGeneral(); }
+    void setGeneral(const General *general) { setHeadGeneral(general); }
+
+    const General *headGeneral() const { return m_headGeneral; }
+    void setHeadGeneral(const General *general) { m_headGeneral = general; }
+
+    const General *deputyGeneral() const { return m_deputyGeneral; }
+    void setDeputyGeneral(const General *general) { m_deputyGeneral = general; }
+
+    bool hasShownHeadGeneral() const { return m_headGeneralShown; }
+    void setHeadGeneralShown(bool shown) { m_headGeneralShown = shown; }
+
+    bool hasShownDeputyGeneral() const { return m_deputyGeneralShown; }
+    void setDeputyGeneralShown(bool shown) { m_deputyGeneralShown = shown; }
+
+    bool hasShownGeneral() const { return hasShownHeadGeneral() || hasShownDeputyGeneral(); }
+    bool hasShownBothGenerals() const { return hasShownHeadGeneral() && hasShownDeputyGeneral(); }
+
+signals:
+    void hpChanged();
+    void maxHpChanged();
+    void phaseChanged();
 
 protected:
     int m_hp;
     int m_maxHp;
+    bool m_alive;
+    bool m_removed;
+    Player *m_next;
+    Phase m_phase;
+    const General *m_headGeneral;
+    const General *m_deputyGeneral;
+    bool m_headGeneralShown;
+    bool m_deputyGeneralShown;
 };
 
 #endif // PLAYER_H

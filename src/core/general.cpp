@@ -17,11 +17,32 @@
     Mogara
 *********************************************************************/
 
-#include "gamelogic.h"
-#include "gamerule.h"
-#include "player.h"
+#include "general.h"
+#include "skill.h"
 
-GameRule::GameRule(GameLogic *logic)
-    : m_logic(logic)
+General::General(const QString &name, const QString &kingdom, int maxHp, Gender gender)
+    : m_name(name)
+    , m_kingdom(kingdom)
+    , m_maxHp(maxHp)
+    , m_gender(gender)
+    , m_lord(false)
+    , m_hidden(false)
+    , m_neverShown(false)
+    , m_headExtraMaxHp(0)
+    , m_deputyExtraMaxHp(0)
 {
+}
+
+General::~General()
+{
+    foreach (Skill *skill, m_skills)
+        delete skill;
+}
+
+bool General::isCompanionWith(const General *general) const
+{
+    if (m_companions.contains(general->name()))
+        return true;
+
+    return kingdom() == general->kingdom() && (isLord() || general->isLord());
 }

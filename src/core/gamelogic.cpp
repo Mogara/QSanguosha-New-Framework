@@ -17,14 +17,21 @@
     Mogara
 *********************************************************************/
 
+#include "card.h"
 #include "eventhandler.h"
 #include "gamelogic.h"
+#include "gamerule.h"
+#include "general.h"
+#include "package.h"
 #include "player.h"
+#include "protocol.h"
+#include "cserveruser.h"
+#include "util.h"
 
 #include <croom.h>
 #include <cserver.h>
-#include <QCoreApplication>
 
+#include <QCoreApplication>
 #include <QDateTime>
 
 GameLogic::GameLogic(CRoom *parent)
@@ -33,6 +40,27 @@ GameLogic::GameLogic(CRoom *parent)
     , m_gameRule(NULL)
 {
 
+}
+
+GameLogic::~GameLogic()
+{
+    foreach (Card *card, m_cards)
+        delete card;
+}
+
+void GameLogic::setGameRule(const GameRule *rule) {
+    if (m_gameRule) {
+        foreach (EventType e, m_gameRule->events()) {
+            if (m_handlers[e].contains(m_gameRule))
+                m_handlers[e].removeOne(m_gameRule);
+        }
+    }
+
+    m_gameRule = rule;
+    if (rule) {
+        foreach (EventType e, rule->events())
+            m_handlers[e].append(m_gameRule);
+    }
 }
 
 void GameLogic::addEventHandler(const EventHandler *handler)
@@ -48,11 +76,6 @@ bool GameLogic::trigger(EventType event, Player *target)
     return trigger(event, target, data);
 }
 
-static bool compareByPriority(const EventHandler *a, const EventHandler *b)
-{
-    return a->priority() > b->priority();
-}
-
 bool GameLogic::trigger(EventType event, Player *target, QVariant &data)
 {
     QList<const EventHandler *> &handlers = m_handlers[event];
@@ -62,51 +85,43 @@ bool GameLogic::trigger(EventType event, Player *target, QVariant &data)
         return a->priority(event) > b->priority(event);
     });
 
-    bool willTriggerEmpty = true;
-    int willTriggerPriority = 0;
-    QMap<Player *, QList<Event>> triggerableEvents;
-    QList<const EventHandler *> triggered;
-
-    int triggerableTested = 0;
-    while (triggerableTested < handlers.length()) {
-        triggerableEvents.clear();
-        willTriggerEmpty = true;
+    int triggerableIndex = 0;
+    while (triggerableIndex < handlers.length()) {
+        int currentPriority = 0;
+        QMap<Player *, QList<Event>> triggerableEvents;
 
         //Construct triggerableEvents
-        foreach (const EventHandler *handler, handlers) {
-            if (!triggered.contains(handler)) {
-                if (handler == m_gameRule) {
-                    if (willTriggerEmpty || handler->priority(event) == willTriggerPriority) {
-                        willTriggerEmpty = false;
-                        triggerableEvents[NULL] << handler;
-                    } else if (handler->priority(event) != willTriggerPriority) {
-                        break;
-                    }
+        do {
+            const EventHandler *handler = handlers.at(triggerableIndex);
+            if (handler == m_gameRule) {
+                if (triggerableEvents.isEmpty()) {
+                    triggerableEvents[NULL] << handler;
+                    currentPriority = handler->priority(event);
+                } else if (handler->priority(event) == currentPriority) {
+                    triggerableEvents[NULL] << handler;
                 } else {
-                    if (willTriggerEmpty || handler->priority(event) == willTriggerPriority) {
-                        QMap<Player *, Event> Events = handler->triggerable(this, event, target, data);
-                        QList<Player *> players = this->players();
-                        foreach (Player *p, players) {
-                            if (!Events.contains(p))
-                                continue;
-
-                            QList<Event> ds = Events.values(p);
-                            foreach(const Event &d, ds) {
-                                willTriggerEmpty = false;
-                                willTriggerPriority = d.handler->priority(event);
-                                triggerableEvents[p] << d;
-                            }
-                        }
-                    } else if (handler->priority(event) != willTriggerPriority) {
-                        break;
-                    }
+                    break;
                 }
-                triggered.prepend(handler);
-            }
-            triggerableTested++;
-        }
+            } else {
+                if (triggerableEvents.isEmpty() || handler->priority(event) == currentPriority) {
+                    QMap<Player *, Event> events = handler->triggerable(this, event, target, data);
+                    QList<Player *> players = this->players();
+                    foreach (Player *p, players) {
+                        if (!events.contains(p))
+                            continue;
 
-        if (!willTriggerEmpty) {
+                        QList<Event> ds = events.values(p);
+                        triggerableEvents[p] << ds;
+                        currentPriority = ds.last().handler->priority(event);
+                    }
+                } else if (handler->priority(event) != currentPriority) {
+                    break;
+                }
+            }
+            triggerableIndex++;
+        } while (triggerableIndex < handlers.length());
+
+        if (!triggerableEvents.isEmpty()) {
             QList<Player *> allPlayers = this->allPlayers(true);
             foreach (Player *invoker, allPlayers) {
                 if (!triggerableEvents.contains(invoker))
@@ -143,7 +158,7 @@ bool GameLogic::trigger(EventType event, Player *target, QVariant &data)
                         m_globalRequestEnabled = true;
                     bool takeEffect = choice.handler->cost(this, event, choice.to.at(0), data, invoker);
                     if (takeEffect && !invoker->hasShownSkill(choice.handler)) {
-                        //@todo: show head general
+                        //@todo: show skill here?
                     }
                     m_globalRequestEnabled = false;
 
@@ -181,7 +196,8 @@ bool GameLogic::trigger(EventType event, Player *target, QVariant &data)
 QList<Player *> GameLogic::players() const
 {
     QList<Player *> players;
-    foreach (CAbstractPlayer *p, abstractPlayers())
+    auto abstractPlayers = this->abstractPlayers();
+    foreach (CAbstractPlayer *p, abstractPlayers)
         players << qobject_cast<Player *>(p);
     return players;
 }
@@ -191,7 +207,7 @@ Player *GameLogic::findPlayer(uint id) const
     return qobject_cast<Player *>(findAbstractPlayer(id));
 }
 
-QList<Player *> GameLogic::allPlayers(bool include_dead) const
+QList<Player *> GameLogic::allPlayers(bool includeDead) const
 {
     QList<Player *> players = this->players();
     Player *current = currentPlayer();
@@ -204,11 +220,11 @@ QList<Player *> GameLogic::allPlayers(bool include_dead) const
 
     QList<Player *> allPlayers;
     for (int i = currentIndex; i < players.length(); i++) {
-        if (include_dead || players.at(i)->isAlive())
+        if (includeDead || players.at(i)->isAlive())
             allPlayers << players.at(i);
     }
     for (int i = 0; i < currentIndex; i++) {
-        if (include_dead || players.at(i)->isAlive())
+        if (includeDead || players.at(i)->isAlive())
             allPlayers << players.at(i);
     }
 
@@ -242,9 +258,79 @@ CAbstractPlayer *GameLogic::createPlayer(CServerRobot *robot)
     return new Player(this);
 }
 
+void GameLogic::prepareToStart()
+{
+    CRoom *room = this->room();
+
+    //Arrange seats for all the players
+    QList<Player *> players = this->players();
+    qShuffle(players);
+    for (int i = 1; i < players.length(); i++) {
+        players[i - 1]->setSeat(i);
+        players[i - 1]->setNext(players.at(i));
+    }
+    Player *lastPlayer = players.last();
+    lastPlayer->setSeat(players.length());
+    lastPlayer->setNext(players.first());
+    setCurrentPlayer(players.first());
+
+    QVariantList playerList;
+    foreach (Player *player, players) {
+        CServerAgent *agent = findAgent(player);
+        QVariantMap info;
+        if (agent->inherits("CServerUser")) {
+            info["userId"] = agent->id();
+        } else {
+            info["robotId"] = agent->id();
+        }
+        info["playerId"] = player->id();
+        playerList << info;
+    }
+    room->broadcastNotification(S_COMMAND_ARRANGE_SEAT, playerList);
+
+    //Import packages
+    QList<const General *> generals;
+    foreach (const Package *package, m_packages) {
+        generals << package->generals();
+        QList<const Card *> cards = package->cards();
+        foreach (const Card *card, cards)
+            m_cards << card->clone();
+    }
+
+    //Prepare cards
+    QVariantList cardData;
+    foreach (const Card *card, m_cards)
+        cardData << card->id();
+    room->broadcastNotification(S_COMMAND_PREPARE_CARDS, cardData);
+
+    //Choose 7 random generals for each player
+    int candidateLimit = 7;
+    qShuffle(generals);
+    foreach (Player *player, players) {
+        QList<const General *> candidates = generals.mid((player->seat() - 1) * candidateLimit, candidateLimit);
+
+        QVariantList candidateData;
+        foreach (const General *general, candidates)
+            candidateData << general->name();
+
+        QVariantList bannedPairData;
+        //@todo: load banned pairs
+
+        QVariantList data;
+        data << QVariant(candidateData);
+        data << QVariant(bannedPairData);
+
+        CServerAgent *agent = findAgent(player);
+        agent->prepareRequest(S_COMMAND_CHOOSE_GENERAL, data);
+    }
+    room->broadcastRequest(room->agents());
+}
+
 void GameLogic::run()
 {
     qsrand((uint) QDateTime::currentMSecsSinceEpoch());
+
+    prepareToStart();
 
     //@to-do: Turn broken event not into a new
     trigger(GameStart, NULL);

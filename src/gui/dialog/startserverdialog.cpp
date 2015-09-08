@@ -22,7 +22,8 @@
 #include <cserver.h>
 #include <croom.h>
 #include <cserveruser.h>
-#include <core/gamelogic.h>
+#include <gamelogic.h>
+#include <gamerule.h>
 
 StartServerDialog::StartServerDialog(QQuickItem *parent)
     : QQuickItem(parent)
@@ -76,7 +77,9 @@ void StartServerDialog::onUserRemoved()
 
 void StartServerDialog::onRoomCreated(CRoom *room)
 {
-    room->setGameLogic(new GameLogic(room));
+    GameLogic *logic = new GameLogic(room);
+    logic->setGameRule(new GameRule(logic));
+    room->setGameLogic(logic);
     connect(room, &CRoom::abandoned, this, &StartServerDialog::onRoomAbandoned);
     CServerUser *owner = room->owner();
     room->setName(tr("%1's Room").arg(owner->screenName()));

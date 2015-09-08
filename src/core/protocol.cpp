@@ -17,11 +17,15 @@
     Mogara
 *********************************************************************/
 
-#include "gamelogic.h"
-#include "gamerule.h"
-#include "player.h"
+#include "protocol.h"
 
-GameRule::GameRule(GameLogic *logic)
-    : m_logic(logic)
+struct ProtocolAdder
 {
-}
+    ProtocolAdder()
+    {
+        C_REGISTER_COMMAND(ARRANGE_SEAT);
+        C_REGISTER_COMMAND(PREPARE_CARDS);
+        C_REGISTER_COMMAND(UPDATE_PLAYER_PROPERTY);
+        C_REGISTER_COMMAND(CHOOSE_GENERAL);
+    }
+};

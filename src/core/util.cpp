@@ -17,11 +17,4 @@
     Mogara
 *********************************************************************/
 
-#include "gamelogic.h"
-#include "gamerule.h"
-#include "player.h"
-
-GameRule::GameRule(GameLogic *logic)
-    : m_logic(logic)
-{
-}
+#include "util.h"

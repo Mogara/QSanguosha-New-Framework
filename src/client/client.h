@@ -22,14 +22,36 @@
 
 #include <cclient.h>
 
+#include <QMap>
+
+class Card;
+class CClientPlayer;
+class Player;
+
 class Client : public CClient
 {
+    Q_OBJECT
+
 public:
     static Client *instance();
     ~Client();
 
+signals:
+    void chooseGeneral(const QStringList &candidates /* @to-do: add banned pair */);
+
 private:
     Client(QObject *parent = 0);
+
+    void restart();
+
+    C_DECLARE_INITIALIZER(Client)
+    static void ArrangeSeatCommand(QObject *receiver, const QVariant &data);
+    static void PrepareCardsCommand(QObject *receiver, const QVariant &data);
+    static void ChooseGeneralCommand(QObject *receiver, const QVariant &data);
+
+    QMap<uint, Player *> m_players;
+    QMap<uint, CClientUser *> m_userMap;//Player Id to CClient User
+    QMap<uint, Card *> m_cards;//Record card state
 };
 
 #endif // CLIENT_H

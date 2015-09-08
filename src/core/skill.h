@@ -22,12 +22,44 @@
 
 #include "eventhandler.h"
 
-class Skill
+#include <QObject>
+#include <QList>
+
+class Skill : public QObject
 {
+    Q_OBJECT
+
+public:
+    enum Frequency
+    {
+        NotFrequent,
+        Frequent,
+        Compulsory,
+        Limited,
+        Wake
+    };
+
+    Skill(const QString &name, QObject *parent = 0);
+
+    Frequency frequency() const { return m_frequency; }
+
+    void addSubskill(Skill *skill);
+    QList<const Skill *> subskills() const;
+
+    bool isLordSkill() const { return m_lordSkill; }
+
+private:
+    Frequency m_frequency;
+    QList<Skill *> m_subskills;
+    bool m_lordSkill;
 };
 
 class TriggerSkill : public Skill, public EventHandler
 {
+    Q_OBJECT
+
+public:
+    TriggerSkill(const QString &name, QObject *parent = 0);
 };
 
 #endif // SKILL_H

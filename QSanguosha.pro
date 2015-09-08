@@ -1,33 +1,58 @@
 TEMPLATE = app
 
 QT += qml quick
+CONFIG += c++11
 
 SOURCES += src/main.cpp \
     src/client/client.cpp \
+    src/core/card.cpp \
+    src/core/engine.cpp \
     src/core/event.cpp \
     src/core/eventhandler.cpp \
     src/core/gamelogic.cpp \
     src/core/gamerule.cpp \
+    src/core/general.cpp \
+    src/core/package.cpp \
     src/core/player.cpp \
+    src/core/protocol.cpp \
     src/core/skill.cpp \
+    src/core/util.cpp \
     src/gui/dialog/startserverdialog.cpp \
     src/gui/dialog/startgamedialog.cpp \
-    src/gui/lobby.cpp
+    src/gui/lobby.cpp \
+    src/package/standardpackage.cpp \
+    src/package/standard-basiccard.cpp \
+    src/package/standard-equipcard.cpp \
+    src/package/standard-qun.cpp \
+    src/package/standard-shu.cpp \
+    src/package/standard-trickcard.cpp \
+    src/package/standard-wei.cpp \
+    src/package/standard-wu.cpp
 
 HEADERS += \
     src/client/client.h \
+    src/core/card.h \
+    src/core/engine.h \
     src/core/event.h \
     src/core/eventhandler.h \
     src/core/eventtype.h \
     src/core/gamelogic.h \
     src/core/gamerule.h \
+    src/core/general.h \
+    src/core/package.h \
     src/core/player.h \
     src/core/skill.h \
+    src/core/util.h \
     src/gui/dialog/startserverdialog.h \
     src/gui/dialog/startgamedialog.h \
-    src/gui/lobby.h
+    src/gui/lobby.h \
+    src/package/standardpackage.h
 
-INCLUDEPATH += src
+INCLUDEPATH += src \
+    src/client \
+    src/core \
+    src/gui \
+    src/package
 
 DEFINES += MCD_STATIC
 #DEFINES += MCD_BUILD

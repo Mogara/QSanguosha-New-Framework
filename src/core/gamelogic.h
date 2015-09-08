@@ -25,14 +25,19 @@
 
 #include <cabstractgamelogic.h>
 
+class Card;
+class GameRule;
 class Player;
+class Package;
 
 class GameLogic : public CAbstractGameLogic
 {
 public:
     GameLogic(CRoom *parent = 0);
+    ~GameLogic();
 
-    void setGameRule(const EventHandler *rule) { m_gameRule = rule; }
+    void setGameRule(const GameRule *rule);
+    void addPackage(const Package *package) { m_packages << package; }
 
     void addEventHandler(const EventHandler *handler);
     bool trigger(EventType event, Player *target);
@@ -44,7 +49,7 @@ public:
     QList<Player *> players() const;
     Player *findPlayer(uint id) const;
 
-    QList<Player *> allPlayers(bool include_dead = false) const;
+    QList<Player *> allPlayers(bool includeDead = false) const;
 
     void addExtraTurn(Player *player) { m_extraTurns << player; }
     QList<Player *> extraTurns() const { return m_extraTurns; }
@@ -57,6 +62,8 @@ protected:
     CAbstractPlayer *createPlayer(CServerUser *user);
     CAbstractPlayer *createPlayer(CServerRobot *robot);
 
+    void prepareToStart();
+
     void run();
 
 private:
@@ -64,7 +71,9 @@ private:
     QList<Player *> m_players;
     Player *m_currentPlayer;
     QList<Player *> m_extraTurns;
-    const EventHandler *m_gameRule;
+    const GameRule *m_gameRule;
+    QList<const Package *> m_packages;
+    QList<Card *> m_cards;
     bool m_globalRequestEnabled;
 };
 

@@ -17,11 +17,34 @@
     Mogara
 *********************************************************************/
 
-#include "gamelogic.h"
-#include "gamerule.h"
-#include "player.h"
+#ifndef PACKAGE_H
+#define PACKAGE_H
 
-GameRule::GameRule(GameLogic *logic)
-    : m_logic(logic)
+#include <QString>
+#include <QList>
+
+class Card;
+class General;
+
+class Package
 {
-}
+public:
+    Package(const QString &name);
+    virtual ~Package();
+
+    QString name() const { return m_name; }
+    QList<const General *> generals() const;
+    QList<const Card *> cards() const;
+
+protected:
+    void addGeneral(General *general) { m_generals << general; }
+    void addGenerals(const QList<General *> &generals) { m_generals << generals; }
+    void addCard(Card *card) { m_cards << card; }
+    void addCards(const QList<Card *> &cards) { m_cards << cards; }
+
+    QString m_name;
+    QList<General *> m_generals;
+    QList<Card *> m_cards;
+};
+
+#endif // PACKAGE_H

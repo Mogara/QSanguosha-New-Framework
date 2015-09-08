@@ -17,11 +17,38 @@
     Mogara
 *********************************************************************/
 
-#include "gamelogic.h"
-#include "gamerule.h"
-#include "player.h"
+#include "package.h"
+#include "card.h"
+#include "general.h"
 
-GameRule::GameRule(GameLogic *logic)
-    : m_logic(logic)
+Package::Package(const QString &name)
+    : m_name(name)
 {
+}
+
+Package::~Package()
+{
+    foreach (Card *card, m_cards)
+        delete card;
+
+    foreach (General *general, m_generals)
+        delete general;
+}
+
+QList<const General *> Package::generals() const
+{
+    QList<const General *> generals;
+    generals.reserve(m_generals.length());
+    foreach (const General *general, m_generals)
+        generals << general;
+    return generals;
+}
+
+QList<const Card *> Package::cards() const
+{
+    QList<const Card *> cards;
+    cards.reserve(m_cards.length());
+    foreach (const Card *card, m_cards)
+        cards << card;
+    return cards;
 }

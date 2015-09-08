@@ -17,11 +17,20 @@
     Mogara
 *********************************************************************/
 
-#include "gamelogic.h"
-#include "gamerule.h"
-#include "player.h"
+#include "standardpackage.h"
+#include "engine.h"
 
-GameRule::GameRule(GameLogic *logic)
-    : m_logic(logic)
+StandardPackage::StandardPackage()
+    : Package("standard")
 {
+    addShuGenerals();
+    addWeiGenerals();
+    addWuGenerals();
+    addQunGenerals();
+
+    addBasicCards();
+    addEquipCards();
+    addTrickCards();
 }
+
+ADD_PACKAGE(Standard)

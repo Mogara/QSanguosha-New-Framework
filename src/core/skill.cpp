@@ -18,3 +18,33 @@
 *********************************************************************/
 
 #include "skill.h"
+
+Skill::Skill(const QString &name, QObject *parent)
+    : QObject(parent)
+    , m_frequency(NotFrequent)
+    , m_lordSkill(false)
+{
+    setObjectName(name);
+}
+
+void Skill::addSubskill(Skill *skill)
+{
+    skill->setParent(this);
+    m_subskills << skill;
+}
+
+QList<const Skill *> Skill::subskills() const
+{
+    QList<const Skill *> subskills;
+    subskills.reserve(m_subskills.length());
+    foreach (const Skill *skill, m_subskills)
+        subskills << skill;
+    return subskills;
+}
+
+
+TriggerSkill::TriggerSkill(const QString &name, QObject *parent)
+    : Skill(name, parent)
+{
+
+}

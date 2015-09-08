@@ -31,6 +31,12 @@ class Player : public CAbstractPlayer
 
     Q_PROPERTY(int hp READ hp WRITE setHp)
     Q_PROPERTY(int maxHp READ maxHp WRITE setMaxHp)
+    Q_PROPERTY(int lostHp READ lostHp)
+    Q_PROPERTY(bool isWounded READ isWounded)
+    Q_PROPERTY(bool isAlive READ isAlive WRITE setAlive)
+    Q_PROPERTY(bool isDead READ isDead WRITE setDead)
+    Q_PROPERTY(bool isRemoved READ isRemoved WRITE setRemoved)
+    Q_PROPERTY(int seat READ seat WRITE setSeat)
 
     Q_ENUMS(Phase)
     Q_ENUMS(Area)
@@ -57,6 +63,8 @@ public:
 
     Player(QObject *parent = 0);
 
+    void setId(uint id) { CAbstractPlayer::setId(id); }
+
     int hp() const { return m_hp; }
     void setHp(int hp);
 
@@ -65,7 +73,10 @@ public:
 
     int lostHp() const { return maxHp() - qMax(hp(), 0); }
     bool isWounded() const { return hp() < 0 || hp() < maxHp(); }
+
+    void setAlive(bool alive) { m_alive = alive; }
     bool isAlive() const { return m_alive; }
+    void setDead(bool dead) { m_alive = !dead; }
     bool isDead() const { return !m_alive; }
 
     bool hasSkill(const EventHandler *skill) const;
@@ -73,6 +84,9 @@ public:
 
     void setRemoved(bool removed) { m_removed = removed; }
     bool isRemoved() const { return m_removed; }
+
+    void setSeat(int seat) { m_seat = seat; }
+    int seat() const { return m_seat; }
 
     void setNext(Player *next) { m_next = next; }
     Player *next() const { return m_next; }
@@ -111,6 +125,7 @@ protected:
     int m_maxHp;
     bool m_alive;
     bool m_removed;
+    int m_seat;
     Player *m_next;
     Phase m_phase;
     const General *m_headGeneral;

@@ -17,11 +17,20 @@
     Mogara
 *********************************************************************/
 
-#include "gamelogic.h"
-#include "gamerule.h"
-#include "player.h"
+#ifndef PROTOCOL_H
+#define PROTOCOL_H
 
-GameRule::GameRule(GameLogic *logic)
-    : m_logic(logic)
+#include <cprotocol.h>
+
+enum SanguoshaCommand
 {
-}
+    S_COMMAND_INVALID_SANGUOSHA_COMMAND = CARDIRECTOR_SYSTEM_COMMAND_COUNT,
+    S_COMMAND_ARRANGE_SEAT,
+    S_COMMAND_PREPARE_CARDS,
+    S_COMMAND_UPDATE_PLAYER_PROPERTY,
+    S_COMMAND_CHOOSE_GENERAL,
+
+    SANGUOSHA_COMMAND_COUNT
+};
+
+#endif // PROTOCOL_H

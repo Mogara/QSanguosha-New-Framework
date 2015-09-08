@@ -17,11 +17,12 @@
     Mogara
 *********************************************************************/
 
-#include "gamelogic.h"
-#include "gamerule.h"
-#include "player.h"
+#include "standardpackage.h"
+#include "general.h"
+#include "skill.h"
 
-GameRule::GameRule(GameLogic *logic)
-    : m_logic(logic)
+void StandardPackage::addWeiGenerals()
 {
 }
+
+

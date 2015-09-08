@@ -22,8 +22,15 @@
 
 #include "eventhandler.h"
 
+class GameLogic;
+
 class GameRule : public EventHandler
 {
+public:
+    GameRule(GameLogic *logic);
+
+protected:
+    GameLogic *m_logic;
 };
 
 #endif // GAMERULE_H

@@ -49,6 +49,7 @@ bool Player::hasSkill(const EventHandler *skill) const
 bool Player::hasShownSkill(const EventHandler *skill) const
 {
     //@todo:
+    C_UNUSED(skill);
     return false;
 }
 

@@ -17,11 +17,20 @@
     Mogara
 *********************************************************************/
 
-#include "gamelogic.h"
-#include "gamerule.h"
-#include "player.h"
+#ifndef UTIL_H
+#define UTIL_H
 
-GameRule::GameRule(GameLogic *logic)
-    : m_logic(logic)
+#include <QList>
+
+template<class T>
+void qShuffle(QList<T> &list)
 {
+    int i, n = list.length();
+    for (i = 0; i < n; i++) {
+        int r = qrand() % (n - i) + i;
+        list.swap(i, r);
+    }
 }
+
+#endif // UTIL_H
+

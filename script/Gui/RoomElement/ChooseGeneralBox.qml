@@ -107,7 +107,6 @@ GraphicsBox {
             kingdom: model.kingdom
 
             onClicked: {
-                var pos;
                 if (headGeneral == name) {
                     headGeneral = "";
                 } else if (deputyGeneral == name) {
@@ -122,6 +121,9 @@ GraphicsBox {
             }
 
             onReleased: {
+                if (isClicked)
+                    return;
+
                 if (y < splitLine.y) {
                     if (headGeneral == name)
                         headGeneral = "";
@@ -143,18 +145,6 @@ GraphicsBox {
                         }
                     }
                 }
-            }
-        }
-
-        Component.onCompleted: {
-            var card, magnet, pos;
-            for (var i = 0; i < generalList.count; i++) {
-                card = generalCardList.itemAt(i);
-                magnet = generalMagnetList.itemAt(i);
-                pos = mapFromItem(generalMagnetList.parent, magnet.x, magnet.y);
-                card.homeX = pos.x;
-                card.homeY = pos.y;
-                card.goBack(true);
             }
         }
     }

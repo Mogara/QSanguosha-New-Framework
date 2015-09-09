@@ -17,6 +17,7 @@ Item {
     property alias glow: glowItem
     property alias footnote: footnoteItem.text
     property alias card: cardItem
+    property bool isClicked: false
 
     signal toggleDiscards()
     signal clicked()
@@ -89,6 +90,7 @@ Item {
         hoverEnabled: true
 
         onReleased: {
+            root.isClicked = mouse.isClick;
             parent.released();
             if (autoBack)
                 goBackAnimation.start();

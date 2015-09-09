@@ -26,7 +26,7 @@ void StandardPackage::addShuGenerals()
     General *liubei = new General("liubei", "shu", 4);
     addGeneral(liubei);
 
-    General *huangyueying = new General("huanyueying", "shu", 3, General::Female);
+    General *huangyueying = new General("huangyueying", "shu", 3, General::Female);
     addGeneral(huangyueying);
 
     General *zhugeliang = new General("zhugeliang", "shu", 3);

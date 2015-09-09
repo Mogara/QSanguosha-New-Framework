@@ -48,6 +48,8 @@ protected:
     Q_INVOKABLE void onRoomListItemClicked(uint id);
     Q_INVOKABLE void onReadyButtonClicked();
 
+    void onRoomPropertyUpdated(const QString &name, const QVariant &value);
+
     void onRoomEntered(const QVariant &config);
     void onUserAdded(const CClientUser *user);
     void onUserRemoved(const CClientUser *user);

@@ -19,13 +19,11 @@
 
 #include "protocol.h"
 
-struct ProtocolAdder
+static void registerSanguoshaCommand()
 {
-    ProtocolAdder()
-    {
-        C_REGISTER_COMMAND(ARRANGE_SEAT);
-        C_REGISTER_COMMAND(PREPARE_CARDS);
-        C_REGISTER_COMMAND(UPDATE_PLAYER_PROPERTY);
-        C_REGISTER_COMMAND(CHOOSE_GENERAL);
-    }
-};
+    C_REGISTER_COMMAND(ARRANGE_SEAT);
+    C_REGISTER_COMMAND(PREPARE_CARDS);
+    C_REGISTER_COMMAND(UPDATE_PLAYER_PROPERTY);
+    C_REGISTER_COMMAND(CHOOSE_GENERAL);
+}
+Q_COREAPP_STARTUP_FUNCTION(registerSanguoshaCommand)

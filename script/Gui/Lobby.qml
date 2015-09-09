@@ -12,6 +12,7 @@ Lobby {
     property alias chatLog: chatLogItem.text
     property alias userAvatar: userAvatarItem.source
     property alias userName: userNameItem.text
+    property bool isOwner: false
 
     onMessageLogged: chatLogItem.append(message);
     onRoomListUpdated: {
@@ -279,7 +280,7 @@ Lobby {
                             anchors.right: parent.right
                             anchors.bottomMargin: Device.gu(10)
                             anchors.rightMargin: Device.gu(10)
-                            text: qsTr("Ready")
+                            text: isOwner ? qsTr("Start") : qsTr("Ready")
                             textColor: "#EDC5C5"
                             textFont.pixelSize: Device.gu(18)
                             border.width: 0

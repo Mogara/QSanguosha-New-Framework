@@ -26,6 +26,7 @@ Lobby::Lobby(QQuickItem *parent)
     : QQuickItem(parent)
     , m_client(Client::instance())
 {
+    connect(m_client, &Client::roomPropertyChanged, this, &Lobby::onRoomPropertyUpdated);
     connect(m_client, &Client::roomListUpdated, this, &Lobby::roomListUpdated);
     connect(m_client, &Client::roomEntered, this, &Lobby::onRoomEntered);
     connect(m_client, &Client::userAdded, this, &Lobby::onUserAdded);
@@ -67,6 +68,15 @@ void Lobby::onReadyButtonClicked()
     m_client->startGame();
 }
 
+void Lobby::onRoomPropertyUpdated(const QString &name, const QVariant &value)
+{
+    if (name == "ownerId") {
+        setProperty("isOwner", value.toUInt() == m_client->self()->id());
+    } else if (name == "name") {
+        setProperty("roomName", value);
+    }
+}
+
 void Lobby::onRoomEntered(const QVariant &config)
 {
     QVariantMap info = config.toMap();
@@ -78,6 +88,7 @@ void Lobby::onRoomEntered(const QVariant &config)
 
     CClientUser *self = m_client->self();
     if (self) {
+        setProperty("isOwner", info["ownerId"].toUInt() == self->id());
         setProperty("userAvatar", self->avatar());
         setProperty("userName", self->screenName());
     }

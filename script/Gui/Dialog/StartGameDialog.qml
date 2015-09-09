@@ -86,10 +86,14 @@ StartGameDialog {
             spacing: Device.gu(20)
 
             MetroButton {
+                width: Device.gu(160)
+                height: Device.gu(50)
                 text: qsTr("Connect")
                 onClicked: startGameDialog.accepted();
             }
             MetroButton {
+                width: Device.gu(160)
+                height: Device.gu(50)
                 text: qsTr("Cancel")
                 onClicked: startGameDialog.rejected();
             }

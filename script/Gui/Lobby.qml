@@ -332,6 +332,7 @@ Lobby {
 
                     MetroButton {
                         Layout.fillWidth: true
+                        width: Device.gu(140)
                         Layout.preferredHeight: Device.gu(55)
                         backgroundColor: "#A46061"
                         textColor: "#EDC5C5"

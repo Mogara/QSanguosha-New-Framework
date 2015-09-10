@@ -40,6 +40,7 @@ public:
     Q_INVOKABLE void updateRoomList();
 
 signals:
+    void gameStarted();
     void messageLogged(const QString &message);
     void roomListUpdated(const QVariant &rooms);
 

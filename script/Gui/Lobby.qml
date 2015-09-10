@@ -55,6 +55,9 @@ Lobby {
             roomListShowAnimation.start();
         }
     }
+    onGameStarted: {
+        dialogLoader.setSource("RoomScene.qml");
+    }
 
     Rectangle {
         anchors.fill: parent

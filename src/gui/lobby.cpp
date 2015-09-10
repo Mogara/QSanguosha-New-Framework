@@ -32,6 +32,7 @@ Lobby::Lobby(QQuickItem *parent)
     connect(m_client, &Client::userAdded, this, &Lobby::onUserAdded);
     connect(m_client, &Client::userRemoved, this, &Lobby::onUserRemoved);
     connect(m_client, &Client::systemMessage, this, &Lobby::onSystemMessageReceived);
+    connect(m_client, &Client::gameStarted, this, &Lobby::gameStarted);
 }
 
 void Lobby::createRoom()

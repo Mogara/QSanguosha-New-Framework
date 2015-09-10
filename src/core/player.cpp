@@ -134,3 +134,47 @@ void Player::setDeputyGeneral(const General *general)
     m_deputyGeneral = general;
     emit deputyGeneralChanged();
 }
+
+void Player::addHandcard(const Card *card)
+{
+    if (m_handcards.contains(card))
+        return;
+    m_handcards.insert(card);
+    emit handcardNumChanged();
+}
+
+void Player::addHandcard(QList<const Card *> cards)
+{
+    bool changed = false;
+    foreach (const Card *card, cards) {
+        if (m_handcards.contains(card))
+            continue;
+        m_handcards.insert(card);
+        changed = true;
+    }
+
+    if (changed)
+        emit handcardNumChanged();
+}
+
+void Player::removeHandcard(const Card *card)
+{
+    if (m_handcards.contains(card)) {
+        m_handcards.remove(card);
+        emit handcardNumChanged();
+    }
+}
+
+void Player::removeHandcard(const QList<Card *> &cards)
+{
+    bool changed = false;
+    foreach (const Card *card, cards) {
+        if (m_handcards.contains(card)) {
+            m_handcards.remove(card);
+            changed = true;
+        }
+    }
+
+    if (changed)
+        emit handcardNumChanged();
+}

@@ -20,26 +20,33 @@
 #ifndef SERVERPLAYER_H
 #define SERVERPLAYER_H
 
+#include "event.h"
 #include "player.h"
 
-class GameLogic;
 class CRoom;
+class CServerAgent;
+class GameLogic;
 
 class ServerPlayer : public Player
 {
     Q_OBJECT
 
 public:
-    ServerPlayer(GameLogic *logic);
+    ServerPlayer(GameLogic *logic, CServerAgent *agent);
+
+    CServerAgent *agent() const { return m_agent; }
+    void setAgent(CServerAgent *agent) { m_agent = agent; }
 
     ServerPlayer *next() const { return qobject_cast<ServerPlayer *>(Player::next()); }
     ServerPlayer *next(bool ignoreRemoved) const{ return qobject_cast<ServerPlayer *>(Player::next(ignoreRemoved)); }
     ServerPlayer *nextAlive(int step = 1, bool ignoreRemoved = true) const{ return qobject_cast<ServerPlayer *>(Player::nextAlive(step, ignoreRemoved)); }
 
+    Event askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable);
     void broadcastProperty(const char *name) const;
 
 private:
     CRoom *m_room;
+    CServerAgent *m_agent;
 };
 
 #endif // SERVERPLAYER_H

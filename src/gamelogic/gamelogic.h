@@ -22,6 +22,7 @@
 
 #include "event.h"
 #include "eventtype.h"
+#include "structs.h"
 
 #include <cabstractgamelogic.h>
 
@@ -60,7 +61,8 @@ public:
     bool isGlobalRequestEnabled() const { return m_globalRequestEnabled; }
     bool skipGameRule() const { return m_skipGameRule; }
 
-    Event askForTriggerOrder(ServerPlayer *player, const QString &reason, QList<Event> &options, bool cancelable = true);
+    void moveCards(const CardsMoveStruct &move);
+    void moveCards(const QList<CardsMoveStruct> &moves);
 
 protected:
     CAbstractPlayer *createPlayer(CServerUser *user);

@@ -23,11 +23,20 @@
 
 #include <croom.h>
 
-ServerPlayer::ServerPlayer(GameLogic *logic)
+ServerPlayer::ServerPlayer(GameLogic *logic, CServerAgent *agent)
     : Player(logic)
     , m_room(logic->room())
+    , m_agent(agent)
 {
+}
 
+Event ServerPlayer::askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable)
+{
+    //@todo:
+    C_UNUSED(reason);
+    C_UNUSED(options);
+    C_UNUSED(cancelable);
+    return Event();
 }
 
 void ServerPlayer::broadcastProperty(const char *name) const

@@ -19,6 +19,7 @@ SOURCES += src/main.cpp \
     src/gamelogic/gamelogic.cpp \
     src/gamelogic/gamerule.cpp \
     src/gamelogic/serverplayer.cpp \
+    src/gamelogic/structs.cpp \
     src/gui/dialog/startserverdialog.cpp \
     src/gui/dialog/startgamedialog.cpp \
     src/gui/lobby.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
     src/core/general.h \
     src/core/package.h \
     src/core/player.h \
+    src/core/protocol.h \
     src/core/skill.h \
     src/core/util.h \
     src/gamelogic/event.h \
@@ -48,6 +50,7 @@ HEADERS += \
     src/gamelogic/gamelogic.h \
     src/gamelogic/gamerule.h \
     src/gamelogic/serverplayer.h \
+    src/gamelogic/structs.h \
     src/gui/dialog/startserverdialog.h \
     src/gui/dialog/startgamedialog.h \
     src/gui/lobby.h \

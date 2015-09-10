@@ -30,8 +30,8 @@
 #include <croom.h>
 #include <cserver.h>
 #include <cserveruser.h>
+#include <cserverrobot.h>
 
-#include <QCoreApplication>
 #include <QDateTime>
 
 GameLogic::GameLogic(CRoom *parent)
@@ -145,7 +145,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
                     if (events.length() > 1) {
                         if (!invoker->hasShownBothGenerals())
                             m_globalRequestEnabled = true;
-                        choice = askForTriggerOrder(invoker, "GameRule:TriggerOrder", events, !hasCompulsory);
+                        choice = invoker->askForTriggerOrder("GameRule:TriggerOrder", events, !hasCompulsory);
                         m_globalRequestEnabled = false;
                     } else {
                         choice = events.first();
@@ -243,26 +243,45 @@ QList<ServerPlayer *> GameLogic::allPlayers(bool includeDead) const
     return allPlayers;
 }
 
-Event GameLogic::askForTriggerOrder(ServerPlayer *player, const QString &reason, QList<Event> &options, bool cancelable)
+void GameLogic::moveCards(const CardsMoveStruct &move)
 {
-    //@todo:
-    C_UNUSED(player);
-    C_UNUSED(reason);
-    C_UNUSED(options);
-    C_UNUSED(cancelable);
-    return Event();
+    QVariant openData = move.toVariant(true);
+    QVariant secretData = move.toVariant(false);
+
+    QList<ServerPlayer *> viewers = players();
+    foreach (ServerPlayer *viewer, viewers) {
+        QVariantList data;
+        CServerAgent *agent = viewer->agent();
+        if (move.isRelevant(viewer))
+            data << openData;
+        else
+            data << secretData;
+        agent->notify(S_COMMAND_MOVE_CARDS, data);
+    }
+}
+
+void GameLogic::moveCards(const QList<CardsMoveStruct> &moves)
+{
+    QList<ServerPlayer *> viewers = players();
+    foreach (ServerPlayer *viewer, viewers) {
+        QVariantList data;
+        foreach (const CardsMoveStruct &move, moves)
+            data << move.toVariant(move.isRelevant(viewer));
+        CServerAgent *agent = viewer->agent();
+        agent->notify(S_COMMAND_MOVE_CARDS, data);
+    }
 }
 
 CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
 {
     C_UNUSED(user);
-    return new ServerPlayer(this);
+    return new ServerPlayer(this, user);
 }
 
 CAbstractPlayer *GameLogic::createPlayer(CServerRobot *robot)
 {
     C_UNUSED(robot);
-    return new ServerPlayer(this);
+    return new ServerPlayer(this, robot);
 }
 
 void GameLogic::prepareToStart()

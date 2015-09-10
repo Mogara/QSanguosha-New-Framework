@@ -61,6 +61,7 @@ RoomScene {
                             maxHp: modelData.maxHp
                             headGeneral: modelData.headGeneralName
                             deputyGeneral: modelData.deputyGeneralName
+                            handcardNum: modelData.handcardNum
                         }
                     }
 

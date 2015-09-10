@@ -17,21 +17,42 @@
     Mogara
 *********************************************************************/
 
-#ifndef PROTOCOL_H
-#define PROTOCOL_H
+#ifndef STRUCTS_H
+#define STRUCTS_H
 
-#include <cprotocol.h>
+#include "player.h"
 
-enum SanguoshaCommand
+#include <QList>
+#include <QString>
+#include <QVariant>
+
+class Card;
+class Player;
+
+struct CardsMoveStruct
 {
-    S_COMMAND_INVALID_SANGUOSHA_COMMAND = CARDIRECTOR_SYSTEM_COMMAND_COUNT,
-    S_COMMAND_ARRANGE_SEAT,
-    S_COMMAND_PREPARE_CARDS,
-    S_COMMAND_UPDATE_PLAYER_PROPERTY,
-    S_COMMAND_CHOOSE_GENERAL,
-    S_COMMAND_MOVE_CARDS,
+    struct Place
+    {
+        Player::Area area;
+        Player *owner;
+        QString pile;
 
-    SANGUOSHA_COMMAND_COUNT
+        Place();
+        QVariant toVariant() const;
+    };
+
+    Place from;
+    Place to;
+    QList<const Card *> cards;
+    bool isOpen;
+    bool isLastHandCard;
+    CardsMoveStruct *origin;
+
+    CardsMoveStruct();
+    ~CardsMoveStruct();
+
+    bool isRelevant(const Player *player) const;
+    QVariant toVariant(bool open = false) const;
 };
 
-#endif // PROTOCOL_H
+#endif // STRUCTS_H

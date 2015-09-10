@@ -20,10 +20,14 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+class Card;
 class EventHandler;
 class General;
 
 #include <cabstractplayer.h>
+
+#include <QList>
+#include <QSet>
 
 class Player : public CAbstractPlayer
 {
@@ -44,6 +48,7 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(QString generalName READ generalName NOTIFY generalChanged)
     Q_PROPERTY(QString headGeneralName READ headGeneralName NOTIFY headGeneralChanged)
     Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName NOTIFY deputyGeneralChanged)
+    Q_PROPERTY(int handcardNum READ handcardNum NOTIFY handcardNumChanged)
 
     Q_ENUMS(Phase)
     Q_ENUMS(Area)
@@ -126,6 +131,13 @@ public:
     bool hasShownGeneral() const { return hasShownHeadGeneral() || hasShownDeputyGeneral(); }
     bool hasShownBothGenerals() const { return hasShownHeadGeneral() && hasShownDeputyGeneral(); }
 
+    QList<const Card *> handcards() const { return m_handcards.toList(); }
+    int handcardNum() const { return m_handcards.size(); }
+    void addHandcard(const Card *card);
+    void addHandcard(QList<const Card *> cards);
+    void removeHandcard(const Card *card);
+    void removeHandcard(const QList<Card *> &cards);
+
 signals:
     void screenNameChanged();
     void hpChanged();
@@ -140,6 +152,7 @@ signals:
     void generalChanged();
     void headGeneralChanged();
     void deputyGeneralChanged();
+    void handcardNumChanged();
 
 protected:
     QString m_screenName;
@@ -154,6 +167,7 @@ protected:
     const General *m_deputyGeneral;
     bool m_headGeneralShown;
     bool m_deputyGeneralShown;
+    QSet<const Card *> m_handcards;
 };
 
 #endif // PLAYER_H

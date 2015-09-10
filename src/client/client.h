@@ -37,7 +37,7 @@ public:
     ~Client();
 
 signals:
-    void chooseGeneral(const QStringList &candidates /* @to-do: add banned pair */);
+    void chooseGeneralRequested(const QStringList &candidates /* @to-do: add banned pair */);
 
 private:
     Client(QObject *parent = 0);

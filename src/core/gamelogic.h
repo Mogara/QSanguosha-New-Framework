@@ -32,12 +32,14 @@ class Package;
 
 class GameLogic : public CAbstractGameLogic
 {
+    Q_OBJECT
+
 public:
     GameLogic(CRoom *parent = 0);
     ~GameLogic();
 
     void setGameRule(const GameRule *rule);
-    void addPackage(const Package *package) { m_packages << package; }
+    void setPackages(const QList<const Package *> &packages) { m_packages = packages; }
 
     void addEventHandler(const EventHandler *handler);
     bool trigger(EventType event, Player *target);
@@ -48,6 +50,7 @@ public:
 
     QList<Player *> players() const;
     Player *findPlayer(uint id) const;
+    Player *findPlayer(CServerAgent *agent) const;
 
     QList<Player *> allPlayers(bool includeDead = false) const;
 

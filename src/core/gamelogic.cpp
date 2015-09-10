@@ -207,6 +207,11 @@ Player *GameLogic::findPlayer(uint id) const
     return qobject_cast<Player *>(findAbstractPlayer(id));
 }
 
+Player *GameLogic::findPlayer(CServerAgent *agent) const
+{
+    return qobject_cast<Player *>(findAbstractPlayer(agent));
+}
+
 QList<Player *> GameLogic::allPlayers(bool includeDead) const
 {
     QList<Player *> players = this->players();
@@ -278,7 +283,7 @@ void GameLogic::prepareToStart()
     foreach (Player *player, players) {
         CServerAgent *agent = findAgent(player);
         QVariantMap info;
-        if (agent->inherits("CServerUser")) {
+        if (agent->controlledByClient()) {
             info["userId"] = agent->id();
         } else {
             info["robotId"] = agent->id();
@@ -304,10 +309,15 @@ void GameLogic::prepareToStart()
     room->broadcastNotification(S_COMMAND_PREPARE_CARDS, cardData);
 
     //Choose 7 random generals for each player
+    //@to-do: config
     int candidateLimit = 7;
     qShuffle(generals);
+
+    QMap<Player *, QList<const General *>> playerCandidates;
+
     foreach (Player *player, players) {
         QList<const General *> candidates = generals.mid((player->seat() - 1) * candidateLimit, candidateLimit);
+        playerCandidates[player] = candidates;
 
         QVariantList candidateData;
         foreach (const General *general, candidates)
@@ -323,7 +333,33 @@ void GameLogic::prepareToStart()
         CServerAgent *agent = findAgent(player);
         agent->prepareRequest(S_COMMAND_CHOOSE_GENERAL, data);
     }
-    room->broadcastRequest(room->agents());
+
+    //@to-do: timeout should be loaded from config
+    room->broadcastRequest(room->agents(), 15000);
+
+    foreach (Player *player, players) {
+        const QList<const General *> &candidates = playerCandidates[player];
+        QList<const General *> generals;
+
+        CServerAgent *agent = findAgent(player);
+        if (agent) {
+            QVariantList reply = agent->waitForReply(0).toList();
+            foreach (const QVariant &choice, reply) {
+                QString name = choice.toString();
+                foreach (const General *general, candidates) {
+                    if (general->name() == name)
+                        generals << general;
+                }
+            }
+        }
+
+        //@to-do: handle banned pairs
+        if (generals.length() < 2)
+            generals = candidates.mid(0, 2);
+
+        player->setHeadGeneral(generals.at(0));
+        player->setDeputyGeneral(generals.at(1));
+    }
 }
 
 void GameLogic::run()

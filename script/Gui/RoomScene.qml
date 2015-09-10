@@ -3,17 +3,22 @@ import QtQuick.Layouts 1.1
 import Cardirector.Gui 1.0
 import Cardirector.Device 1.0
 import Cardirector.Resource 1.0
+import Sanguosha 1.0
 import "RoomElement"
 import "../engine.js" as Engine
 
-Image {
+RoomScene {
     property int playerNum: 8
     property int firstPlayerIndex: 0
 
     id: roomScene
-    source: config.tableImage
     anchors.fill: parent
-    focus: true
+
+    Image {
+        source: config.tableImage
+        anchors.fill: parent
+        focus: true
+    }
 
     MouseArea {
         anchors.fill: parent
@@ -81,17 +86,38 @@ Image {
     }
 
     Loader {
-        id: dialogLoader
-
+        id: popupBox
         onSourceChanged: {
             if (item === null)
                 return;
+            item.finished.connect(function(){
+                source = "";
+            });
+            item.widthChanged.connect(function(){
+                popupBox.moveToCenter();
+            });
+            item.heightChanged.connect(function(){
+                popupBox.moveToCenter();
+            });
+            moveToCenter();
+        }
+
+        function moveToCenter()
+        {
             item.x = Math.round((roomArea.width - item.width) / 2);
             item.y = Math.round(roomArea.height * 0.67 - item.height / 2);
-            item.finished.connect(function(){
-                dialogLoader.source = "";
-            });
         }
+    }
+
+    onChooseGeneralStarted: {
+        popupBox.source = "RoomElement/ChooseGeneralBox.qml";
+        var box = popupBox.item;
+        box.accepted.connect(function(){
+            roomScene.chooseGeneralFinished(box.headGeneral, box.deputyGeneral);
+        });
+        for (var i = 0; i < generals.length; i++)
+            box.model.append(generals[i]);
+        box.arrangeCards();
     }
 
     onPlayerNumChanged: arrangePhotos();

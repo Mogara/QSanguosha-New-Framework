@@ -20,6 +20,7 @@ SOURCES += src/main.cpp \
     src/gui/dialog/startserverdialog.cpp \
     src/gui/dialog/startgamedialog.cpp \
     src/gui/lobby.cpp \
+    src/gui/roomscene.cpp \
     src/package/standardpackage.cpp \
     src/package/standard-basiccard.cpp \
     src/package/standard-equipcard.cpp \
@@ -46,6 +47,7 @@ HEADERS += \
     src/gui/dialog/startserverdialog.h \
     src/gui/dialog/startgamedialog.h \
     src/gui/lobby.h \
+    src/gui/roomscene.h \
     src/package/standardpackage.h
 
 INCLUDEPATH += src \

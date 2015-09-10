@@ -24,21 +24,8 @@
 #include "protocol.h"
 
 #include <QtQml>
-#include <QCoreApplication>
 
 static Client *ClientInstance = NULL;
-
-static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
-{
-    return Client::instance();
-}
-
-static void initClientInstance()
-{
-    qmlRegisterSingletonType<Client>("Sanguosha", 1, 0, "Client", ClientInstanceCallback);
-}
-
-Q_COREAPP_STARTUP_FUNCTION(initClientInstance)
 
 Client::Client(QObject *parent)
     : CClient(parent)
@@ -92,6 +79,7 @@ void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
         const QVariantMap info = rawInfo.toMap();
         Player *player = players.at(i);
         player->setId(info["playerId"].toUInt());
+        player->setSeat(i + 1);
 
         client->m_players[player->id()] = player;
 
@@ -132,13 +120,21 @@ void Client::ChooseGeneralCommand(QObject *receiver, const QVariant &data)
     //@to-do: parse banned pairs
 
     Client *client = qobject_cast<Client *>(receiver);
-    emit client->chooseGeneral(generals);
+    emit client->chooseGeneralRequested(generals);
+}
+
+static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
+{
+    return Client::instance();
 }
 
 void Client::Init()
 {
+    qmlRegisterSingletonType<Client>("Sanguosha", 1, 0, "Client", ClientInstanceCallback);
+
     AddCallback(S_COMMAND_ARRANGE_SEAT, ArrangeSeatCommand);
     AddCallback(S_COMMAND_PREPARE_CARDS, PrepareCardsCommand);
-    AddCallback(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralCommand);
+
+    AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralCommand);
 }
 C_INITIALIZE_CLASS(Client)

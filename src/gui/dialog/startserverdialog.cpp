@@ -18,6 +18,7 @@
 *********************************************************************/
 
 #include "startserverdialog.h"
+#include "engine.h"
 
 #include <cserver.h>
 #include <croom.h>
@@ -77,12 +78,17 @@ void StartServerDialog::onUserRemoved()
 
 void StartServerDialog::onRoomCreated(CRoom *room)
 {
+    connect(room, &CRoom::abandoned, this, &StartServerDialog::onRoomAbandoned);
+
     GameLogic *logic = new GameLogic(room);
     logic->setGameRule(new GameRule(logic));
+    Engine *engine = Engine::instance();
+    logic->setPackages(engine->packages());
     room->setGameLogic(logic);
-    connect(room, &CRoom::abandoned, this, &StartServerDialog::onRoomAbandoned);
+
     CServerUser *owner = room->owner();
     room->setName(tr("%1's Room").arg(owner->screenName()));
+
     emit messageLogged(tr("%1(%2) created a new room(%3)").arg(owner->screenName()).arg(owner->id()).arg(room->id()));
 }
 

@@ -1,4 +1,4 @@
-import QtQuick 2.5
+import QtQuick 2.4
 import Cardirector.Device 1.0
 import Sanguosha.Dialogs 1.0
 

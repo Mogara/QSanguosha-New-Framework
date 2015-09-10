@@ -17,20 +17,26 @@
     Mogara
 *********************************************************************/
 
-#ifndef GAMERULE_H
-#define GAMERULE_H
+#ifndef EVENT_H
+#define EVENT_H
 
-#include "eventhandler.h"
+class EventHandler;
+class ServerPlayer;
 
-class GameLogic;
+#include <QList>
 
-class GameRule : public EventHandler
+struct Event
 {
-public:
-    GameRule(GameLogic *logic);
+    Event();
+    Event(const EventHandler *handler);
+    Event(const EventHandler *handler, ServerPlayer *owner);
 
-protected:
-    GameLogic *m_logic;
+    bool isValid() { return handler != NULL; }
+
+    const EventHandler *handler;
+    ServerPlayer *owner;
+    QList<ServerPlayer *> to;
 };
 
-#endif // GAMERULE_H
+#endif // EVENT_H
+

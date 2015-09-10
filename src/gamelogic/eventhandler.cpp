@@ -18,7 +18,7 @@
 *********************************************************************/
 
 #include "eventhandler.h"
-#include "player.h"
+#include "serverplayer.h"
 
 EventHandler::EventHandler()
 {
@@ -39,21 +39,21 @@ int EventHandler::priority(EventType event) const
     return m_priorityMap.contains(event) ? m_priorityMap.value(event) : m_defaultPriority;
 }
 
-bool EventHandler::triggerable(Player *owner) const
+bool EventHandler::triggerable(ServerPlayer *owner) const
 {
     return owner != NULL && owner->isAlive() && owner->hasSkill(this);
 }
 
-QMap<Player *, Event> EventHandler::triggerable(GameLogic *logic, EventType event, Player *owner, QVariant &data) const
+QMap<ServerPlayer *, Event> EventHandler::triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data) const
 {
-    QMap<Player *, Event> result;
+    QMap<ServerPlayer *, Event> result;
     QList<Event> events = triggerable(logic, event, owner, data, owner);
     foreach (const Event &d, events)
         result.insertMulti(owner, d);
     return result;
 }
 
-QList<Event> EventHandler::triggerable(GameLogic *logic, EventType event, Player *owner, QVariant &data, Player *invoker) const
+QList<Event> EventHandler::triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, Player *invoker) const
 {
     Q_UNUSED(logic)
     Q_UNUSED(event)

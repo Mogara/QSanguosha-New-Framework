@@ -17,26 +17,24 @@
     Mogara
 *********************************************************************/
 
-#ifndef EVENT_H
-#define EVENT_H
+#include "gamelogic.h"
+#include "protocol.h"
+#include "serverplayer.h"
 
-class EventHandler;
-class Player;
+#include <croom.h>
 
-#include <QList>
-
-struct Event
+ServerPlayer::ServerPlayer(GameLogic *logic)
+    : Player(logic)
+    , m_room(logic->room())
 {
-    Event();
-    Event(const EventHandler *handler);
-    Event(const EventHandler *handler, Player *owner);
 
-    bool isValid() { return handler != NULL; }
+}
 
-    const EventHandler *handler;
-    Player *owner;
-    QList<Player *> to;
-};
-
-#endif // EVENT_H
-
+void ServerPlayer::broadcastProperty(const char *name) const
+{
+    QVariantList data;
+    data << id();
+    data << name;
+    data << property(name);
+    m_room->broadcastNotification(S_COMMAND_UPDATE_PLAYER_PROPERTY, data);
+}

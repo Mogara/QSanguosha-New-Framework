@@ -24,4 +24,35 @@
 GameRule::GameRule(GameLogic *logic)
     : m_logic(logic)
 {
+    m_events << GameStart;
+    m_events << TurnStart << PhaseProceeding << PhaseEnd << PhaseChanging;
+}
+
+bool GameRule::triggerable(Player *) const
+{
+    return true;
+}
+
+bool GameRule::effect(GameLogic *logic, EventType event, Player *current, QVariant &data, Player *) const
+{
+    if (logic->skipGameRule())
+        return false;
+
+    if (current == NULL) {
+        if (event == GameStart) {
+            onGameStart(logic);
+        }
+    } else {
+        throw GameFinish;
+    }
+
+    return false;
+}
+
+void GameRule::onGameStart(GameLogic *logic) const
+{
+    QList<ServerPlayer *> players = logic->allPlayers();
+    foreach (ServerPlayer *player, players) {
+        //@to-do: draw 4 cards
+    }
 }

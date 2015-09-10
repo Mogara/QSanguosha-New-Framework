@@ -19,7 +19,7 @@
 
 #include "cglobal.h"
 #include "client.h"
-#include "player.h"
+#include "clientplayer.h"
 #include "protocol.h"
 #include "roomscene.h"
 #include "util.h"
@@ -35,7 +35,7 @@ RoomScene::RoomScene(QQuickItem *parent)
 
 void RoomScene::onSeatArranged()
 {
-    QList<const Player *> players = m_client->players();
+    QList<const ClientPlayer *> players = m_client->players();
     players.removeOne(m_client->findPlayer(m_client->self()));
     setProperty("photoModel", qConvertToModel(players));
     setProperty("playerNum", players.length() + 1);

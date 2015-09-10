@@ -27,7 +27,7 @@
 
 class Card;
 class GameRule;
-class Player;
+class ServerPlayer;
 class Package;
 
 class GameLogic : public CAbstractGameLogic
@@ -42,25 +42,25 @@ public:
     void setPackages(const QList<const Package *> &packages) { m_packages = packages; }
 
     void addEventHandler(const EventHandler *handler);
-    bool trigger(EventType event, Player *target);
-    bool trigger(EventType event, Player *target, QVariant &data);
+    bool trigger(EventType event, ServerPlayer *target);
+    bool trigger(EventType event, ServerPlayer *target, QVariant &data);
 
-    void setCurrentPlayer(Player *player) { m_currentPlayer = player; }
-    Player *currentPlayer() const { return m_currentPlayer; }
+    void setCurrentPlayer(ServerPlayer *player) { m_currentPlayer = player; }
+    ServerPlayer *currentPlayer() const { return m_currentPlayer; }
 
-    QList<Player *> players() const;
-    Player *findPlayer(uint id) const;
-    Player *findPlayer(CServerAgent *agent) const;
+    QList<ServerPlayer *> players() const;
+    ServerPlayer *findPlayer(uint id) const;
+    ServerPlayer *findPlayer(CServerAgent *agent) const;
 
-    QList<Player *> allPlayers(bool includeDead = false) const;
+    QList<ServerPlayer *> allPlayers(bool includeDead = false) const;
 
-    void addExtraTurn(Player *player) { m_extraTurns << player; }
-    QList<Player *> extraTurns() const { return m_extraTurns; }
+    void addExtraTurn(ServerPlayer *player) { m_extraTurns << player; }
+    QList<ServerPlayer *> extraTurns() const { return m_extraTurns; }
 
     bool isGlobalRequestEnabled() const { return m_globalRequestEnabled; }
     bool skipGameRule() const { return m_skipGameRule; }
 
-    Event askForTriggerOrder(Player *player, const QString &reason, QList<Event> &options, bool cancelable = true);
+    Event askForTriggerOrder(ServerPlayer *player, const QString &reason, QList<Event> &options, bool cancelable = true);
 
 protected:
     CAbstractPlayer *createPlayer(CServerUser *user);
@@ -72,9 +72,9 @@ protected:
 
 private:
     QList<const EventHandler *> m_handlers[EventTypeCount];
-    QList<Player *> m_players;
-    Player *m_currentPlayer;
-    QList<Player *> m_extraTurns;
+    QList<ServerPlayer *> m_players;
+    ServerPlayer *m_currentPlayer;
+    QList<ServerPlayer *> m_extraTurns;
     const GameRule *m_gameRule;
     QList<const Package *> m_packages;
     QList<Card *> m_cards;

@@ -52,9 +52,9 @@ public:
 
     Frequency frequency() const { return m_frequency; }
 
-    virtual bool triggerable(Player *owner) const;
-    virtual QMap<Player *, Event> triggerable(GameLogic *logic, EventType event, Player *owner, QVariant &data) const;
-    virtual QList<Event> triggerable(GameLogic *logic, EventType event, Player *owner, QVariant &data, Player *invoker) const;
+    virtual bool triggerable(ServerPlayer *owner) const;
+    virtual QMap<ServerPlayer *, Event> triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data) const;
+    virtual QList<Event> triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, Player *invoker) const;
     virtual bool cost(GameLogic *logic, EventType event, Player *target, QVariant &data, Player *invoker = NULL) const;
     virtual bool effect(GameLogic *logic, EventType event, Player *target, QVariant &data, Player *invoker = NULL) const;
 

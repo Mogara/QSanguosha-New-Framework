@@ -31,7 +31,7 @@ Event::Event(const EventHandler *handler)
 {
 }
 
-Event::Event(const EventHandler *handler, Player *owner)
+Event::Event(const EventHandler *handler, ServerPlayer *owner)
     : handler(handler)
     , owner(owner)
 {

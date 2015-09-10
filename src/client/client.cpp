@@ -19,8 +19,8 @@
 
 #include "card.h"
 #include "client.h"
+#include "clientplayer.h"
 #include "engine.h"
-#include "player.h"
 #include "protocol.h"
 
 #include <cclientuser.h>
@@ -48,15 +48,15 @@ Client::~Client()
         ClientInstance = NULL;
 }
 
-const Player *Client::findPlayer(CClientUser *user) const
+const ClientPlayer *Client::findPlayer(CClientUser *user) const
 {
     return m_user2player.value(user);
 }
 
-QList<const Player *> Client::players() const
+QList<const ClientPlayer *> Client::players() const
 {
-    QList<const Player *> players;
-    foreach (const Player *player, m_players)
+    QList<const ClientPlayer *> players;
+    foreach (const ClientPlayer *player, m_players)
         players << player;
     return players;
 }
@@ -68,7 +68,7 @@ int Client::playerNum() const
 
 void Client::restart()
 {
-    foreach (Player *player, m_players)
+    foreach (ClientPlayer *player, m_players)
         player->deleteLater();
     m_players.clear();
 
@@ -85,10 +85,10 @@ void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
 
     Client *client = qobject_cast<Client *>(receiver);
 
-    QList<Player *> players;
+    QList<ClientPlayer *> players;
     players.reserve(infos.length());
     for (int i = 0; i < infos.length(); i++)
-        players << new Player(client);
+        players << new ClientPlayer(client);
 
     for (int i = 1; i < infos.length(); i++)
         players.at(i - 1)->setNext(players.at(i));
@@ -97,7 +97,7 @@ void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
     int i = 0;
     foreach (const QVariant &rawInfo, infos) {
         const QVariantMap info = rawInfo.toMap();
-        Player *player = players.at(i);
+        ClientPlayer *player = players.at(i);
         player->setId(info["playerId"].toUInt());
         player->setSeat(i + 1);
 

@@ -70,8 +70,6 @@ public:
 
     Player(QObject *parent = 0);
 
-    void setId(uint id) { CAbstractPlayer::setId(id); }
-
     QString screenName() const { return m_screenName; }
     void setScreenName(const QString &name);
 

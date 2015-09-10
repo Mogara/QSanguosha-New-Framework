@@ -5,18 +5,20 @@ CONFIG += c++11
 
 SOURCES += src/main.cpp \
     src/client/client.cpp \
+    src/client/clientplayer.cpp \
     src/core/card.cpp \
     src/core/engine.cpp \
-    src/core/event.cpp \
-    src/core/eventhandler.cpp \
-    src/core/gamelogic.cpp \
-    src/core/gamerule.cpp \
     src/core/general.cpp \
     src/core/package.cpp \
     src/core/player.cpp \
     src/core/protocol.cpp \
     src/core/skill.cpp \
     src/core/util.cpp \
+    src/gamelogic/event.cpp \
+    src/gamelogic/eventhandler.cpp \
+    src/gamelogic/gamelogic.cpp \
+    src/gamelogic/gamerule.cpp \
+    src/gamelogic/serverplayer.cpp \
     src/gui/dialog/startserverdialog.cpp \
     src/gui/dialog/startgamedialog.cpp \
     src/gui/lobby.cpp \
@@ -32,18 +34,20 @@ SOURCES += src/main.cpp \
 
 HEADERS += \
     src/client/client.h \
+    src/client/clientplayer.h \
     src/core/card.h \
     src/core/engine.h \
-    src/core/event.h \
-    src/core/eventhandler.h \
-    src/core/eventtype.h \
-    src/core/gamelogic.h \
-    src/core/gamerule.h \
     src/core/general.h \
     src/core/package.h \
     src/core/player.h \
     src/core/skill.h \
     src/core/util.h \
+    src/gamelogic/event.h \
+    src/gamelogic/eventhandler.h \
+    src/gamelogic/eventtype.h \
+    src/gamelogic/gamelogic.h \
+    src/gamelogic/gamerule.h \
+    src/gamelogic/serverplayer.h \
     src/gui/dialog/startserverdialog.h \
     src/gui/dialog/startgamedialog.h \
     src/gui/lobby.h \
@@ -53,6 +57,7 @@ HEADERS += \
 INCLUDEPATH += src \
     src/client \
     src/core \
+    src/gamelogic \
     src/gui \
     src/package
 

@@ -23,13 +23,13 @@
 #include "gamerule.h"
 #include "general.h"
 #include "package.h"
-#include "player.h"
 #include "protocol.h"
-#include "cserveruser.h"
+#include "serverplayer.h"
 #include "util.h"
 
 #include <croom.h>
 #include <cserver.h>
+#include <cserveruser.h>
 
 #include <QCoreApplication>
 #include <QDateTime>
@@ -72,13 +72,13 @@ void GameLogic::addEventHandler(const EventHandler *handler)
         m_handlers[event] << handler;
 }
 
-bool GameLogic::trigger(EventType event, Player *target)
+bool GameLogic::trigger(EventType event, ServerPlayer *target)
 {
     QVariant data;
     return trigger(event, target, data);
 }
 
-bool GameLogic::trigger(EventType event, Player *target, QVariant &data)
+bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
 {
     QList<const EventHandler *> &handlers = m_handlers[event];
 
@@ -90,7 +90,7 @@ bool GameLogic::trigger(EventType event, Player *target, QVariant &data)
     int triggerableIndex = 0;
     while (triggerableIndex < handlers.length()) {
         int currentPriority = 0;
-        QMap<Player *, QList<Event>> triggerableEvents;
+        QMap<ServerPlayer *, QList<Event>> triggerableEvents;
 
         //Construct triggerableEvents
         do {
@@ -106,9 +106,9 @@ bool GameLogic::trigger(EventType event, Player *target, QVariant &data)
                 }
             } else {
                 if (triggerableEvents.isEmpty() || handler->priority(event) == currentPriority) {
-                    QMap<Player *, Event> events = handler->triggerable(this, event, target, data);
-                    QList<Player *> players = this->players();
-                    foreach (Player *p, players) {
+                    QMap<ServerPlayer *, Event> events = handler->triggerable(this, event, target, data);
+                    QList<ServerPlayer *> players = this->players();
+                    foreach (ServerPlayer *p, players) {
                         if (!events.contains(p))
                             continue;
 
@@ -124,8 +124,8 @@ bool GameLogic::trigger(EventType event, Player *target, QVariant &data)
         } while (triggerableIndex < handlers.length());
 
         if (!triggerableEvents.isEmpty()) {
-            QList<Player *> allPlayers = this->allPlayers(true);
-            foreach (Player *invoker, allPlayers) {
+            QList<ServerPlayer *> allPlayers = this->allPlayers(true);
+            foreach (ServerPlayer *invoker, allPlayers) {
                 if (!triggerableEvents.contains(invoker))
                     continue;
 
@@ -177,7 +177,7 @@ bool GameLogic::trigger(EventType event, Player *target, QVariant &data)
                         if (d.handler != choice.handler)
                             continue;
 
-                        foreach (Player *to, choice.to) {
+                        foreach (ServerPlayer *to, choice.to) {
                             int index = d.to.indexOf(to);
                             if (index == d.to.length() - 1) {
                                 events.removeAt(i);
@@ -195,29 +195,29 @@ bool GameLogic::trigger(EventType event, Player *target, QVariant &data)
     return false;
 }
 
-QList<Player *> GameLogic::players() const
+QList<ServerPlayer *> GameLogic::players() const
 {
-    QList<Player *> players;
+    QList<ServerPlayer *> players;
     auto abstractPlayers = this->abstractPlayers();
     foreach (CAbstractPlayer *p, abstractPlayers)
-        players << qobject_cast<Player *>(p);
+        players << qobject_cast<ServerPlayer *>(p);
     return players;
 }
 
-Player *GameLogic::findPlayer(uint id) const
+ServerPlayer *GameLogic::findPlayer(uint id) const
 {
-    return qobject_cast<Player *>(findAbstractPlayer(id));
+    return qobject_cast<ServerPlayer *>(findAbstractPlayer(id));
 }
 
-Player *GameLogic::findPlayer(CServerAgent *agent) const
+ServerPlayer *GameLogic::findPlayer(CServerAgent *agent) const
 {
-    return qobject_cast<Player *>(findAbstractPlayer(agent));
+    return qobject_cast<ServerPlayer *>(findAbstractPlayer(agent));
 }
 
-QList<Player *> GameLogic::allPlayers(bool includeDead) const
+QList<ServerPlayer *> GameLogic::allPlayers(bool includeDead) const
 {
-    QList<Player *> players = this->players();
-    Player *current = currentPlayer();
+    QList<ServerPlayer *> players = this->players();
+    ServerPlayer *current = currentPlayer();
     if (current == NULL)
         return players;
 
@@ -225,7 +225,7 @@ QList<Player *> GameLogic::allPlayers(bool includeDead) const
     if (currentIndex == -1)
         return players;
 
-    QList<Player *> allPlayers;
+    QList<ServerPlayer *> allPlayers;
     for (int i = currentIndex; i < players.length(); i++) {
         if (includeDead || players.at(i)->isAlive())
             allPlayers << players.at(i);
@@ -243,7 +243,7 @@ QList<Player *> GameLogic::allPlayers(bool includeDead) const
     return allPlayers;
 }
 
-Event GameLogic::askForTriggerOrder(Player *player, const QString &reason, QList<Event> &options, bool cancelable)
+Event GameLogic::askForTriggerOrder(ServerPlayer *player, const QString &reason, QList<Event> &options, bool cancelable)
 {
     //@todo:
     C_UNUSED(player);
@@ -256,13 +256,13 @@ Event GameLogic::askForTriggerOrder(Player *player, const QString &reason, QList
 CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
 {
     C_UNUSED(user);
-    return new Player(this);
+    return new ServerPlayer(this);
 }
 
 CAbstractPlayer *GameLogic::createPlayer(CServerRobot *robot)
 {
     C_UNUSED(robot);
-    return new Player(this);
+    return new ServerPlayer(this);
 }
 
 void GameLogic::prepareToStart()
@@ -270,19 +270,19 @@ void GameLogic::prepareToStart()
     CRoom *room = this->room();
 
     //Arrange seats for all the players
-    QList<Player *> players = this->players();
+    QList<ServerPlayer *> players = this->players();
     qShuffle(players);
     for (int i = 1; i < players.length(); i++) {
         players[i - 1]->setSeat(i);
         players[i - 1]->setNext(players.at(i));
     }
-    Player *lastPlayer = players.last();
+    ServerPlayer *lastPlayer = players.last();
     lastPlayer->setSeat(players.length());
     lastPlayer->setNext(players.first());
     setCurrentPlayer(players.first());
 
     QVariantList playerList;
-    foreach (Player *player, players) {
+    foreach (ServerPlayer *player, players) {
         CServerAgent *agent = findAgent(player);
         QVariantMap info;
         if (agent->controlledByClient()) {
@@ -315,9 +315,9 @@ void GameLogic::prepareToStart()
     int candidateLimit = 7;
     qShuffle(generals);
 
-    QMap<Player *, QList<const General *>> playerCandidates;
+    QMap<ServerPlayer *, QList<const General *>> playerCandidates;
 
-    foreach (Player *player, players) {
+    foreach (ServerPlayer *player, players) {
         QList<const General *> candidates = generals.mid((player->seat() - 1) * candidateLimit, candidateLimit);
         playerCandidates[player] = candidates;
 
@@ -339,7 +339,7 @@ void GameLogic::prepareToStart()
     //@to-do: timeout should be loaded from config
     room->broadcastRequest(room->agents(), 15000);
 
-    foreach (Player *player, players) {
+    foreach (ServerPlayer *player, players) {
         const QList<const General *> &candidates = playerCandidates[player];
         QList<const General *> generals;
 
@@ -376,14 +376,14 @@ void GameLogic::run()
     forever {
         try {
             forever {
-                Player *current = currentPlayer();
+                ServerPlayer *current = currentPlayer();
                 if (current->seat() == 1)
                     m_round++;
 
                 trigger(TurnStart, current);
-                Player *next = current->nextAlive(1, false);
+                ServerPlayer *next = current->nextAlive(1, false);
                 while (!m_extraTurns.isEmpty()) {
-                    Player *extra = m_extraTurns.takeFirst();
+                    ServerPlayer *extra = m_extraTurns.takeFirst();
                     setCurrentPlayer(extra);
                     trigger(TurnStart, extra);
                 }
@@ -393,9 +393,9 @@ void GameLogic::run()
             if (event == GameFinish) {
                 return;
             } else if (event == TurnBroken) {
-                Player *current = currentPlayer();
+                ServerPlayer *current = currentPlayer();
                 trigger(TurnBroken, current);
-                Player *next = current->nextAlive(1, false);
+                ServerPlayer *next = current->nextAlive(1, false);
                 if (current->phase() != Player::NotActive) {
                     QVariant data;
                     m_gameRule->effect(this, PhaseEnd, current, data, current);

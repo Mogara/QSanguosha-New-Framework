@@ -25,8 +25,7 @@
 #include <QMap>
 
 class Card;
-class CClientPlayer;
-class Player;
+class ClientPlayer;
 
 class Client : public CClient
 {
@@ -36,8 +35,8 @@ public:
     static Client *instance();
     ~Client();
 
-    const Player *findPlayer(CClientUser *user) const;
-    QList<const Player *> players() const;
+    const ClientPlayer *findPlayer(CClientUser *user) const;
+    QList<const ClientPlayer *> players() const;
     int playerNum() const;
 
 signals:
@@ -54,9 +53,9 @@ private:
     static void PrepareCardsCommand(QObject *receiver, const QVariant &data);
     static void ChooseGeneralCommand(QObject *receiver, const QVariant &data);
 
-    QMap<uint, Player *> m_players;
-    QMap<Player *, CClientUser *> m_player2user;
-    QMap<CClientUser *, Player *> m_user2player;
+    QMap<uint, ClientPlayer *> m_players;
+    QMap<ClientPlayer *, CClientUser *> m_player2user;
+    QMap<CClientUser *, ClientPlayer *> m_user2player;
     QMap<uint, Card *> m_cards;//Record card state
 };
 

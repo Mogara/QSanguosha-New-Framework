@@ -19,15 +19,26 @@
 
 #include "cglobal.h"
 #include "client.h"
+#include "player.h"
 #include "protocol.h"
 #include "roomscene.h"
+#include "util.h"
 
 RoomScene::RoomScene(QQuickItem *parent)
     : QQuickItem(parent)
     , m_client(Client::instance())
 {
     connect(m_client, &Client::chooseGeneralRequested, this, &RoomScene::onChooseGeneralRequested);
+    connect(m_client, &Client::seatArranged, this, &RoomScene::onSeatArranged);
     connect(this, &RoomScene::chooseGeneralFinished, this, &RoomScene::onChooseGeneralFinished);
+}
+
+void RoomScene::onSeatArranged()
+{
+    QList<const Player *> players = m_client->players();
+    players.removeOne(m_client->findPlayer(m_client->self()));
+    setProperty("photoModel", qConvertToModel(players));
+    setProperty("playerNum", players.length() + 1);
 }
 
 void RoomScene::onChooseGeneralRequested(const QStringList &candidates)

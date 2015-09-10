@@ -21,6 +21,8 @@
 #define UTIL_H
 
 #include <QList>
+#include <QObject>
+#include <QVariant>
 
 template<class T>
 void qShuffle(QList<T> &list)
@@ -30,6 +32,24 @@ void qShuffle(QList<T> &list)
         int r = qrand() % (n - i) + i;
         list.swap(i, r);
     }
+}
+
+template<class T>
+QVariant qConvertToModel(const QList<T *> &list)
+{
+    QObjectList objects;
+    foreach (T *o, list)
+        objects << o;
+    return QVariant::fromValue(objects);
+}
+
+template<class T>
+QVariant qConvertToModel(const QList<const T *> &list)
+{
+    QObjectList objects;
+    foreach (const T *o, list)
+        objects << const_cast<T *>(o);
+    return QVariant::fromValue(objects);
 }
 
 #endif // UTIL_H

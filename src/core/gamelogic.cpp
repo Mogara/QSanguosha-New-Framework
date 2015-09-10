@@ -38,6 +38,8 @@ GameLogic::GameLogic(CRoom *parent)
     : CAbstractGameLogic(parent)
     , m_currentPlayer(NULL)
     , m_gameRule(NULL)
+    , m_skipGameRule(false)
+    , m_round(0)
 {
 
 }
@@ -375,6 +377,9 @@ void GameLogic::run()
         try {
             forever {
                 Player *current = currentPlayer();
+                if (current->seat() == 1)
+                    m_round++;
+
                 trigger(TurnStart, current);
                 Player *next = current->nextAlive(1, false);
                 while (!m_extraTurns.isEmpty()) {

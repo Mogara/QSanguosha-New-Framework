@@ -58,6 +58,7 @@ public:
     QList<Player *> extraTurns() const { return m_extraTurns; }
 
     bool isGlobalRequestEnabled() const { return m_globalRequestEnabled; }
+    bool skipGameRule() const { return m_skipGameRule; }
 
     Event askForTriggerOrder(Player *player, const QString &reason, QList<Event> &options, bool cancelable = true);
 
@@ -78,6 +79,8 @@ private:
     QList<const Package *> m_packages;
     QList<Card *> m_cards;
     bool m_globalRequestEnabled;
+    bool m_skipGameRule;
+    int m_round;
 };
 
 #endif // CGAMELOGIC_H

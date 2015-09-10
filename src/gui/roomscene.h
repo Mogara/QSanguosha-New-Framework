@@ -36,6 +36,7 @@ signals:
     void chooseGeneralFinished(const QString &head, const QString &deputy);
 
 private:
+    void onSeatArranged();
     void onChooseGeneralRequested(const QStringList &candidates);
     void onChooseGeneralFinished(const QString &head, const QString &deputy);
 

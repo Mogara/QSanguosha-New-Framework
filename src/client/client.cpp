@@ -23,6 +23,8 @@
 #include "player.h"
 #include "protocol.h"
 
+#include <cclientuser.h>
+
 #include <QtQml>
 
 static Client *ClientInstance = NULL;
@@ -44,6 +46,24 @@ Client::~Client()
 {
     if (ClientInstance == this)
         ClientInstance = NULL;
+}
+
+const Player *Client::findPlayer(CClientUser *user) const
+{
+    return m_user2player.value(user);
+}
+
+QList<const Player *> Client::players() const
+{
+    QList<const Player *> players;
+    foreach (const Player *player, m_players)
+        players << player;
+    return players;
+}
+
+int Client::playerNum() const
+{
+    return m_players.size();
 }
 
 void Client::restart()
@@ -86,11 +106,16 @@ void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
         if (info.contains("userId")) {
             uint userId = info["userId"].toUInt();
             CClientUser *user = client->findUser(userId);
-            client->m_userMap[player->id()] = user;
+            client->m_player2user[player] = user;
+            client->m_user2player[user] = player;
+            player->setScreenName(user->screenName());
         } else if (info.contains("robotId")) {
             //@to-do:
         }
+        i++;
     }
+
+    emit client->seatArranged();
 }
 
 void Client::PrepareCardsCommand(QObject *receiver, const QVariant &data)

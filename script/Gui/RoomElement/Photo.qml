@@ -4,7 +4,7 @@ import Cardirector.Device 1.0
 import Cardirector.Resource 1.0
 
 Item {
-    property string headGeneral: "blank"
+    property string headGeneral: ""
     property string deputyGeneral: ""
     property alias screenName: screenNameItem.text
     property alias faceTurned: faceTurnedCover.visible
@@ -34,7 +34,7 @@ Item {
         Image {
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
-            source: "image://general/fullphoto/" + headGeneral
+            source: "image://general/fullphoto/" + (headGeneral != "" ? headGeneral : "blank")
         }
     }
 

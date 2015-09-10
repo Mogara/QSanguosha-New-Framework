@@ -36,7 +36,12 @@ public:
     static Client *instance();
     ~Client();
 
+    const Player *findPlayer(CClientUser *user) const;
+    QList<const Player *> players() const;
+    int playerNum() const;
+
 signals:
+    void seatArranged();
     void chooseGeneralRequested(const QStringList &candidates /* @to-do: add banned pair */);
 
 private:
@@ -50,7 +55,8 @@ private:
     static void ChooseGeneralCommand(QObject *receiver, const QVariant &data);
 
     QMap<uint, Player *> m_players;
-    QMap<uint, CClientUser *> m_userMap;//Player Id to CClient User
+    QMap<Player *, CClientUser *> m_player2user;
+    QMap<CClientUser *, Player *> m_user2player;
     QMap<uint, Card *> m_cards;//Record card state
 };
 

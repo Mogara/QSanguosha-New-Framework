@@ -29,14 +29,21 @@ class Player : public CAbstractPlayer
 {
     Q_OBJECT
 
-    Q_PROPERTY(int hp READ hp WRITE setHp)
-    Q_PROPERTY(int maxHp READ maxHp WRITE setMaxHp)
-    Q_PROPERTY(int lostHp READ lostHp)
+    Q_ENUMS(Phase)
+
+    Q_PROPERTY(QString screenName READ screenName WRITE setScreenName NOTIFY screenNameChanged)
+    Q_PROPERTY(int hp READ hp WRITE setHp NOTIFY hpChanged)
+    Q_PROPERTY(int maxHp READ maxHp WRITE setMaxHp NOTIFY maxHpChanged)
+    Q_PROPERTY(int lostHp READ lostHp NOTIFY hpChanged)
     Q_PROPERTY(bool isWounded READ isWounded)
-    Q_PROPERTY(bool isAlive READ isAlive WRITE setAlive)
-    Q_PROPERTY(bool isDead READ isDead WRITE setDead)
-    Q_PROPERTY(bool isRemoved READ isRemoved WRITE setRemoved)
-    Q_PROPERTY(int seat READ seat WRITE setSeat)
+    Q_PROPERTY(bool isAlive READ isAlive WRITE setAlive NOTIFY aliveChanged)
+    Q_PROPERTY(bool isDead READ isDead WRITE setDead NOTIFY aliveChanged)
+    Q_PROPERTY(bool isRemoved READ isRemoved WRITE setRemoved NOTIFY removedChanged)
+    Q_PROPERTY(int seat READ seat WRITE setSeat NOTIFY seatChanged)
+    Q_PROPERTY(Phase phase READ phase WRITE setPhase NOTIFY phaseChanged)
+    Q_PROPERTY(QString generalName READ generalName NOTIFY generalChanged)
+    Q_PROPERTY(QString headGeneralName READ headGeneralName NOTIFY headGeneralChanged)
+    Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName NOTIFY deputyGeneralChanged)
 
     Q_ENUMS(Phase)
     Q_ENUMS(Area)
@@ -65,6 +72,9 @@ public:
 
     void setId(uint id) { CAbstractPlayer::setId(id); }
 
+    QString screenName() const { return m_screenName; }
+    void setScreenName(const QString &name);
+
     int hp() const { return m_hp; }
     void setHp(int hp);
 
@@ -74,18 +84,18 @@ public:
     int lostHp() const { return maxHp() - qMax(hp(), 0); }
     bool isWounded() const { return hp() < 0 || hp() < maxHp(); }
 
-    void setAlive(bool alive) { m_alive = alive; }
+    void setAlive(bool alive);
     bool isAlive() const { return m_alive; }
-    void setDead(bool dead) { m_alive = !dead; }
+    void setDead(bool dead) { setAlive(!dead); }
     bool isDead() const { return !m_alive; }
 
     bool hasSkill(const EventHandler *skill) const;
     bool hasShownSkill(const EventHandler *skill) const;
 
-    void setRemoved(bool removed) { m_removed = removed; }
+    void setRemoved(bool removed);
     bool isRemoved() const { return m_removed; }
 
-    void setSeat(int seat) { m_seat = seat; }
+    void setSeat(int seat);
     int seat() const { return m_seat; }
 
     void setNext(Player *next) { m_next = next; }
@@ -98,13 +108,16 @@ public:
 
     //Alias of head general.
     const General *general() const { return headGeneral(); }
+    QString generalName() const { return headGeneralName(); }
     void setGeneral(const General *general) { setHeadGeneral(general); }
 
     const General *headGeneral() const { return m_headGeneral; }
-    void setHeadGeneral(const General *general) { m_headGeneral = general; }
+    QString headGeneralName() const;
+    void setHeadGeneral(const General *general);
 
     const General *deputyGeneral() const { return m_deputyGeneral; }
-    void setDeputyGeneral(const General *general) { m_deputyGeneral = general; }
+    QString deputyGeneralName() const;
+    void setDeputyGeneral(const General *general);
 
     bool hasShownHeadGeneral() const { return m_headGeneralShown; }
     void setHeadGeneralShown(bool shown) { m_headGeneralShown = shown; }
@@ -116,11 +129,22 @@ public:
     bool hasShownBothGenerals() const { return hasShownHeadGeneral() && hasShownDeputyGeneral(); }
 
 signals:
+    void screenNameChanged();
     void hpChanged();
     void maxHpChanged();
+    void lostHpChanged();
+    void woundedChanged();
+    void aliveChanged();
+    void deadChanged();
+    void removedChanged();
+    void seatChanged();
     void phaseChanged();
+    void generalChanged();
+    void headGeneralChanged();
+    void deputyGeneralChanged();
 
 protected:
+    QString m_screenName;
     int m_hp;
     int m_maxHp;
     bool m_alive;

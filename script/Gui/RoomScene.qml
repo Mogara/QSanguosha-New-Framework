@@ -8,8 +8,9 @@ import "RoomElement"
 import "../engine.js" as Engine
 
 RoomScene {
-    property int playerNum: 8
     property int firstPlayerIndex: 0
+    property var photoModel
+    property int playerNum: 0
 
     id: roomScene
     anchors.fill: parent
@@ -53,8 +54,13 @@ RoomScene {
 
                     Repeater {
                         id: photos
-                        model: playerNum - 1
+                        model: photoModel
                         Photo {
+                            screenName: modelData.screenName
+                            hp: modelData.hp
+                            maxHp: modelData.maxHp
+                            headGeneral: modelData.headGeneralName
+                            deputyGeneral: modelData.deputyGeneralName
                         }
                     }
 
@@ -173,21 +179,32 @@ RoomScene {
             item = photos.itemAt(i);
             region = regions[seatIndex[i]];
             subindex = region.players.indexOf(i);
+
+            //Top Area 1 or 7
             if (seatIndex[i] === 1 || seatIndex[i] === 7) {
                 if (playerNum === 6 || playerNum === 10) {
                     spacing = ((region.right - region.left) - region.players.length * item.width) / (region.players.length + 1);
-                    x = region.left + spacing * (subindex + 1) + item.width * subindex;
+                    x = region.right - (item.width + spacing) * (subindex + 1);
                 } else {
-                    x = region.left + (region.right - region.left) / region.players.length / 2 * (subindex * 2 + 1) - item.width / 2;
+                    x = region.right - item.width / 2 - (region.right - region.left) / region.players.length / 2 * (subindex * 2 + 1);
                 }
+            //Left Area 4 or 6, Right Area 3 or 5
             } else {
                 x = (region.left + region.right - item.width) / 2;
             }
-            if ((seatIndex[i] >= 0 && seatIndex[i] <= 2) || seatIndex[i] === 7) {
+
+            //Top Area 1 or 7
+            if (seatIndex[i] === 1 || seatIndex[i] === 7) {
                 y = (region.top + region.bottom - item.height) / 2;
             } else {
                 spacing = ((region.bottom - region.top) - region.players.length * item.height) / (region.players.length + 1);
-                y = region.top + spacing * (subindex + 1) + item.height * subindex;
+                //Right Area 3 or 5
+                if (seatIndex[i] === 3 || seatIndex[i] === 5) {
+                    y = region.bottom - (spacing + item.height) * (subindex + 1);
+                //Left Area 4 or 6
+                } else {
+                    y = region.top + spacing * (subindex + 1) + item.height * subindex;
+                }
             }
             item.x = Math.round(x);
             item.y = Math.round(y);

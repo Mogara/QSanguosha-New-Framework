@@ -47,8 +47,8 @@ bool EventHandler::triggerable(Player *owner) const
 QMap<Player *, Event> EventHandler::triggerable(GameLogic *logic, EventType event, Player *owner, QVariant &data) const
 {
     QMap<Player *, Event> result;
-    QList<Event> Events = triggerable(logic, event, owner, data, owner);
-    foreach (const Event &d, Events)
+    QList<Event> events = triggerable(logic, event, owner, data, owner);
+    foreach (const Event &d, events)
         result.insertMulti(owner, d);
     return result;
 }

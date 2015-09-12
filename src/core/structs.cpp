@@ -29,7 +29,7 @@ CardsMoveStruct::Area::Area()
 QVariant CardsMoveStruct::Area::toVariant() const
 {
     QVariantMap data;
-    data["area"] = type;
+    data["type"] = type;
     data["ownerId"] = owner ? owner->id() : 0;
     data["pile"] = pile;
     return data;

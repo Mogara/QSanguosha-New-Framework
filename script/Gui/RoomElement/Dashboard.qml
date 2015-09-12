@@ -11,13 +11,14 @@ RowLayout {
     property alias deputyGeneralAvatar: deputyGeneralItem.avatar
     property alias deputyGeneralKingdom: deputyGeneralItem.kingdom
     property int seatNumber: 0
-    property alias handcardNum : handcardNumItem.value
     property string userRole: "unknown"
     property alias hp: hpBar.value
     property alias maxHp: hpBar.maxValue
     property alias acceptButton: acceptButtonItem
     property alias rejectButton: rejectButtonItem
     property alias finishButton: finishButtonItem
+    property alias handcardArea: handcardAreaItem
+    property alias equipArea: equipAreaItem
 
     signal accepted()
     signal rejected()
@@ -39,6 +40,7 @@ RowLayout {
     }
 
     Image {
+        id: equipAreaItem
         source: "image://dashboard/equip"
         Layout.preferredWidth: Device.gu(164)
         Layout.fillHeight: true
@@ -52,16 +54,27 @@ RowLayout {
         RowLayout {
             anchors.fill: parent
 
-            Item {
-                id: handcardArea
+            RowLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                HandcardNumber {
-                    id: handcardNumItem
-                    kingdom: headGeneralKingdom
-                    x: parent.width - width / 2
-                    y: parent.height - height - Device.gu(5)
+                CardArea {
+                    id: handcardAreaItem
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.topMargin: Device.gu(5)
+                }
+
+                Item {
+                    Layout.preferredWidth: Device.gu(20)
+                    Layout.fillHeight: true
+
+                    HandcardNumber {
+                        id: handcardNumItem
+                        kingdom: headGeneralKingdom
+                        value: handcardArea.length
+                        y: parent.height - height - Device.gu(5)
+                    }
                 }
             }
 

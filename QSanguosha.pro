@@ -114,6 +114,7 @@ QML_FILES = \
     script/Gui/Dialog/StartGameDialog.qml \
     script/Gui/Dialog/StartServerDialog.qml \
     script/Gui/RoomScene.qml \
+    script/Gui/RoomElement/CardArea.qml \
     script/Gui/RoomElement/CardItem.qml \
     script/Gui/RoomElement/ChatBox.qml \
     script/Gui/RoomElement/ChooseGeneralBox.qml \
@@ -127,6 +128,7 @@ QML_FILES = \
     script/Gui/RoomElement/HandcardNumber.qml \
     script/Gui/RoomElement/HpBar.qml \
     script/Gui/RoomElement/IndicatorLine.qml \
+    script/Gui/RoomElement/InvisibleCardArea.qml \
     script/Gui/RoomElement/IrregularButton.qml \
     script/Gui/RoomElement/LogBox.qml \
     script/Gui/RoomElement/Magatama.qml \

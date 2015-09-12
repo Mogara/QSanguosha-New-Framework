@@ -20,6 +20,8 @@
 #ifndef ROOMSCENE_H
 #define ROOMSCENE_H
 
+#include "structs.h"
+
 #include <QQuickItem>
 
 class Client;
@@ -32,10 +34,16 @@ public:
     RoomScene(QQuickItem *parent = 0);
 
 signals:
+    //Output Signals
     void chooseGeneralStarted(const QVariant &generals);
     void chooseGeneralFinished(const QString &head, const QString &deputy);
 
+    //Internal Signals
+    void cardsMoved(const QVariant &moves);
+
 private:
+    void animateCardsMoving(const QList<CardsMoveStruct> &moves);
+
     void onSeatArranged();
     void onChooseGeneralRequested(const QStringList &candidates);
     void onChooseGeneralFinished(const QString &head, const QString &deputy);

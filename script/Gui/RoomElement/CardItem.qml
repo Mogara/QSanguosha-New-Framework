@@ -3,6 +3,7 @@ import QtGraphicalEffects 1.0
 import Cardirector.Device 1.0
 
 Item {
+    property int cid: 0
     property string suit: "heart"
     property int number: 2
     property string name: "slash"
@@ -139,6 +140,25 @@ Item {
         onStopped: root.movementAnimationFinished();
     }
 
+    function setData(data)
+    {
+        cid = data.cid;
+        name = data.name;
+        suit = data.suit;
+        number = data.number;
+    }
+
+    function toData()
+    {
+        var data = {
+            cid: cid,
+            name: name,
+            suit: suit,
+            number: number
+        };
+        return data;
+    }
+
     function goBack(animated)
     {
         if (animated) {
@@ -148,6 +168,13 @@ Item {
             x = homeX;
             y = homeY;
         }
+    }
+
+    function destroyOnStop()
+    {
+        root.movementAnimationFinished.connect(function(){
+            destroy();
+        });
     }
 
     Component.onCompleted: {

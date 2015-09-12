@@ -24,6 +24,8 @@
 
 #include <QMap>
 
+#include "structs.h"
+
 class Card;
 class ClientPlayer;
 
@@ -42,16 +44,20 @@ public:
 signals:
     void seatArranged();
     void chooseGeneralRequested(const QStringList &candidates /* @to-do: add banned pair */);
+    void cardsMoved(const QList<CardsMoveStruct> &moves);
 
 private:
     Client(QObject *parent = 0);
 
     void restart();
+    ClientPlayer *findPlayer(uint id) { return m_players.value(id); }
+    Card *findCard(uint id) { return m_cards.value(id); }
 
     C_DECLARE_INITIALIZER(Client)
     static void ArrangeSeatCommand(QObject *receiver, const QVariant &data);
     static void PrepareCardsCommand(QObject *receiver, const QVariant &data);
     static void ChooseGeneralCommand(QObject *receiver, const QVariant &data);
+    static void MoveCardsCommand(QObject *receiver, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

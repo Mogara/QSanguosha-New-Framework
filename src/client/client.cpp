@@ -150,6 +150,50 @@ void Client::ChooseGeneralCommand(QObject *receiver, const QVariant &data)
     emit client->chooseGeneralRequested(generals);
 }
 
+void Client::MoveCardsCommand(QObject *receiver, const QVariant &data)
+{
+    Client *client = qobject_cast<Client *>(receiver);
+
+    QList<CardsMoveStruct> moves;
+
+    QVariantList movesData = data.toList();
+    foreach (const QVariant &moveVar, movesData) {
+        const QVariantMap moveData = moveVar.toMap();
+        const QVariantMap from = moveData["from"].toMap();
+        const QVariantMap to = moveData["to"].toMap();
+
+        CardsMoveStruct move;
+        move.from.type = static_cast<CardArea::Type>(from["type"].toInt());
+        move.from.pile = from["pile"].toString();
+        move.from.owner = client->findPlayer(from["ownerId"].toUInt());
+        move.to.type = static_cast<CardArea::Type>(to["type"].toInt());
+        move.to.pile = to["pile"].toString();
+        move.to.owner = client->findPlayer(to["ownerId"].toInt());
+        move.isOpen = to["isOpen"].toBool();
+        move.isLastHandCard = to["isLastHandCard"].toBool();
+
+        const QVariantList cards = moveData["cards"].toList();
+        if (cards.isEmpty()) {
+            int cardNum = moveData["cards"].toInt();
+            move.cards.reserve(cardNum);
+            for (int i = 0; i < cardNum; i++)
+                move.cards << NULL;
+        } else {
+            foreach (const QVariant &cardData, cards) {
+                Card *card = client->findCard(cardData.toUInt());
+                if (card)
+                    move.cards << card;
+                else
+                    qWarning("Unknown card id received: %u", cardData.toUInt());
+            }
+        }
+
+        moves << move;
+    }
+
+    emit client->cardsMoved(moves);
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -161,6 +205,7 @@ void Client::Init()
 
     AddCallback(S_COMMAND_ARRANGE_SEAT, ArrangeSeatCommand);
     AddCallback(S_COMMAND_PREPARE_CARDS, PrepareCardsCommand);
+    AddCallback(S_COMMAND_MOVE_CARDS, MoveCardsCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralCommand);
 }

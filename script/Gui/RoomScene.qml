@@ -8,8 +8,8 @@ import "RoomElement"
 import "../engine.js" as Engine
 
 RoomScene {
-    property int firstPlayerIndex: 0
-    property var photoModel
+    property alias dashboardSeat: dashboard.seatNumber
+    property var photoModel: []
     property int playerNum: 0
 
     id: roomScene
@@ -67,6 +67,16 @@ RoomScene {
 
                     onWidthChanged: arrangePhotos();
                     onHeightChanged: arrangePhotos();
+
+                    InvisibleCardArea {
+                        id: drawPile
+                        anchors.centerIn: parent
+                    }
+
+                    CardArea {
+                        id: discardPile
+                        visible: false
+                    }
                 }
             }
 
@@ -125,6 +135,25 @@ RoomScene {
         for (var i = 0; i < generals.length; i++)
             box.model.append(generals[i]);
         box.arrangeCards();
+    }
+
+    onCardsMoved: {
+        var component = Qt.createComponent("RoomElement/CardItem.qml");
+        if (component.status !== Component.Ready)
+            return;
+
+        var cardItems = [], i;
+        for (i = 0; i < moves.length; i++) {
+            var move = moves[i];
+            var from = getAreaItem(move.from);
+            var to = getAreaItem(move.to);
+            if (!from || !to)
+                continue;
+            var items = from.remove(move.cards);
+            if (items.length > 0)
+                to.add(items);
+            to.updateCardPosition(true);
+        }
     }
 
     onPlayerNumChanged: arrangePhotos();
@@ -218,15 +247,14 @@ RoomScene {
         if (component.status !== Component.Ready)
             return;
 
-        var fromItem = (from <= 0) ? dashboard : photos.itemAt(from - 1);
+        var fromItem = getItemBySeat(from);
         var fromPos = mapFromItem(fromItem, fromItem.width / 2, fromItem.height / 2);
 
         var end = [];
         for (var i = 0; i < tos.length; i++) {
             if (from === tos[i])
                 continue;
-            var to = tos[i];
-            var toItem = (to <= 0) ? dashboard : photos.itemAt(to - 1);
+            var toItem = getItemBySeat(tos[i]);
             var toPos = mapFromItem(toItem, toItem.width / 2, toItem.height / 2);
             end.push(toPos);
         }
@@ -234,5 +262,32 @@ RoomScene {
         var color = Engine.kingdomColor[fromItem.userRole];
         var line = component.createObject(root, {start: fromPos, end: end, color: color});
         line.running = true;
+    }
+
+    function getItemBySeat(seat)
+    {
+        if (seat === dashboard.seatNumber)
+            return dashboard;
+        var i = (seat - dashboard.seatNumber + playerNum) % playerNum;
+        return photos.itemAt(i);
+    }
+
+    function getAreaItem(area)
+    {
+        if (area.type === "drawPile") {
+            return drawPile;
+        } else if (area.type === "table") {
+            return discardPile;
+        }
+
+        var photo = getItemBySeat(area.seat);
+        if (area.type === "hand")
+            return photo.handcardArea;
+        else if (area.type === "equip")
+            return photo.equipArea;
+        else if (area.type === "delayedTrick")
+            return photo.delayedTrickArea;
+
+        return null;
     }
 }

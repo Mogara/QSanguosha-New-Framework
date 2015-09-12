@@ -18,17 +18,18 @@
 *********************************************************************/
 
 #include "card.h"
+#include "player.h"
 #include "structs.h"
 
-CardsMoveStruct::Place::Place()
+CardsMoveStruct::Area::Area()
     : owner(NULL)
 {
 }
 
-QVariant CardsMoveStruct::Place::toVariant() const
+QVariant CardsMoveStruct::Area::toVariant() const
 {
     QVariantMap data;
-    data["area"] = area;
+    data["area"] = type;
     data["ownerId"] = owner->id();
     data["pile"] = pile;
     return data;
@@ -49,7 +50,7 @@ CardsMoveStruct::~CardsMoveStruct()
 
 bool CardsMoveStruct::isRelevant(const Player *player) const
 {
-    return player == NULL || player == from.owner || (player == to.owner && to.area != Player::SpecialArea);
+    return player == NULL || player == from.owner || (player == to.owner && to.type != CardArea::Special);
 }
 
 QVariant CardsMoveStruct::toVariant(bool open) const

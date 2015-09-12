@@ -27,6 +27,7 @@
 #include <cabstractgamelogic.h>
 
 class Card;
+class CardArea;
 class GameRule;
 class ServerPlayer;
 class Package;
@@ -62,13 +63,14 @@ public:
     bool skipGameRule() const { return m_skipGameRule; }
 
     void moveCards(const CardsMoveStruct &move);
-    void moveCards(const QList<CardsMoveStruct> &moves);
+    void moveCards(QList<CardsMoveStruct> moves);
 
 protected:
     CAbstractPlayer *createPlayer(CServerUser *user);
     CAbstractPlayer *createPlayer(CServerRobot *robot);
 
     void prepareToStart();
+    CardArea *findArea(const CardsMoveStruct::Area &area);
 
     void run();
 
@@ -83,6 +85,10 @@ private:
     bool m_globalRequestEnabled;
     bool m_skipGameRule;
     int m_round;
+
+    CardArea *m_drawPile;
+    CardArea *m_discardPile;
+    CardArea *m_table;
 };
 
 #endif // CGAMELOGIC_H

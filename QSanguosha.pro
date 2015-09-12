@@ -7,19 +7,20 @@ SOURCES += src/main.cpp \
     src/client/client.cpp \
     src/client/clientplayer.cpp \
     src/core/card.cpp \
+    src/core/cardarea.cpp \
     src/core/engine.cpp \
     src/core/general.cpp \
     src/core/package.cpp \
     src/core/player.cpp \
     src/core/protocol.cpp \
     src/core/skill.cpp \
+    src/core/structs.cpp \
     src/core/util.cpp \
     src/gamelogic/event.cpp \
     src/gamelogic/eventhandler.cpp \
     src/gamelogic/gamelogic.cpp \
     src/gamelogic/gamerule.cpp \
     src/gamelogic/serverplayer.cpp \
-    src/gamelogic/structs.cpp \
     src/gui/dialog/startserverdialog.cpp \
     src/gui/dialog/startgamedialog.cpp \
     src/gui/lobby.cpp \
@@ -37,12 +38,14 @@ HEADERS += \
     src/client/client.h \
     src/client/clientplayer.h \
     src/core/card.h \
+    src/core/cardarea.h \
     src/core/engine.h \
     src/core/general.h \
     src/core/package.h \
     src/core/player.h \
     src/core/protocol.h \
     src/core/skill.h \
+    src/core/structs.h \
     src/core/util.h \
     src/gamelogic/event.h \
     src/gamelogic/eventhandler.h \
@@ -50,7 +53,6 @@ HEADERS += \
     src/gamelogic/gamelogic.h \
     src/gamelogic/gamerule.h \
     src/gamelogic/serverplayer.h \
-    src/gamelogic/structs.h \
     src/gui/dialog/startserverdialog.h \
     src/gui/dialog/startgamedialog.h \
     src/gui/lobby.h \

@@ -18,6 +18,7 @@
 *********************************************************************/
 
 #include "card.h"
+#include "cardarea.h"
 #include "eventhandler.h"
 #include "gamelogic.h"
 #include "gamerule.h"
@@ -41,11 +42,15 @@ GameLogic::GameLogic(CRoom *parent)
     , m_skipGameRule(false)
     , m_round(0)
 {
-
+    m_drawPile = new CardArea(CardArea::DrawPile);
+    m_discardPile = new CardArea(CardArea::DiscardPile);
+    m_table = new CardArea(CardArea::Table);
 }
 
 GameLogic::~GameLogic()
 {
+    delete m_drawPile;
+
     foreach (Card *card, m_cards)
         delete card;
 }
@@ -245,23 +250,33 @@ QList<ServerPlayer *> GameLogic::allPlayers(bool includeDead) const
 
 void GameLogic::moveCards(const CardsMoveStruct &move)
 {
-    QVariant openData = move.toVariant(true);
-    QVariant secretData = move.toVariant(false);
-
-    QList<ServerPlayer *> viewers = players();
-    foreach (ServerPlayer *viewer, viewers) {
-        QVariantList data;
-        CServerAgent *agent = viewer->agent();
-        if (move.isRelevant(viewer))
-            data << openData;
-        else
-            data << secretData;
-        agent->notify(S_COMMAND_MOVE_CARDS, data);
-    }
+    moveCards(QList<CardsMoveStruct>() << move);
 }
 
-void GameLogic::moveCards(const QList<CardsMoveStruct> &moves)
+void GameLogic::moveCards(QList<CardsMoveStruct> moves)
 {
+    QList<ServerPlayer *> allPlayers = this->allPlayers();
+    QVariant moveData = QVariant::fromValue(moves);
+    foreach (ServerPlayer *player, allPlayers)
+        trigger(BeforeCardsMove, player, moveData);
+    moves = moveData.value<QList<CardsMoveStruct>>();
+
+    for (int i = 0 ; i < moves.length(); i++) {
+        const CardsMoveStruct &move = moves.at(i);
+        CardArea *from = findArea(move.from);
+        CardArea *to = findArea(move.to);
+        if (from == NULL || to == NULL)
+            continue;
+
+        if (from->remove(move.cards)) {
+            to->add(move.cards);
+        } else {
+            qWarning("Moving source from an incorrect source.");
+            moves.removeAt(i);
+            i--;
+        }
+    }
+
     QList<ServerPlayer *> viewers = players();
     foreach (ServerPlayer *viewer, viewers) {
         QVariantList data;
@@ -270,6 +285,10 @@ void GameLogic::moveCards(const QList<CardsMoveStruct> &moves)
         CServerAgent *agent = viewer->agent();
         agent->notify(S_COMMAND_MOVE_CARDS, data);
     }
+
+    allPlayers = this->allPlayers();
+    foreach (ServerPlayer *player, allPlayers)
+        trigger(CardsMove, player, moveData);
 }
 
 CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
@@ -381,6 +400,36 @@ void GameLogic::prepareToStart()
         player->setHeadGeneral(generals.at(0));
         player->setDeputyGeneral(generals.at(1));
     }
+}
+
+CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)
+{
+    if (area.owner) {
+        switch (area.type) {
+        case CardArea::Hand:
+            return area.owner->handcards();
+        case CardArea::Equip:
+            return area.owner->equips();
+        case CardArea::DelayedTrick:
+            return area.owner->delayedTricks();
+        case CardArea::Judge:
+            return area.owner->judgeCards();
+        default: qWarning("Owner Area Not Found");
+        }
+    } else {
+        switch (area.type) {
+        case CardArea::DrawPile:
+        case CardArea::DrawPileTop:
+        case CardArea::DrawPileBottom:
+            return m_drawPile;
+        case CardArea::DiscardPile:
+            return m_discardPile;
+        case CardArea::Table:
+            return m_table;
+        default: qWarning("Global Area Not Found");
+        }
+    }
+    return NULL;
 }
 
 void GameLogic::run()

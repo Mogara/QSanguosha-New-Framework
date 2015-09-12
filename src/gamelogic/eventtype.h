@@ -35,6 +35,9 @@ enum EventType
     PhaseSkipping,
     TurnBroken,
 
+    BeforeCardsMove,
+    CardsMove,
+
     EventTypeCount
 };
 

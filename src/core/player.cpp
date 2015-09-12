@@ -17,6 +17,7 @@
     Mogara
 *********************************************************************/
 
+#include "cardarea.h"
 #include "player.h"
 #include "general.h"
 
@@ -28,7 +29,27 @@ Player::Player(QObject *parent)
     , m_headGeneral(NULL)
     , m_deputyGeneral(NULL)
 {
+    m_handCards = new CardArea(CardArea::Hand, this);
+    m_handCards->setSignal([this](){
+        emit handCardNumChanged();
+    });
+    m_equips = new CardArea(CardArea::Equip, this);
+    m_handCards->setSignal([this](){
+        emit equipNumChanged();
+    });
+    m_delayedTricks = new CardArea(CardArea::DelayedTrick, this);
+    m_handCards->setSignal([this](){
+        emit delayedTrickNumChanged();
+    });
+    m_judgeCards = new CardArea(CardArea::Judge, this);
+}
 
+Player::~Player()
+{
+    delete m_handCards;
+    delete m_equips;
+    delete m_delayedTricks;
+    delete m_judgeCards;
 }
 
 void Player::setScreenName(const QString &name)
@@ -135,46 +156,17 @@ void Player::setDeputyGeneral(const General *general)
     emit deputyGeneralChanged();
 }
 
-void Player::addHandcard(const Card *card)
+int Player::handcardNum() const
 {
-    if (m_handcards.contains(card))
-        return;
-    m_handcards.insert(card);
-    emit handcardNumChanged();
+    return m_handCards->length();
 }
 
-void Player::addHandcard(QList<const Card *> cards)
+int Player::equipNum() const
 {
-    bool changed = false;
-    foreach (const Card *card, cards) {
-        if (m_handcards.contains(card))
-            continue;
-        m_handcards.insert(card);
-        changed = true;
-    }
-
-    if (changed)
-        emit handcardNumChanged();
+    return m_equips->length();
 }
 
-void Player::removeHandcard(const Card *card)
+int Player::delayedTrickNum() const
 {
-    if (m_handcards.contains(card)) {
-        m_handcards.remove(card);
-        emit handcardNumChanged();
-    }
-}
-
-void Player::removeHandcard(const QList<Card *> &cards)
-{
-    bool changed = false;
-    foreach (const Card *card, cards) {
-        if (m_handcards.contains(card)) {
-            m_handcards.remove(card);
-            changed = true;
-        }
-    }
-
-    if (changed)
-        emit handcardNumChanged();
+    return m_delayedTricks->length();
 }

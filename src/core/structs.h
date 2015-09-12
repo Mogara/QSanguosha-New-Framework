@@ -20,7 +20,7 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
-#include "player.h"
+#include "cardarea.h"
 
 #include <QList>
 #include <QString>
@@ -31,19 +31,19 @@ class Player;
 
 struct CardsMoveStruct
 {
-    struct Place
+    struct Area
     {
-        Player::Area area;
+        CardArea::Type type;
         Player *owner;
         QString pile;
 
-        Place();
+        Area();
         QVariant toVariant() const;
     };
 
-    Place from;
-    Place to;
-    QList<const Card *> cards;
+    Area from;
+    Area to;
+    QList<Card *> cards;
     bool isOpen;
     bool isLastHandCard;
     CardsMoveStruct *origin;
@@ -54,5 +54,7 @@ struct CardsMoveStruct
     bool isRelevant(const Player *player) const;
     QVariant toVariant(bool open = false) const;
 };
+
+Q_DECLARE_METATYPE(QList<CardsMoveStruct>)
 
 #endif // STRUCTS_H

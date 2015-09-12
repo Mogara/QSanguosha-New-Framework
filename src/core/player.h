@@ -21,6 +21,7 @@
 #define PLAYER_H
 
 class Card;
+class CardArea;
 class EventHandler;
 class General;
 
@@ -48,10 +49,11 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(QString generalName READ generalName NOTIFY generalChanged)
     Q_PROPERTY(QString headGeneralName READ headGeneralName NOTIFY headGeneralChanged)
     Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName NOTIFY deputyGeneralChanged)
-    Q_PROPERTY(int handcardNum READ handcardNum NOTIFY handcardNumChanged)
+    Q_PROPERTY(int handcardNum READ handcardNum NOTIFY handCardNumChanged)
+    Q_PROPERTY(int equipNum READ equipNum NOTIFY equipNumChanged)
+    Q_PROPERTY(int delayedTrickNum READ delayedTrickNum NOTIFY delayedTrickNumChanged)
 
     Q_ENUMS(Phase)
-    Q_ENUMS(Area)
     Q_ENUMS(Role)
 
 public:
@@ -60,20 +62,13 @@ public:
         InvalidPhase, RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive
     };
 
-    enum Area
-    {
-        UnknownArea,
-        HandArea, EquipArea, DelayedTrickArea, JudgeArea,
-        DiscardPile, DrawPileTop, DrawPileBottom,
-        SpecialArea, TableArea, WuguArea
-    };
-
     enum Role
     {
         Lord, Loyalist, Rebel, Renegade
     };
 
     Player(QObject *parent = 0);
+    ~Player();
 
     QString screenName() const { return m_screenName; }
     void setScreenName(const QString &name);
@@ -131,12 +126,20 @@ public:
     bool hasShownGeneral() const { return hasShownHeadGeneral() || hasShownDeputyGeneral(); }
     bool hasShownBothGenerals() const { return hasShownHeadGeneral() && hasShownDeputyGeneral(); }
 
-    QList<const Card *> handcards() const { return m_handcards.toList(); }
-    int handcardNum() const { return m_handcards.size(); }
-    void addHandcard(const Card *card);
-    void addHandcard(QList<const Card *> cards);
-    void removeHandcard(const Card *card);
-    void removeHandcard(const QList<Card *> &cards);
+    CardArea *handcards() { return m_handCards; }
+    const CardArea *handcards() const { return m_handCards; }
+    int handcardNum() const;
+
+    const CardArea *equips() const { return m_equips; }
+    CardArea *equips() { return m_equips; }
+    int equipNum() const;
+
+    CardArea *delayedTricks() { return m_delayedTricks; }
+    const CardArea *delayedTricks() const { return m_delayedTricks; }
+    int delayedTrickNum() const;
+
+    CardArea *judgeCards() { return m_judgeCards; }
+    const CardArea *judgeCards() const { return m_judgeCards; }
 
 signals:
     void screenNameChanged();
@@ -152,7 +155,9 @@ signals:
     void generalChanged();
     void headGeneralChanged();
     void deputyGeneralChanged();
-    void handcardNumChanged();
+    void handCardNumChanged();
+    void equipNumChanged();
+    void delayedTrickNumChanged();
 
 protected:
     QString m_screenName;
@@ -167,7 +172,11 @@ protected:
     const General *m_deputyGeneral;
     bool m_headGeneralShown;
     bool m_deputyGeneralShown;
-    QSet<const Card *> m_handcards;
+
+    CardArea *m_handCards;
+    CardArea *m_equips;
+    CardArea *m_delayedTricks;
+    CardArea *m_judgeCards;
 };
 
 #endif // PLAYER_H

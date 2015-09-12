@@ -62,6 +62,8 @@ public:
     bool isGlobalRequestEnabled() const { return m_globalRequestEnabled; }
     bool skipGameRule() const { return m_skipGameRule; }
 
+    const CardArea *drawPile() const { return m_drawPile; }
+
     void moveCards(const CardsMoveStruct &move);
     void moveCards(QList<CardsMoveStruct> moves);
 

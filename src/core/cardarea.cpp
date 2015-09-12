@@ -71,11 +71,3 @@ bool CardArea::remove(const QList<Card *> &cards)
 
     return num - cards.length() == length();
 }
-
-QList<const Card *> CardArea::cards() const
-{
-    QList<const Card *> result;
-    foreach (const Card *card, m_cards)
-        result << card;
-    return result;
-}

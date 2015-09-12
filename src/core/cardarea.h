@@ -52,7 +52,7 @@ public:
 
     bool contains(Card *card) const { return m_cards.contains(card); }
     QList<Card *> &cards() { return m_cards; }
-    QList<const Card *> cards() const;
+    QList<Card *> cards() const { return m_cards; }
     int length() const { return m_cards.length(); }
     int size() const { return m_cards.size(); }
 

@@ -41,10 +41,13 @@ public:
     ServerPlayer *next(bool ignoreRemoved) const{ return qobject_cast<ServerPlayer *>(Player::next(ignoreRemoved)); }
     ServerPlayer *nextAlive(int step = 1, bool ignoreRemoved = true) const{ return qobject_cast<ServerPlayer *>(Player::nextAlive(step, ignoreRemoved)); }
 
+    void drawCards(int n);
+
     Event askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable);
     void broadcastProperty(const char *name) const;
 
 private:
+    GameLogic *m_logic;
     CRoom *m_room;
     CServerAgent *m_agent;
 };

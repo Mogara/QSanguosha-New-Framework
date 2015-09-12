@@ -25,9 +25,20 @@
 
 ServerPlayer::ServerPlayer(GameLogic *logic, CServerAgent *agent)
     : Player(logic)
+    , m_logic(logic)
     , m_room(logic->room())
     , m_agent(agent)
 {
+}
+
+void ServerPlayer::drawCards(int n)
+{
+    CardsMoveStruct move;
+    move.from.type = CardArea::DrawPile;
+    move.to.type = CardArea::Hand;
+    move.to.owner = this;
+    move.cards = m_logic->drawPile()->cards().mid(0, n);
+    m_logic->moveCards(move);
 }
 
 Event ServerPlayer::askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable)

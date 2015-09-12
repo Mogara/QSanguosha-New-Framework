@@ -29,11 +29,11 @@ class GameRule : public EventHandler
 public:
     GameRule(GameLogic *logic);
 
-    bool triggerable(Player *) const;
-    bool effect(GameLogic *logic, EventType event, Player *current, QVariant &data, Player *) const;
+    bool triggerable(ServerPlayer *) const override;
+    bool effect(GameLogic *logic, EventType event, ServerPlayer *current, QVariant &data, Player *) const override;
 
 protected:
-    void onGameStart(GameLogic *logic) const;
+    void onGameStart(ServerPlayer *current) const;
 
     GameLogic *m_logic;
 };

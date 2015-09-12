@@ -55,8 +55,8 @@ public:
     virtual bool triggerable(ServerPlayer *owner) const;
     virtual QMap<ServerPlayer *, Event> triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data) const;
     virtual QList<Event> triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, Player *invoker) const;
-    virtual bool cost(GameLogic *logic, EventType event, Player *target, QVariant &data, Player *invoker = NULL) const;
-    virtual bool effect(GameLogic *logic, EventType event, Player *target, QVariant &data, Player *invoker = NULL) const;
+    virtual bool cost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, Player *invoker = NULL) const;
+    virtual bool effect(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, Player *invoker = NULL) const;
 
 protected:
     QList<EventType> m_events;

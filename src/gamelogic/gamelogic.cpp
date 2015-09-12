@@ -100,30 +100,19 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
         //Construct triggerableEvents
         do {
             const EventHandler *handler = handlers.at(triggerableIndex);
-            if (handler == m_gameRule) {
-                if (triggerableEvents.isEmpty()) {
-                    triggerableEvents[NULL] << handler;
-                    currentPriority = handler->priority(event);
-                } else if (handler->priority(event) == currentPriority) {
-                    triggerableEvents[NULL] << handler;
-                } else {
-                    break;
-                }
-            } else {
-                if (triggerableEvents.isEmpty() || handler->priority(event) == currentPriority) {
-                    QMap<ServerPlayer *, Event> events = handler->triggerable(this, event, target, data);
-                    QList<ServerPlayer *> players = this->players();
-                    foreach (ServerPlayer *p, players) {
-                        if (!events.contains(p))
-                            continue;
+            if (triggerableEvents.isEmpty() || handler->priority(event) == currentPriority) {
+                QMap<ServerPlayer *, Event> events = handler->triggerable(this, event, target, data);
+                QList<ServerPlayer *> players = this->players();
+                foreach (ServerPlayer *p, players) {
+                    if (!events.contains(p))
+                        continue;
 
-                        QList<Event> ds = events.values(p);
-                        triggerableEvents[p] << ds;
-                        currentPriority = ds.last().handler->priority(event);
-                    }
-                } else if (handler->priority(event) != currentPriority) {
-                    break;
+                    QList<Event> ds = events.values(p);
+                    triggerableEvents[p] << ds;
+                    currentPriority = ds.last().handler->priority(event);
                 }
+            } else if (handler->priority(event) != currentPriority) {
+                break;
             }
             triggerableIndex++;
         } while (triggerableIndex < handlers.length());
@@ -136,6 +125,8 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
 
                 forever {
                     QList<Event> &events = triggerableEvents[invoker];
+                    if (events.isEmpty())
+                        break;
 
                     bool hasCompulsory = false;
                     foreach (const Event &d, events) {
@@ -160,10 +151,12 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
                     if (!choice.isValid())
                         break;
 
+                    ServerPlayer *eventTarget = choice.to.isEmpty() ? target : choice.to.first();
+
                     //Ask the invoker for cost
                     if (!invoker->hasShownSkill(choice.handler))
                         m_globalRequestEnabled = true;
-                    bool takeEffect = choice.handler->cost(this, event, choice.to.at(0), data, invoker);
+                    bool takeEffect = choice.handler->cost(this, event, eventTarget, data, invoker);
                     if (takeEffect && !invoker->hasShownSkill(choice.handler)) {
                         //@todo: show skill here?
                     }
@@ -171,7 +164,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
 
                     //Take effect
                     if (takeEffect) {
-                        bool broken = choice.handler->effect(this, event, choice.to.at(0), data, invoker);
+                        bool broken = choice.handler->effect(this, event, eventTarget, data, invoker);
                         if (broken)
                             break;
                     }
@@ -190,6 +183,11 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
                             } else {
                                 d.to = d.to.mid(index + 1);
                             }
+                        }
+
+                        if (choice.to.isEmpty()) {
+                            events.removeAt(i);
+                            i--;
                         }
                     }
                 }
@@ -400,6 +398,8 @@ void GameLogic::prepareToStart()
         player->setHeadGeneral(generals.at(0));
         player->setDeputyGeneral(generals.at(1));
     }
+
+    m_drawPile->add(m_cards);
 }
 
 CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)
@@ -438,8 +438,10 @@ void GameLogic::run()
 
     prepareToStart();
 
-    //@to-do: Turn broken event not into a new
-    trigger(GameStart, NULL);
+    //@to-do: Turn broken event
+    QList<ServerPlayer *> allPlayers = this->allPlayers();
+    foreach (ServerPlayer *player, allPlayers)
+        trigger(GameStart, player);
 
     forever {
         try {

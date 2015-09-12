@@ -67,7 +67,7 @@ QList<Event> EventHandler::triggerable(GameLogic *logic, EventType event, Server
     return Events;
 }
 
-bool EventHandler::cost(GameLogic *logic, EventType event, Player *target, QVariant &data, Player *invoker) const
+bool EventHandler::cost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, Player *invoker) const
 {
     Q_UNUSED(logic)
     Q_UNUSED(event)
@@ -77,7 +77,7 @@ bool EventHandler::cost(GameLogic *logic, EventType event, Player *target, QVari
     return true;
 }
 
-bool EventHandler::effect(GameLogic *logic, EventType event, Player *target, QVariant &data, Player *invoker) const
+bool EventHandler::effect(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, Player *invoker) const
 {
     Q_UNUSED(logic)
     Q_UNUSED(event)

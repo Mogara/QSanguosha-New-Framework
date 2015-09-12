@@ -19,7 +19,7 @@
 
 #include "gamelogic.h"
 #include "gamerule.h"
-#include "player.h"
+#include "serverplayer.h"
 
 GameRule::GameRule(GameLogic *logic)
     : m_logic(logic)
@@ -28,20 +28,18 @@ GameRule::GameRule(GameLogic *logic)
     m_events << TurnStart << PhaseProceeding << PhaseEnd << PhaseChanging;
 }
 
-bool GameRule::triggerable(Player *) const
+bool GameRule::triggerable(ServerPlayer *) const
 {
     return true;
 }
 
-bool GameRule::effect(GameLogic *logic, EventType event, Player *current, QVariant &data, Player *) const
+bool GameRule::effect(GameLogic *logic, EventType event, ServerPlayer *current, QVariant &data, Player *) const
 {
     if (logic->skipGameRule())
         return false;
 
-    if (current == NULL) {
-        if (event == GameStart) {
-            onGameStart(logic);
-        }
+    if (event == GameStart) {
+        onGameStart(current);
     } else {
         throw GameFinish;
     }
@@ -49,10 +47,7 @@ bool GameRule::effect(GameLogic *logic, EventType event, Player *current, QVaria
     return false;
 }
 
-void GameRule::onGameStart(GameLogic *logic) const
+void GameRule::onGameStart(ServerPlayer *current) const
 {
-    QList<ServerPlayer *> players = logic->allPlayers();
-    foreach (ServerPlayer *player, players) {
-        //@to-do: draw 4 cards
-    }
+    current->drawCards(4);
 }

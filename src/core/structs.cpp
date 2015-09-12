@@ -30,7 +30,7 @@ QVariant CardsMoveStruct::Area::toVariant() const
 {
     QVariantMap data;
     data["area"] = type;
-    data["ownerId"] = owner->id();
+    data["ownerId"] = owner ? owner->id() : 0;
     data["pile"] = pile;
     return data;
 }

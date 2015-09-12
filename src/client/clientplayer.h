@@ -22,14 +22,21 @@
 
 #include "player.h"
 
+class CClientUser;
+
 class ClientPlayer : public Player
 {
     Q_OBJECT
 
 public:
-    ClientPlayer(QObject *parent = 0);
+    ClientPlayer(CClientUser *user, QObject *parent = 0);
 
     void setId(uint id) { CAbstractPlayer::setId(id); }
+
+    CClientUser *user() const { return m_user; }
+
+private:
+    CClientUser *m_user;
 };
 
 #endif // CLIENTPLAYER_H

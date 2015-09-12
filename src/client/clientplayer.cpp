@@ -1,6 +1,7 @@
 #include "clientplayer.h"
 
-ClientPlayer::ClientPlayer(QObject *parent)
+ClientPlayer::ClientPlayer(CClientUser *user, QObject *parent)
     : Player(parent)
+    , m_user(user)
 {
 }

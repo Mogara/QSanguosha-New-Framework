@@ -87,33 +87,35 @@ void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
 
     QList<ClientPlayer *> players;
     players.reserve(infos.length());
-    for (int i = 0; i < infos.length(); i++)
-        players << new ClientPlayer(client);
 
-    for (int i = 1; i < infos.length(); i++)
-        players.at(i - 1)->setNext(players.at(i));
-    players.last()->setNext(players.first());
-
-    int i = 0;
     foreach (const QVariant &rawInfo, infos) {
         const QVariantMap info = rawInfo.toMap();
-        ClientPlayer *player = players.at(i);
-        player->setId(info["playerId"].toUInt());
-        player->setSeat(i + 1);
-
-        client->m_players[player->id()] = player;
-
         if (info.contains("userId")) {
             uint userId = info["userId"].toUInt();
             CClientUser *user = client->findUser(userId);
-            client->m_player2user[player] = user;
+
+            ClientPlayer *player = new ClientPlayer(user, client);
+            player->setId(info["playerId"].toUInt());
+            client->m_players[player->id()] = player;
             client->m_user2player[user] = player;
             player->setScreenName(user->screenName());
         } else if (info.contains("robotId")) {
             //@to-do:
         }
-        i++;
     }
+
+    if (!players.isEmpty()) {
+        for (int i = 1; i < infos.length(); i++) {
+            Player *prev = players.at(i - 1);
+            prev->setSeat(i);
+            prev->setNext(players.at(i));
+        }
+
+        Player *last = players.last();
+        last->setSeat(players.length());
+        last->setNext(players.first());
+    }
+
 
     emit client->seatArranged();
 }

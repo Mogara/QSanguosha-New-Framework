@@ -54,7 +54,6 @@ private:
     static void ChooseGeneralCommand(QObject *receiver, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
-    QMap<ClientPlayer *, CClientUser *> m_player2user;
     QMap<CClientUser *, ClientPlayer *> m_user2player;
     QMap<uint, Card *> m_cards;//Record card state
 };

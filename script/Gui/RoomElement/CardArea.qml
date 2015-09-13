@@ -59,7 +59,7 @@ Item {
             }
         }
 
-        var parentPos = roomScene.mapFromItem(root, root.x, root.y);
+        var parentPos = roomScene.mapFromItem(root, 0, 0);
         for (i = 0; i < cards.length; i++) {
             card = cards[i];
             card.homeX += parentPos.x;
@@ -73,4 +73,3 @@ Item {
         }
     }
 }
-

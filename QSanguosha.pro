@@ -137,6 +137,7 @@ QML_FILES = \
     script/Gui/RoomElement/Prompt.qml \
     script/Gui/RoomElement/RoleComboBox.qml \
     script/Gui/RoomElement/SimpleRoleIcon.qml \
+    script/Gui/RoomElement/TablePile.qml \
     script/engine.js \
     script/utility.js \
     script/main.qml

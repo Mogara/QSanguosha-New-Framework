@@ -73,8 +73,6 @@ GraphicsBox {
         model: cards
 
         CardItem {
-            onEntered: z++;
-            onExited: z--;
             onReleased: arrangeCards();
         }
     }

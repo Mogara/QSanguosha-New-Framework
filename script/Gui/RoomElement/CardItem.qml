@@ -12,7 +12,9 @@ Item {
     property int homeY: 0
     property real homeOpacity: 1.0
     property int goBackDuration: 500
+    property bool selectable: false
     property bool selected: false
+    property bool draggable: false
     property bool autoBack: true
     property alias glow: glowItem
     property alias footnote: footnoteItem.text
@@ -33,7 +35,6 @@ Item {
     id: root
     width: Device.gu(93)
     height: Device.gu(130)
-    enabled: false
 
     RectangularGlow {
         id: glowItem
@@ -84,9 +85,16 @@ Item {
         glow.samples: 12
     }
 
+    Rectangle {
+        visible: !root.selectable
+        anchors.fill: parent
+        color: Qt.rgba(0, 0, 0, 0.5)
+        opacity: 0.7
+    }
+
     MouseArea {
         anchors.fill: parent
-        drag.target: enabled ? parent : undefined
+        drag.target: draggable ? parent : undefined
         drag.axis: Drag.XAndYAxis
         hoverEnabled: true
 
@@ -99,17 +107,24 @@ Item {
 
         onEntered: {
             parent.entered();
-            if (enabled)
+            if (draggable) {
                 glow.visible = true;
+                root.z++;
+            }
         }
 
         onExited: {
             parent.exited();
-            if (enabled)
+            if (draggable) {
                 glow.visible = false;
+                root.z--;
+            }
         }
 
-        onClicked: parent.clicked();
+        onClicked: {
+            selected = selectable ? !selected : false;
+            parent.clicked();
+        }
     }
 
     ParallelAnimation {

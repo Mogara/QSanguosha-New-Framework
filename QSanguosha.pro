@@ -125,6 +125,7 @@ QML_FILES = \
     script/Gui/RoomElement/GlowText.qml \
     script/Gui/RoomElement/GraphicsBox.qml \
     script/Gui/RoomElement/GuanxingBox.qml \
+    script/Gui/RoomElement/HandcardArea.qml \
     script/Gui/RoomElement/HandcardNumber.qml \
     script/Gui/RoomElement/HpBar.qml \
     script/Gui/RoomElement/IndicatorLine.qml \

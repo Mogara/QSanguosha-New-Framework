@@ -58,7 +58,7 @@ RowLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
-                CardArea {
+                HandcardArea {
                     id: handcardAreaItem
                     Layout.fillWidth: true
                     Layout.fillHeight: true

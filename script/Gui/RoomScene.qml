@@ -70,12 +70,16 @@ RoomScene {
 
                     InvisibleCardArea {
                         id: drawPile
-                        anchors.centerIn: parent
+                        x: parent.width / 2
+                        y: parent.height * 0.7
                     }
 
-                    CardArea {
-                        id: discardPile
-                        visible: false
+                    TablePile {
+                        id: tablePile
+                        width: parent.width * 0.6
+                        height: Device.gu(150)
+                        x: parent.width * 0.2
+                        y: parent.height * 0.5
                     }
                 }
             }
@@ -268,7 +272,7 @@ RoomScene {
     {
         if (seat === dashboard.seatNumber)
             return dashboard;
-        var i = (seat - dashboard.seatNumber + playerNum) % playerNum;
+        var i = (seat - dashboard.seatNumber - 1 + playerNum) % playerNum;
         return photos.itemAt(i);
     }
 
@@ -277,13 +281,16 @@ RoomScene {
         if (area.type === "drawPile") {
             return drawPile;
         } else if (area.type === "table") {
-            return discardPile;
+            return tablePile;
         }
 
         var photo = getItemBySeat(area.seat);
-        if (area.type === "hand")
+        if (!photo)
+            return null;
+
+        if (area.type === "hand") {
             return photo.handcardArea;
-        else if (area.type === "equip")
+        } else if (area.type === "equip")
             return photo.equipArea;
         else if (area.type === "delayedTrick")
             return photo.delayedTrickArea;

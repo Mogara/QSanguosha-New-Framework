@@ -13,7 +13,6 @@ Item {
     property real homeOpacity: 1.0
     property int goBackDuration: 500
     property bool selected: false
-    property bool frozen: false
     property bool autoBack: true
     property alias glow: glowItem
     property alias footnote: footnoteItem.text
@@ -34,6 +33,7 @@ Item {
     id: root
     width: Device.gu(93)
     height: Device.gu(130)
+    enabled: false
 
     RectangularGlow {
         id: glowItem
@@ -86,7 +86,7 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        drag.target: parent
+        drag.target: enabled ? parent : undefined
         drag.axis: Drag.XAndYAxis
         hoverEnabled: true
 
@@ -99,12 +99,14 @@ Item {
 
         onEntered: {
             parent.entered();
-            glow.visible = true;
+            if (enabled)
+                glow.visible = true;
         }
 
         onExited: {
             parent.exited();
-            glow.visible = false;
+            if (enabled)
+                glow.visible = false;
         }
 
         onClicked: parent.clicked();

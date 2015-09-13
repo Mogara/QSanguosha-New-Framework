@@ -12,6 +12,7 @@ Image {
         anchors.fill: parent
         color: "white"
         text: value
+        font.pixelSize: Device.gu(12)
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
 

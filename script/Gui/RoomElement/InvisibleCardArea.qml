@@ -58,6 +58,8 @@ Item {
                 state.homeY = parentPos.y;
                 state.opacity = 0;
                 card = component.createObject(roomScene, state);
+                card.x -= card.width / 2;
+                card.y -= card.height / 2;
                 items.push(card);
                 if (checkExisting) {
                     cards.splice(i, 1);
@@ -80,22 +82,24 @@ Item {
             var parentPos = roomScene.mapFromItem(root, 0, 0);
             for (i = 0; i < pendingInput.length; i++) {
                 card = pendingInput[i];
-                card.homeX = parentPos.x;
-                card.homeY = parentPos.y;
-                card.homeOpacity = 0;
+                card.homeX = parentPos.x - card.width / 2;
+                card.homeY = parentPos.y - card.height / 2;
+                card.homeOpacity = 1;
                 card.destroyOnStop();
             }
 
             for (i = 0; i < pendingInput.length; i++)
-                cards[i].goBack(true);
+                pendingInput[i].goBack(true);
         } else {
             for (i = 0; i < pendingInput.length; i++) {
                 card = pendingInput[i];
-                card.x = parentPos.x;
-                card.y = parentPos.y;
-                card.opacity = 0;
+                card.x = parentPos.x - card.width / 2;
+                card.y = parentPos.y - card.height / 2;
+                card.opacity = 1;
                 card.destroy();
             }
         }
+
+        pendingInput = [];
     }
 }

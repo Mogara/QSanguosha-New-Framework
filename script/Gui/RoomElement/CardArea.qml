@@ -1,6 +1,5 @@
 import QtQuick 2.4
 import Cardirector.Device 1.0
-import "../../utility.js" as Utility
 
 Item {
     property var cards: []
@@ -19,18 +18,20 @@ Item {
         length = cards.length;
     }
 
-    function remove(cids)
+    function remove(outputs)
     {
-        var outputs = [];
+        var result = [];
         for (var i = 0; i < cards.length; i++) {
-            if (cids.contains(cards[i].cid)) {
-                outputs.push(cards[i]);
-                cards.splice(i, 1);
-                i--;
+            for (var j = 0; j < outputs.length; j++) {
+                if (outputs[j].cid === cards[i].cid) {
+                    result.push(cards[i]);
+                    cards.splice(i, 1);
+                    i--;
+                }
             }
         }
         length = cards.length;
-        return outputs;
+        return result;
     }
 
     function updateCardPosition(animated)

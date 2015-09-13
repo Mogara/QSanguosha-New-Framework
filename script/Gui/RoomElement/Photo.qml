@@ -12,6 +12,7 @@ Item {
     property alias handcardNum: handcardNumItem.value
     property alias maxHp: hpBar.maxValue
     property alias hp: hpBar.value
+    property alias handcardArea: handcardAreaItem
 
     id: root
     width: Device.gu(157)
@@ -154,5 +155,10 @@ Item {
     RoleComboBox {
         x: parent.width - width - Device.gu(5)
         y: Device.gu(1)
+    }
+
+    InvisibleCardArea {
+        id: handcardAreaItem
+        anchors.centerIn: parent
     }
 }

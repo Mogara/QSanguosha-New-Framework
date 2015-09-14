@@ -25,22 +25,28 @@ CardArea::CardArea(CardArea::Type type, Player *owner)
 {
 }
 
-bool CardArea::add(Card *card) {
+bool CardArea::add(Card *card, Direction direction) {
     if (m_cards.contains(card))
         return false;
-    m_cards << card;
+    if (direction == Bottom)
+        m_cards.prepend(card);
+    else
+        m_cards.append(card);
     if (m_changeSignal)
         m_changeSignal();
     return true;
 }
 
-bool CardArea::add(const QList<Card *> &cards)
+bool CardArea::add(const QList<Card *> &cards, Direction direction)
 {
     int num = length();
     foreach (Card *card, cards) {
         if (m_cards.contains(card))
             continue;
-        m_cards << card;
+        if (direction == Bottom)
+            m_cards.prepend(card);
+        else
+            m_cards.append(card);
     }
 
     if (m_changeSignal && num != length())
@@ -70,4 +76,18 @@ bool CardArea::remove(const QList<Card *> &cards)
             m_changeSignal();
 
     return num - cards.length() == length();
+}
+
+QList<Card *> CardArea::takeFirst(int n)
+{
+    QList<Card *> cards = m_cards.mid(0, n);
+    m_cards = m_cards.mid(n + 1);
+    return cards;
+}
+
+QList<Card *> CardArea::takeLast(int n)
+{
+    QList<Card *> cards = m_cards.mid(length() - n);
+    m_cards = m_cards.mid(0, length() - n);
+    return cards;
 }

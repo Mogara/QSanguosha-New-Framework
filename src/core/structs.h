@@ -34,6 +34,7 @@ struct CardsMoveStruct
     struct Area
     {
         CardArea::Type type;
+        CardArea::Direction direction;
         Player *owner;
         QString pile;
 

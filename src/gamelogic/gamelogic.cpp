@@ -267,11 +267,9 @@ void GameLogic::moveCards(QList<CardsMoveStruct> moves)
             continue;
 
         if (from->remove(move.cards)) {
-            to->add(move.cards);
+            to->add(move.cards, move.to.direction);
         } else {
             qWarning("Moving source from an incorrect source.");
-            moves.removeAt(i);
-            i--;
         }
     }
 
@@ -419,8 +417,6 @@ CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)
     } else {
         switch (area.type) {
         case CardArea::DrawPile:
-        case CardArea::DrawPileTop:
-        case CardArea::DrawPileBottom:
             return m_drawPile;
         case CardArea::DiscardPile:
             return m_discardPile;

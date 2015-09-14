@@ -33,8 +33,15 @@ public:
     {
         Unknown,
         Hand, Equip, DelayedTrick, Judge,
-        DrawPile, DrawPileTop, DrawPileBottom, DiscardPile,
+        DrawPile, DiscardPile,
         Special, Table, Wugu
+    };
+
+    enum Direction
+    {
+        UndefinedDirection,
+        Top,
+        Bottom
     };
 
     typedef std::function<void()> ChangeSignal;
@@ -45,14 +52,28 @@ public:
 
     void setSignal(ChangeSignal signal) { m_changeSignal = signal; }
 
-    bool add(Card *card);
-    bool add(const QList<Card *> &cards);
+    bool add(Card *card, Direction direction = UndefinedDirection);
+    bool add(const QList<Card *> &cards, Direction direction = UndefinedDirection);
     bool remove(Card *card);
     bool remove(const QList<Card *> &cards);
 
+    Card *first() const { return m_cards.first(); }
+    Card *takeFirst() { return m_cards.takeFirst(); }
+
+    Card *last() const { return m_cards.last(); }
+    Card *takeLast() { return m_cards.takeLast(); }
+
+    QList<Card *> first(int n) const { return m_cards.mid(0, n); }
+    QList<Card *> takeFirst(int n);
+
+    QList<Card *> last(int n) const { return m_cards.mid(m_cards.length() - n); }
+    QList<Card *> takeLast(int n);
+
     bool contains(Card *card) const { return m_cards.contains(card); }
+
     QList<Card *> &cards() { return m_cards; }
     QList<Card *> cards() const { return m_cards; }
+
     int length() const { return m_cards.length(); }
     int size() const { return m_cards.size(); }
 

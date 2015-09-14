@@ -33,8 +33,6 @@ static QString AreaTypeToString(CardArea::Type type)
     case CardArea::DiscardPile:
         return "table";
     case CardArea::DrawPile:
-    case CardArea::DrawPileTop:
-    case CardArea::DrawPileBottom:
         return "drawPile";
     case CardArea::Hand:
         return "hand";

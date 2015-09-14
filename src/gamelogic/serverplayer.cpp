@@ -35,9 +35,10 @@ void ServerPlayer::drawCards(int n)
 {
     CardsMoveStruct move;
     move.from.type = CardArea::DrawPile;
+    move.from.direction = CardArea::Top;
     move.to.type = CardArea::Hand;
     move.to.owner = this;
-    move.cards = m_logic->drawPile()->cards().mid(0, n);
+    move.cards = m_logic->drawPile()->first(n);
     m_logic->moveCards(move);
 }
 

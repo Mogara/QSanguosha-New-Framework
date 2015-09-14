@@ -23,6 +23,7 @@
 
 CardsMoveStruct::Area::Area()
     : owner(NULL)
+    , direction(CardArea::UndefinedDirection)
 {
 }
 
@@ -30,6 +31,7 @@ QVariant CardsMoveStruct::Area::toVariant() const
 {
     QVariantMap data;
     data["type"] = type;
+    data["direction"] = direction;
     data["ownerId"] = owner ? owner->id() : 0;
     data["pile"] = pile;
     return data;

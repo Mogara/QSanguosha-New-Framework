@@ -22,6 +22,7 @@
 
 #include "event.h"
 #include "player.h"
+#include "structs.h"
 
 class CRoom;
 class CServerAgent;
@@ -42,6 +43,9 @@ public:
     ServerPlayer *nextAlive(int step = 1, bool ignoreRemoved = true) const{ return qobject_cast<ServerPlayer *>(Player::nextAlive(step, ignoreRemoved)); }
 
     void drawCards(int n);
+    void play();
+    void play(const QList<Phase> &phases);
+    void activate(CardUseStruct &use);
 
     Event askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable);
     void broadcastProperty(const char *name) const;

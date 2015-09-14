@@ -21,13 +21,14 @@
 #define STRUCTS_H
 
 #include "cardarea.h"
+#include "player.h"
 
 #include <QList>
 #include <QString>
 #include <QVariant>
 
 class Card;
-class Player;
+class ServerPlayer;
 
 struct CardsMoveStruct
 {
@@ -57,5 +58,35 @@ struct CardsMoveStruct
 };
 
 Q_DECLARE_METATYPE(QList<CardsMoveStruct>)
+
+struct PhaseChangeStruct
+{
+    Player::Phase from;
+    Player::Phase to;
+};
+
+Q_DECLARE_METATYPE(PhaseChangeStruct)
+
+struct CardUseStruct
+{
+    enum Reason
+    {
+        UnknownReason = 0x00,
+        PlayReason = 0x01,
+        ResponseReason = 0x02,
+        ResponseUseReason = 0x12
+    };
+
+    ServerPlayer *from;
+    QList<ServerPlayer *> to;
+    Card *card;
+    QList<ServerPlayer *> nullifiedList;
+    bool isOwnerUse;
+    bool addHistory;
+    bool isHandcard;
+    Reason reason;
+
+    CardUseStruct();
+};
 
 #endif // STRUCTS_H

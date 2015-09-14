@@ -52,6 +52,8 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(int handcardNum READ handcardNum NOTIFY handCardNumChanged)
     Q_PROPERTY(int equipNum READ equipNum NOTIFY equipNumChanged)
     Q_PROPERTY(int delayedTrickNum READ delayedTrickNum NOTIFY delayedTrickNumChanged)
+    Q_PROPERTY(int turnCount READ turnCount WRITE setTurnCount)
+    Q_PROPERTY(int faceUp READ faceUp WRITE setFaceUp NOTIFY faceUpChanged)
 
     Q_ENUMS(Phase)
     Q_ENUMS(Role)
@@ -126,6 +128,12 @@ public:
     bool hasShownGeneral() const { return hasShownHeadGeneral() || hasShownDeputyGeneral(); }
     bool hasShownBothGenerals() const { return hasShownHeadGeneral() && hasShownDeputyGeneral(); }
 
+    int turnCount() const { return m_turnCount; }
+    void setTurnCount(int count) { m_turnCount = count; }
+
+    bool faceUp() const { return m_faceUp; }
+    void setFaceUp(bool faceUp);
+
     CardArea *handcards() { return m_handCards; }
     const CardArea *handcards() const { return m_handCards; }
     int handcardNum() const;
@@ -155,6 +163,7 @@ signals:
     void generalChanged();
     void headGeneralChanged();
     void deputyGeneralChanged();
+    void faceUpChanged();
     void handCardNumChanged();
     void equipNumChanged();
     void delayedTrickNumChanged();
@@ -172,6 +181,8 @@ protected:
     const General *m_deputyGeneral;
     bool m_headGeneralShown;
     bool m_deputyGeneralShown;
+    int m_turnCount;
+    bool m_faceUp;
 
     CardArea *m_handCards;
     CardArea *m_equips;

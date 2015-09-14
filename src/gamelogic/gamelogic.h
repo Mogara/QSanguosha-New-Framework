@@ -67,6 +67,10 @@ public:
     void moveCards(const CardsMoveStruct &move);
     void moveCards(QList<CardsMoveStruct> moves);
 
+    void useCard(const CardUseStruct &use);
+
+    Card *findCard(uint id) const { return m_cards.value(id); }
+
 protected:
     CAbstractPlayer *createPlayer(CServerUser *user);
     CAbstractPlayer *createPlayer(CServerRobot *robot);
@@ -83,7 +87,7 @@ private:
     QList<ServerPlayer *> m_extraTurns;
     const GameRule *m_gameRule;
     QList<const Package *> m_packages;
-    QList<Card *> m_cards;
+    QMap<uint, Card *> m_cards;
     bool m_globalRequestEnabled;
     bool m_skipGameRule;
     int m_round;

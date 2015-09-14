@@ -38,6 +38,10 @@ enum EventType
     BeforeCardsMove,
     CardsMove,
 
+    DrawNCards,
+    AfterDrawNCards,
+    CountMaxCardNum,
+
     EventTypeCount
 };
 

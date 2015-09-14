@@ -196,6 +196,11 @@ void Client::MoveCardsCommand(QObject *receiver, const QVariant &data)
     emit client->cardsMoved(moves);
 }
 
+void Client::UseCardCommand(QObject *receiver, const QVariant &data)
+{
+    Client *client = qobject_cast<Client *>(receiver);
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -210,5 +215,6 @@ void Client::Init()
     AddCallback(S_COMMAND_MOVE_CARDS, MoveCardsCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralCommand);
+    AddInteraction(S_COMMAND_USE_CARD, UseCardCommand);
 }
 C_INITIALIZE_CLASS(Client)

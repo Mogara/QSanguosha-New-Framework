@@ -58,6 +58,7 @@ private:
     static void PrepareCardsCommand(QObject *receiver, const QVariant &data);
     static void ChooseGeneralCommand(QObject *receiver, const QVariant &data);
     static void MoveCardsCommand(QObject *receiver, const QVariant &data);
+    static void UseCardCommand(QObject *receiver, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

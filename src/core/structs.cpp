@@ -74,3 +74,13 @@ QVariant CardsMoveStruct::toVariant(bool open) const
     data["isLastHandCard"] = isLastHandCard;
     return data;
 }
+
+CardUseStruct::CardUseStruct()
+    : from(NULL)
+    , card(NULL)
+    , isOwnerUse(true)
+    , addHistory(true)
+    , isHandcard(true)
+    , reason(PlayReason)
+{
+}

@@ -287,6 +287,11 @@ void GameLogic::moveCards(QList<CardsMoveStruct> moves)
         trigger(CardsMove, player, moveData);
 }
 
+void GameLogic::useCard(const CardUseStruct &use)
+{
+    //@to-do:
+}
+
 CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
 {
     C_UNUSED(user);
@@ -335,7 +340,7 @@ void GameLogic::prepareToStart()
         generals << package->generals();
         QList<const Card *> cards = package->cards();
         foreach (const Card *card, cards)
-            m_cards << card->clone();
+            m_cards.insert(card->id(), card->clone());
     }
 
     //Prepare cards
@@ -397,7 +402,8 @@ void GameLogic::prepareToStart()
         player->setDeputyGeneral(generals.at(1));
     }
 
-    m_drawPile->add(m_cards);
+    foreach (Card *card, m_cards)
+        m_drawPile->add(card);
 }
 
 CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)

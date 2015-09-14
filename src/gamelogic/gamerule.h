@@ -20,6 +20,9 @@
 #ifndef GAMERULE_H
 #define GAMERULE_H
 
+#include <QMap>
+#include <cglobal.h>
+
 #include "eventhandler.h"
 
 class GameLogic;
@@ -33,9 +36,14 @@ public:
     bool effect(GameLogic *logic, EventType event, ServerPlayer *current, QVariant &data, Player *) const override;
 
 protected:
-    void onGameStart(ServerPlayer *current) const;
+    typedef void (GameRule::*Callback)(ServerPlayer *, QVariant &) const;
+    void onGameStart(ServerPlayer *current, QVariant &) const;
+    void onTurnStart(ServerPlayer *current, QVariant &) const;
+    void onPhaseProceeding(ServerPlayer *current, QVariant &) const;
 
     GameLogic *m_logic;
+    static QMap<EventType, Callback> m_callbacks;
+    C_DECLARE_INITIALIZER(GameRule)
 };
 
 #endif // GAMERULE_H

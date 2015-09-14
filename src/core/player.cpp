@@ -28,6 +28,7 @@ Player::Player(QObject *parent)
     , m_alive(true)
     , m_headGeneral(NULL)
     , m_deputyGeneral(NULL)
+    , m_turnCount(0)
 {
     m_handCards = new CardArea(CardArea::Hand, this);
     m_handCards->setSignal([this](){
@@ -154,6 +155,12 @@ void Player::setDeputyGeneral(const General *general)
 {
     m_deputyGeneral = general;
     emit deputyGeneralChanged();
+}
+
+void Player::setFaceUp(bool faceUp)
+{
+    m_faceUp = faceUp;
+    emit faceUpChanged();
 }
 
 int Player::handcardNum() const

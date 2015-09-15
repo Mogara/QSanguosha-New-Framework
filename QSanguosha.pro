@@ -98,7 +98,7 @@ macx {
 android {
     CONFIG += embeded_resource
     QT += androidextras
-    ANDROID_EXTRA_LIBS += $$PWD/Cardirector/lib/libCardirector.so
+    !contains(DEFINES, MCD_STATIC): ANDROID_EXTRA_LIBS += $$PWD/Cardirector/lib/libCardirector.so
 }
 
 LIBS += -l$$qtLibraryTarget(Cardirector)
@@ -175,7 +175,9 @@ CONFIG(embeded_resource){
     RESOURCES += \
         image.qrc \
         qml.qrc
-    DEFINES += EMBEDED_RESOURCE
+    DEFINES += QSanguoshaSource=\\\"qrc:/\\\"
+} else {
+    DEFINES += QSanguoshaSource=""
 }
 
 lupdate_only {

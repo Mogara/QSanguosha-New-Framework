@@ -42,6 +42,19 @@ enum EventType
     AfterDrawNCards,
     CountMaxCardNum,
 
+    PreCardUsed,
+    CardUsed,
+    TargetChoosing,
+    TargetConfirming,
+    TargetChosen,
+    TargetConfirmed,
+    CardEffect,
+    CardEffected,
+    CardEffectConfirmed,
+    PostCardEffected,
+    CardFinished,
+    TrickCardCanceling,
+
     EventTypeCount
 };
 

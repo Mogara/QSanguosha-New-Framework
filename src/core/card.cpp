@@ -18,6 +18,7 @@
 *********************************************************************/
 
 #include "card.h"
+#include "gamelogic.h"
 
 Card::Card(Suit suit, int number)
     : m_suit(suit)
@@ -53,7 +54,7 @@ uint Card::effectiveId() const
         return m_id;
 
     if (m_subcards.length() == 1)
-        return m_subcards.first()->number();
+        return m_subcards.first()->effectiveId();
 
     return 0;
 }
@@ -146,9 +147,32 @@ QString Card::typeString() const
         return "skill";
 }
 
-void Card::addSubcard(const Card *card)
+void Card::addSubcard(Card *card)
 {
     m_subcards << card;
+}
+
+Card *Card::realCard()
+{
+    if (id() > 0)
+        return this;
+
+    if (m_subcards.length() == 1)
+        return m_subcards.first();
+
+    return NULL;
+}
+
+QList<Card *> Card::realCards()
+{
+    QList<Card *> cards;
+    if (id() > 0) {
+        cards << this;
+    } else {
+        foreach (Card *card, m_subcards)
+            cards << card->realCard();
+    }
+    return cards;
 }
 
 bool Card::targetFeasible(const QList<const Player *> &targets, const Player *self) const
@@ -170,4 +194,18 @@ bool Card::isAvailable(const Player *player) const
     //@todo:
     Q_UNUSED(player)
     return false;
+}
+
+void Card::onUse(GameLogic *logic, CardUseStruct &use) const
+{
+    logic->sortByActionOrder(use.to);
+
+    QVariant useData = QVariant::fromValue(use);
+    logic->trigger(PreCardUsed, use.from, useData);
+    use = useData.value<CardUseStruct>();
+
+    CardsMoveStruct move;
+    move.to.type = CardArea::Table;
+    move.cards = use.card->realCards();
+    logic->moveCards(move);
 }

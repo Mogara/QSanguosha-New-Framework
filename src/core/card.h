@@ -24,7 +24,10 @@
 #include <QList>
 #include <QSet>
 
+class GameLogic;
 class Player;
+
+#include "structs.h"
 
 class Card : public QObject
 {
@@ -93,8 +96,11 @@ public:
     Type type() const { return m_type; }
     QString typeString() const;
 
-    void addSubcard(const Card *card);
-    QList<const Card *> subcards() const { return m_subcards; }
+    void addSubcard(Card *card);
+    QList<Card *> subcards() const { return m_subcards; }
+
+    Card *realCard();
+    QList<Card *> realCards();
 
     void setTransferable(bool transferable) { m_transferable = transferable; }
     bool isTransferable() const { return m_transferable; }
@@ -115,6 +121,7 @@ public:
     virtual bool targetFilter(const QList<const Player *> targets, const Player *toSelect, const Player *self) const;
     virtual bool isAvailable(const Player *player) const;
 
+    virtual void onUse(GameLogic *logic, CardUseStruct &use) const;
 
 protected:
     uint m_id;
@@ -129,7 +136,7 @@ protected:
     bool m_targetFixed;
 
     QString m_skillName;
-    QList<const Card *> m_subcards;
+    QList<Card *> m_subcards;
     QSet<QString> m_flags;
 };
 

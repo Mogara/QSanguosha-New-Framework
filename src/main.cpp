@@ -42,11 +42,8 @@ int main(int argc, char *argv[])
     app.installTranslator(&translator);
 
     CMainWindow window;
-#ifdef EMBEDED_RESOURCE
-    window.setSource(QUrl(QStringLiteral("qrc:/script/main.qml")));
-#else
-    window.setSource(QUrl(QStringLiteral("script/main.qml")));
-#endif
+    window.setIcon(QIcon(QSanguoshaSource"image/mogara/logo.png"));
+    window.setSource(QUrl(QStringLiteral(QSanguoshaSource"script/main.qml")));
     window.show();
 
     cRegisterUrlScheme(window.title());

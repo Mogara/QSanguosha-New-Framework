@@ -91,4 +91,17 @@ struct CardUseStruct
 
 Q_DECLARE_METATYPE(CardUseStruct)
 
+struct CardEffectStruct
+{
+    Card *card;
+    ServerPlayer *from;
+    ServerPlayer *to;
+    bool multiple;  //It's true iff the card has more than 1 target
+    bool nullified; //Does not make sense if it's a skill card
+
+    CardEffectStruct();
+};
+
+Q_DECLARE_METATYPE(CardEffectStruct)
+
 #endif // STRUCTS_H

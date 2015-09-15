@@ -85,3 +85,13 @@ CardUseStruct::CardUseStruct()
     , reason(PlayReason)
 {
 }
+
+
+CardEffectStruct::CardEffectStruct()
+    : card(NULL)
+    , from(NULL)
+    , to(NULL)
+    , multiple(false)
+    , nullified(false)
+{
+}

@@ -55,6 +55,7 @@ public:
     ServerPlayer *findPlayer(CServerAgent *agent) const;
 
     QList<ServerPlayer *> allPlayers(bool includeDead = false) const;
+    void sortByActionOrder(QList<ServerPlayer *> &players) const;
 
     void addExtraTurn(ServerPlayer *player) { m_extraTurns << player; }
     QList<ServerPlayer *> extraTurns() const { return m_extraTurns; }
@@ -63,6 +64,8 @@ public:
     bool skipGameRule() const { return m_skipGameRule; }
 
     const CardArea *drawPile() const { return m_drawPile; }
+    const CardArea *discardPile() const { return m_discardPile; }
+    const CardArea *table() const { return m_table; }
 
     void moveCards(const CardsMoveStruct &move);
     void moveCards(QList<CardsMoveStruct> moves);
@@ -95,6 +98,8 @@ private:
     CardArea *m_drawPile;
     CardArea *m_discardPile;
     CardArea *m_table;
+
+    QMap<Card *, CardArea *> m_cardPosition;
 };
 
 #endif // CGAMELOGIC_H

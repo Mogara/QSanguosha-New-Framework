@@ -22,8 +22,9 @@
 #include "structs.h"
 
 CardsMoveStruct::Area::Area()
-    : owner(NULL)
+    : type(CardArea::Unknown)
     , direction(CardArea::UndefinedDirection)
+    , owner(NULL)
 {
 }
 
@@ -33,7 +34,7 @@ QVariant CardsMoveStruct::Area::toVariant() const
     data["type"] = type;
     data["direction"] = direction;
     data["ownerId"] = owner ? owner->id() : 0;
-    data["pile"] = pile;
+    data["name"] = name;
     return data;
 }
 

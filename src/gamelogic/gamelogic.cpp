@@ -246,6 +246,19 @@ QList<ServerPlayer *> GameLogic::allPlayers(bool includeDead) const
     return allPlayers;
 }
 
+void GameLogic::sortByActionOrder(QList<ServerPlayer *> &players) const
+{
+    QList<ServerPlayer *> allPlayers = this->allPlayers(true);
+
+    QMap<ServerPlayer *, int> actionOrder;
+    foreach (ServerPlayer *player, players)
+        actionOrder[player] = allPlayers.indexOf(player);
+
+    qSort(allPlayers.begin(), allPlayers.end(), [&actionOrder](ServerPlayer *a, ServerPlayer *b){
+        return actionOrder.value(a) < actionOrder.value(b);
+    });
+}
+
 void GameLogic::moveCards(const CardsMoveStruct &move)
 {
     moveCards(QList<CardsMoveStruct>() << move);
@@ -253,6 +266,38 @@ void GameLogic::moveCards(const CardsMoveStruct &move)
 
 void GameLogic::moveCards(QList<CardsMoveStruct> moves)
 {
+    //Fill card source information
+    for (int i = 0, maxi = moves.length(); i < maxi; i++) {
+        CardsMoveStruct &move = moves[i];
+        if (move.from.type != CardArea::Unknown)
+            continue;
+
+        QMap<CardArea *, QList<Card *>> cardSource;
+        foreach (Card *card, move.cards) {
+            CardArea *from = m_cardPosition[card];
+            if (from == NULL)
+                continue;
+            cardSource[from].append(card);
+        }
+
+        QMapIterator<CardArea *, QList<Card *>> iter(cardSource);
+        while (iter.hasNext()) {
+            iter.next();
+            CardArea *from = iter.key();
+            CardsMoveStruct submove;
+            submove.from.type = from->type();
+            submove.from.owner = from->owner();
+            submove.from.name = from->name();
+            submove.cards = iter.value();
+            submove.to = move.to;
+            moves << submove;
+        }
+
+        moves.removeAt(i);
+        i--;
+        maxi--;
+    }
+
     QList<ServerPlayer *> allPlayers = this->allPlayers();
     QVariant moveData = QVariant::fromValue(moves);
     foreach (ServerPlayer *player, allPlayers)
@@ -266,10 +311,13 @@ void GameLogic::moveCards(QList<CardsMoveStruct> moves)
         if (from == NULL || to == NULL)
             continue;
 
-        if (from->remove(move.cards)) {
-            to->add(move.cards, move.to.direction);
-        } else {
-            qWarning("Moving source from an incorrect source.");
+        foreach (Card *card, move.cards) {
+            if (from != m_cardPosition.value(card))
+                continue;
+            if (from->remove(card)) {
+                to->add(card, move.to.direction);
+                m_cardPosition[card] = to;
+            }
         }
     }
 
@@ -402,8 +450,10 @@ void GameLogic::prepareToStart()
         player->setDeputyGeneral(generals.at(1));
     }
 
-    foreach (Card *card, m_cards)
+    foreach (Card *card, m_cards) {
         m_drawPile->add(card);
+        m_cardPosition[card] = m_drawPile;
+    }
 }
 
 CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)

@@ -50,7 +50,7 @@ static QVariant AreaToVariant(const CardsMoveStruct::Area area)
     QVariantMap data;
     data["seat"] = area.owner ? area.owner->seat() : 0;
     data["type"] = AreaTypeToString(area.type);
-    data["pile"] = area.pile;
+    data["name"] = area.name;
     return data;
 }
 

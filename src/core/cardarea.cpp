@@ -19,9 +19,10 @@
 
 #include "cardarea.h"
 
-CardArea::CardArea(CardArea::Type type, Player *owner)
+CardArea::CardArea(CardArea::Type type, Player *owner, const QString &name)
     : m_type(type)
     , m_owner(owner)
+    , m_name(name)
 {
 }
 

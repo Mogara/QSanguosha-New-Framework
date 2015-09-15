@@ -165,11 +165,11 @@ void Client::MoveCardsCommand(QObject *receiver, const QVariant &data)
         CardsMoveStruct move;
         move.from.type = static_cast<CardArea::Type>(from["type"].toInt());
         move.from.direction = static_cast<CardArea::Direction>(from["direction"].toInt());
-        move.from.pile = from["pile"].toString();
+        move.from.name = from["name"].toString();
         move.from.owner = client->findPlayer(from["ownerId"].toUInt());
         move.to.type = static_cast<CardArea::Type>(to["type"].toInt());
         move.to.direction = static_cast<CardArea::Direction>(from["direction"].toInt());
-        move.to.pile = to["pile"].toString();
+        move.to.name = to["name"].toString();
         move.to.owner = client->findPlayer(to["ownerId"].toInt());
         move.isOpen = to["isOpen"].toBool();
         move.isLastHandCard = to["isLastHandCard"].toBool();

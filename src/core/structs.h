@@ -37,7 +37,7 @@ struct CardsMoveStruct
         CardArea::Type type;
         CardArea::Direction direction;
         Player *owner;
-        QString pile;
+        QString name;
 
         Area();
         QVariant toVariant() const;
@@ -88,5 +88,7 @@ struct CardUseStruct
 
     CardUseStruct();
 };
+
+Q_DECLARE_METATYPE(CardUseStruct)
 
 #endif // STRUCTS_H

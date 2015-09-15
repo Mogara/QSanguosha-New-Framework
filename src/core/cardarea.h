@@ -46,9 +46,10 @@ public:
 
     typedef std::function<void()> ChangeSignal;
 
-    CardArea(Type type, Player *owner = NULL);
+    CardArea(Type type, Player *owner = NULL, const QString &name = QString());
     Type type() const { return m_type; }
     Player *owner() const { return m_owner; }
+    QString name() const { return m_name; }
 
     void setSignal(ChangeSignal signal) { m_changeSignal = signal; }
 
@@ -80,6 +81,7 @@ public:
 private:
     Type m_type;
     Player *m_owner;
+    QString m_name;
     QList<Card *> m_cards;
     ChangeSignal m_changeSignal;
 };

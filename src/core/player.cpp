@@ -177,3 +177,11 @@ int Player::delayedTrickNum() const
 {
     return m_delayedTricks->length();
 }
+
+void Player::addCardHistory(const QString &name, int times)
+{
+    if (m_cardHistory.contains(name))
+        m_cardHistory[name] += times;
+    else
+        m_cardHistory[name] = times;
+}

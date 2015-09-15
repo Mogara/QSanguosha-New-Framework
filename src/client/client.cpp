@@ -201,6 +201,24 @@ void Client::UseCardCommand(QObject *receiver, const QVariant &data)
     Client *client = qobject_cast<Client *>(receiver);
 }
 
+void Client::AddCardHistoryCommand(QObject *receiver, const QVariant &data)
+{
+    Client *client = qobject_cast<Client *>(receiver);
+    ClientPlayer *self = client->m_user2player.value(client->self());
+
+    if (data.isNull()) {
+        self->clearCardHistory();
+    } else {
+        QVariantList dataList = data.toList();
+        if (dataList.size() != 2)
+            return;
+
+        QString name = dataList.at(0).toString();
+        int times = dataList.at(1).toInt();
+        self->addCardHistory(name, times);
+    }
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -213,6 +231,7 @@ void Client::Init()
     AddCallback(S_COMMAND_ARRANGE_SEAT, ArrangeSeatCommand);
     AddCallback(S_COMMAND_PREPARE_CARDS, PrepareCardsCommand);
     AddCallback(S_COMMAND_MOVE_CARDS, MoveCardsCommand);
+    AddCallback(S_COMMAND_ADD_CARD_HISTORY, AddCardHistoryCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardCommand);

@@ -132,3 +132,18 @@ void ServerPlayer::broadcastProperty(const char *name) const
     data << property(name);
     m_room->broadcastNotification(S_COMMAND_UPDATE_PLAYER_PROPERTY, data);
 }
+
+void ServerPlayer::addCardHistory(const QString &name, int times)
+{
+    Player::addCardHistory(name, times);
+    QVariantList data;
+    data << name;
+    data << times;
+    m_agent->notify(S_COMMAND_ADD_CARD_HISTORY, data);
+}
+
+void ServerPlayer::clearCardHistory()
+{
+    Player::clearCardHistory();
+    m_agent->notify(S_COMMAND_ADD_CARD_HISTORY);
+}

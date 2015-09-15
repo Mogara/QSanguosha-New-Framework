@@ -149,6 +149,10 @@ public:
     CardArea *judgeCards() { return m_judgeCards; }
     const CardArea *judgeCards() const { return m_judgeCards; }
 
+    int cardHistory(const QString &name) const { return m_cardHistory.value(name); }
+    void addCardHistory(const QString &name, int times = 1);
+    void clearCardHistory() { m_cardHistory.clear(); }
+
 signals:
     void screenNameChanged();
     void hpChanged();
@@ -188,6 +192,8 @@ protected:
     CardArea *m_equips;
     CardArea *m_delayedTricks;
     CardArea *m_judgeCards;
+
+    QHash<QString, int> m_cardHistory;
 };
 
 #endif // PLAYER_H

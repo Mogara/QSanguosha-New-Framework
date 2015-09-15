@@ -50,6 +50,9 @@ public:
     Event askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable);
     void broadcastProperty(const char *name) const;
 
+    void addCardHistory(const QString &name, int times = 1);
+    void clearCardHistory();
+
 private:
     GameLogic *m_logic;
     CRoom *m_room;

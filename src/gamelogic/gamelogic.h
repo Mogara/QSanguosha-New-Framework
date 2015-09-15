@@ -55,6 +55,7 @@ public:
     ServerPlayer *findPlayer(CServerAgent *agent) const;
 
     QList<ServerPlayer *> allPlayers(bool includeDead = false) const;
+    QList<ServerPlayer *> otherPlayers(ServerPlayer *except, bool includeDead = false) const;
     void sortByActionOrder(QList<ServerPlayer *> &players) const;
 
     void addExtraTurn(ServerPlayer *player) { m_extraTurns << player; }

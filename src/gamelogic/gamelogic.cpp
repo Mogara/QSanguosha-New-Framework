@@ -246,6 +246,14 @@ QList<ServerPlayer *> GameLogic::allPlayers(bool includeDead) const
     return allPlayers;
 }
 
+QList<ServerPlayer *> GameLogic::otherPlayers(ServerPlayer *except, bool includeDead) const
+{
+    QList<ServerPlayer *> players = allPlayers(includeDead);
+    if (except && (except->isAlive() || includeDead))
+        players.removeOne(except);
+    return players;
+}
+
 void GameLogic::sortByActionOrder(QList<ServerPlayer *> &players) const
 {
     QList<ServerPlayer *> allPlayers = this->allPlayers(true);

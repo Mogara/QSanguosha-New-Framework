@@ -335,9 +335,38 @@ void GameLogic::moveCards(QList<CardsMoveStruct> moves)
         trigger(CardsMove, player, moveData);
 }
 
-void GameLogic::useCard(const CardUseStruct &use)
+bool GameLogic::useCard(CardUseStruct &use)
 {
-    //@to-do:
+    if (use.card == NULL || use.from == NULL)
+        return false;
+
+    //Initialize isHandcard
+    use.isHandcard = true;
+    QList<Card *> realCards = use.card->realCards();
+    foreach (Card *card, realCards) {
+        CardArea *area = m_cardPosition[card];
+        if (area == NULL || area->owner() != use.from || area->type() != CardArea::Hand) {
+            use.isHandcard = false;
+            break;
+        }
+    }
+
+    if (use.from->phase() == Player::Play && use.addHistory)
+        use.from->addCardHistory(use.card->objectName());
+
+    try {
+        use.card->onUse(this, use);
+
+        QVariant data = QVariant::fromValue(use);
+        trigger(CardUsed, use.from, data);
+        trigger(CardFinished, use.from, data);
+
+    } catch (EventType e) {
+        //@to-do: handle TurnBroken and StageChange
+        throw e;
+    }
+
+    return true;
 }
 
 bool GameLogic::takeCardEffect(const CardEffectStruct &effect)

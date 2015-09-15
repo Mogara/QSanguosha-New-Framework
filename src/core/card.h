@@ -122,6 +122,9 @@ public:
     virtual bool isAvailable(const Player *player) const;
 
     virtual void onUse(GameLogic *logic, CardUseStruct &use) const;
+    virtual void use(GameLogic *logic, ServerPlayer *source, QList<ServerPlayer *> &targets);
+    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual bool isCancelable(const CardEffectStruct &effect) const;
 
 protected:
     uint m_id;

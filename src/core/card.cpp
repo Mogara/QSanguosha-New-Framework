@@ -209,3 +209,34 @@ void Card::onUse(GameLogic *logic, CardUseStruct &use) const
     move.cards = use.card->realCards();
     logic->moveCards(move);
 }
+
+void Card::use(GameLogic *logic, ServerPlayer *source, QList<ServerPlayer *> &targets)
+{
+    foreach (ServerPlayer *target, targets) {
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = source;
+        effect.to = target;
+        effect.multiple = (targets.length() > 1);
+        //@to-do: effect.nullified = ?
+        logic->takeCardEffect(effect);
+    }
+
+    const CardArea *table = logic->table();
+    if (table->length() > 0) {
+        CardsMoveStruct move;
+        move.cards = table->cards();
+        move.to.type = CardArea::DiscardPile;
+        move.isOpen = true;
+        logic->moveCards(move);
+    }
+}
+
+void Card::onEffect(const CardEffectStruct &) const
+{
+}
+
+bool Card::isCancelable(const CardEffectStruct &) const
+{
+    return false;
+}

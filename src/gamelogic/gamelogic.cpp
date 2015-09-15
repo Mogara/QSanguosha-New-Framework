@@ -340,6 +340,20 @@ void GameLogic::useCard(const CardUseStruct &use)
     //@to-do:
 }
 
+bool GameLogic::takeCardEffect(const CardEffectStruct &effect)
+{
+    QVariant data = QVariant::fromValue(effect);
+    bool canceled = false;
+    if (effect.to->isAlive()) {
+        // No skills should be triggered here!
+        trigger(CardEffect, effect.to, data);
+        // Make sure that effectiveness of Slash isn't judged here!
+        canceled = !trigger(CardEffected, effect.to, data);
+    }
+    trigger(PostCardEffected, effect.to, data);
+    return canceled;
+}
+
 CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
 {
     C_UNUSED(user);

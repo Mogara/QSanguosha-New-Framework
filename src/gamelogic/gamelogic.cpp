@@ -577,8 +577,10 @@ CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)
 {
     if (area.owner) {
         switch (area.type) {
-        case CardArea::Hand:
-            return area.owner->handcards();
+        case CardArea::Hand: {
+            ServerPlayer *owner = findPlayer(area.owner->id());
+            return owner->handcards();
+        }
         case CardArea::Equip:
             return area.owner->equips();
         case CardArea::DelayedTrick:

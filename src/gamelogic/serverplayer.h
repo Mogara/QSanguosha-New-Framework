@@ -34,6 +34,7 @@ class ServerPlayer : public Player
 
 public:
     ServerPlayer(GameLogic *logic, CServerAgent *agent);
+    ~ServerPlayer();
 
     CServerAgent *agent() const { return m_agent; }
     void setAgent(CServerAgent *agent) { m_agent = agent; }
@@ -53,10 +54,14 @@ public:
     void addCardHistory(const QString &name, int times = 1);
     void clearCardHistory();
 
+    CardArea *handcards() { return m_handcards; }
+    const CardArea *handcards() const { return m_handcards; }
+
 private:
     GameLogic *m_logic;
     CRoom *m_room;
     CServerAgent *m_agent;
+    CardArea *m_handcards;
 };
 
 #endif // SERVERPLAYER_H

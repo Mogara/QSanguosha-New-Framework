@@ -29,17 +29,14 @@ Player::Player(QObject *parent)
     , m_headGeneral(nullptr)
     , m_deputyGeneral(nullptr)
     , m_turnCount(0)
+    , m_handcardNum(0)
 {
-    m_handCards = new CardArea(CardArea::Hand, this);
-    m_handCards->setSignal([this](){
-        emit handCardNumChanged();
-    });
     m_equips = new CardArea(CardArea::Equip, this);
-    m_handCards->setSignal([this](){
+    m_equips->setSignal([this](){
         emit equipNumChanged();
     });
     m_delayedTricks = new CardArea(CardArea::DelayedTrick, this);
-    m_handCards->setSignal([this](){
+    m_delayedTricks->setSignal([this](){
         emit delayedTrickNumChanged();
     });
     m_judgeCards = new CardArea(CardArea::Judge, this);
@@ -47,7 +44,6 @@ Player::Player(QObject *parent)
 
 Player::~Player()
 {
-    delete m_handCards;
     delete m_equips;
     delete m_delayedTricks;
     delete m_judgeCards;
@@ -161,11 +157,6 @@ void Player::setFaceUp(bool faceUp)
 {
     m_faceUp = faceUp;
     emit faceUpChanged();
-}
-
-int Player::handcardNum() const
-{
-    return m_handCards->length();
 }
 
 int Player::equipNum() const

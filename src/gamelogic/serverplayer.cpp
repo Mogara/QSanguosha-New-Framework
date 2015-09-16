@@ -30,6 +30,16 @@ ServerPlayer::ServerPlayer(GameLogic *logic, CServerAgent *agent)
     , m_room(logic->room())
     , m_agent(agent)
 {
+    m_handcards = new CardArea(CardArea::Hand, this);
+    m_handcards->setSignal([this](){
+        m_handcardNum = m_handcards->length();
+        emit handcardNumChanged();
+    });
+}
+
+ServerPlayer::~ServerPlayer()
+{
+    delete m_handcards;
 }
 
 void ServerPlayer::drawCards(int n)

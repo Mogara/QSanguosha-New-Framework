@@ -49,7 +49,7 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(QString generalName READ generalName NOTIFY generalChanged)
     Q_PROPERTY(QString headGeneralName READ headGeneralName NOTIFY headGeneralChanged)
     Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName NOTIFY deputyGeneralChanged)
-    Q_PROPERTY(int handcardNum READ handcardNum NOTIFY handCardNumChanged)
+    Q_PROPERTY(int handcardNum READ handcardNum NOTIFY handcardNumChanged)
     Q_PROPERTY(int equipNum READ equipNum NOTIFY equipNumChanged)
     Q_PROPERTY(int delayedTrickNum READ delayedTrickNum NOTIFY delayedTrickNumChanged)
     Q_PROPERTY(int turnCount READ turnCount WRITE setTurnCount)
@@ -135,9 +135,7 @@ public:
     bool faceUp() const { return m_faceUp; }
     void setFaceUp(bool faceUp);
 
-    CardArea *handcards() { return m_handCards; }
-    const CardArea *handcards() const { return m_handCards; }
-    int handcardNum() const;
+    int handcardNum() const { return m_handcardNum; }
 
     const CardArea *equips() const { return m_equips; }
     CardArea *equips() { return m_equips; }
@@ -172,7 +170,7 @@ signals:
     void headGeneralChanged();
     void deputyGeneralChanged();
     void faceUpChanged();
-    void handCardNumChanged();
+    void handcardNumChanged();
     void equipNumChanged();
     void delayedTrickNumChanged();
     void drankChanged();
@@ -193,7 +191,7 @@ protected:
     int m_turnCount;
     bool m_faceUp;
 
-    CardArea *m_handCards;
+    int m_handcardNum;
     CardArea *m_equips;
     CardArea *m_delayedTricks;
     CardArea *m_judgeCards;

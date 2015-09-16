@@ -76,6 +76,8 @@ public:
 
     Card *findCard(uint id) const { return m_cards.value(id); }
 
+    void damage(DamageStruct &damage);
+
 protected:
     CAbstractPlayer *createPlayer(CServerUser *user);
     CAbstractPlayer *createPlayer(CServerRobot *robot);

@@ -391,6 +391,61 @@ bool GameLogic::takeCardEffect(const CardEffectStruct &effect)
     return canceled;
 }
 
+void GameLogic::damage(DamageStruct &damage)
+{
+    if (damage.to == NULL || damage.to->isDead())
+        return;
+
+    QVariant data = QVariant::fromValue(damage);
+    if (!damage.chain && !damage.transfer) {
+        trigger(ConfirmDamage, damage.from, data);
+        damage = data.value<DamageStruct>();
+    }
+
+    // Predamage
+    if (trigger(Predamage, damage.from, data))
+        return;
+
+    try {
+        do {
+            if (trigger(DamageForseen, damage.to, data))
+                break;
+
+            damage = data.value<DamageStruct>();
+            if (damage.from && trigger(DamageCaused, damage.from, data))
+                break;
+
+            damage = data.value<DamageStruct>();
+            if (damage.to && trigger(DamageInflicted, damage.to, data))
+                break;
+        } while (false);
+
+        damage = data.value<DamageStruct>();
+        if (damage.to)
+            trigger(PreDamageDone, damage.to, data);
+
+        damage = data.value<DamageStruct>();
+        if (damage.to)
+            trigger(DamageDone, damage.to, data);
+
+        damage = data.value<DamageStruct>();
+        if (damage.from)
+            trigger(Damage, damage.from, data);
+
+        damage = data.value<DamageStruct>();
+        if (damage.to)
+            trigger(Damaged, damage.to, data);
+
+        damage = data.value<DamageStruct>();
+        if (damage.to)
+            trigger(DamageComplete, damage.to, data);
+
+    } catch (EventType e) {
+        //@to-do: handle TurnBroken and StageChange
+        throw e;
+    }
+}
+
 CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
 {
     C_UNUSED(user);

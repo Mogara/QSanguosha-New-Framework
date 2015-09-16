@@ -234,7 +234,7 @@ void Card::use(GameLogic *logic, ServerPlayer *source, QList<ServerPlayer *> &ta
     }
 }
 
-void Card::onEffect(const CardEffectStruct &)
+void Card::onEffect(GameLogic*, const CardEffectStruct &)
 {
 }
 
@@ -268,7 +268,7 @@ bool TrickCard::isCancelable(const CardEffectStruct &) const
 
 EquipCard::EquipCard(Card::Suit suit, int number, Skill *skill)
     : Card(suit, number)
-    , m_skill(NULL)
+    , m_skill(skill)
 {
     m_type = EquipType;
 }

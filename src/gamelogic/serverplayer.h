@@ -20,6 +20,8 @@
 #ifndef SERVERPLAYER_H
 #define SERVERPLAYER_H
 
+#include <QPointer>
+
 #include "event.h"
 #include "player.h"
 #include "structs.h"
@@ -36,8 +38,10 @@ public:
     ServerPlayer(GameLogic *logic, CServerAgent *agent);
     ~ServerPlayer();
 
-    CServerAgent *agent() const { return m_agent; }
-    void setAgent(CServerAgent *agent) { m_agent = agent; }
+    CServerAgent *agent() const;
+    void setAgent(CServerAgent *agent);
+
+    CRoom *room() const;
 
     ServerPlayer *next() const { return qobject_cast<ServerPlayer *>(Player::next()); }
     ServerPlayer *next(bool ignoreRemoved) const{ return qobject_cast<ServerPlayer *>(Player::next(ignoreRemoved)); }
@@ -60,7 +64,7 @@ public:
 private:
     GameLogic *m_logic;
     CRoom *m_room;
-    CServerAgent *m_agent;
+    QPointer<CServerAgent> m_agent;
     CardArea *m_handcards;
 };
 

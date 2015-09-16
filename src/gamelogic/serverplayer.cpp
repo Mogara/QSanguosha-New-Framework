@@ -42,6 +42,23 @@ ServerPlayer::~ServerPlayer()
     delete m_handcards;
 }
 
+CServerAgent *ServerPlayer::agent() const
+{
+    return m_agent.data();
+}
+
+void ServerPlayer::setAgent(CServerAgent *agent)
+{
+    m_agent = agent;
+}
+
+CRoom *ServerPlayer::room() const
+{
+    if (m_room->isAbandoned())
+        throw GameFinish;
+    return m_room;
+}
+
 void ServerPlayer::drawCards(int n)
 {
     CardsMoveStruct move;
@@ -99,9 +116,12 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
 
 void ServerPlayer::activate(CardUseStruct &use)
 {
-    int timeout = 15;
+    int timeout = 15 * 1000;
+    if (m_agent.isNull())
+        return;
     m_agent->request(S_COMMAND_USE_CARD, QVariant(), timeout);
-
+    if (m_agent.isNull())
+        return;
     QVariant replyData = m_agent->waitForReply(timeout);
     if (replyData.isNull())
         return;
@@ -149,11 +169,14 @@ void ServerPlayer::addCardHistory(const QString &name, int times)
     QVariantList data;
     data << name;
     data << times;
-    m_agent->notify(S_COMMAND_ADD_CARD_HISTORY, data);
+
+    if (!m_agent.isNull())
+        m_agent->notify(S_COMMAND_ADD_CARD_HISTORY, data);
 }
 
 void ServerPlayer::clearCardHistory()
 {
     Player::clearCardHistory();
-    m_agent->notify(S_COMMAND_ADD_CARD_HISTORY);
+    if (!m_agent.isNull())
+        m_agent->notify(S_COMMAND_ADD_CARD_HISTORY);
 }

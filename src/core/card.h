@@ -94,6 +94,7 @@ public:
 
     void setType(Type type) { m_type = type; }
     Type type() const { return m_type; }
+    int subtype() const { return m_subtype; }
     QString typeString() const;
 
     void addSubcard(Card *card);
@@ -118,13 +119,15 @@ public:
 
     bool isTargetFixed() const { return m_targetFixed; }
     virtual bool targetFeasible(const QList<const Player *> &targets, const Player *self) const;
-    virtual bool targetFilter(const QList<const Player *> targets, const Player *toSelect, const Player *self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const;
     virtual bool isAvailable(const Player *player) const;
 
-    virtual void onUse(GameLogic *logic, CardUseStruct &use) const;
+    virtual void onUse(GameLogic *logic, CardUseStruct &use);
     virtual void use(GameLogic *logic, ServerPlayer *source, QList<ServerPlayer *> &targets);
-    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual void onEffect(const CardEffectStruct &effect);
+
     virtual bool isCancelable(const CardEffectStruct &effect) const;
+    virtual void onNullified(ServerPlayer *target) const;
 
 protected:
     uint m_id;
@@ -132,6 +135,7 @@ protected:
     int m_number;
     Color m_color;
     Type m_type;
+    int m_subtype;
     bool m_transferable;
 
     bool m_willThrow;
@@ -141,6 +145,107 @@ protected:
     QString m_skillName;
     QList<Card *> m_subcards;
     QSet<QString> m_flags;
+};
+
+class Skill;
+
+class BasicCard : public Card
+{
+    Q_OBJECT
+
+public:
+    BasicCard(Suit suit, int number);
+};
+
+class TrickCard : public Card
+{
+    Q_OBJECT
+
+public:
+    enum SubType
+    {
+        //Immediate Types
+        GlobalEffectType,
+        AreaOfEffectType,
+        SingleTargetType,
+
+        //Delayed Types
+        DelayedType
+    };
+
+    TrickCard(Suit suit, int number);
+
+    bool isCancelable(const CardEffectStruct &effect) const override;
+
+protected:
+    bool m_cancelable;
+};
+
+class EquipCard : public Card
+{
+    Q_OBJECT
+    Q_ENUMS(SubType)
+
+public:
+    enum SubType
+    {
+        WeaponType,
+        ArmorType,
+        DefensiveHorseType,
+        OffensiveHorseType,
+        TreasureType
+    };
+
+    EquipCard(Suit suit, int number, Skill *skill = NULL);
+
+    void onUse(GameLogic *logic, CardUseStruct &card_use) override;
+    void use(GameLogic *logic, ServerPlayer *, QList<ServerPlayer *> &targets) override;
+
+protected:
+    Skill *m_skill;
+};
+
+class GlobalEffect : public TrickCard
+{
+    Q_OBJECT
+
+public:
+    GlobalEffect(Card::Suit suit, int number);
+
+    void onUse(GameLogic *logic, CardUseStruct &use) override;
+};
+
+class AreaOfEffect : public TrickCard
+{
+    Q_OBJECT
+
+public:
+    AreaOfEffect(Suit suit, int number);
+
+    void onUse(GameLogic *logic, CardUseStruct &use) override;
+};
+
+class SingleTargetTrick : public TrickCard
+{
+    Q_OBJECT
+
+public:
+    SingleTargetTrick(Suit suit, int number);
+
+    bool targetFilter(const QList<const Player *> &, const Player *, const Player *) const override;
+};
+
+class DelayedTrick : public TrickCard
+{
+    Q_OBJECT
+
+public:
+    DelayedTrick(Suit suit, int number);
+
+    void onUse(GameLogic *logic, CardUseStruct &use) override;
+
+protected:
+    bool m_movable;
 };
 
 #endif // CARD_H

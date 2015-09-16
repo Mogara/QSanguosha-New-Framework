@@ -162,7 +162,7 @@ Card *Card::realCard()
     if (m_subcards.length() == 1)
         return m_subcards.first();
 
-    return NULL;
+    return nullptr;
 }
 
 QList<Card *> Card::realCards()
@@ -298,7 +298,7 @@ void EquipCard::use(GameLogic *logic, ServerPlayer *, QList<ServerPlayer *> &tar
     ServerPlayer *target = targets.first();
 
     //Find the existing equip
-    Card *equippedCard = NULL;
+    Card *equippedCard = nullptr;
     QList<Card *> equips = target->equips()->cards();
     foreach (Card *card, equips) {
         if (card->subtype() == subtype()) {
@@ -316,7 +316,7 @@ void EquipCard::use(GameLogic *logic, ServerPlayer *, QList<ServerPlayer *> &tar
     install.isOpen = true;
     moves << install;
 
-    if (equippedCard != NULL) {
+    if (equippedCard != nullptr) {
         CardsMoveStruct uninstall;
         uninstall.cards << equippedCard;
         uninstall.to.type = CardArea::Table;
@@ -325,7 +325,7 @@ void EquipCard::use(GameLogic *logic, ServerPlayer *, QList<ServerPlayer *> &tar
     }
     logic->moveCards(moves);
 
-    if (equippedCard != NULL) {
+    if (equippedCard != nullptr) {
         const CardArea *table = logic->table();
         if (table->contains(equippedCard)) {
             CardsMoveStruct discard;

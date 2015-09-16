@@ -37,8 +37,8 @@
 
 GameLogic::GameLogic(CRoom *parent)
     : CAbstractGameLogic(parent)
-    , m_currentPlayer(NULL)
-    , m_gameRule(NULL)
+    , m_currentPlayer(nullptr)
+    , m_gameRule(nullptr)
     , m_skipGameRule(false)
     , m_round(0)
 {
@@ -221,7 +221,7 @@ QList<ServerPlayer *> GameLogic::allPlayers(bool includeDead) const
 {
     QList<ServerPlayer *> players = this->players();
     ServerPlayer *current = currentPlayer();
-    if (current == NULL)
+    if (current == nullptr)
         return players;
 
     int currentIndex = players.indexOf(current);
@@ -283,7 +283,7 @@ void GameLogic::moveCards(QList<CardsMoveStruct> moves)
         QMap<CardArea *, QList<Card *>> cardSource;
         foreach (Card *card, move.cards) {
             CardArea *from = m_cardPosition[card];
-            if (from == NULL)
+            if (from == nullptr)
                 continue;
             cardSource[from].append(card);
         }
@@ -316,7 +316,7 @@ void GameLogic::moveCards(QList<CardsMoveStruct> moves)
         const CardsMoveStruct &move = moves.at(i);
         CardArea *from = findArea(move.from);
         CardArea *to = findArea(move.to);
-        if (from == NULL || to == NULL)
+        if (from == nullptr || to == nullptr)
             continue;
 
         foreach (Card *card, move.cards) {
@@ -345,7 +345,7 @@ void GameLogic::moveCards(QList<CardsMoveStruct> moves)
 
 bool GameLogic::useCard(CardUseStruct &use)
 {
-    if (use.card == NULL || use.from == NULL)
+    if (use.card == nullptr || use.from == nullptr)
         return false;
 
     //Initialize isHandcard
@@ -353,7 +353,7 @@ bool GameLogic::useCard(CardUseStruct &use)
     QList<Card *> realCards = use.card->realCards();
     foreach (Card *card, realCards) {
         CardArea *area = m_cardPosition[card];
-        if (area == NULL || area->owner() != use.from || area->type() != CardArea::Hand) {
+        if (area == nullptr || area->owner() != use.from || area->type() != CardArea::Hand) {
             use.isHandcard = false;
             break;
         }
@@ -532,7 +532,7 @@ CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)
         default: qWarning("Global Area Not Found");
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void GameLogic::run()

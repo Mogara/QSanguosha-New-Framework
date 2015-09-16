@@ -20,14 +20,14 @@
 #include "event.h"
 
 Event::Event()
-    : handler(NULL)
-    , owner(NULL)
+    : handler(nullptr)
+    , owner(nullptr)
 {
 }
 
 Event::Event(const EventHandler *handler)
     : handler(handler)
-    , owner(NULL)
+    , owner(nullptr)
 {
 }
 

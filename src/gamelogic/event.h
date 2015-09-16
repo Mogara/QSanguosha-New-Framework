@@ -31,7 +31,7 @@ struct Event
     Event(const EventHandler *handler);
     Event(const EventHandler *handler, ServerPlayer *owner);
 
-    bool isValid() { return handler != NULL; }
+    bool isValid() { return handler != nullptr; }
 
     const EventHandler *handler;
     ServerPlayer *owner;

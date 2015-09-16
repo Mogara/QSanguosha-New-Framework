@@ -41,7 +41,7 @@ int EventHandler::priority(EventType event) const
 
 bool EventHandler::triggerable(ServerPlayer *owner) const
 {
-    return owner != NULL && owner->isAlive() && owner->hasSkill(this);
+    return owner != nullptr && owner->isAlive() && owner->hasSkill(this);
 }
 
 QMap<ServerPlayer *, Event> EventHandler::triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data) const

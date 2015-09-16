@@ -196,7 +196,7 @@ public:
         TreasureType
     };
 
-    EquipCard(Suit suit, int number, Skill *skill = NULL);
+    EquipCard(Suit suit, int number, Skill *skill = nullptr);
 
     void onUse(GameLogic *logic, CardUseStruct &card_use) override;
     void use(GameLogic *logic, ServerPlayer *, QList<ServerPlayer *> &targets) override;

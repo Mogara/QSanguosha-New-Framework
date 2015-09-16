@@ -24,7 +24,7 @@
 CardsMoveStruct::Area::Area()
     : type(CardArea::Unknown)
     , direction(CardArea::UndefinedDirection)
-    , owner(NULL)
+    , owner(nullptr)
 {
 }
 
@@ -41,7 +41,7 @@ QVariant CardsMoveStruct::Area::toVariant() const
 CardsMoveStruct::CardsMoveStruct()
     : isOpen(false)
     , isLastHandCard(false)
-    , origin(NULL)
+    , origin(nullptr)
 {
 }
 
@@ -53,7 +53,7 @@ CardsMoveStruct::~CardsMoveStruct()
 
 bool CardsMoveStruct::isRelevant(const Player *player) const
 {
-    return player == NULL || player == from.owner || (player == to.owner && to.type != CardArea::Special);
+    return player == nullptr || player == from.owner || (player == to.owner && to.type != CardArea::Special);
 }
 
 QVariant CardsMoveStruct::toVariant(bool open) const
@@ -77,8 +77,8 @@ QVariant CardsMoveStruct::toVariant(bool open) const
 }
 
 CardUseStruct::CardUseStruct()
-    : from(NULL)
-    , card(NULL)
+    : from(nullptr)
+    , card(nullptr)
     , isOwnerUse(true)
     , addHistory(true)
     , isHandcard(true)
@@ -87,18 +87,18 @@ CardUseStruct::CardUseStruct()
 }
 
 CardEffectStruct::CardEffectStruct()
-    : card(NULL)
-    , from(NULL)
-    , to(NULL)
+    : card(nullptr)
+    , from(nullptr)
+    , to(nullptr)
     , multiple(false)
     , nullified(false)
 {
 }
 
 DamageStruct::DamageStruct()
-    : from(NULL)
-    , to(NULL)
-    , card(NULL)
+    : from(nullptr)
+    , to(nullptr)
+    , card(nullptr)
     , damage(1)
     , nature(Normal)
     , chain(false)

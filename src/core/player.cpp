@@ -26,8 +26,8 @@ Player::Player(QObject *parent)
     , m_hp(0)
     , m_maxHp(0)
     , m_alive(true)
-    , m_headGeneral(NULL)
-    , m_deputyGeneral(NULL)
+    , m_headGeneral(nullptr)
+    , m_deputyGeneral(nullptr)
     , m_turnCount(0)
 {
     m_handCards = new CardArea(CardArea::Hand, this);

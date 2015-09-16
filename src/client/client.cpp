@@ -27,7 +27,7 @@
 
 #include <QtQml>
 
-static Client *ClientInstance = NULL;
+static Client *ClientInstance = nullptr;
 
 Client::Client(QObject *parent)
     : CClient(parent)
@@ -45,7 +45,7 @@ Client *Client::instance()
 Client::~Client()
 {
     if (ClientInstance == this)
-        ClientInstance = NULL;
+        ClientInstance = nullptr;
 }
 
 const ClientPlayer *Client::findPlayer(CClientUser *user) const
@@ -179,7 +179,7 @@ void Client::MoveCardsCommand(QObject *receiver, const QVariant &data)
             int cardNum = moveData["cards"].toInt();
             move.cards.reserve(cardNum);
             for (int i = 0; i < cardNum; i++)
-                move.cards << NULL;
+                move.cards << nullptr;
         } else {
             foreach (const QVariant &cardData, cards) {
                 Card *card = client->findCard(cardData.toUInt());

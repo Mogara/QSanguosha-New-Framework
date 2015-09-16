@@ -58,7 +58,7 @@ const Package *Engine::package(const QString &name) const
             return package;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 QList<const Package *> Engine::packages() const

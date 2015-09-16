@@ -113,7 +113,7 @@ void Lobby::onUserRemoved(const CClientUser *user)
 void Lobby::onUserSpeaking(const QString &message)
 {
     CClientUser *user = qobject_cast<CClientUser *>(sender());
-    if (user == NULL)
+    if (user == nullptr)
         return;
     emit messageLogged(tr("%1(%2): %3").arg(user->screenName()).arg(user->id()).arg(message));
 }

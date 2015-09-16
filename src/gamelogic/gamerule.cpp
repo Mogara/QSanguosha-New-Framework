@@ -81,7 +81,7 @@ void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
         while (current->isAlive()) {
             CardUseStruct use;
             current->activate(use);
-            if (use.card != NULL)
+            if (use.card != nullptr)
                 m_logic->useCard(use);
             else
                 break;

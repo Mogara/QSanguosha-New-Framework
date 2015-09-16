@@ -28,7 +28,7 @@
 
 StartServerDialog::StartServerDialog(QQuickItem *parent)
     : QQuickItem(parent)
-    , m_server(NULL)
+    , m_server(nullptr)
 {
 }
 
@@ -39,7 +39,7 @@ void StartServerDialog::createServer()
     if (!m_server->listen(QHostAddress::Any, port)) {
         emit messageLogged(tr("The server failed to start, probably due to port %1 occupied by another application.").arg(port));
         m_server->deleteLater();
-        m_server = NULL;
+        m_server = nullptr;
         return;
     }
 
@@ -63,7 +63,7 @@ void StartServerDialog::onUserAdded(CServerUser *user)
 void StartServerDialog::onUserNetworkDelayChanged()
 {
     CServerUser *user = qobject_cast<CServerUser *>(sender());
-    if(user == NULL)
+    if(user == nullptr)
         return;
     emit messageLogged(tr("User %1(%2) Network Delay: %3").arg(user->screenName()).arg(user->id()).arg(user->networkDelay()));
 }
@@ -71,7 +71,7 @@ void StartServerDialog::onUserNetworkDelayChanged()
 void StartServerDialog::onUserRemoved()
 {
     CServerUser *user = qobject_cast<CServerUser *>(sender());
-    if(user == NULL)
+    if(user == nullptr)
         return;
     emit messageLogged(tr("User %1(%2) logged out.").arg(user->screenName()).arg(user->id()));
 }
@@ -95,7 +95,7 @@ void StartServerDialog::onRoomCreated(CRoom *room)
 void StartServerDialog::onRoomAbandoned()
 {
     CRoom *room = qobject_cast<CRoom *>(sender());
-    if(room == NULL)
+    if(room == nullptr)
         return;
     emit messageLogged(tr("Room(%1) became empty and thus closed.").arg(room->id()));
 }

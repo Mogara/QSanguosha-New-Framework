@@ -46,7 +46,7 @@ public:
 
     typedef std::function<void()> ChangeSignal;
 
-    CardArea(Type type, Player *owner = NULL, const QString &name = QString());
+    CardArea(Type type, Player *owner = nullptr, const QString &name = QString());
     Type type() const { return m_type; }
     Player *owner() const { return m_owner; }
     QString name() const { return m_name; }

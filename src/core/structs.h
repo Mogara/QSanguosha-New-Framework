@@ -104,4 +104,30 @@ struct CardEffectStruct
 
 Q_DECLARE_METATYPE(CardEffectStruct)
 
+struct DamageStruct
+{
+    enum Nature
+    {
+        Normal,
+        Fire,
+        Thunder
+    };
+
+    DamageStruct();
+
+    ServerPlayer *from;
+    ServerPlayer *to;
+    const Card *card;
+    int damage;
+    Nature nature;
+    bool chain;
+    bool transfer;
+    bool byUser;
+    QString reason;
+    QString transferReason;
+    bool prevented;
+};
+
+Q_DECLARE_METATYPE(DamageStruct)
+
 #endif // STRUCTS_H

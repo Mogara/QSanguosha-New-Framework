@@ -86,12 +86,24 @@ CardUseStruct::CardUseStruct()
 {
 }
 
-
 CardEffectStruct::CardEffectStruct()
     : card(NULL)
     , from(NULL)
     , to(NULL)
     , multiple(false)
     , nullified(false)
+{
+}
+
+DamageStruct::DamageStruct()
+    : from(NULL)
+    , to(NULL)
+    , card(NULL)
+    , damage(1)
+    , nature(Normal)
+    , chain(false)
+    , transfer(false)
+    , byUser(true)
+    , prevented(false)
 {
 }

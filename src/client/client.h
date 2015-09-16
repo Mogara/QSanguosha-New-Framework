@@ -45,6 +45,7 @@ signals:
     void seatArranged();
     void chooseGeneralRequested(const QStringList &candidates /* @to-do: add banned pair */);
     void cardsMoved(const QList<CardsMoveStruct> &moves);
+    void damageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
 
 private:
     Client(QObject *parent = 0);
@@ -60,6 +61,7 @@ private:
     static void MoveCardsCommand(QObject *receiver, const QVariant &data);
     static void UseCardCommand(QObject *receiver, const QVariant &data);
     static void AddCardHistoryCommand(QObject *receiver, const QVariant &data);
+    static void DamageCommand(QObject *receiver, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

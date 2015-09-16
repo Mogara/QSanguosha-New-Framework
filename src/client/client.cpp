@@ -219,6 +219,19 @@ void Client::AddCardHistoryCommand(QObject *receiver, const QVariant &data)
     }
 }
 
+void Client::DamageCommand(QObject *receiver, const QVariant &data)
+{
+    QVariantList dataList = data.toList();
+    if (dataList.length() != 3)
+        return;
+
+    Client *client = qobject_cast<Client *>(receiver);
+    ClientPlayer *victim = client->findPlayer(dataList.at(0).toUInt());
+    DamageStruct::Nature nature = static_cast<DamageStruct::Nature>(dataList.at(1).toInt());
+    int damage = dataList.at(2).toInt();
+    emit client->damageDone(victim, nature, damage);
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -232,6 +245,7 @@ void Client::Init()
     AddCallback(S_COMMAND_PREPARE_CARDS, PrepareCardsCommand);
     AddCallback(S_COMMAND_MOVE_CARDS, MoveCardsCommand);
     AddCallback(S_COMMAND_ADD_CARD_HISTORY, AddCardHistoryCommand);
+    AddCallback(S_COMMAND_DAMAGE, DamageCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardCommand);

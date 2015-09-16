@@ -92,6 +92,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
         return a->priority(event) > b->priority(event);
     });
 
+    bool broken = false;
     int triggerableIndex = 0;
     while (triggerableIndex < handlers.length()) {
         int currentPriority = 0;
@@ -164,7 +165,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
 
                     //Take effect
                     if (takeEffect) {
-                        bool broken = choice.handler->effect(this, event, eventTarget, data, invoker);
+                        broken = choice.handler->effect(this, event, eventTarget, data, invoker);
                         if (broken)
                             break;
                     }
@@ -195,7 +196,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
         }
     }
 
-    return false;
+    return broken;
 }
 
 QList<ServerPlayer *> GameLogic::players() const
@@ -425,8 +426,18 @@ void GameLogic::damage(DamageStruct &damage)
             trigger(PreDamageDone, damage.to, data);
 
         damage = data.value<DamageStruct>();
-        if (damage.to)
-            trigger(DamageDone, damage.to, data);
+        if (damage.to && !trigger(DamageDone, damage.to, data)) {
+            damage = data.value<DamageStruct>();
+            QVariantList arg;
+            arg << damage.to->id();
+            arg << damage.nature;
+            arg << -damage.damage;
+            room()->broadcastNotification(S_COMMAND_DAMAGE, arg);
+
+            int newHp = damage.to->hp() - damage.damage;
+            damage.to->setHp(newHp);
+            damage.to->broadcastProperty("hp");
+        }
 
         damage = data.value<DamageStruct>();
         if (damage.from)

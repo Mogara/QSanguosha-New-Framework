@@ -62,6 +62,7 @@ RoomScene {
                             headGeneral: modelData.headGeneralName
                             deputyGeneral: modelData.deputyGeneralName
                             handcardNum: modelData.handcardNum
+                            phase: modelData.phaseString
                         }
                     }
 

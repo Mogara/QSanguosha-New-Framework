@@ -13,6 +13,7 @@ Item {
     property alias maxHp: hpBar.maxValue
     property alias hp: hpBar.value
     property alias handcardArea: handcardAreaItem
+    property string phase: "not_active"
 
     id: root
     width: Device.gu(157)
@@ -96,7 +97,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             anchors.bottomMargin: Device.gu(3)
-            visible: false
+            visible: maxHp > 0
 
             transform: Scale {
                 origin.x: hpBar.width / 2
@@ -155,6 +156,15 @@ Item {
     RoleComboBox {
         x: parent.width - width - Device.gu(5)
         y: Device.gu(1)
+    }
+
+    Image {
+        source: root.phase != "not_active" ? "image://root/phase/" + root.phase + ".png" : ""
+        width: parent.width * 0.9
+        height: implicitHeight / implicitWidth * width
+        x: (parent.width - width) / 2
+        y: parent.height
+        visible: root.phase != "not_active"
     }
 
     InvisibleCardArea {

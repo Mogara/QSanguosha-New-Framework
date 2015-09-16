@@ -99,6 +99,8 @@ void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
             client->m_players[player->id()] = player;
             client->m_user2player[user] = player;
             player->setScreenName(user->screenName());
+
+            players << player;
         } else if (info.contains("robotId")) {
             //@to-do:
         }
@@ -129,6 +131,22 @@ void Client::PrepareCardsCommand(QObject *receiver, const QVariant &data)
         const Card *card = engine->getCard(cardId.toUInt());
         if (card)
             client->m_cards[card->id()] = card->clone();
+    }
+}
+
+void Client::UpdatePlayerPropertyCommand(QObject *receiver, const QVariant &data)
+{
+    QVariantList dataList = data.toList();
+    if (dataList.length() != 3)
+        return;
+
+    Client *client = qobject_cast<Client *>(receiver);
+    uint playerId = dataList.at(0).toUInt();
+    ClientPlayer *player = client->m_players.value(playerId);
+    if (player) {
+        QString name = dataList.at(1).toString();
+        QVariant value = dataList.at(2);
+        player->setProperty(name.toLatin1().constData(), value);
     }
 }
 
@@ -243,6 +261,7 @@ void Client::Init()
 
     AddCallback(S_COMMAND_ARRANGE_SEAT, ArrangeSeatCommand);
     AddCallback(S_COMMAND_PREPARE_CARDS, PrepareCardsCommand);
+    AddCallback(S_COMMAND_UPDATE_PLAYER_PROPERTY, UpdatePlayerPropertyCommand);
     AddCallback(S_COMMAND_MOVE_CARDS, MoveCardsCommand);
     AddCallback(S_COMMAND_ADD_CARD_HISTORY, AddCardHistoryCommand);
     AddCallback(S_COMMAND_DAMAGE, DamageCommand);

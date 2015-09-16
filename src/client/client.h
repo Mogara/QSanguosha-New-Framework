@@ -57,6 +57,7 @@ private:
     C_DECLARE_INITIALIZER(Client)
     static void ArrangeSeatCommand(QObject *receiver, const QVariant &data);
     static void PrepareCardsCommand(QObject *receiver, const QVariant &data);
+    static void UpdatePlayerPropertyCommand(QObject *receiver, const QVariant &data);
     static void ChooseGeneralCommand(QObject *receiver, const QVariant &data);
     static void MoveCardsCommand(QObject *receiver, const QVariant &data);
     static void UseCardCommand(QObject *receiver, const QVariant &data);

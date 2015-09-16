@@ -185,3 +185,9 @@ void Player::addCardHistory(const QString &name, int times)
     else
         m_cardHistory[name] = times;
 }
+
+void Player::setDrank(int drank)
+{
+    m_drank = drank;
+    emit drankChanged();
+}

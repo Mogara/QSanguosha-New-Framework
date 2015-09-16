@@ -54,6 +54,7 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(int delayedTrickNum READ delayedTrickNum NOTIFY delayedTrickNumChanged)
     Q_PROPERTY(int turnCount READ turnCount WRITE setTurnCount)
     Q_PROPERTY(int faceUp READ faceUp WRITE setFaceUp NOTIFY faceUpChanged)
+    Q_PROPERTY(int drank READ drank WRITE setDrank NOTIFY drankChanged)
 
     Q_ENUMS(Phase)
     Q_ENUMS(Role)
@@ -153,6 +154,9 @@ public:
     void addCardHistory(const QString &name, int times = 1);
     void clearCardHistory() { m_cardHistory.clear(); }
 
+    void setDrank(int drank);
+    int drank() const { return m_drank; }
+
 signals:
     void screenNameChanged();
     void hpChanged();
@@ -171,6 +175,7 @@ signals:
     void handCardNumChanged();
     void equipNumChanged();
     void delayedTrickNumChanged();
+    void drankChanged();
 
 protected:
     QString m_screenName;
@@ -194,6 +199,7 @@ protected:
     CardArea *m_judgeCards;
 
     QHash<QString, int> m_cardHistory;
+    int m_drank;
 };
 
 #endif // PLAYER_H

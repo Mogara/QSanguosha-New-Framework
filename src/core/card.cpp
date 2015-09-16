@@ -234,7 +234,7 @@ void Card::use(GameLogic *logic, ServerPlayer *source, QList<ServerPlayer *> &ta
     }
 }
 
-void Card::onEffect(GameLogic*, const CardEffectStruct &)
+void Card::onEffect(GameLogic*, CardEffectStruct &)
 {
 }
 

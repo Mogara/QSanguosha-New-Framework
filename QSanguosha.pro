@@ -57,7 +57,8 @@ HEADERS += \
     src/gui/dialog/startgamedialog.h \
     src/gui/lobby.h \
     src/gui/roomscene.h \
-    src/package/standardpackage.h
+    src/package/standardpackage.h \
+    src/package/standard-basiccard.h
 
 INCLUDEPATH += src \
     src/client \

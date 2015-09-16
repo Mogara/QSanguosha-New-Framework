@@ -124,7 +124,7 @@ public:
 
     virtual void onUse(GameLogic *logic, CardUseStruct &use);
     virtual void use(GameLogic *logic, ServerPlayer *source, QList<ServerPlayer *> &targets);
-    virtual void onEffect(GameLogic *logic, const CardEffectStruct &effect);
+    virtual void onEffect(GameLogic *logic, CardEffectStruct &effect);
 
     virtual bool isCancelable(const CardEffectStruct &effect) const;
     virtual void onNullified(ServerPlayer *target) const;

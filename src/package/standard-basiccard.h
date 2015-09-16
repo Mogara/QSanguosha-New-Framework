@@ -17,51 +17,41 @@
     Mogara
 *********************************************************************/
 
-#ifndef EVENTTYPE_H
-#define EVENTTYPE_H
+#ifndef STANDARDBASICCARD_H
+#define STANDARDBASICCARD_H
 
-enum EventType
+#include "card.h"
+
+struct SlashEffectStruct
 {
-    InvalidEvent,
+    ServerPlayer *from;
+    ServerPlayer *to;
 
-    GameStart,
-    GameFinish,
+    const Card *slash;
+    const Card *jink;
 
-    TurnStart,
-    PhaseStart,
-    PhaseProceeding,
-    PhaseEnd,
-    PhaseChanging,
-    PhaseSkipping,
-    TurnBroken,
+    DamageStruct::Nature nature;
+    int drank;
+    int jinkNum;
+    bool nullified;
 
-    BeforeCardsMove,
-    CardsMove,
-
-    DrawNCards,
-    AfterDrawNCards,
-    CountMaxCardNum,
-
-    PreCardUsed,
-    CardUsed,
-    TargetChoosing,
-    TargetConfirming,
-    TargetChosen,
-    TargetConfirmed,
-    CardEffect,
-    CardEffected,
-    CardEffectConfirmed,
-    PostCardEffected,
-    CardFinished,
-    TrickCardCanceling,
-
-    SlashEffect,
-    SlashEffected,
-    SlashProceed,
-    SlashHit,
-    SlashMissed,
-
-    EventTypeCount
+    SlashEffectStruct();
 };
 
-#endif // EVENTTYPE_H
+Q_DECLARE_METATYPE(SlashEffectStruct)
+
+class Slash : public BasicCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Slash(Suit suit, int number);
+
+    void onEffect(GameLogic *logic, CardEffectStruct &cardEffect) override;
+
+protected:
+    DamageStruct::Nature m_nature;
+    int m_drank;
+};
+
+#endif // STANDARDBASICCARD_H

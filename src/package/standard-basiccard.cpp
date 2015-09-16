@@ -87,5 +87,5 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
 void StandardPackage::addBasicCards()
 {
     for (int i = 1; i <= 100; i++)
-        addCard(new Card(Card::Spade, i % 13 + 1));
+        addCard(new Slash(Card::Spade, i % 13 + 1));
 }

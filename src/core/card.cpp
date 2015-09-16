@@ -43,10 +43,8 @@ Card::Card(Suit suit, int number)
 Card *Card::clone() const
 {
     const QMetaObject *metaObject = this->metaObject();
-    Card *card = qobject_cast<Card *>(metaObject->newInstance());
+    Card *card = qobject_cast<Card *>(metaObject->newInstance(Q_ARG(Suit, suit()), Q_ARG(int, number())));
     card->m_id = m_id;
-    card->setSuit(suit());
-    card->setNumber(number());
     return card;
 }
 

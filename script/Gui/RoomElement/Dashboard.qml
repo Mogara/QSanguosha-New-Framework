@@ -19,6 +19,7 @@ RowLayout {
     property alias finishButton: finishButtonItem
     property alias handcardArea: handcardAreaItem
     property alias equipArea: equipAreaItem
+    property string phase: "not_active"
 
     signal accepted()
     signal rejected()
@@ -63,6 +64,13 @@ RowLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     Layout.topMargin: Device.gu(5)
+
+                    Image {
+                        source: root.phase != "not_active" ? "image://root/phase/" + root.phase + ".png" : ""
+                        y: -height - Device.gu(5)
+                        x: parent.width - width
+                        visible: root.phase != "not_active"
+                    }
                 }
 
                 Item {

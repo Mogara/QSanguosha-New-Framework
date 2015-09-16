@@ -100,7 +100,7 @@ void RoomScene::onSeatArranged()
     QList<const ClientPlayer *> players = m_client->players();
     const ClientPlayer *self = m_client->findPlayer(m_client->self());
     players.removeOne(self);
-    setProperty("dashboardSeat", self->seat());
+    setProperty("dashboardModel", qConvertToModel(self));
     setProperty("photoModel", qConvertToModel(players));
     setProperty("playerNum", players.length() + 1);
 }

@@ -52,5 +52,13 @@ QVariant qConvertToModel(const QList<const T *> &list)
     return QVariant::fromValue(objects);
 }
 
+template<class T>
+QVariant qConvertToModel(const T *object)
+{
+    QObjectList objects;
+    objects << const_cast<T *>(object);
+    return QVariant::fromValue(objects);
+}
+
 #endif // UTIL_H
 

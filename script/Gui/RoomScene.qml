@@ -8,7 +8,7 @@ import "RoomElement"
 import "../engine.js" as Engine
 
 RoomScene {
-    property alias dashboardSeat: dashboard.seatNumber
+    property var dashboardModel: null
     property var photoModel: []
     property int playerNum: 0
 
@@ -62,7 +62,7 @@ RoomScene {
                             headGeneral: modelData.headGeneralName
                             deputyGeneral: modelData.deputyGeneralName
                             handcardNum: modelData.handcardNum
-                            phase: modelData.phaseString
+                            phase: modelData.phase
                         }
                     }
 
@@ -104,6 +104,15 @@ RoomScene {
 
         Dashboard {
             id: dashboard
+
+            Connections {
+                target: roomScene
+                onDashboardModelChanged: {
+                    var model = dashboardModel[0];
+                    dashboard.seatNumber = Qt.binding(function(){return model.seat});
+                    dashboard.phase = Qt.binding(function(){return model.phase});
+                }
+            }
         }
     }
 

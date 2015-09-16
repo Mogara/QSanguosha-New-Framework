@@ -78,6 +78,8 @@ public:
 
     void damage(DamageStruct &damage);
 
+    void delay(ulong msecs);
+
 protected:
     CAbstractPlayer *createPlayer(CServerUser *user);
     CAbstractPlayer *createPlayer(CServerRobot *robot);

@@ -131,6 +131,49 @@ void Player::setPhase(Phase phase)
     emit phaseChanged();
 }
 
+void Player::setPhaseString(const QString &phase)
+{
+    if (phase == "round_start")
+        m_phase = RoundStart;
+    else if (phase == "start")
+        m_phase = Start;
+    else if (phase == "judge")
+        m_phase = Judge;
+    else if (phase == "draw")
+        m_phase = Draw;
+    else if (phase == "play")
+        m_phase = Play;
+    else if (phase == "discard")
+        m_phase = Discard;
+    else if (phase == "finish")
+        m_phase = Finish;
+    else
+        m_phase = NotActive;
+    emit phaseChanged();
+}
+
+QString Player::phaseString() const
+{
+    switch (m_phase) {
+    case RoundStart:
+        return "round_start";
+    case Start:
+        return "start";
+    case Judge:
+        return "judge";
+    case Draw:
+        return "draw";
+    case Play:
+        return "play";
+    case Discard:
+        return "discard";
+    case Finish:
+        return "finish";
+    default:
+        return "not_active";
+    }
+}
+
 QString Player::headGeneralName() const
 {
     return m_headGeneral ? m_headGeneral->name() : "";

@@ -45,7 +45,7 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(bool isDead READ isDead WRITE setDead NOTIFY aliveChanged)
     Q_PROPERTY(bool isRemoved READ isRemoved WRITE setRemoved NOTIFY removedChanged)
     Q_PROPERTY(int seat READ seat WRITE setSeat NOTIFY seatChanged)
-    Q_PROPERTY(Phase phase READ phase WRITE setPhase NOTIFY phaseChanged)
+    Q_PROPERTY(QString phase READ phaseString WRITE setPhaseString NOTIFY phaseChanged)
     Q_PROPERTY(QString generalName READ generalName NOTIFY generalChanged)
     Q_PROPERTY(QString headGeneralName READ headGeneralName NOTIFY headGeneralChanged)
     Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName NOTIFY deputyGeneralChanged)
@@ -106,6 +106,8 @@ public:
 
     void setPhase(Phase phase);
     Phase phase() const { return m_phase; }
+    void setPhaseString(const QString &phase);
+    QString phaseString() const;
 
     //Alias of head general.
     const General *general() const { return headGeneral(); }

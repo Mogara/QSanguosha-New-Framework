@@ -34,6 +34,7 @@
 #include <cserverrobot.h>
 
 #include <QDateTime>
+#include <QThread>
 
 GameLogic::GameLogic(CRoom *parent)
     : CAbstractGameLogic(parent)
@@ -457,6 +458,11 @@ void GameLogic::damage(DamageStruct &damage)
     }
 }
 
+void GameLogic::delay(ulong msecs)
+{
+    QThread::currentThread()->msleep(msecs);
+}
+
 CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
 {
     C_UNUSED(user);
@@ -642,6 +648,7 @@ void GameLogic::run()
                     m_gameRule->effect(this, PhaseEnd, current, data, current);
                     //@todo:
                     current->setPhase(Player::NotActive);
+                    current->broadcastProperty("phase");
                 }
                 setCurrentPlayer(next);
             }

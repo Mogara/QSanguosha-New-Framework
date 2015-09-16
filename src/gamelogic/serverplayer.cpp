@@ -112,6 +112,9 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
 
     QVariant data = QVariant::fromValue(change);
     m_logic->trigger(PhaseChanging, this, data);
+
+    setPhase(change.to);
+    broadcastProperty("phase");
 }
 
 void ServerPlayer::activate(CardUseStruct &use)

@@ -138,6 +138,7 @@ QML_FILES = \
     script/Gui/RoomElement/Magatama.qml \
     script/Gui/RoomElement/Photo.qml \
     script/Gui/RoomElement/PixmapAnimation.qml \
+    script/Gui/RoomElement/ProgressBar.qml \
     script/Gui/RoomElement/Prompt.qml \
     script/Gui/RoomElement/RoleComboBox.qml \
     script/Gui/RoomElement/SimpleRoleIcon.qml \

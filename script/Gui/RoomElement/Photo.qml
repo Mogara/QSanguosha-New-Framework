@@ -14,6 +14,7 @@ Item {
     property alias hp: hpBar.value
     property alias handcardArea: handcardAreaItem
     property string phase: "not_active"
+    property alias progressBar: progressBarItem
 
     id: root
     width: Device.gu(157)
@@ -163,8 +164,16 @@ Item {
         width: parent.width * 0.9
         height: implicitHeight / implicitWidth * width
         x: (parent.width - width) / 2
-        y: parent.height
+        y: parent.height - Device.gu(3)
         visible: root.phase != "not_active"
+    }
+
+    ProgressBar {
+        id: progressBarItem
+        width: parent.width
+        height: 10
+        y: parent.height + Device.gu(10)
+        visible: false
     }
 
     InvisibleCardArea {

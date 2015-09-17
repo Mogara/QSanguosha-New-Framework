@@ -14,12 +14,14 @@ RowLayout {
     property string userRole: "unknown"
     property alias hp: hpBar.value
     property alias maxHp: hpBar.maxValue
+    property string phase: "not_active"
+
     property alias acceptButton: acceptButtonItem
     property alias rejectButton: rejectButtonItem
     property alias finishButton: finishButtonItem
     property alias handcardArea: handcardAreaItem
     property alias equipArea: equipAreaItem
-    property string phase: "not_active"
+    property alias progressBar: progressBarItem
 
     signal accepted()
     signal rejected()
@@ -64,6 +66,15 @@ RowLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     Layout.topMargin: Device.gu(5)
+
+                    ProgressBar {
+                        id: progressBarItem
+                        width: parent.width * 0.4
+                        height: 15
+                        y: -height - Device.gu(10)
+                        x: (parent.width - width) / 2
+                        visible: false
+                    }
 
                     Image {
                         source: root.phase != "not_active" ? "image://root/phase/" + root.phase + ".png" : ""

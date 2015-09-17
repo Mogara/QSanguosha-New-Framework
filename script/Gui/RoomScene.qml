@@ -82,6 +82,14 @@ RoomScene {
                         x: parent.width * 0.2
                         y: parent.height * 0.5
                     }
+
+                    ProgressBar {
+                        id: globalProgressBar
+                        width: 400
+                        height: 15
+                        anchors.centerIn: parent
+                        visible: false
+                    }
                 }
             }
 

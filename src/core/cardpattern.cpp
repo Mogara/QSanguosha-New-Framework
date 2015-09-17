@@ -74,7 +74,7 @@ bool CardPattern::matchOne(const Player *player, const Card *card, const Exp &ex
                 }
                 if (card->inherits(name.toLatin1().data())
                     || (name.startsWith('%') && name.midRef(1) == name)
-                    || (card->effectiveId() == name.toInt(&isInt) && isInt))
+                    || (card->effectiveId() == name.toUInt(&isInt) && isInt))
                     checkPoint = positive;
                 else
                     checkPoint = !positive;
@@ -159,7 +159,7 @@ bool CardPattern::matchOne(const Player *player, const Card *card, const Exp &ex
         return true;
 
     checkPoint = false;
-    if (!player || exp.places.length() == 1 && exp.places.first() == ".")
+    if (!player || (exp.places.length() == 1 && exp.places.first() == "."))
         checkPoint = true;
 
     if (!checkPoint) {

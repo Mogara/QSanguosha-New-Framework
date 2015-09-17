@@ -137,6 +137,8 @@ public:
     bool faceUp() const { return m_faceUp; }
     void setFaceUp(bool faceUp);
 
+    CardArea *handcards() { return m_handcards; }
+    const CardArea *handcards() const { return m_handcards; }
     int handcardNum() const { return m_handcardNum; }
 
     const CardArea *equips() const { return m_equips; }
@@ -192,8 +194,9 @@ protected:
     bool m_deputyGeneralShown;
     int m_turnCount;
     bool m_faceUp;
-
     int m_handcardNum;
+
+    CardArea *m_handcards;
     CardArea *m_equips;
     CardArea *m_delayedTricks;
     CardArea *m_judgeCards;

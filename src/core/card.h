@@ -101,7 +101,9 @@ public:
     QList<Card *> subcards() const { return m_subcards; }
 
     Card *realCard();
+    const Card *realCard() const;
     QList<Card *> realCards();
+    QList<const Card *> realCards() const;
 
     void setTransferable(bool transferable) { m_transferable = transferable; }
     bool isTransferable() const { return m_transferable; }

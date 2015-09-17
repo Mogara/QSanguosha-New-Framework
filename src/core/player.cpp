@@ -31,6 +31,11 @@ Player::Player(QObject *parent)
     , m_turnCount(0)
     , m_handcardNum(0)
 {
+    m_handcards = new CardArea(CardArea::Hand, this);
+    m_handcards->setSignal([this](){
+        m_handcardNum = m_handcards->length();
+        emit handcardNumChanged();
+    });
     m_equips = new CardArea(CardArea::Equip, this);
     m_equips->setSignal([this](){
         emit equipNumChanged();
@@ -44,6 +49,7 @@ Player::Player(QObject *parent)
 
 Player::~Player()
 {
+    delete m_handcards;
     delete m_equips;
     delete m_delayedTricks;
     delete m_judgeCards;

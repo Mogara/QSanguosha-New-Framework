@@ -70,7 +70,7 @@ public:
     QList<Card *> last(int n) const { return m_cards.mid(m_cards.length() - n); }
     QList<Card *> takeLast(int n);
 
-    bool contains(Card *card) const { return m_cards.contains(card); }
+    bool contains(const Card *card) const;
 
     QList<Card *> &cards() { return m_cards; }
     QList<Card *> cards() const { return m_cards; }

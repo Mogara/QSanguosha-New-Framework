@@ -8,6 +8,7 @@ SOURCES += src/main.cpp \
     src/client/clientplayer.cpp \
     src/core/card.cpp \
     src/core/cardarea.cpp \
+    src/core/cardpattern.cpp \
     src/core/engine.cpp \
     src/core/general.cpp \
     src/core/package.cpp \
@@ -39,6 +40,7 @@ HEADERS += \
     src/client/clientplayer.h \
     src/core/card.h \
     src/core/cardarea.h \
+    src/core/cardpattern.h \
     src/core/engine.h \
     src/core/general.h \
     src/core/package.h \

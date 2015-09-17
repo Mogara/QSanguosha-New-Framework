@@ -58,9 +58,6 @@ public:
     void addCardHistory(const QString &name, int times = 1);
     void clearCardHistory();
 
-    CardArea *handcards() { return m_handcards; }
-    const CardArea *handcards() const { return m_handcards; }
-
 private:
     GameLogic *m_logic;
     CRoom *m_room;

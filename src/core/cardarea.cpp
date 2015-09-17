@@ -92,3 +92,11 @@ QList<Card *> CardArea::takeLast(int n)
     m_cards = m_cards.mid(0, length() - n);
     return cards;
 }
+
+bool CardArea::contains(const Card *card) const
+{
+    foreach (const Card *c, m_cards)
+        if (c == card)
+            return true;
+    return false;
+}

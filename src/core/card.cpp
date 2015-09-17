@@ -158,7 +158,18 @@ Card *Card::realCard()
         return this;
 
     if (m_subcards.length() == 1)
-        return m_subcards.first();
+        return m_subcards.first()->realCard();
+
+    return nullptr;
+}
+
+const Card *Card::realCard() const
+{
+    if (id() > 0)
+        return this;
+
+    if (m_subcards.length() == 1)
+        return m_subcards.first()->realCard();
 
     return nullptr;
 }
@@ -170,7 +181,19 @@ QList<Card *> Card::realCards()
         cards << this;
     } else {
         foreach (Card *card, m_subcards)
-            cards << card->realCard();
+            cards << card->realCards();
+    }
+    return cards;
+}
+
+QList<const Card *> Card::realCards() const
+{
+    QList<const Card *> cards;
+    if (id() > 0) {
+        cards << this;
+    } else {
+        foreach (const Card *card, m_subcards)
+            cards << card->realCards();
     }
     return cards;
 }

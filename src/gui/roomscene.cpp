@@ -61,6 +61,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::chooseGeneralRequested, this, &RoomScene::onChooseGeneralRequested);
     connect(m_client, &Client::seatArranged, this, &RoomScene::onSeatArranged);
     connect(m_client, &Client::cardsMoved, this, &RoomScene::animateCardsMoving);
+    connect(m_client, &Client::usingCard, this, &RoomScene::onUsingCard);
     connect(this, &RoomScene::chooseGeneralFinished, this, &RoomScene::onChooseGeneralFinished);
 }
 
@@ -124,6 +125,21 @@ void RoomScene::onChooseGeneralFinished(const QString &head, const QString &depu
     data << head;
     data << deputy;
     m_client->replyToServer(S_COMMAND_CHOOSE_GENERAL, data);
+}
+
+void RoomScene::onUsingCard(const QString &pattern)
+{
+    if (!pattern.isEmpty()) {
+        //@todo: load CardPattern
+    } else {
+        //@todo: filter usable cards
+        const ClientPlayer *self = m_client->findPlayer(m_client->self());
+        QList<Card *> cards = self->handcards()->cards();
+        QVariantList cardIds;
+        foreach (Card *card, cards)
+            cardIds << card->id();
+        emit cardEnabled(cardIds);
+    }
 }
 
 C_REGISTER_QMLTYPE("Sanguosha", 1, 0, RoomScene)

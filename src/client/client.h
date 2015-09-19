@@ -46,6 +46,7 @@ signals:
     void chooseGeneralRequested(const QStringList &candidates /* @to-do: add banned pair */);
     void cardsMoved(const QList<CardsMoveStruct> &moves);
     void damageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
+    void usingCard(const QString &pattern);
 
 private:
     Client(QObject *parent = 0);
@@ -53,6 +54,7 @@ private:
     void restart();
     ClientPlayer *findPlayer(uint id) { return m_players.value(id); }
     Card *findCard(uint id) { return m_cards.value(id); }
+    CardArea *findArea(const CardsMoveStruct::Area &area);
 
     C_DECLARE_INITIALIZER(Client)
     static void ArrangeSeatCommand(QObject *receiver, const QVariant &data);

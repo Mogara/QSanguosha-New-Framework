@@ -40,6 +40,7 @@ signals:
 
     //Internal Signals
     void cardsMoved(const QVariant &moves);
+    void cardEnabled(const QVariant &cardIds);
 
 private:
     void animateCardsMoving(const QList<CardsMoveStruct> &moves);
@@ -47,6 +48,7 @@ private:
     void onSeatArranged();
     void onChooseGeneralRequested(const QStringList &candidates);
     void onChooseGeneralFinished(const QString &head, const QString &deputy);
+    void onUsingCard(const QString &pattern);
 
     Client *m_client;
 };

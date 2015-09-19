@@ -82,6 +82,11 @@ RowLayout {
                         x: parent.width - width
                         visible: root.phase != "not_active"
                     }
+
+                    Connections {
+                        target: root
+                        onPhaseChanged: handcardArea.enableCards([]);
+                    }
                 }
 
                 Item {

@@ -49,6 +49,8 @@ Item {
         for (i = 0; i < cards.length; i++) {
             card = cards[i];
             card.selectable = cardIds.contains(card.cid);
+            if (!card.selectable)
+                card.selected = false;
         }
     }
 

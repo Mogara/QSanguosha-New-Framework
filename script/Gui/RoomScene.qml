@@ -178,6 +178,7 @@ RoomScene {
         }
     }
 
+    onCardEnabled: dashboard.handcardArea.enableCards(cardIds);
     onPlayerNumChanged: arrangePhotos();
 
     function arrangePhotos()

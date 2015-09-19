@@ -77,6 +77,25 @@ void Client::restart()
     m_cards.clear();
 }
 
+CardArea *Client::findArea(const CardsMoveStruct::Area &area)
+{
+    if (area.owner) {
+        switch (area.type) {
+        case CardArea::Hand:
+            return area.owner->handcards();
+        case CardArea::Equip:
+            return area.owner->equips();
+        case CardArea::DelayedTrick:
+            return area.owner->delayedTricks();
+        case CardArea::Judge:
+            return area.owner->judgeCards();
+        default:
+            return nullptr;
+        }
+    }
+    return nullptr;
+}
+
 void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
 {
     QVariantList infos = data.toList();
@@ -208,6 +227,13 @@ void Client::MoveCardsCommand(QObject *receiver, const QVariant &data)
             }
         }
 
+        CardArea *source = client->findArea(move.from);
+        CardArea *destination = client->findArea(move.to);
+        if (source)
+            source->remove(move.cards);
+        if (destination)
+            destination->add(move.cards);
+
         moves << move;
     }
 
@@ -217,6 +243,7 @@ void Client::MoveCardsCommand(QObject *receiver, const QVariant &data)
 void Client::UseCardCommand(QObject *receiver, const QVariant &data)
 {
     Client *client = qobject_cast<Client *>(receiver);
+    emit client->usingCard(data.toString());
 }
 
 void Client::AddCardHistoryCommand(QObject *receiver, const QVariant &data)

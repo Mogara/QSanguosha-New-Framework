@@ -124,6 +124,10 @@ RoomScene {
                     var model = dashboardModel[0];
                     dashboard.seatNumber = Qt.binding(function(){return model.seat});
                     dashboard.phase = Qt.binding(function(){return model.phase});
+                    dashboard.hp = Qt.binding(function(){return model.hp});
+                    dashboard.maxHp = Qt.binding(function(){return model.maxHp});
+                    dashboard.headGeneralAvatar = Qt.binding(function(){return model.headGeneralName});
+                    dashboard.deputyGeneralAvatar = Qt.binding(function(){return model.deputyGeneralName});
                 }
             }
 

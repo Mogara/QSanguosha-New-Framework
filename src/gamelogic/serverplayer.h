@@ -54,6 +54,8 @@ public:
 
     Event askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable);
     void broadcastProperty(const char *name) const;
+    void broadcastProperty(const char *name, const QVariant &value, ServerPlayer *except = nullptr) const;
+    void notifyPropertyTo(const char *name, ServerPlayer *player);
 
     void addCardHistory(const QString &name, int times = 1);
     void clearCardHistory();

@@ -75,8 +75,15 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
     }
 
     if (effect.jink == nullptr) {
-        if (effect.to->isAlive())
+        if (effect.to->isAlive()) {
             logic->trigger(SlashHit, effect.from, data);
+
+            DamageStruct damage;
+            damage.from = effect.from;
+            damage.to = effect.to;
+            damage.nature = effect.nature;
+            logic->damage(damage);
+        }
     } else {
         logic->trigger(SlashMissed, effect.from, data);
     }

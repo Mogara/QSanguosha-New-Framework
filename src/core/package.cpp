@@ -35,12 +35,14 @@ Package::~Package()
         delete general;
 }
 
-QList<const General *> Package::generals() const
+QList<const General *> Package::generals(bool includeHidden) const
 {
     QList<const General *> generals;
     generals.reserve(m_generals.length());
-    foreach (const General *general, m_generals)
-        generals << general;
+    foreach (const General *general, m_generals) {
+        if (includeHidden || !general->isHidden())
+            generals << general;
+    }
     return generals;
 }
 

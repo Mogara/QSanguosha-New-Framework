@@ -33,7 +33,8 @@ SOURCES += src/main.cpp \
     src/package/standard-shu.cpp \
     src/package/standard-trickcard.cpp \
     src/package/standard-wei.cpp \
-    src/package/standard-wu.cpp
+    src/package/standard-wu.cpp \
+    src/package/systempackage.cpp
 
 HEADERS += \
     src/client/client.h \
@@ -60,7 +61,8 @@ HEADERS += \
     src/gui/lobby.h \
     src/gui/roomscene.h \
     src/package/standardpackage.h \
-    src/package/standard-basiccard.h
+    src/package/standard-basiccard.h \
+    src/package/systempackage.h
 
 INCLUDEPATH += src \
     src/client \

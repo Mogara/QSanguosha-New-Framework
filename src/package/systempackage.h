@@ -17,34 +17,15 @@
     Mogara
 *********************************************************************/
 
-#ifndef PACKAGE_H
-#define PACKAGE_H
+#ifndef SYSTEMPACKAGE_H
+#define SYSTEMPACKAGE_H
 
-#include <QString>
-#include <QList>
+#include "package.h"
 
-class Card;
-class General;
-
-class Package
+class SystemPackage : public Package
 {
 public:
-    Package(const QString &name);
-    virtual ~Package();
-
-    QString name() const { return m_name; }
-    QList<const General *> generals(bool includeHidden = false) const;
-    QList<const Card *> cards() const;
-
-protected:
-    void addGeneral(General *general) { m_generals << general; }
-    void addGenerals(const QList<General *> &generals) { m_generals << generals; }
-    void addCard(Card *card) { m_cards << card; }
-    void addCards(const QList<Card *> &cards) { m_cards << cards; }
-
-    QString m_name;
-    QList<General *> m_generals;
-    QList<Card *> m_cards;
+    SystemPackage();
 };
 
-#endif // PACKAGE_H
+#endif // SYSTEMPACKAGE_H

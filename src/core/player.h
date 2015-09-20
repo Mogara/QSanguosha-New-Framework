@@ -46,9 +46,9 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(bool isRemoved READ isRemoved WRITE setRemoved NOTIFY removedChanged)
     Q_PROPERTY(int seat READ seat WRITE setSeat NOTIFY seatChanged)
     Q_PROPERTY(QString phase READ phaseString WRITE setPhaseString NOTIFY phaseChanged)
-    Q_PROPERTY(QString generalName READ generalName NOTIFY generalChanged)
-    Q_PROPERTY(QString headGeneralName READ headGeneralName NOTIFY headGeneralChanged)
-    Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName NOTIFY deputyGeneralChanged)
+    Q_PROPERTY(QString generalName READ generalName WRITE setGeneralName NOTIFY generalChanged)
+    Q_PROPERTY(QString headGeneralName READ headGeneralName WRITE setHeadGeneralName NOTIFY headGeneralChanged)
+    Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName WRITE setDeputyGeneralName NOTIFY deputyGeneralChanged)
     Q_PROPERTY(int handcardNum READ handcardNum NOTIFY handcardNumChanged)
     Q_PROPERTY(int equipNum READ equipNum NOTIFY equipNumChanged)
     Q_PROPERTY(int delayedTrickNum READ delayedTrickNum NOTIFY delayedTrickNumChanged)
@@ -111,16 +111,19 @@ public:
 
     //Alias of head general.
     const General *general() const { return headGeneral(); }
-    QString generalName() const { return headGeneralName(); }
     void setGeneral(const General *general) { setHeadGeneral(general); }
+    QString generalName() const { return headGeneralName(); }
+    void setGeneralName(const QString &name) { setHeadGeneralName(name); }
 
     const General *headGeneral() const { return m_headGeneral; }
-    QString headGeneralName() const;
     void setHeadGeneral(const General *general);
+    QString headGeneralName() const;
+    void setHeadGeneralName(const QString &name);
 
     const General *deputyGeneral() const { return m_deputyGeneral; }
-    QString deputyGeneralName() const;
     void setDeputyGeneral(const General *general);
+    QString deputyGeneralName() const;
+    void setDeputyGeneralName(const QString &name);
 
     bool hasShownHeadGeneral() const { return m_headGeneralShown; }
     void setHeadGeneralShown(bool shown) { m_headGeneralShown = shown; }

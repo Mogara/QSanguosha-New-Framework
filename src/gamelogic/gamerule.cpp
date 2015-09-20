@@ -19,6 +19,7 @@
 
 #include "gamelogic.h"
 #include "gamerule.h"
+#include "general.h"
 #include "serverplayer.h"
 
 #include <QThread>
@@ -53,6 +54,22 @@ bool GameRule::effect(GameLogic *logic, EventType event, ServerPlayer *current, 
 
 void GameRule::onGameStart(ServerPlayer *current, QVariant &) const
 {
+    current->broadcastProperty("headGeneralName", "anjiang", current);
+    current->broadcastProperty("deputyGeneralName", "anjiang", current);
+
+    current->notifyPropertyTo("headGeneralName", current);
+    current->notifyPropertyTo("deputyGeneralName", current);
+
+    const General *headGeneral = current->headGeneral();
+    const General *deputyGeneral = current->deputyGeneral();
+    int headHp = headGeneral->headMaxHp();
+    int deputyHp = deputyGeneral->deputyMaxHp();
+    int hp = (headHp + deputyHp) / 2;
+    current->setMaxHp(hp);
+    current->setHp(hp);
+    current->broadcastProperty("maxHp");
+    current->broadcastProperty("hp");
+
     current->drawCards(4);
 }
 

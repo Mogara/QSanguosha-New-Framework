@@ -20,6 +20,7 @@
 #include "cardarea.h"
 #include "player.h"
 #include "general.h"
+#include "engine.h"
 
 Player::Player(QObject *parent)
     : CAbstractPlayer(parent)
@@ -45,6 +46,8 @@ Player::Player(QObject *parent)
         emit delayedTrickNumChanged();
     });
     m_judgeCards = new CardArea(CardArea::Judge, this);
+
+    connect(this, &Player::headGeneralChanged, this, &Player::generalChanged);
 }
 
 Player::~Player()
@@ -185,6 +188,14 @@ QString Player::headGeneralName() const
     return m_headGeneral ? m_headGeneral->name() : "";
 }
 
+void Player::setHeadGeneralName(const QString &name)
+{
+    Engine *engine = Engine::instance();
+    const General *general = engine->getGeneral(name);
+    if (general)
+        setHeadGeneral(general);
+}
+
 void Player::setHeadGeneral(const General *general)
 {
     m_headGeneral = general;
@@ -194,6 +205,14 @@ void Player::setHeadGeneral(const General *general)
 QString Player::deputyGeneralName() const
 {
     return m_deputyGeneral ? m_deputyGeneral->name() : "";
+}
+
+void Player::setDeputyGeneralName(const QString &name)
+{
+    Engine *engine = Engine::instance();
+    const General *general = engine->getGeneral(name);
+    if (general)
+        setDeputyGeneral(general);
 }
 
 void Player::setDeputyGeneral(const General *general)

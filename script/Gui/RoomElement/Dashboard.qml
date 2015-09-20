@@ -167,7 +167,7 @@ RowLayout {
 
             HpBar {
                 id: hpBar
-                visible: false
+                visible: maxHp > 0
                 anchors.bottom: parent.bottom
                 transform: Scale {
                     xScale: hpBar.parent.width / hpBar.width

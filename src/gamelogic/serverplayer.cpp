@@ -159,6 +159,26 @@ void ServerPlayer::broadcastProperty(const char *name) const
     m_room->broadcastNotification(S_COMMAND_UPDATE_PLAYER_PROPERTY, data);
 }
 
+void ServerPlayer::broadcastProperty(const char *name, const QVariant &value, ServerPlayer *except) const
+{
+    QVariantList data;
+    data << id();
+    data << name;
+    data << value;
+    m_room->broadcastNotification(S_COMMAND_UPDATE_PLAYER_PROPERTY, data, except->agent());
+}
+
+void ServerPlayer::notifyPropertyTo(const char *name, ServerPlayer *player)
+{
+    QVariantList data;
+    data << id();
+    data << name;
+    data << property(name);
+    CServerAgent *agent = player->agent();
+    if (agent)
+        agent->notify(S_COMMAND_UPDATE_PLAYER_PROPERTY, data);
+}
+
 void ServerPlayer::addCardHistory(const QString &name, int times)
 {
     Player::addCardHistory(name, times);

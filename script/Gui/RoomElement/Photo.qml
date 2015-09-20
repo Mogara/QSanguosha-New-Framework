@@ -1,5 +1,6 @@
 import QtQuick 2.4
 import QtQuick.Layouts 1.1
+import QtGraphicalEffects 1.0
 import Cardirector.Device 1.0
 import Cardirector.Resource 1.0
 
@@ -15,19 +16,73 @@ Item {
     property alias handcardArea: handcardAreaItem
     property string phase: "not_active"
     property alias progressBar: progressBarItem
+    property int seat: 0
+    property bool selectable: false
+    property bool selected: false
 
     id: root
     width: Device.gu(157)
     height: Device.gu(181)
+    states: [
+        State {
+            name: "normal"
+            PropertyChanges {
+                target: outerGlow
+                visible: false
+            }
+        },
+        State {
+            name: "candidate"
+            PropertyChanges {
+                target: outerGlow
+                color: "#EEB300"
+                visible: root.selectable && root.selected
+            }
+        },
+        State {
+            name: "playing"
+            PropertyChanges {
+                target: outerGlow
+                color: "#BE85EE"
+                visible: true
+            }
+        },
+        State {
+            name: "responding"
+            PropertyChanges {
+                target: outerGlow
+                color: "#51D659"
+                visible: true
+            }
+        },
+        State {
+            name: "sos"
+            PropertyChanges {
+                target: outerGlow
+                color: "#ED8B96"
+                visible: true
+            }
+        }
+    ]
+    state: "normal"
 
     ImageProvider {
-        id: roomSceneImage
+        id: photoImage
         providerId: "photo"
 
         function imagePath(imageId, requestedSize)
         {
             return "image/photo/" + imageId + ".png";
         }
+    }
+
+    RectangularGlow {
+        id: outerGlow
+        anchors.fill: parent
+        visible: true
+        glowRadius: 8
+        spread: 0.4
+        cornerRadius: 8
     }
 
     Item {
@@ -75,6 +130,7 @@ Item {
         x: Device.gu(-10)
         y: Device.gu(110)
         kingdom: parent.userRole
+        value: handcardArea.length
     }
 
     Item {
@@ -159,6 +215,14 @@ Item {
         y: Device.gu(1)
     }
 
+    Rectangle {
+        id: disableMask
+        anchors.fill: parent
+        color: "black"
+        opacity: 0.3
+        visible: root.state == "candidate" && !root.selectable
+    }
+
     Image {
         source: root.phase != "not_active" ? "image://root/phase/" + root.phase + ".png" : ""
         width: parent.width * 0.9
@@ -166,6 +230,16 @@ Item {
         x: (parent.width - width) / 2
         y: parent.height - Device.gu(3)
         visible: root.phase != "not_active"
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            if (parent.state != "candidate" || !parent.selectable)
+                return;
+            parent.selected = !parent.selected;
+            roomScene.photoSelected(roomScene.getSelectedSeats());
+        }
     }
 
     ProgressBar {

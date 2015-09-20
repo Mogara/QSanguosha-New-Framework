@@ -41,6 +41,9 @@ public:
     QList<const ClientPlayer *> players() const;
     int playerNum() const;
 
+    const Card *findCard(uint id) { return m_cards.value(id); }
+    void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
+
 signals:
     void seatArranged();
     void chooseGeneralRequested(const QStringList &candidates /* @to-do: add banned pair */);
@@ -53,7 +56,6 @@ private:
 
     void restart();
     ClientPlayer *findPlayer(uint id) { return m_players.value(id); }
-    Card *findCard(uint id) { return m_cards.value(id); }
     CardArea *findArea(const CardsMoveStruct::Area &area);
 
     C_DECLARE_INITIALIZER(Client)

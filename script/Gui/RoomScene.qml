@@ -61,8 +61,10 @@ RoomScene {
                             maxHp: modelData.maxHp
                             headGeneral: modelData.headGeneralName
                             deputyGeneral: modelData.deputyGeneralName
-                            handcardNum: modelData.handcardNum
                             phase: modelData.phase
+                            seat: modelData.seat
+                            selectable: true
+                            state: "candidate"
                         }
                     }
 
@@ -113,12 +115,26 @@ RoomScene {
         Dashboard {
             id: dashboard
 
+            acceptButton.enabled: true
+            onAccepted: roomScene.accepted();
+
             Connections {
                 target: roomScene
                 onDashboardModelChanged: {
                     var model = dashboardModel[0];
                     dashboard.seatNumber = Qt.binding(function(){return model.seat});
                     dashboard.phase = Qt.binding(function(){return model.phase});
+                }
+            }
+
+            Connections {
+                target: dashboard.handcardArea
+                onSelectedChanged: {
+                    var ids = [];
+                    var cards = dashboard.handcardArea.getSelectedCards();
+                    for (var i = 0; i < cards.length; i++)
+                        ids.push(cards[i].cid);
+                    roomScene.cardSelected(ids);
                 }
             }
         }
@@ -315,5 +331,16 @@ RoomScene {
             return photo.delayedTrickArea;
 
         return null;
+    }
+
+    function getSelectedSeats()
+    {
+        var selected = [];
+        for (var i = 0; i < photos.count; i++) {
+            var photo = photos.itemAt(i);
+            if (photo.state === "selected")
+                selected.push(photo.seat);
+        }
+        return selected;
     }
 }

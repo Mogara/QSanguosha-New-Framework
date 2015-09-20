@@ -6,11 +6,14 @@ Item {
     property alias cards: cardArea.cards
     property alias length: cardArea.length
 
+    signal selectedChanged()
+
     id: area
 
     CardArea {
         anchors.fill: parent
         id: cardArea
+        onLengthChanged: area.adjustCards();
     }
 
     function add(inputs)
@@ -34,7 +37,7 @@ Item {
     {
         var result = cardArea.remove(outputs);
         var card;
-        for (var i = 0; result.length; i++) {
+        for (var i = 0; i < result.length; i++) {
             card = result[i];
             card.draggable = false;
             card.selectable = false;
@@ -85,5 +88,6 @@ Item {
     function adjustCards()
     {
         area.updateCardPosition(true);
+        selectedChanged();
     }
 }

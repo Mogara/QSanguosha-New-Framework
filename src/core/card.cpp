@@ -229,6 +229,7 @@ void Card::onUse(GameLogic *logic, CardUseStruct &use)
 
     CardsMoveStruct move;
     move.to.type = CardArea::Table;
+    move.isOpen = true;
     move.cards = use.card->realCards();
     logic->moveCards(move);
 }

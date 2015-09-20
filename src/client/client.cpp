@@ -66,6 +66,17 @@ int Client::playerNum() const
     return m_players.size();
 }
 
+void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets)
+{
+    QVariantMap data;
+    data["cardId"] = card->id();
+    QVariantList to;
+    foreach (const ClientPlayer *target, targets)
+        to << target->id();
+    data["to"] = to;
+    replyToServer(S_COMMAND_USE_CARD, data);
+}
+
 void Client::restart()
 {
     foreach (ClientPlayer *player, m_players)
@@ -219,7 +230,7 @@ void Client::MoveCardsCommand(QObject *receiver, const QVariant &data)
                 move.cards << nullptr;
         } else {
             foreach (const QVariant &cardData, cards) {
-                Card *card = client->findCard(cardData.toUInt());
+                Card *card = client->m_cards.value(cardData.toUInt());
                 if (card)
                     move.cards << card;
                 else

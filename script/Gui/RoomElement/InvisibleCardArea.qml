@@ -18,15 +18,20 @@ Item {
                 pendingInput.push(card);
                 cards.push(card.toData());
             }
+
+            if (checkExisting)
+                length = cards.length;
+            else
+                length += inputs.length;
         } else {
             pendingInput.push(inputs);
             cards.push(inputs.toData());
-        }
 
-        if (checkExisting)
-            length = cards.length;
-        else
-            length += inputs.length;
+            if (checkExisting)
+                length = cards.length;
+            else
+                length++;
+        }
     }
 
     function contains(cid)

@@ -62,7 +62,11 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::seatArranged, this, &RoomScene::onSeatArranged);
     connect(m_client, &Client::cardsMoved, this, &RoomScene::animateCardsMoving);
     connect(m_client, &Client::usingCard, this, &RoomScene::onUsingCard);
+
     connect(this, &RoomScene::chooseGeneralFinished, this, &RoomScene::onChooseGeneralFinished);
+    connect(this, &RoomScene::cardSelected, this, &RoomScene::onCardSelected);
+    connect(this, &RoomScene::photoSelected, this, &RoomScene::onPhotoSelected);
+    connect(this, &RoomScene::accepted, this, &RoomScene::onAccepted);
 }
 
 void RoomScene::animateCardsMoving(const QList<CardsMoveStruct> &moves)
@@ -139,6 +143,37 @@ void RoomScene::onUsingCard(const QString &pattern)
         foreach (Card *card, cards)
             cardIds << card->id();
         emit cardEnabled(cardIds);
+    }
+}
+
+void RoomScene::onCardSelected(const QVariantList &cardIds)
+{
+    m_selectedCard.clear();
+    foreach (const QVariant &cardId, cardIds) {
+        const Card *card = m_client->findCard(cardId.toUInt());
+        if (card)
+            m_selectedCard << card;
+    }
+}
+
+void RoomScene::onPhotoSelected(const QVariantList &seats)
+{
+    QSet<int> selectedSeats;
+    foreach (const QVariant &seat, seats)
+        selectedSeats << seat.toInt();
+
+    m_selectedPlayer.clear();
+    QList<const ClientPlayer *> players = m_client->players();
+    foreach (const ClientPlayer *player, players) {
+        if (selectedSeats.contains(player->seat()))
+            m_selectedPlayer << player;
+    }
+}
+
+void RoomScene::onAccepted()
+{
+    if (m_selectedCard.length() == 1) {
+        m_client->useCard(m_selectedCard.first(), m_selectedPlayer);
     }
 }
 

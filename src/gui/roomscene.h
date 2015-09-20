@@ -25,6 +25,7 @@
 #include <QQuickItem>
 
 class Client;
+class ClientPlayer;
 
 class RoomScene : public QQuickItem
 {
@@ -34,13 +35,16 @@ public:
     RoomScene(QQuickItem *parent = 0);
 
 signals:
-    //Output Signals
-    void chooseGeneralStarted(const QVariant &generals);
+    //Signals from QML to C++
     void chooseGeneralFinished(const QString &head, const QString &deputy);
+    void cardSelected(const QVariantList &cardIds);
+    void photoSelected(const QVariantList &seats);
+    void accepted();
 
-    //Internal Signals
+    //Signals from C++ to QML
     void cardsMoved(const QVariant &moves);
     void cardEnabled(const QVariant &cardIds);
+    void chooseGeneralStarted(const QVariant &generals);
 
 private:
     void animateCardsMoving(const QList<CardsMoveStruct> &moves);
@@ -49,8 +53,13 @@ private:
     void onChooseGeneralRequested(const QStringList &candidates);
     void onChooseGeneralFinished(const QString &head, const QString &deputy);
     void onUsingCard(const QString &pattern);
+    void onCardSelected(const QVariantList &cardIds);
+    void onPhotoSelected(const QVariantList &seats);
+    void onAccepted();
 
     Client *m_client;
+    QList<const Card *> m_selectedCard;
+    QList<const ClientPlayer *> m_selectedPlayer;
 };
 
 #endif // ROOMSCENE_H

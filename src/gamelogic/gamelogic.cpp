@@ -300,6 +300,7 @@ void GameLogic::moveCards(QList<CardsMoveStruct> moves)
             submove.from.name = from->name();
             submove.cards = iter.value();
             submove.to = move.to;
+            submove.isOpen = move.isOpen;
             moves << submove;
         }
 

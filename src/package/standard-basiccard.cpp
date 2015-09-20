@@ -62,14 +62,12 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
     effect.drank = m_drank;
     effect.nullified = cardEffect.nullified;
 
-    QVariant data = QVariant::fromValue(effect);
+    QVariant data = QVariant::fromValue(&effect);
 
     if (!logic->trigger(SlashEffect, effect.from, data)) {
         if (!logic->trigger(SlashEffected, effect.to, data)) {
-            effect = data.value<SlashEffectStruct>();
             if (effect.jinkNum > 0) {
                 if (!logic->trigger(SlashProceed, effect.from, data)) {
-                    effect = data.value<SlashEffectStruct>();
                     //@to-do: ask for jink here
                 }
             }

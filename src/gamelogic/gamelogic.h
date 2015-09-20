@@ -72,7 +72,7 @@ public:
     void moveCards(QList<CardsMoveStruct> moves);
 
     bool useCard(CardUseStruct &use);
-    bool takeCardEffect(const CardEffectStruct &effect);
+    bool takeCardEffect(CardEffectStruct &effect);
 
     Card *findCard(uint id) const { return m_cards.value(id); }
 

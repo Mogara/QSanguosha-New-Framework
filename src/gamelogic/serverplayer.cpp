@@ -86,9 +86,8 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
         change.from = phase();
         change.to = to;
 
-        QVariant data = QVariant::fromValue(change);
+        QVariant data = QVariant::fromValue(&change);
         bool skip = m_logic->trigger(PhaseChanging, this, data);
-        change = data.value<PhaseChangeStruct>();
 
         setPhase(change.to);
         broadcastProperty("phase");
@@ -104,7 +103,7 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
     change.from = phase();
     change.to = NotActive;
 
-    QVariant data = QVariant::fromValue(change);
+    QVariant data = QVariant::fromValue(&change);
     m_logic->trigger(PhaseChanging, this, data);
 
     setPhase(change.to);

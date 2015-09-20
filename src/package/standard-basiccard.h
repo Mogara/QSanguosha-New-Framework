@@ -38,7 +38,7 @@ struct SlashEffectStruct
     SlashEffectStruct();
 };
 
-Q_DECLARE_METATYPE(SlashEffectStruct)
+Q_DECLARE_METATYPE(SlashEffectStruct *)
 
 class Slash : public BasicCard
 {

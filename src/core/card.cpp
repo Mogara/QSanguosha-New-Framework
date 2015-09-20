@@ -223,9 +223,8 @@ void Card::onUse(GameLogic *logic, CardUseStruct &use)
 {
     logic->sortByActionOrder(use.to);
 
-    QVariant useData = QVariant::fromValue(use);
+    QVariant useData = QVariant::fromValue(&use);
     logic->trigger(PreCardUsed, use.from, useData);
-    use = useData.value<CardUseStruct>();
 
     CardsMoveStruct move;
     move.to.type = CardArea::Table;
@@ -301,9 +300,8 @@ void EquipCard::onUse(GameLogic *logic, CardUseStruct &use)
     if (use.to.isEmpty())
         use.to << player;
 
-    QVariant data = QVariant::fromValue(use);
+    QVariant data = QVariant::fromValue(&use);
     logic->trigger(PreCardUsed, player, data);
-    use = data.value<CardUseStruct>();
 }
 
 void EquipCard::use(GameLogic *logic, ServerPlayer *, QList<ServerPlayer *> &targets)
@@ -409,7 +407,7 @@ void DelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)
 {
     use.card = this;
 
-    QVariant data = QVariant::fromValue(use);
+    QVariant data = QVariant::fromValue(&use);
     logic->trigger(PreCardUsed, use.from, data);
 
     CardsMoveStruct move;

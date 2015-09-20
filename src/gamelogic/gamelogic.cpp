@@ -310,10 +310,9 @@ void GameLogic::moveCards(QList<CardsMoveStruct> moves)
     }
 
     QList<ServerPlayer *> allPlayers = this->allPlayers();
-    QVariant moveData = QVariant::fromValue(moves);
+    QVariant moveData = QVariant::fromValue(&moves);
     foreach (ServerPlayer *player, allPlayers)
         trigger(BeforeCardsMove, player, moveData);
-    moves = moveData.value<QList<CardsMoveStruct>>();
 
     for (int i = 0 ; i < moves.length(); i++) {
         const CardsMoveStruct &move = moves.at(i);
@@ -368,8 +367,21 @@ bool GameLogic::useCard(CardUseStruct &use)
     try {
         use.card->onUse(this, use);
 
-        QVariant data = QVariant::fromValue(use);
+        QVariant data = QVariant::fromValue(&use);
         trigger(CardUsed, use.from, data);
+
+        if (use.from)
+            trigger(TargetChoosing, use.from, data);
+
+        if (use.from && !use.to.isEmpty()) {
+            foreach (ServerPlayer *to, use.to) {
+                if (!use.to.contains(to))
+                    continue;
+
+                trigger(TargetConfirming, to, data);
+            }
+        }
+
         trigger(CardFinished, use.from, data);
 
     } catch (EventType e) {
@@ -380,9 +392,9 @@ bool GameLogic::useCard(CardUseStruct &use)
     return true;
 }
 
-bool GameLogic::takeCardEffect(const CardEffectStruct &effect)
+bool GameLogic::takeCardEffect(CardEffectStruct &effect)
 {
-    QVariant data = QVariant::fromValue(effect);
+    QVariant data = QVariant::fromValue(&effect);
     bool canceled = false;
     if (effect.to->isAlive()) {
         // No skills should be triggered here!
@@ -399,10 +411,9 @@ void GameLogic::damage(DamageStruct &damage)
     if (damage.to == NULL || damage.to->isDead())
         return;
 
-    QVariant data = QVariant::fromValue(damage);
+    QVariant data = QVariant::fromValue(&damage);
     if (!damage.chain && !damage.transfer) {
         trigger(ConfirmDamage, damage.from, data);
-        damage = data.value<DamageStruct>();
     }
 
     // Predamage
@@ -414,22 +425,17 @@ void GameLogic::damage(DamageStruct &damage)
             if (trigger(DamageForseen, damage.to, data))
                 break;
 
-            damage = data.value<DamageStruct>();
             if (damage.from && trigger(DamageCaused, damage.from, data))
                 break;
 
-            damage = data.value<DamageStruct>();
             if (damage.to && trigger(DamageInflicted, damage.to, data))
                 break;
         } while (false);
 
-        damage = data.value<DamageStruct>();
         if (damage.to)
             trigger(PreDamageDone, damage.to, data);
 
-        damage = data.value<DamageStruct>();
         if (damage.to && !trigger(DamageDone, damage.to, data)) {
-            damage = data.value<DamageStruct>();
             QVariantList arg;
             arg << damage.to->id();
             arg << damage.nature;
@@ -441,15 +447,12 @@ void GameLogic::damage(DamageStruct &damage)
             damage.to->broadcastProperty("hp");
         }
 
-        damage = data.value<DamageStruct>();
         if (damage.from)
             trigger(Damage, damage.from, data);
 
-        damage = data.value<DamageStruct>();
         if (damage.to)
             trigger(Damaged, damage.to, data);
 
-        damage = data.value<DamageStruct>();
         if (damage.to)
             trigger(DamageComplete, damage.to, data);
 

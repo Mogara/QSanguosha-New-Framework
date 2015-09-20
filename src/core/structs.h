@@ -57,7 +57,7 @@ struct CardsMoveStruct
     QVariant toVariant(bool open = false) const;
 };
 
-Q_DECLARE_METATYPE(QList<CardsMoveStruct>)
+Q_DECLARE_METATYPE(QList<CardsMoveStruct> *)
 
 struct PhaseChangeStruct
 {
@@ -65,7 +65,7 @@ struct PhaseChangeStruct
     Player::Phase to;
 };
 
-Q_DECLARE_METATYPE(PhaseChangeStruct)
+Q_DECLARE_METATYPE(PhaseChangeStruct *)
 
 struct CardUseStruct
 {
@@ -89,7 +89,7 @@ struct CardUseStruct
     CardUseStruct();
 };
 
-Q_DECLARE_METATYPE(CardUseStruct)
+Q_DECLARE_METATYPE(CardUseStruct *)
 
 struct CardEffectStruct
 {
@@ -102,7 +102,7 @@ struct CardEffectStruct
     CardEffectStruct();
 };
 
-Q_DECLARE_METATYPE(CardEffectStruct)
+Q_DECLARE_METATYPE(CardEffectStruct *)
 
 struct DamageStruct
 {
@@ -128,6 +128,6 @@ struct DamageStruct
     bool prevented;
 };
 
-Q_DECLARE_METATYPE(DamageStruct)
+Q_DECLARE_METATYPE(DamageStruct *)
 
 #endif // STRUCTS_H

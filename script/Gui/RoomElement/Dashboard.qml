@@ -4,11 +4,9 @@ import Cardirector.Device 1.0
 import Cardirector.Resource 1.0
 
 RowLayout {
-    property alias headGeneralName: headGeneralItem.generalName
-    property alias headGeneralAvatar: headGeneralItem.avatar
+    property string headGeneralName: ""
     property alias headGeneralKingdom: headGeneralItem.kingdom
-    property alias deputyGeneralName: deputyGeneralItem.generalName
-    property alias deputyGeneralAvatar: deputyGeneralItem.avatar
+    property string deputyGeneralName: ""
     property alias deputyGeneralKingdom: deputyGeneralItem.kingdom
     property int seatNumber: 0
     property string userRole: "unknown"
@@ -183,7 +181,8 @@ RowLayout {
         GeneralAvatar {
             id: headGeneralItem
             y: -Device.gu(4)
-            avatar: "huangyueying"
+            avatar: headGeneralName ? headGeneralName: "huangyueying"
+            generalName: qsTr(headGeneralName)
             generalPosition: "head"
         }
 
@@ -191,7 +190,8 @@ RowLayout {
             id: deputyGeneralItem
             x: Device.gu(128)
             y: -Device.gu(4)
-            avatar: "zhugeliang"
+            avatar: deputyGeneralName ? deputyGeneralName : "zhugeliang"
+            generalName: qsTr(deputyGeneralName)
             generalPosition: "deputy"
         }
     }

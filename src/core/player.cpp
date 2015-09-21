@@ -250,3 +250,15 @@ void Player::setDrank(int drank)
     m_drank = drank;
     emit drankChanged();
 }
+
+void Player::setKingdom(const QString &kingdom)
+{
+    m_kingdom = kingdom;
+    emit kingdomChanged();
+}
+
+void Player::setRole(const QString &role)
+{
+    m_role = role;
+    emit roleChanged();
+}

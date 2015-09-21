@@ -8,9 +8,3 @@ var kingdomColor = {
     god : "#96943D",
 unknown : "#96943D"
 };
-
-function translate(text)
-{
-    //@todo:
-    return text;
-}

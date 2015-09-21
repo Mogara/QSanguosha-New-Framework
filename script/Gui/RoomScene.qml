@@ -126,8 +126,9 @@ RoomScene {
                     dashboard.phase = Qt.binding(function(){return model.phase});
                     dashboard.hp = Qt.binding(function(){return model.hp});
                     dashboard.maxHp = Qt.binding(function(){return model.maxHp});
-                    dashboard.headGeneralAvatar = Qt.binding(function(){return model.headGeneralName});
-                    dashboard.deputyGeneralAvatar = Qt.binding(function(){return model.deputyGeneralName});
+                    dashboard.headGeneralName = Qt.binding(function(){return model.headGeneralName});
+                    dashboard.deputyGeneralName = Qt.binding(function(){return model.deputyGeneralName});
+                    dashboard.headGeneralKingdom = dashboard.deputyGeneralKingdom = Qt.binding(function(){return model.kingdom});
                 }
             }
 

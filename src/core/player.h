@@ -55,6 +55,9 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(int turnCount READ turnCount WRITE setTurnCount)
     Q_PROPERTY(int faceUp READ faceUp WRITE setFaceUp NOTIFY faceUpChanged)
     Q_PROPERTY(int drank READ drank WRITE setDrank NOTIFY drankChanged)
+    Q_PROPERTY(QString kingdom READ kingdom WRITE setKingdom NOTIFY kingdomChanged)
+    Q_PROPERTY(QString role READ role WRITE setRole NOTIFY roleChanged)
+
 
     Q_ENUMS(Phase)
     Q_ENUMS(Role)
@@ -63,11 +66,6 @@ public:
     enum Phase
     {
         InvalidPhase, RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive
-    };
-
-    enum Role
-    {
-        Lord, Loyalist, Rebel, Renegade
     };
 
     Player(QObject *parent = 0);
@@ -162,6 +160,12 @@ public:
     void setDrank(int drank);
     int drank() const { return m_drank; }
 
+    QString kingdom() const { return m_kingdom; }
+    void setKingdom(const QString &kingdom);
+
+    QString role() const { return m_role; }
+    void setRole(const QString &role);
+
 signals:
     void screenNameChanged();
     void hpChanged();
@@ -181,6 +185,8 @@ signals:
     void equipNumChanged();
     void delayedTrickNumChanged();
     void drankChanged();
+    void kingdomChanged();
+    void roleChanged();
 
 protected:
     QString m_screenName;
@@ -206,6 +212,8 @@ protected:
 
     QHash<QString, int> m_cardHistory;
     int m_drank;
+    QString m_kingdom;
+    QString m_role;
 };
 
 #endif // PLAYER_H

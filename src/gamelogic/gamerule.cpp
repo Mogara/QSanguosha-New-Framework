@@ -62,6 +62,7 @@ void GameRule::onGameStart(ServerPlayer *current, QVariant &) const
 
     const General *headGeneral = current->headGeneral();
     const General *deputyGeneral = current->deputyGeneral();
+
     int headHp = headGeneral->headMaxHp();
     int deputyHp = deputyGeneral->deputyMaxHp();
     int hp = (headHp + deputyHp) / 2;
@@ -69,6 +70,11 @@ void GameRule::onGameStart(ServerPlayer *current, QVariant &) const
     current->setHp(hp);
     current->broadcastProperty("maxHp");
     current->broadcastProperty("hp");
+
+    current->setRole(headGeneral->kingdom());
+    current->notifyPropertyTo("role", current);
+    current->setKingdom(headGeneral->kingdom());
+    current->notifyPropertyTo("kingdom", current);
 
     current->drawCards(4);
 }

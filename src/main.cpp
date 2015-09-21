@@ -24,6 +24,7 @@
 #include <cmainwindow.h>
 #include <cexceptionhandler.h>
 #include <cnetwork.h>
+#include <ctranslator.h>
 
 int main(int argc, char *argv[])
 {
@@ -37,8 +38,14 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("mogara.org");
     app.setApplicationName("QSanguosha");
 
+    QString localeName = QLocale::system().name();
+
+    CTranslator ctranslator;
+    ctranslator.load(localeName, QStringLiteral("translations"));
+    app.installTranslator(&ctranslator);
+
     QTranslator translator;
-    translator.load(QLocale::system().name(), QStringLiteral("translations"));
+    translator.load(localeName, QStringLiteral("translations"));
     app.installTranslator(&translator);
 
     CMainWindow window;

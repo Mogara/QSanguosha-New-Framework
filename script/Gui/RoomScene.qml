@@ -343,7 +343,7 @@ RoomScene {
         var selected = [];
         for (var i = 0; i < photos.count; i++) {
             var photo = photos.itemAt(i);
-            if (photo.state === "selected")
+            if (photo.selected)
                 selected.push(photo.seat);
         }
         return selected;

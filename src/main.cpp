@@ -39,13 +39,14 @@ int main(int argc, char *argv[])
     app.setApplicationName("QSanguosha");
 
     QString localeName = QLocale::system().name();
-
-    CTranslator ctranslator;
-    ctranslator.load(localeName, QStringLiteral("translations"));
-    app.installTranslator(&ctranslator);
-
     QTranslator translator;
-    translator.load(localeName, QStringLiteral("translations"));
+    if (!translator.load(localeName, QStringLiteral("translations"))) {
+        localeName = "zh_CN";
+        translator.load(localeName, QStringLiteral("translations"));
+    }
+    CTranslator ctranslator;
+    if (ctranslator.load(localeName, QStringLiteral("translations")))
+        app.installTranslator(&ctranslator);
     app.installTranslator(&translator);
 
     CMainWindow window;

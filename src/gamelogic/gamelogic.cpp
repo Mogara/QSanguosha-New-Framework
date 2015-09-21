@@ -370,15 +370,29 @@ bool GameLogic::useCard(CardUseStruct &use)
         QVariant data = QVariant::fromValue(&use);
         trigger(CardUsed, use.from, data);
 
-        if (use.from)
+        if (use.from) {
             trigger(TargetChoosing, use.from, data);
 
-        if (use.from && !use.to.isEmpty()) {
-            foreach (ServerPlayer *to, use.to) {
-                if (!use.to.contains(to))
-                    continue;
+            if (use.from && !use.to.isEmpty()) {
+                foreach (ServerPlayer *to, use.to) {
+                    if (!use.to.contains(to))
+                        continue;
+                    trigger(TargetConfirming, to, data);
+                }
 
-                trigger(TargetConfirming, to, data);
+                if (use.from && !use.to.isEmpty()) {
+                    trigger(TargetChosen, use.from, data);
+
+                    if (use.from && !use.to.isEmpty()) {
+                        foreach (ServerPlayer *to, use.to) {
+                            if (!use.to.contains(to))
+                                continue;
+                            trigger(TargetConfirmed, to, data);
+                        }
+
+                        use.card->use(this, use.from, use.to);
+                    }
+                }
             }
         }
 
@@ -400,10 +414,15 @@ bool GameLogic::takeCardEffect(CardEffectStruct &effect)
         // No skills should be triggered here!
         trigger(CardEffect, effect.to, data);
         // Make sure that effectiveness of Slash isn't judged here!
-        canceled = !trigger(CardEffected, effect.to, data);
+        canceled = trigger(CardEffected, effect.to, data);
+        if (!canceled) {
+            trigger(CardEffectConfirmed, effect.to, data);
+            if (effect.to->isAlive())
+                effect.card->onEffect(this, effect);
+        }
     }
     trigger(PostCardEffected, effect.to, data);
-    return canceled;
+    return !canceled;
 }
 
 void GameLogic::damage(DamageStruct &damage)

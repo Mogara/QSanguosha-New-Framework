@@ -15,7 +15,7 @@ Item {
 
     FolderListModel {
         id: fileModel
-        folder: "../../../image/" + source
+        folder: "../../../image/animation/" + source
         showDirs: false
     }
 
@@ -24,7 +24,7 @@ Item {
         model: fileModel.count
 
         Image {
-            source: "image://root/" + root.source + index
+            source: "image://root/animation/" + root.source + "/" + index
             visible: false
             onStatusChanged: {
                 if (status == Image.Ready) {

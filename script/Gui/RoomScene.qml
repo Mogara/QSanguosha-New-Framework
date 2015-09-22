@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.1
 import Cardirector.Gui 1.0
 import Cardirector.Device 1.0
 import Cardirector.Resource 1.0
+import Cardirector.Media 1.0
 import Sanguosha 1.0
 import "RoomElement"
 import "../engine.js" as Engine
@@ -14,6 +15,22 @@ RoomScene {
 
     id: roomScene
     anchors.fill: parent
+
+    CSound {
+        id: backgroundMusic
+    }
+
+    CSound {
+        id: soundEffect
+
+        Connections {
+            target: roomScene
+            onSoundPlayed: {
+                soundEffect.fileName = "audio/" + path;
+                soundEffect.play();
+            }
+        }
+    }
 
     Image {
         source: config.tableImage
@@ -181,10 +198,6 @@ RoomScene {
     }
 
     onCardsMoved: {
-        var component = Qt.createComponent("RoomElement/CardItem.qml");
-        if (component.status !== Component.Ready)
-            return;
-
         var cardItems = [], i;
         for (i = 0; i < moves.length; i++) {
             var move = moves[i];
@@ -197,6 +210,15 @@ RoomScene {
                 to.add(items);
             to.updateCardPosition(true);
         }
+    }
+
+    onEmotionStarted: {
+        var component = Qt.createComponent("RoomElement/PixmapAnimation.qml");
+        if (component.status !== Component.Ready)
+            return;
+
+        var photo = getItemBySeat(seat);
+        var animation = component.createObject(roomScene, {source: emotion, x: photo.x, y: photo.y});
     }
 
     onCardEnabled: dashboard.handcardArea.enableCards(cardIds);
@@ -251,6 +273,9 @@ RoomScene {
 
         for (i = 0; i < playerNum - 1; i++) {
             item = photos.itemAt(i);
+            if (!item)
+                continue;
+
             region = regions[seatIndex[i]];
             subindex = region.players.indexOf(i);
 

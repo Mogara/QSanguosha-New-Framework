@@ -458,7 +458,7 @@ void GameLogic::damage(DamageStruct &damage)
             QVariantList arg;
             arg << damage.to->id();
             arg << damage.nature;
-            arg << -damage.damage;
+            arg << damage.damage;
             room()->broadcastNotification(S_COMMAND_DAMAGE, arg);
 
             int newHp = damage.to->hp() - damage.damage;
@@ -488,13 +488,11 @@ void GameLogic::delay(ulong msecs)
 
 CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
 {
-    C_UNUSED(user);
     return new ServerPlayer(this, user);
 }
 
 CAbstractPlayer *GameLogic::createPlayer(CServerRobot *robot)
 {
-    C_UNUSED(robot);
     return new ServerPlayer(this, robot);
 }
 

@@ -18,6 +18,8 @@ RoomScene {
 
     CSound {
         id: backgroundMusic
+        source: config.backgroundMusic
+        Component.onCompleted: play();
     }
 
     CSound {
@@ -26,7 +28,7 @@ RoomScene {
         Connections {
             target: roomScene
             onSoundPlayed: {
-                soundEffect.fileName = "audio/" + path;
+                soundEffect.source = "audio/" + path;
                 soundEffect.play();
             }
         }

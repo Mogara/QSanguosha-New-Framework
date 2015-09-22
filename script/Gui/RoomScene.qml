@@ -219,6 +219,8 @@ RoomScene {
 
         var photo = getItemBySeat(seat);
         var animation = component.createObject(roomScene, {source: emotion, x: photo.x, y: photo.y});
+        animation.finished.connect(function(){animation.destroy();});
+        animation.start();
     }
 
     onCardEnabled: dashboard.handcardArea.enableCards(cardIds);
@@ -330,6 +332,7 @@ RoomScene {
 
         var color = Engine.kingdomColor[fromItem.userRole];
         var line = component.createObject(root, {start: fromPos, end: end, color: color});
+        line.finished.connect(function(){line.destroy();});
         line.running = true;
     }
 

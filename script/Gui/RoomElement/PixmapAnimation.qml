@@ -6,6 +6,7 @@ Item {
     property int currentFrame: 0
     property alias interval: timer.interval
     property int loadedFrameCount: 0
+    property bool autoStart: false
 
     signal loaded()
     signal started()
@@ -36,7 +37,10 @@ Item {
         }
     }
 
-    onLoaded: timer.start();
+    onLoaded: {
+        if (autoStart)
+            timer.start();
+    }
 
     Timer {
         id: timer
@@ -55,6 +59,17 @@ Item {
             frames.itemAt(currentFrame).visible = true;
 
             currentFrame++;
+        }
+    }
+
+    function start()
+    {
+        if (loadedFrameCount == fileModel.count) {
+            timer.start();
+        } else {
+            root.loaded.connect(function(){
+                timer.start();
+            });
         }
     }
 }

@@ -17,6 +17,7 @@ Item {
                 card = inputs[i];
                 pendingInput.push(card);
                 cards.push(card.toData());
+                card.destroy();
             }
 
             if (checkExisting)

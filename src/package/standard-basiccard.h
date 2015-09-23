@@ -27,8 +27,8 @@ struct SlashEffectStruct
     ServerPlayer *from;
     ServerPlayer *to;
 
-    const Card *slash;
-    QList<const Card *> jink;
+    Card *slash;
+    QList<Card *> jink;
 
     DamageStruct::Nature nature;
     int drank;
@@ -60,6 +60,9 @@ class Jink : public BasicCard
 
 public:
     Q_INVOKABLE Jink(Suit suit, int number);
+
+    void onUse(GameLogic *logic, CardUseStruct &use) override;
+    void onEffect(GameLogic *, CardEffectStruct &effect) override;
 };
 
 #endif // STANDARDBASICCARD_H

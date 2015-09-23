@@ -73,9 +73,8 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
                             CardUseStruct use;
                             use.from = effect.to;
                             use.card = card;
+                            use.extra = data;
                             logic->useCard(use);
-
-                            effect.jink << card;
                         } else {
                             break;
                         }
@@ -105,6 +104,21 @@ Jink::Jink(Card::Suit suit, int number)
     : BasicCard(suit, number)
 {
     setObjectName("jink");
+}
+
+void Jink::onUse(GameLogic *logic, CardUseStruct &use)
+{
+    SlashEffectStruct *effect = use.extra.value<SlashEffectStruct *>();
+    if (effect)
+        use.target = effect->slash;
+    BasicCard::onUse(logic, use);
+}
+
+void Jink::onEffect(GameLogic *, CardEffectStruct &effect)
+{
+    SlashEffectStruct *slashEffect = effect.extra.value<SlashEffectStruct *>();
+    if (slashEffect)
+        slashEffect->jink << this;
 }
 
 void StandardPackage::addBasicCards()

@@ -233,15 +233,26 @@ void Card::onUse(GameLogic *logic, CardUseStruct &use)
     logic->moveCards(move);
 }
 
-void Card::use(GameLogic *logic, ServerPlayer *source, QList<ServerPlayer *> &targets)
+void Card::use(GameLogic *logic, CardUseStruct &use)
 {
-    foreach (ServerPlayer *target, targets) {
+    foreach (ServerPlayer *target, use.to) {
         CardEffectStruct effect;
         effect.card = this;
-        effect.from = source;
+        effect.from = use.from;
         effect.to = target;
-        effect.multiple = (targets.length() > 1);
+        effect.extra = use.extra;
+        effect.multiple = (use.to.length() > 1);
         //@to-do: effect.nullified = ?
+        logic->takeCardEffect(effect);
+    }
+
+    if (use.target) {
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = use.from;
+        effect.target = use.target;
+        effect.extra = use.extra;
+        effect.multiple = false;
         logic->takeCardEffect(effect);
     }
 
@@ -255,7 +266,7 @@ void Card::use(GameLogic *logic, ServerPlayer *source, QList<ServerPlayer *> &ta
     }
 }
 
-void Card::onEffect(GameLogic*, CardEffectStruct &)
+void Card::onEffect(GameLogic *, CardEffectStruct &)
 {
 }
 
@@ -304,9 +315,9 @@ void EquipCard::onUse(GameLogic *logic, CardUseStruct &use)
     logic->trigger(PreCardUsed, player, data);
 }
 
-void EquipCard::use(GameLogic *logic, ServerPlayer *, QList<ServerPlayer *> &targets)
+void EquipCard::use(GameLogic *logic, CardUseStruct &use)
 {
-    if (targets.isEmpty()) {
+    if (use.to.isEmpty()) {
         CardsMoveStruct move;
         move.cards << this;
         move.to.type = CardArea::DiscardPile;
@@ -315,7 +326,7 @@ void EquipCard::use(GameLogic *logic, ServerPlayer *, QList<ServerPlayer *> &tar
         return;
     }
 
-    ServerPlayer *target = targets.first();
+    ServerPlayer *target = use.to.first();
 
     //Find the existing equip
     Card *equippedCard = nullptr;

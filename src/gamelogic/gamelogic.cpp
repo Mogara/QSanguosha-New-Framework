@@ -384,24 +384,24 @@ bool GameLogic::useCard(CardUseStruct &use)
             args["to"] = tos;
             room()->broadcastNotification(S_COMMAND_USE_CARD, args);
 
-            if (use.from && !use.to.isEmpty()) {
+            if (use.from && (!use.to.isEmpty() || use.target)) {
                 foreach (ServerPlayer *to, use.to) {
                     if (!use.to.contains(to))
                         continue;
                     trigger(TargetConfirming, to, data);
                 }
 
-                if (use.from && !use.to.isEmpty()) {
+                if (use.from && (!use.to.isEmpty() || use.target)) {
                     trigger(TargetChosen, use.from, data);
 
-                    if (use.from && !use.to.isEmpty()) {
+                    if (use.from && (!use.to.isEmpty() || use.target)) {
                         foreach (ServerPlayer *to, use.to) {
                             if (!use.to.contains(to))
                                 continue;
                             trigger(TargetConfirmed, to, data);
                         }
 
-                        use.card->use(this, use.from, use.to);
+                        use.card->use(this, use);
                     }
                 }
             }
@@ -421,17 +421,20 @@ bool GameLogic::takeCardEffect(CardEffectStruct &effect)
 {
     QVariant data = QVariant::fromValue(&effect);
     bool canceled = false;
-    if (effect.to->isAlive()) {
-        // No skills should be triggered here!
-        trigger(CardEffect, effect.to, data);
-        // Make sure that effectiveness of Slash isn't judged here!
-        canceled = trigger(CardEffected, effect.to, data);
-        if (!canceled) {
-            trigger(CardEffectConfirmed, effect.to, data);
-            if (effect.to->isAlive())
-                effect.card->onEffect(this, effect);
+    if (effect.to) {
+        if (effect.to->isAlive()) {
+            // No skills should be triggered here!
+            trigger(CardEffect, effect.to, data);
+            // Make sure that effectiveness of Slash isn't judged here!
+            canceled = trigger(CardEffected, effect.to, data);
+            if (!canceled) {
+                trigger(CardEffectConfirmed, effect.to, data);
+                if (effect.to->isAlive())
+                    effect.card->onEffect(this, effect);
+            }
         }
-    }
+    } else if (effect.target)
+        effect.card->onEffect(this, effect);
     trigger(PostCardEffected, effect.to, data);
     return !canceled;
 }

@@ -125,7 +125,7 @@ public:
     virtual bool isAvailable(const Player *player) const;
 
     virtual void onUse(GameLogic *logic, CardUseStruct &use);
-    virtual void use(GameLogic *logic, ServerPlayer *source, QList<ServerPlayer *> &targets);
+    virtual void use(GameLogic *logic, CardUseStruct &use);
     virtual void onEffect(GameLogic *logic, CardEffectStruct &effect);
 
     virtual bool isCancelable(const CardEffectStruct &effect) const;
@@ -200,8 +200,8 @@ public:
 
     EquipCard(Suit suit, int number, Skill *skill = nullptr);
 
-    void onUse(GameLogic *logic, CardUseStruct &card_use) override;
-    void use(GameLogic *logic, ServerPlayer *, QList<ServerPlayer *> &targets) override;
+    void onUse(GameLogic *logic, CardUseStruct &use) override;
+    void use(GameLogic *logic, CardUseStruct &use) override;
 
 protected:
     Skill *m_skill;

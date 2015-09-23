@@ -113,8 +113,6 @@ struct DamageStruct
         Thunder
     };
 
-    DamageStruct();
-
     ServerPlayer *from;
     ServerPlayer *to;
     const Card *card;
@@ -126,6 +124,8 @@ struct DamageStruct
     QString reason;
     QString transferReason;
     bool prevented;
+
+    DamageStruct();
 };
 
 Q_DECLARE_METATYPE(DamageStruct *)

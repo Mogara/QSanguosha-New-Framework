@@ -205,7 +205,7 @@ RoomScene {
             var move = moves[i];
             var from = getAreaItem(move.from);
             var to = getAreaItem(move.to);
-            if (!from || !to)
+            if (!from || !to || from === to)
                 continue;
             var items = from.remove(move.cards);
             if (items.length > 0)

@@ -53,6 +53,8 @@ public:
     void activate(CardUseStruct &use);
 
     Event askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable);
+    Card *askForCard(const QString &pattern, const QString &prompt);
+
     void broadcastProperty(const char *name) const;
     void broadcastProperty(const char *name, const QVariant &value, ServerPlayer *except = nullptr) const;
     void notifyPropertyTo(const char *name, ServerPlayer *player);

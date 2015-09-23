@@ -21,6 +21,7 @@
 #include "cglobal.h"
 #include "client.h"
 #include "clientplayer.h"
+#include "cardpattern.h"
 #include "protocol.h"
 #include "roomscene.h"
 #include "util.h"
@@ -57,6 +58,7 @@ static QVariant AreaToVariant(const CardsMoveStruct::Area area)
 RoomScene::RoomScene(QQuickItem *parent)
     : QQuickItem(parent)
     , m_client(Client::instance())
+    , m_respondingState(InactiveState)
 {
     connect(m_client, &Client::chooseGeneralRequested, this, &RoomScene::onChooseGeneralRequested);
     connect(m_client, &Client::seatArranged, this, &RoomScene::onSeatArranged);
@@ -64,6 +66,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::usingCard, this, &RoomScene::onUsingCard);
     connect(m_client, &Client::damageDone, this, &RoomScene::onDamageDone);
     connect(m_client, &Client::cardUsed, this, &RoomScene::onCardUsed);
+    connect(m_client, &Client::cardAsked, this, &RoomScene::onCardAsked);
 
     connect(this, &RoomScene::chooseGeneralFinished, this, &RoomScene::onChooseGeneralFinished);
     connect(this, &RoomScene::cardSelected, this, &RoomScene::onCardSelected);
@@ -135,6 +138,8 @@ void RoomScene::onChooseGeneralFinished(const QString &head, const QString &depu
 
 void RoomScene::onUsingCard(const QString &pattern)
 {
+    m_respondingState = UsingCardState;
+
     if (!pattern.isEmpty()) {
         //@todo: load CardPattern
     } else {
@@ -174,8 +179,18 @@ void RoomScene::onPhotoSelected(const QVariantList &seats)
 
 void RoomScene::onAccepted()
 {
-    if (m_selectedCard.length() == 1) {
-        m_client->useCard(m_selectedCard.first(), m_selectedPlayer);
+    switch (m_respondingState) {
+    case UsingCardState:{
+        if (m_selectedCard.length() == 1) {
+            m_client->useCard(m_selectedCard.first(), m_selectedPlayer);
+        }
+        break;
+    }
+    case RespondingCardState:{
+        m_client->respondCard(m_selectedCard);
+        break;
+    }
+    default:;
     }
 }
 
@@ -203,6 +218,27 @@ void RoomScene::onCardUsed(const ClientPlayer *from, const QList<const ClientPla
     foreach (const ClientPlayer *to, tos)
         toSeats << to->seat();
     emit indicatorLineShown(from->seat(), toSeats);
+}
+
+void RoomScene::onCardAsked(const QString &pattern, const QString &prompt)
+{
+    m_respondingState = RespondingCardState;
+    showPrompt(prompt);
+
+    QVariantList cardIds;
+    const ClientPlayer *self = m_client->findPlayer(m_client->self());
+    CardPattern exp(pattern);
+    QList<Card *> handcards = self->handcards()->cards();
+    foreach (const Card *card, handcards) {
+        if (exp.match(self, card))
+            cardIds << card->id();
+    }
+    QList<Card *> equips = self->equips()->cards();
+    foreach (const Card *card, equips) {
+        if (exp.match(self, card))
+            cardIds << card->id();
+    }
+    cardEnabled(cardIds);
 }
 
 C_REGISTER_QMLTYPE("Sanguosha", 1, 0, RoomScene)

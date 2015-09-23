@@ -43,6 +43,7 @@ public:
 
     const Card *findCard(uint id) { return m_cards.value(id); }
     void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
+    void respondCard(const QList<const Card *> &cards);
 
 signals:
     void seatArranged();
@@ -51,6 +52,7 @@ signals:
     void damageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
     void usingCard(const QString &pattern);
     void cardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &to);
+    void cardAsked(const QString &pattern, const QString &prompt);
 
 private:
     Client(QObject *parent = 0);
@@ -69,6 +71,7 @@ private:
     static void UseCardCommand(QObject *receiver, const QVariant &data);
     static void AddCardHistoryCommand(QObject *receiver, const QVariant &data);
     static void DamageCommand(QObject *receiver, const QVariant &data);
+    static void AskForCardRequestCommand(QObject *receiver, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

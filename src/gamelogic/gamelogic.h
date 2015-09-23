@@ -75,6 +75,7 @@ public:
     bool takeCardEffect(CardEffectStruct &effect);
 
     Card *findCard(uint id) const { return m_cards.value(id); }
+    QList<Card *> findCards(const QVariant &data);
 
     void damage(DamageStruct &damage);
 

@@ -28,7 +28,6 @@ SlashEffectStruct::SlashEffectStruct()
     : from(nullptr)
     , to(nullptr)
     , slash(nullptr)
-    , jink(nullptr)
     , nature(DamageStruct::Normal)
     , drank(0)
     , jinkNum(1)
@@ -68,13 +67,25 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
         if (!logic->trigger(SlashEffected, effect.to, data)) {
             if (effect.jinkNum > 0) {
                 if (!logic->trigger(SlashProceed, effect.from, data)) {
-                    //@to-do: ask for jink here
+                    while (effect.jink.length() < effect.jinkNum) {
+                        Card *card = effect.to->askForCard("Jink", "slash-jink");
+                        if (card) {
+                            CardUseStruct use;
+                            use.from = effect.to;
+                            use.card = card;
+                            logic->useCard(use);
+
+                            effect.jink << card;
+                        } else {
+                            break;
+                        }
+                    }
                 }
             }
         }
     }
 
-    if (effect.jink == nullptr) {
+    if (effect.jink.length() < effect.jinkNum) {
         if (effect.to->isAlive()) {
             logic->trigger(SlashHit, effect.from, data);
 
@@ -82,6 +93,7 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
             damage.from = effect.from;
             damage.to = effect.to;
             damage.nature = effect.nature;
+            damage.card = this;
             logic->damage(damage);
         }
     } else {
@@ -89,8 +101,18 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
     }
 }
 
+Jink::Jink(Card::Suit suit, int number)
+    : BasicCard(suit, number)
+{
+    setObjectName("jink");
+}
+
 void StandardPackage::addBasicCards()
 {
-    for (int i = 1; i <= 100; i++)
-        addCard(new Slash(Card::Spade, i % 13 + 1));
+    for (int i = 1; i <= 100; i++) {
+        if ((i & 1) == 1)
+            addCard(new Slash(Card::Club, i % 13 + 1));
+        else
+            addCard(new Jink(Card::Diamond, i % 13 + 1));
+    }
 }

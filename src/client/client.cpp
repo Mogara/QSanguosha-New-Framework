@@ -77,6 +77,18 @@ void Client::useCard(const Card *card, const QList<const ClientPlayer *> &target
     replyToServer(S_COMMAND_USE_CARD, data);
 }
 
+void Client::respondCard(const QList<const Card *> &cards)
+{
+    QVariantMap data;
+
+    QVariantList cardData;
+    foreach (const Card *card, cards)
+        cardData << card->id();
+    data["cards"] = cardData;
+
+    replyToServer(S_COMMAND_ASK_FOR_CARD, data);
+}
+
 void Client::restart()
 {
     foreach (ClientPlayer *player, m_players)
@@ -305,6 +317,18 @@ void Client::DamageCommand(QObject *receiver, const QVariant &data)
     emit client->damageDone(victim, nature, damage);
 }
 
+void Client::AskForCardRequestCommand(QObject *receiver, const QVariant &data)
+{
+    QVariantMap arg = data.toMap();
+    if (!arg.contains("pattern") || !arg.contains("prompt"))
+        return;
+
+    QString pattern = arg["pattern"].toString();
+    QString prompt = arg["prompt"].toString();
+    Client *client = qobject_cast<Client *>(receiver);
+    emit client->cardAsked(pattern, prompt);
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -324,5 +348,6 @@ void Client::Init()
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);
+    AddInteraction(S_COMMAND_ASK_FOR_CARD, AskForCardRequestCommand);
 }
 C_INITIALIZE_CLASS(Client)

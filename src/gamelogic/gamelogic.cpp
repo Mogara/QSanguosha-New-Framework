@@ -436,6 +436,18 @@ bool GameLogic::takeCardEffect(CardEffectStruct &effect)
     return !canceled;
 }
 
+QList<Card *> GameLogic::findCards(const QVariant &data)
+{
+    QList<Card *> cards;
+    QVariantList dataList = data.toList();
+    foreach (const QVariant &cardId, dataList) {
+        Card *card = findCard(cardId.toUInt());
+        if (card)
+            cards << card;
+    }
+    return cards;
+}
+
 void GameLogic::damage(DamageStruct &damage)
 {
     if (damage.to == NULL || damage.to->isDead())

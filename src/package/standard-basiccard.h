@@ -28,7 +28,7 @@ struct SlashEffectStruct
     ServerPlayer *to;
 
     const Card *slash;
-    const Card *jink;
+    QList<const Card *> jink;
 
     DamageStruct::Nature nature;
     int drank;
@@ -52,6 +52,14 @@ public:
 protected:
     DamageStruct::Nature m_nature;
     int m_drank;
+};
+
+class Jink : public BasicCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Jink(Suit suit, int number);
 };
 
 #endif // STANDARDBASICCARD_H

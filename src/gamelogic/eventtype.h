@@ -72,6 +72,11 @@ enum EventType
     Damaged,          // the moment for -- yiji..
     DamageComplete,   // the moment for trigger iron chain
 
+    PreHpRecover,
+    HpRecover,
+
+    MaxHpChanged,
+
     EventTypeCount
 };
 

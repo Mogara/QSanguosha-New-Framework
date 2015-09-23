@@ -128,7 +128,7 @@ void ServerPlayer::activate(CardUseStruct &use)
     use.from = this;
 
     uint cardId = reply["cardId"].toUInt();
-    use.card = m_logic->findCard(cardId);
+    use.card = cardId > 0 ? m_logic->findCard(cardId) : nullptr;
 
     //@to-do: filter view as skills on server side
 
@@ -148,6 +148,31 @@ Event ServerPlayer::askForTriggerOrder(const QString &reason, QList<Event> &opti
     C_UNUSED(options);
     C_UNUSED(cancelable);
     return Event();
+}
+
+Card *ServerPlayer::askForCard(const QString &pattern, const QString &prompt)
+{
+    if (!m_agent.isNull()) {
+        QVariantMap data;
+        data["pattern"] = pattern;
+        data["prompt"] = prompt;
+
+        QVariant replyData;
+        forever {
+            m_agent->request(S_COMMAND_ASK_FOR_CARD, data, 15000);
+            replyData = m_agent->waitForReply(15000);
+            if (replyData.toString() == "cancel")
+                break;
+
+            const QVariantMap reply = replyData.toMap();
+            QList<Card *> cards = m_logic->findCards(reply["cards"]);
+            //@to-do: filter cards with skill reply["skill"]
+            if (cards.length() != 1)
+                break;
+            return cards.first();
+        }
+    }
+    return nullptr;
 }
 
 void ServerPlayer::broadcastProperty(const char *name) const

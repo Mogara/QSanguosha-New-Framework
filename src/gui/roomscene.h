@@ -48,8 +48,16 @@ signals:
     void emotionStarted(const QString &emotion, int seat);
     void soundPlayed(const QString &path);
     void indicatorLineShown(int from, const QVariantList &tos);
+    void showPrompt(const QString &prompt);
 
 private:
+    enum RespondingState
+    {
+        InactiveState,
+        UsingCardState,
+        RespondingCardState
+    };
+
     void animateCardsMoving(const QList<CardsMoveStruct> &moves);
 
     void onSeatArranged();
@@ -61,10 +69,12 @@ private:
     void onAccepted();
     void onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
     void onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos);
+    void onCardAsked(const QString &pattern, const QString &prompt);
 
     Client *m_client;
     QList<const Card *> m_selectedCard;
     QList<const ClientPlayer *> m_selectedPlayer;
+    RespondingState m_respondingState;
 };
 
 #endif // ROOMSCENE_H

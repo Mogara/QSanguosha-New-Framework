@@ -63,26 +63,32 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
 
     QVariant data = QVariant::fromValue(&effect);
 
-    if (!logic->trigger(SlashEffect, effect.from, data)) {
-        if (!logic->trigger(SlashEffected, effect.to, data)) {
-            if (effect.jinkNum > 0) {
-                if (!logic->trigger(SlashProceed, effect.from, data)) {
-                    while (effect.jink.length() < effect.jinkNum) {
-                        Card *card = effect.to->askForCard("Jink", "slash-jink");
-                        if (card) {
-                            CardUseStruct use;
-                            use.from = effect.to;
-                            use.card = card;
-                            use.extra = data;
-                            logic->useCard(use);
-                        } else {
-                            break;
-                        }
-                    }
-                }
+    do {
+        if (logic->trigger(SlashEffect, effect.from, data))
+            break;
+
+        if (logic->trigger(SlashEffected, effect.to, data))
+            break;
+
+        if (effect.jinkNum <= 0)
+            break;
+
+        if (logic->trigger(SlashProceed, effect.from, data))
+            break;
+
+        while (effect.jink.length() < effect.jinkNum) {
+            Card *card = effect.to->askForCard("Jink", "slash-jink");
+            if (card) {
+                CardUseStruct use;
+                use.from = effect.to;
+                use.card = card;
+                use.extra = data;
+                logic->useCard(use);
+            } else {
+                break;
             }
         }
-    }
+    } while (false);
 
     if (effect.jink.length() < effect.jinkNum) {
         if (effect.to->isAlive()) {

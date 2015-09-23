@@ -317,6 +317,19 @@ void Client::DamageCommand(QObject *receiver, const QVariant &data)
     emit client->damageDone(victim, nature, damage);
 }
 
+void Client::RecoverCommand(QObject *receiver, const QVariant &data)
+{
+    QVariantMap arg = data.toMap();
+    if (!arg.contains("from") || !arg.contains("to") || !arg.contains("num"))
+        return;
+
+    Client *client = qobject_cast<Client *>(receiver);
+    const ClientPlayer *from = client->findPlayer(arg["from"].toUInt());
+    const ClientPlayer *to = client->findPlayer(arg["to"].toUInt());
+    int num = arg["num"].toInt();
+    emit client->recoverDone(from, to, num);
+}
+
 void Client::AskForCardRequestCommand(QObject *receiver, const QVariant &data)
 {
     QVariantMap arg = data.toMap();
@@ -344,6 +357,7 @@ void Client::Init()
     AddCallback(S_COMMAND_MOVE_CARDS, MoveCardsCommand);
     AddCallback(S_COMMAND_ADD_CARD_HISTORY, AddCardHistoryCommand);
     AddCallback(S_COMMAND_DAMAGE, DamageCommand);
+    AddCallback(S_COMMAND_RECOVER, RecoverCommand);
     AddCallback(S_COMMAND_USE_CARD, UseCardCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);

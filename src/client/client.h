@@ -50,6 +50,7 @@ signals:
     void chooseGeneralRequested(const QStringList &candidates /* @to-do: add banned pair */);
     void cardsMoved(const QList<CardsMoveStruct> &moves);
     void damageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
+    void recoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
     void usingCard(const QString &pattern);
     void cardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &to);
     void cardAsked(const QString &pattern, const QString &prompt);
@@ -71,6 +72,7 @@ private:
     static void UseCardCommand(QObject *receiver, const QVariant &data);
     static void AddCardHistoryCommand(QObject *receiver, const QVariant &data);
     static void DamageCommand(QObject *receiver, const QVariant &data);
+    static void RecoverCommand(QObject *receiver, const QVariant &data);
     static void AskForCardRequestCommand(QObject *receiver, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;

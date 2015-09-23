@@ -127,12 +127,40 @@ void Jink::onEffect(GameLogic *, CardEffectStruct &effect)
         slashEffect->jink << this;
 }
 
+Peach::Peach(Card::Suit suit, int number)
+    : BasicCard(suit, number)
+{
+    setObjectName("peach");
+}
+
+void Peach::onUse(GameLogic *logic, CardUseStruct &use)
+{
+    if (use.to.isEmpty())
+        use.to << use.from;
+    BasicCard::onUse(logic, use);
+}
+
+void Peach::onEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    RecoverStruct recover;
+    recover.card = this;
+    recover.from = effect.from;
+    recover.to = effect.to;
+    logic->recover(recover);
+}
+
+bool Peach::isAvailable(const Player *player) const
+{
+    return player->isWounded() && BasicCard::isAvailable(player);
+}
+
 void StandardPackage::addBasicCards()
 {
     for (int i = 1; i <= 100; i++) {
-        if ((i & 1) == 1)
-            addCard(new Slash(Card::Club, i % 13 + 1));
-        else
-            addCard(new Jink(Card::Diamond, i % 13 + 1));
+        switch (i % 3){
+        case 0: addCard(new Slash(Card::Club, i % 13 + 1));
+        case 1: addCard(new Jink(Card::Diamond, i % 13 + 1));
+        case 2: addCard(new Peach(Card::Heart, i % 13 + 1));
+        }
     }
 }

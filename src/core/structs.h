@@ -134,4 +134,16 @@ struct DamageStruct
 
 Q_DECLARE_METATYPE(DamageStruct *)
 
+struct RecoverStruct
+{
+    ServerPlayer *from;
+    ServerPlayer *to;
+    int recover;
+    Card *card;
+
+    RecoverStruct();
+};
+
+Q_DECLARE_METATYPE(RecoverStruct *)
+
 #endif // STRUCTS_H

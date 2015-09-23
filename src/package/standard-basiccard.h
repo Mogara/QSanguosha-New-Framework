@@ -65,4 +65,15 @@ public:
     void onEffect(GameLogic *, CardEffectStruct &effect) override;
 };
 
+class Peach : public BasicCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Peach(Suit suit, int number);
+    void onUse(GameLogic *logic, CardUseStruct &use) override;
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    bool isAvailable(const Player *player) const override;
+};
+
 #endif // STANDARDBASICCARD_H

@@ -507,6 +507,30 @@ void GameLogic::damage(DamageStruct &damage)
     }
 }
 
+void GameLogic::recover(RecoverStruct &recover)
+{
+    if (recover.to == nullptr || recover.to->lostHp() == 0 || recover.to->isDead())
+        return;
+
+    QVariant data = QVariant::fromValue(&recover);
+    if (trigger(PreHpRecover, recover.to, data))
+        return;
+    if (recover.to == nullptr)
+        return;
+
+    int newHp = qMin(recover.to->hp() + recover.recover, recover.to->maxHp());
+    recover.to->setHp(newHp);
+    recover.to->broadcastProperty("hp");
+
+    QVariantMap arg;
+    arg["from"] = recover.from ? recover.from->id() : 0;
+    arg["to"] = recover.to->id();
+    arg["num"] = recover.recover;
+    room()->broadcastNotification(S_COMMAND_RECOVER, arg);
+
+    trigger(HpRecover, recover.to, data);
+}
+
 void GameLogic::delay(ulong msecs)
 {
     QThread::currentThread()->msleep(msecs);

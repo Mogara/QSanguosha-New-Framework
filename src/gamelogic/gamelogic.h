@@ -78,6 +78,7 @@ public:
     QList<Card *> findCards(const QVariant &data);
 
     void damage(DamageStruct &damage);
+    void recover(RecoverStruct &recover);
 
     void delay(ulong msecs);
 

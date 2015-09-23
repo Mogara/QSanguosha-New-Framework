@@ -65,6 +65,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::cardsMoved, this, &RoomScene::animateCardsMoving);
     connect(m_client, &Client::usingCard, this, &RoomScene::onUsingCard);
     connect(m_client, &Client::damageDone, this, &RoomScene::onDamageDone);
+    connect(m_client, &Client::recoverDone, this, &RoomScene::onRecoverDone);
     connect(m_client, &Client::cardUsed, this, &RoomScene::onCardUsed);
     connect(m_client, &Client::cardAsked, this, &RoomScene::onCardAsked);
 
@@ -211,6 +212,14 @@ void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature na
     }
 
     playAudio(QString("system/injure%1.ogg").arg(qMin(damage, 3)));
+}
+
+void RoomScene::onRecoverDone(const ClientPlayer *from, const ClientPlayer *to, int num)
+{
+    C_UNUSED(from);
+    C_UNUSED(to);
+    C_UNUSED(num);
+    playAudio("card/common/peach.ogg");
 }
 
 void RoomScene::onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos)

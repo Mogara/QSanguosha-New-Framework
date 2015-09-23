@@ -109,3 +109,12 @@ DamageStruct::DamageStruct()
     , prevented(false)
 {
 }
+
+
+RecoverStruct::RecoverStruct()
+    : from(nullptr)
+    , to(nullptr)
+    , recover(1)
+    , card(nullptr)
+{
+}

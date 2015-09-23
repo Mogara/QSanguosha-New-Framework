@@ -68,6 +68,7 @@ private:
     void onPhotoSelected(const QVariantList &seats);
     void onAccepted();
     void onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
+    void onRecoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
     void onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos);
     void onCardAsked(const QString &pattern, const QString &prompt);
 

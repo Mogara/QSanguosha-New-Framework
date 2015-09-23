@@ -50,6 +50,8 @@ GameLogic::GameLogic(CRoom *parent)
 
 GameLogic::~GameLogic()
 {
+    delete m_table;
+    delete m_discardPile;
     delete m_drawPile;
 
     foreach (Card *card, m_cards)
@@ -372,6 +374,15 @@ bool GameLogic::useCard(CardUseStruct &use)
 
         if (use.from) {
             trigger(TargetChoosing, use.from, data);
+
+            QVariantMap args;
+            args["from"] = use.from->id();
+            //args["cards"]
+            QVariantList tos;
+            foreach (ServerPlayer *to, use.to)
+                tos << to->id();
+            args["to"] = tos;
+            room()->broadcastNotification(S_COMMAND_USE_CARD, args);
 
             if (use.from && !use.to.isEmpty()) {
                 foreach (ServerPlayer *to, use.to) {

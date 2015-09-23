@@ -180,7 +180,7 @@ void Client::UpdatePlayerPropertyCommand(QObject *receiver, const QVariant &data
     }
 }
 
-void Client::ChooseGeneralCommand(QObject *receiver, const QVariant &data)
+void Client::ChooseGeneralRequestCommand(QObject *receiver, const QVariant &data)
 {
     QVariantList dataList = data.toList();
     if (dataList.length() < 2)
@@ -251,10 +251,27 @@ void Client::MoveCardsCommand(QObject *receiver, const QVariant &data)
     emit client->cardsMoved(moves);
 }
 
-void Client::UseCardCommand(QObject *receiver, const QVariant &data)
+void Client::UseCardRequestCommand(QObject *receiver, const QVariant &data)
 {
     Client *client = qobject_cast<Client *>(receiver);
     emit client->usingCard(data.toString());
+}
+
+void Client::UseCardCommand(QObject *receiver, const QVariant &data)
+{
+    Client *client = qobject_cast<Client *>(receiver);
+    const QVariantMap args = data.toMap();
+    const ClientPlayer *from = client->findPlayer(args["from"].toUInt());
+    QList<const ClientPlayer *> targets;
+    const QVariantList tos = args["to"].toList();
+    foreach (const QVariant &to, tos) {
+        const ClientPlayer *target = client->findPlayer(to.toUInt());
+        if (target)
+            targets << target;
+    }
+
+    //@to-do: set card footnote
+    emit client->cardUsed(from, targets);
 }
 
 void Client::AddCardHistoryCommand(QObject *receiver, const QVariant &data)
@@ -303,8 +320,9 @@ void Client::Init()
     AddCallback(S_COMMAND_MOVE_CARDS, MoveCardsCommand);
     AddCallback(S_COMMAND_ADD_CARD_HISTORY, AddCardHistoryCommand);
     AddCallback(S_COMMAND_DAMAGE, DamageCommand);
+    AddCallback(S_COMMAND_USE_CARD, UseCardCommand);
 
-    AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralCommand);
-    AddInteraction(S_COMMAND_USE_CARD, UseCardCommand);
+    AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
+    AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);
 }
 C_INITIALIZE_CLASS(Client)

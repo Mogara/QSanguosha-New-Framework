@@ -63,6 +63,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::cardsMoved, this, &RoomScene::animateCardsMoving);
     connect(m_client, &Client::usingCard, this, &RoomScene::onUsingCard);
     connect(m_client, &Client::damageDone, this, &RoomScene::onDamageDone);
+    connect(m_client, &Client::cardUsed, this, &RoomScene::onCardUsed);
 
     connect(this, &RoomScene::chooseGeneralFinished, this, &RoomScene::onChooseGeneralFinished);
     connect(this, &RoomScene::cardSelected, this, &RoomScene::onCardSelected);
@@ -194,6 +195,14 @@ void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature na
     }
 
     emit soundPlayed(QString("system/injure%1.ogg").arg(qMin(damage, 3)));
+}
+
+void RoomScene::onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos)
+{
+    QVariantList toSeats;
+    foreach (const ClientPlayer *to, tos)
+        toSeats << to->seat();
+    emit indicatorLineShown(from->seat(), toSeats);
 }
 
 C_REGISTER_QMLTYPE("Sanguosha", 1, 0, RoomScene)

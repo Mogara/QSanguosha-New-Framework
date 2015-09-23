@@ -50,6 +50,7 @@ signals:
     void cardsMoved(const QList<CardsMoveStruct> &moves);
     void damageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
     void usingCard(const QString &pattern);
+    void cardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &to);
 
 private:
     Client(QObject *parent = 0);
@@ -62,8 +63,9 @@ private:
     static void ArrangeSeatCommand(QObject *receiver, const QVariant &data);
     static void PrepareCardsCommand(QObject *receiver, const QVariant &data);
     static void UpdatePlayerPropertyCommand(QObject *receiver, const QVariant &data);
-    static void ChooseGeneralCommand(QObject *receiver, const QVariant &data);
+    static void ChooseGeneralRequestCommand(QObject *receiver, const QVariant &data);
     static void MoveCardsCommand(QObject *receiver, const QVariant &data);
+    static void UseCardRequestCommand(QObject *receiver, const QVariant &data);
     static void UseCardCommand(QObject *receiver, const QVariant &data);
     static void AddCardHistoryCommand(QObject *receiver, const QVariant &data);
     static void DamageCommand(QObject *receiver, const QVariant &data);

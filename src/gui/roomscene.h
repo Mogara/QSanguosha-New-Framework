@@ -47,6 +47,7 @@ signals:
     void chooseGeneralStarted(const QVariant &generals);
     void emotionStarted(const QString &emotion, int seat);
     void soundPlayed(const QString &path);
+    void indicatorLineShown(int from, const QVariantList &tos);
 
 private:
     void animateCardsMoving(const QList<CardsMoveStruct> &moves);
@@ -59,6 +60,7 @@ private:
     void onPhotoSelected(const QVariantList &seats);
     void onAccepted();
     void onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
+    void onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos);
 
     Client *m_client;
     QList<const Card *> m_selectedCard;

@@ -314,7 +314,7 @@ RoomScene {
         }
     }
 
-    function showIndicatorLine(from, tos)
+    onIndicatorLineShown:
     {
         var component = Qt.createComponent("RoomElement/IndicatorLine.qml");
         if (component.status !== Component.Ready)
@@ -333,7 +333,7 @@ RoomScene {
         }
 
         var color = Engine.kingdomColor[fromItem.userRole];
-        var line = component.createObject(root, {start: fromPos, end: end, color: color});
+        var line = component.createObject(roomScene, {start: fromPos, end: end, color: color});
         line.finished.connect(function(){line.destroy();});
         line.running = true;
     }

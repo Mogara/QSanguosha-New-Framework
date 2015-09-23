@@ -27,7 +27,7 @@ RoomScene {
 
         Connections {
             target: roomScene
-            onSoundPlayed: {
+            onPlayAudio: {
                 soundEffect.source = "audio/" + path;
                 soundEffect.play();
             }
@@ -188,7 +188,7 @@ RoomScene {
         }
     }
 
-    onChooseGeneralStarted: {
+    onChooseGeneral: {
         popupBox.source = "RoomElement/ChooseGeneralBox.qml";
         var box = popupBox.item;
         box.accepted.connect(function(){
@@ -199,7 +199,7 @@ RoomScene {
         box.arrangeCards();
     }
 
-    onCardsMoved: {
+    onMoveCards: {
         var cardItems = [], i;
         for (i = 0; i < moves.length; i++) {
             var move = moves[i];
@@ -214,7 +214,7 @@ RoomScene {
         }
     }
 
-    onEmotionStarted: {
+    onStartEmotion: {
         var component = Qt.createComponent("RoomElement/PixmapAnimation.qml");
         if (component.status !== Component.Ready)
             return;
@@ -225,7 +225,8 @@ RoomScene {
         animation.start();
     }
 
-    onCardEnabled: dashboard.handcardArea.enableCards(cardIds);
+    onEnableCards: dashboard.handcardArea.enableCards(cardIds);
+
     onPlayerNumChanged: arrangePhotos();
 
     function arrangePhotos()
@@ -314,7 +315,7 @@ RoomScene {
         }
     }
 
-    onIndicatorLineShown:
+    onShowIndicatorLine:
     {
         var component = Qt.createComponent("RoomElement/IndicatorLine.qml");
         if (component.status !== Component.Ready)

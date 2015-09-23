@@ -42,12 +42,12 @@ signals:
     void accepted();
 
     //Signals from C++ to QML
-    void cardsMoved(const QVariant &moves);
-    void cardEnabled(const QVariant &cardIds);
-    void chooseGeneralStarted(const QVariant &generals);
-    void emotionStarted(const QString &emotion, int seat);
-    void soundPlayed(const QString &path);
-    void indicatorLineShown(int from, const QVariantList &tos);
+    void moveCards(const QVariant &moves);
+    void enableCards(const QVariant &cardIds);
+    void chooseGeneral(const QVariant &generals);
+    void startEmotion(const QString &emotion, int seat);
+    void playAudio(const QString &path);
+    void showIndicatorLine(int from, const QVariantList &tos);
     void showPrompt(const QString &prompt);
 
 private:

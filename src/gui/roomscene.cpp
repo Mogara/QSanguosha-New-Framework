@@ -102,7 +102,7 @@ void RoomScene::animateCardsMoving(const QList<CardsMoveStruct> &moves)
         paths << path;
     }
 
-    emit cardsMoved(paths);
+    moveCards(paths);
 }
 
 void RoomScene::onSeatArranged()
@@ -125,7 +125,7 @@ void RoomScene::onChooseGeneralRequested(const QStringList &candidates)
         general["kingdom"] = "shu";
         generals << general;
     }
-    emit chooseGeneralStarted(generals);
+    chooseGeneral(generals);
 }
 
 void RoomScene::onChooseGeneralFinished(const QString &head, const QString &deputy)
@@ -149,7 +149,7 @@ void RoomScene::onUsingCard(const QString &pattern)
         QVariantList cardIds;
         foreach (Card *card, cards)
             cardIds << card->id();
-        emit cardEnabled(cardIds);
+        enableCards(cardIds);
     }
 }
 
@@ -192,6 +192,7 @@ void RoomScene::onAccepted()
     }
     default:;
     }
+    enableCards(QVariantList());
 }
 
 void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage)
@@ -200,7 +201,7 @@ void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature na
         return;
 
     int seat = victim->seat();
-    emit emotionStarted("damage", seat);
+    startEmotion("damage", seat);
 
     //@to-do:
     if (nature == DamageStruct::Fire) {
@@ -209,7 +210,7 @@ void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature na
 
     }
 
-    emit soundPlayed(QString("system/injure%1.ogg").arg(qMin(damage, 3)));
+    playAudio(QString("system/injure%1.ogg").arg(qMin(damage, 3)));
 }
 
 void RoomScene::onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos)
@@ -217,7 +218,7 @@ void RoomScene::onCardUsed(const ClientPlayer *from, const QList<const ClientPla
     QVariantList toSeats;
     foreach (const ClientPlayer *to, tos)
         toSeats << to->seat();
-    emit indicatorLineShown(from->seat(), toSeats);
+    showIndicatorLine(from->seat(), toSeats);
 }
 
 void RoomScene::onCardAsked(const QString &pattern, const QString &prompt)
@@ -238,7 +239,7 @@ void RoomScene::onCardAsked(const QString &pattern, const QString &prompt)
         if (exp.match(self, card))
             cardIds << card->id();
     }
-    cardEnabled(cardIds);
+    enableCards(cardIds);
 }
 
 C_REGISTER_QMLTYPE("Sanguosha", 1, 0, RoomScene)

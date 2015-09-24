@@ -648,6 +648,7 @@ void GameLogic::prepareToStart()
         m_drawPile->add(card);
         m_cardPosition[card] = m_drawPile;
     }
+    qShuffle(m_drawPile->cards());
 }
 
 CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)

@@ -22,6 +22,4 @@
 
 void StandardPackage::addEquipCards()
 {
-    for (int i = 1; i <= 100; i++)
-        addCard(new Card(Card::Club, i % 13 + 1));
 }

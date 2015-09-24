@@ -53,6 +53,22 @@ protected:
     DamageStruct::Nature m_nature;
 };
 
+class FireSlash : public Slash
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE FireSlash(Suit suit, int number);
+};
+
+class ThunderSlash : public Slash
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ThunderSlash(Suit suit, int number);
+};
+
 class Jink : public BasicCard
 {
     Q_OBJECT

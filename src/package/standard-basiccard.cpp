@@ -105,6 +105,20 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
     }
 }
 
+FireSlash::FireSlash(Card::Suit suit, int number)
+    : Slash(suit, number)
+{
+    setObjectName("fire_slash");
+    m_nature = DamageStruct::Fire;
+}
+
+ThunderSlash::ThunderSlash(Card::Suit suit, int number)
+    : Slash(suit, number)
+{
+    setObjectName("thunder_slash");
+    m_nature = DamageStruct::Thunder;
+}
+
 Jink::Jink(Card::Suit suit, int number)
     : BasicCard(suit, number)
 {

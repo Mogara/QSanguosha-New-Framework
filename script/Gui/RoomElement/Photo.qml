@@ -14,7 +14,7 @@ Item {
     property alias maxHp: hpBar.maxValue
     property alias hp: hpBar.value
     property alias handcardArea: handcardAreaItem
-    property string phase: "not_active"
+    property string phase: "inactive"
     property alias progressBar: progressBarItem
     property int seat: 0
     property bool selectable: false
@@ -224,12 +224,12 @@ Item {
     }
 
     Image {
-        source: root.phase != "not_active" ? "image://root/phase/" + root.phase + ".png" : ""
+        source: root.phase != "inactive" ? "image://root/phase/" + root.phase + ".png" : ""
         width: parent.width * 0.9
         height: implicitHeight / implicitWidth * width
         x: (parent.width - width) / 2
         y: parent.height - Device.gu(3)
-        visible: root.phase != "not_active"
+        visible: root.phase != "inactive"
     }
 
     MouseArea {

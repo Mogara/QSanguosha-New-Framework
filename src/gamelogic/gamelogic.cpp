@@ -242,7 +242,7 @@ QList<ServerPlayer *> GameLogic::allPlayers(bool includeDead) const
             allPlayers << players.at(i);
     }
 
-    if (current->phase() == Player::NotActive && allPlayers.contains(current)) {
+    if (current->phase() == Player::Inactive && allPlayers.contains(current)) {
         allPlayers.removeOne(current);
         allPlayers.append(current);
     }
@@ -715,11 +715,11 @@ void GameLogic::run()
                 ServerPlayer *current = currentPlayer();
                 trigger(TurnBroken, current);
                 ServerPlayer *next = current->nextAlive(1, false);
-                if (current->phase() != Player::NotActive) {
+                if (current->phase() != Player::Inactive) {
                     QVariant data;
                     m_gameRule->effect(this, PhaseEnd, current, data, current);
                     //@todo:
-                    current->setPhase(Player::NotActive);
+                    current->setPhase(Player::Inactive);
                     current->broadcastProperty("phase");
                 }
                 setCurrentPlayer(next);

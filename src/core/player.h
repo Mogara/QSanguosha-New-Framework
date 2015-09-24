@@ -65,7 +65,7 @@ class Player : public CAbstractPlayer
 public:
     enum Phase
     {
-        InvalidPhase, RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive
+        InvalidPhase, RoundStart, Start, Judge, Draw, Play, Discard, Finish, Inactive
     };
 
     Player(QObject *parent = 0);

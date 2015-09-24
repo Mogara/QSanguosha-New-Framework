@@ -12,7 +12,7 @@ RowLayout {
     property string userRole: "unknown"
     property alias hp: hpBar.value
     property alias maxHp: hpBar.maxValue
-    property string phase: "not_active"
+    property string phase: "inactive"
 
     property alias acceptButton: acceptButtonItem
     property alias rejectButton: rejectButtonItem
@@ -75,10 +75,10 @@ RowLayout {
                     }
 
                     Image {
-                        source: root.phase != "not_active" ? "image://root/phase/" + root.phase + ".png" : ""
+                        source: root.phase != "inactive" ? "image://root/phase/" + root.phase + ".png" : ""
                         y: -height - Device.gu(5)
                         x: parent.width - width
-                        visible: root.phase != "not_active"
+                        visible: root.phase != "inactive"
                     }
 
                     Connections {

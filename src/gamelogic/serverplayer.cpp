@@ -81,7 +81,7 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
 {
     PhaseChangeStruct change;
     foreach (Phase to, phases) {
-        if (to == NotActive)
+        if (to == Inactive)
             break;
         change.from = phase();
         change.to = to;
@@ -101,7 +101,7 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
     }
 
     change.from = phase();
-    change.to = NotActive;
+    change.to = Inactive;
 
     QVariant data = QVariant::fromValue(&change);
     m_logic->trigger(PhaseChanging, this, data);

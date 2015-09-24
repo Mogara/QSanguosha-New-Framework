@@ -30,7 +30,7 @@ Player::Player(QObject *parent)
     , m_removed(false)
     , m_seat(0)
     , m_next(nullptr)
-    , m_phase(NotActive)
+    , m_phase(Inactive)
     , m_turnCount(0)
     , m_faceUp(false)
     , m_handcardNum(0)
@@ -167,7 +167,7 @@ void Player::setPhaseString(const QString &phase)
     else if (phase == "finish")
         m_phase = Finish;
     else
-        m_phase = NotActive;
+        m_phase = Inactive;
     emit phaseChanged();
 }
 
@@ -189,7 +189,7 @@ QString Player::phaseString() const
     case Finish:
         return "finish";
     default:
-        return "not_active";
+        return "inactive";
     }
 }
 

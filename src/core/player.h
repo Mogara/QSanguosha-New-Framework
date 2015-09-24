@@ -46,9 +46,6 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(bool isRemoved READ isRemoved WRITE setRemoved NOTIFY removedChanged)
     Q_PROPERTY(int seat READ seat WRITE setSeat NOTIFY seatChanged)
     Q_PROPERTY(QString phase READ phaseString WRITE setPhaseString NOTIFY phaseChanged)
-    Q_PROPERTY(QString generalName READ generalName WRITE setGeneralName NOTIFY generalChanged)
-    Q_PROPERTY(QString headGeneralName READ headGeneralName WRITE setHeadGeneralName NOTIFY headGeneralChanged)
-    Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName WRITE setDeputyGeneralName NOTIFY deputyGeneralChanged)
     Q_PROPERTY(int handcardNum READ handcardNum NOTIFY handcardNumChanged)
     Q_PROPERTY(int equipNum READ equipNum NOTIFY equipNumChanged)
     Q_PROPERTY(int delayedTrickNum READ delayedTrickNum NOTIFY delayedTrickNumChanged)
@@ -58,9 +55,9 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(QString kingdom READ kingdom WRITE setKingdom NOTIFY kingdomChanged)
     Q_PROPERTY(QString role READ role WRITE setRole NOTIFY roleChanged)
 
-
-    Q_ENUMS(Phase)
-    Q_ENUMS(Role)
+    Q_PROPERTY(QString generalName READ generalName WRITE setGeneralName NOTIFY generalChanged)
+    Q_PROPERTY(QString headGeneralName READ headGeneralName WRITE setHeadGeneralName NOTIFY headGeneralChanged)
+    Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName WRITE setDeputyGeneralName NOTIFY deputyGeneralChanged)
 
 public:
     enum Phase
@@ -107,6 +104,21 @@ public:
     void setPhaseString(const QString &phase);
     QString phaseString() const;
 
+    int turnCount() const { return m_turnCount; }
+    void setTurnCount(int count) { m_turnCount = count; }
+
+    bool faceUp() const { return m_faceUp; }
+    void setFaceUp(bool faceUp);
+
+    void setDrank(bool drank);
+    bool isDrank() const { return m_drank; }
+
+    QString kingdom() const { return m_kingdom; }
+    void setKingdom(const QString &kingdom);
+
+    QString role() const { return m_role; }
+    void setRole(const QString &role);
+
     //Alias of head general.
     const General *general() const { return headGeneral(); }
     void setGeneral(const General *general) { setHeadGeneral(general); }
@@ -132,11 +144,9 @@ public:
     bool hasShownGeneral() const { return hasShownHeadGeneral() || hasShownDeputyGeneral(); }
     bool hasShownBothGenerals() const { return hasShownHeadGeneral() && hasShownDeputyGeneral(); }
 
-    int turnCount() const { return m_turnCount; }
-    void setTurnCount(int count) { m_turnCount = count; }
-
-    bool faceUp() const { return m_faceUp; }
-    void setFaceUp(bool faceUp);
+    int cardHistory(const QString &name) const { return m_cardHistory.value(name); }
+    void addCardHistory(const QString &name, int times = 1);
+    void clearCardHistory() { m_cardHistory.clear(); }
 
     CardArea *handcards() { return m_handcards; }
     const CardArea *handcards() const { return m_handcards; }
@@ -152,19 +162,6 @@ public:
 
     CardArea *judgeCards() { return m_judgeCards; }
     const CardArea *judgeCards() const { return m_judgeCards; }
-
-    int cardHistory(const QString &name) const { return m_cardHistory.value(name); }
-    void addCardHistory(const QString &name, int times = 1);
-    void clearCardHistory() { m_cardHistory.clear(); }
-
-    void setDrank(bool drank);
-    bool isDrank() const { return m_drank; }
-
-    QString kingdom() const { return m_kingdom; }
-    void setKingdom(const QString &kingdom);
-
-    QString role() const { return m_role; }
-    void setRole(const QString &role);
 
 signals:
     void screenNameChanged();
@@ -197,23 +194,23 @@ protected:
     int m_seat;
     Player *m_next;
     Phase m_phase;
+    int m_turnCount;
+    bool m_faceUp;
+    int m_handcardNum;
+    bool m_drank;
+    QString m_kingdom;
+    QString m_role;
+
     const General *m_headGeneral;
     const General *m_deputyGeneral;
     bool m_headGeneralShown;
     bool m_deputyGeneralShown;
-    int m_turnCount;
-    bool m_faceUp;
-    int m_handcardNum;
 
+    QHash<QString, int> m_cardHistory;
     CardArea *m_handcards;
     CardArea *m_equips;
     CardArea *m_delayedTricks;
     CardArea *m_judgeCards;
-
-    QHash<QString, int> m_cardHistory;
-    bool m_drank;
-    QString m_kingdom;
-    QString m_role;
 };
 
 #endif // PLAYER_H

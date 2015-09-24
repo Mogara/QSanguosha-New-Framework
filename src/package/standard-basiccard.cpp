@@ -29,7 +29,7 @@ SlashEffectStruct::SlashEffectStruct()
     , to(nullptr)
     , slash(nullptr)
     , nature(DamageStruct::Normal)
-    , drank(0)
+    , drank(false)
     , jinkNum(1)
     , nullified(false)
 {
@@ -39,26 +39,23 @@ SlashEffectStruct::SlashEffectStruct()
 Slash::Slash(Card::Suit suit, int number)
     : BasicCard(suit, number)
     , m_nature(DamageStruct::Normal)
-    , m_drank(0)
 {
     setObjectName("slash");
 }
 
 void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
 {
-    if (cardEffect.from->drank() > 0) {
-        m_drank = cardEffect.from->drank();
-        cardEffect.from->setDrank(0);
-        cardEffect.from->broadcastProperty("drank");
-    }
-
     SlashEffectStruct effect;
     effect.from = cardEffect.from;
     effect.nature = m_nature;
     effect.slash = this;
 
     effect.to = cardEffect.to;
-    effect.drank = m_drank;
+    effect.drank = cardEffect.from->isDrank();
+    if (effect.drank) {
+        cardEffect.from->setDrank(false);
+        cardEffect.from->broadcastProperty("isDrank");
+    }
     effect.nullified = cardEffect.nullified;
 
     QVariant data = QVariant::fromValue(&effect);
@@ -99,6 +96,8 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
             damage.to = effect.to;
             damage.nature = effect.nature;
             damage.card = this;
+            if (effect.drank)
+                damage.damage++;
             logic->damage(damage);
         }
     } else {
@@ -152,6 +151,33 @@ void Peach::onEffect(GameLogic *logic, CardEffectStruct &effect)
 bool Peach::isAvailable(const Player *player) const
 {
     return player->isWounded() && BasicCard::isAvailable(player);
+}
+
+Analeptic::Analeptic(Card::Suit suit, int number)
+    : BasicCard(suit, number)
+{
+    setObjectName("analeptic");
+}
+
+void Analeptic::onUse(GameLogic *logic, CardUseStruct &use)
+{
+    if (use.to.isEmpty())
+        use.to << use.from;
+    BasicCard::onUse(logic, use);
+}
+
+void Analeptic::onEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    if (effect.to->phase() == Player::Play) {
+        effect.to->setDrank(true);
+        effect.to->broadcastProperty("isDrank");
+    } else {
+        RecoverStruct recover;
+        recover.card = this;
+        recover.from = effect.from;
+        recover.to = effect.to;
+        logic->recover(recover);
+    }
 }
 
 void StandardPackage::addBasicCards()

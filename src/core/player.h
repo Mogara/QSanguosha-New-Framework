@@ -54,7 +54,7 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(int delayedTrickNum READ delayedTrickNum NOTIFY delayedTrickNumChanged)
     Q_PROPERTY(int turnCount READ turnCount WRITE setTurnCount)
     Q_PROPERTY(int faceUp READ faceUp WRITE setFaceUp NOTIFY faceUpChanged)
-    Q_PROPERTY(int drank READ drank WRITE setDrank NOTIFY drankChanged)
+    Q_PROPERTY(bool isDrank READ isDrank WRITE setDrank NOTIFY drankChanged)
     Q_PROPERTY(QString kingdom READ kingdom WRITE setKingdom NOTIFY kingdomChanged)
     Q_PROPERTY(QString role READ role WRITE setRole NOTIFY roleChanged)
 
@@ -157,8 +157,8 @@ public:
     void addCardHistory(const QString &name, int times = 1);
     void clearCardHistory() { m_cardHistory.clear(); }
 
-    void setDrank(int drank);
-    int drank() const { return m_drank; }
+    void setDrank(bool drank);
+    bool isDrank() const { return m_drank; }
 
     QString kingdom() const { return m_kingdom; }
     void setKingdom(const QString &kingdom);
@@ -211,7 +211,7 @@ protected:
     CardArea *m_judgeCards;
 
     QHash<QString, int> m_cardHistory;
-    int m_drank;
+    bool m_drank;
     QString m_kingdom;
     QString m_role;
 };

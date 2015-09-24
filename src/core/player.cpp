@@ -31,6 +31,7 @@ Player::Player(QObject *parent)
     , m_deputyGeneral(nullptr)
     , m_turnCount(0)
     , m_handcardNum(0)
+    , m_drank(false)
 {
     m_handcards = new CardArea(CardArea::Hand, this);
     m_handcards->setSignal([this](){
@@ -245,7 +246,7 @@ void Player::addCardHistory(const QString &name, int times)
         m_cardHistory[name] = times;
 }
 
-void Player::setDrank(int drank)
+void Player::setDrank(bool drank)
 {
     m_drank = drank;
     emit drankChanged();

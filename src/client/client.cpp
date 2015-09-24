@@ -66,12 +66,12 @@ int Client::playerNum() const
     return m_players.size();
 }
 
-void Client::useCard(const Card *card, const QList<const ClientPlayer *> &targets)
+void Client::useCard(const Card *card, const QList<const Player *> &targets)
 {
     QVariantMap data;
     data["cardId"] = card->id();
     QVariantList to;
-    foreach (const ClientPlayer *target, targets)
+    foreach (const Player *target, targets)
         to << target->id();
     data["to"] = to;
     replyToServer(S_COMMAND_USE_CARD, data);

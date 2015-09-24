@@ -40,15 +40,21 @@ signals:
     void cardSelected(const QVariantList &cardIds);
     void photoSelected(const QVariantList &seats);
     void accepted();
+    void rejected();
+    void finished();
 
     //Signals from C++ to QML
     void moveCards(const QVariant &moves);
     void enableCards(const QVariant &cardIds);
+    void enablePhotos(const QVariant &seats);
     void chooseGeneral(const QVariant &generals);
     void startEmotion(const QString &emotion, int seat);
     void playAudio(const QString &path);
     void showIndicatorLine(int from, const QVariantList &tos);
     void showPrompt(const QString &prompt);
+    void setAcceptEnabled(bool enabled);
+    void setRejectEnabled(bool enabled);
+    void setFinishEnabled(bool enabled);
 
 private:
     enum RespondingState
@@ -67,6 +73,8 @@ private:
     void onCardSelected(const QVariantList &cardIds);
     void onPhotoSelected(const QVariantList &seats);
     void onAccepted();
+    void onRejected();
+    void onFinished();
     void onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
     void onRecoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
     void onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos);
@@ -74,7 +82,7 @@ private:
 
     Client *m_client;
     QList<const Card *> m_selectedCard;
-    QList<const ClientPlayer *> m_selectedPlayer;
+    QList<const Player *> m_selectedPlayer;
     RespondingState m_respondingState;
 };
 

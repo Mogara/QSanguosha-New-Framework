@@ -42,7 +42,7 @@ public:
     int playerNum() const;
 
     const Card *findCard(uint id) { return m_cards.value(id); }
-    void useCard(const Card *card, const QList<const ClientPlayer *> &targets);
+    void useCard(const Card *card, const QList<const Player *> &targets);
     void respondCard(const QList<const Card *> &cards);
 
 signals:

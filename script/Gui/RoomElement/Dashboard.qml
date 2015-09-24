@@ -13,6 +13,8 @@ RowLayout {
     property alias hp: hpBar.value
     property alias maxHp: hpBar.maxValue
     property string phase: "inactive"
+    property bool selectable: false
+    property bool selected: false
 
     property alias acceptButton: acceptButtonItem
     property alias rejectButton: rejectButtonItem

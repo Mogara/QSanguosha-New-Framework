@@ -73,6 +73,8 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(this, &RoomScene::cardSelected, this, &RoomScene::onCardSelected);
     connect(this, &RoomScene::photoSelected, this, &RoomScene::onPhotoSelected);
     connect(this, &RoomScene::accepted, this, &RoomScene::onAccepted);
+    connect(this, &RoomScene::rejected, this, &RoomScene::onRejected);
+    connect(this, &RoomScene::finished, this, &RoomScene::onFinished);
 }
 
 void RoomScene::animateCardsMoving(const QList<CardsMoveStruct> &moves)
@@ -158,11 +160,33 @@ void RoomScene::onUsingCard(const QString &pattern)
 
 void RoomScene::onCardSelected(const QVariantList &cardIds)
 {
-    m_selectedCard.clear();
-    foreach (const QVariant &cardId, cardIds) {
-        const Card *card = m_client->findCard(cardId.toUInt());
-        if (card)
-            m_selectedCard << card;
+    switch (m_respondingState) {
+    case UsingCardState:{
+        m_selectedCard.clear();
+        foreach (const QVariant &cardId, cardIds) {
+            const Card *card = m_client->findCard(cardId.toUInt());
+            if (card)
+                m_selectedCard << card;
+        }
+
+        if (m_selectedCard.isEmpty()) {
+            onUsingCard(QString());
+        } else {
+            const Card *card = m_selectedCard.first();
+            uint id = card->id();
+            enableCards(QVariantList() << id);
+
+            QVariantList seats;
+            const ClientPlayer *self = m_client->findPlayer(m_client->self());
+            QList<const ClientPlayer *> players = m_client->players();
+            foreach (const ClientPlayer *player, players) {
+                if (card->targetFilter(m_selectedPlayer, player, self))
+                    seats << player->seat();
+            }
+            enablePhotos(seats);
+        }
+    }
+    default:;
     }
 }
 
@@ -196,6 +220,17 @@ void RoomScene::onAccepted()
     default:;
     }
     enableCards(QVariantList());
+}
+
+void RoomScene::onRejected()
+{
+
+}
+
+void RoomScene::onFinished()
+{
+    if (m_respondingState == UsingCardState)
+        m_client->replyToServer(S_COMMAND_USE_CARD, "finish");
 }
 
 void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage)

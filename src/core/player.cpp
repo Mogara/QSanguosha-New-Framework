@@ -39,6 +39,8 @@ Player::Player(QObject *parent)
     , m_deputyGeneral(nullptr)
     , m_headGeneralShown(false)
     , m_deputyGeneralShown(false)
+    , m_extraOutDistance(0)
+    , m_extraInDistance(0)
 {
     m_handcards = new CardArea(CardArea::Hand, this);
     m_handcards->setSignal([this](){
@@ -245,6 +247,40 @@ int Player::delayedTrickNum() const
     return m_delayedTricks->length();
 }
 
+int Player::distanceTo(const Player *other) const
+{
+    if (this == other)
+        return 0;
+
+    if (isRemoved() || other->isRemoved() || isDead() || other->isDead())
+        return -1;
+
+    if (m_fixedDistance.contains(other))
+        return m_fixedDistance.value(other);
+
+    const Player *next = this;
+    int right = 0;
+    while (next != other) {
+        next = next->nextAlive();
+        if (next == this)
+            return -1;
+        right++;
+    }
+    int left = 0;
+    while (next != this) {
+        next = next->nextAlive();
+        left++;
+    }
+
+    int distance = qMin(left, right) + extraOutDistance() + other->extraInDistance();
+
+    // keep the distance >=1
+    if (distance < 1)
+        distance = 1;
+
+    return distance;
+}
+
 void Player::addCardHistory(const QString &name, int times)
 {
     if (m_cardHistory.contains(name))
@@ -269,4 +305,10 @@ void Player::setRole(const QString &role)
 {
     m_role = role;
     emit roleChanged();
+}
+
+void Player::setAttackRange(int range)
+{
+    m_attackRange = range;
+    emit attackRangeChanged();
 }

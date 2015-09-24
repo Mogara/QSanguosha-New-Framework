@@ -29,6 +29,8 @@ class General;
 
 #include <QList>
 #include <QSet>
+#include <QMap>
+#include <QHash>
 
 class Player : public CAbstractPlayer
 {
@@ -54,10 +56,11 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(bool isDrank READ isDrank WRITE setDrank NOTIFY drankChanged)
     Q_PROPERTY(QString kingdom READ kingdom WRITE setKingdom NOTIFY kingdomChanged)
     Q_PROPERTY(QString role READ role WRITE setRole NOTIFY roleChanged)
-
     Q_PROPERTY(QString generalName READ generalName WRITE setGeneralName NOTIFY generalChanged)
     Q_PROPERTY(QString headGeneralName READ headGeneralName WRITE setHeadGeneralName NOTIFY headGeneralChanged)
     Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName WRITE setDeputyGeneralName NOTIFY deputyGeneralChanged)
+    Q_PROPERTY(int extraOutDistance READ extraOutDistance WRITE setExtraOutDistance)
+    Q_PROPERTY(int extraInDistance READ extraInDistance WRITE setExtraInDistance)
 
 public:
     enum Phase
@@ -119,6 +122,9 @@ public:
     QString role() const { return m_role; }
     void setRole(const QString &role);
 
+    int attackRange() const { return m_attackRange; }
+    void setAttackRange(int range);
+
     //Alias of head general.
     const General *general() const { return headGeneral(); }
     void setGeneral(const General *general) { setHeadGeneral(general); }
@@ -147,6 +153,18 @@ public:
     int cardHistory(const QString &name) const { return m_cardHistory.value(name); }
     void addCardHistory(const QString &name, int times = 1);
     void clearCardHistory() { m_cardHistory.clear(); }
+
+    int distanceTo(const Player *other) const;
+    void setFixedDistance(const Player *other, int distance) { m_fixedDistance[other] = distance; }
+    void unsetFixedDistance(const Player *other) { m_fixedDistance.remove(other); }
+
+    //Extra distance from you to other players
+    int extraOutDistance() const { return m_extraOutDistance; }
+    void setExtraOutDistance(int extra) { m_extraOutDistance = extra; }
+
+    //Extra distance from other players to you
+    int extraInDistance() const { return m_extraInDistance; }
+    void setExtraInDistance(int extra) { m_extraInDistance = extra; }
 
     CardArea *handcards() { return m_handcards; }
     const CardArea *handcards() const { return m_handcards; }
@@ -184,6 +202,7 @@ signals:
     void drankChanged();
     void kingdomChanged();
     void roleChanged();
+    void attackRangeChanged();
 
 protected:
     QString m_screenName;
@@ -200,11 +219,16 @@ protected:
     bool m_drank;
     QString m_kingdom;
     QString m_role;
+    int m_attackRange;
 
     const General *m_headGeneral;
     const General *m_deputyGeneral;
     bool m_headGeneralShown;
     bool m_deputyGeneralShown;
+
+    QMap<const Player *, int> m_fixedDistance;
+    int m_extraInDistance;
+    int m_extraOutDistance;
 
     QHash<QString, int> m_cardHistory;
     CardArea *m_handcards;

@@ -148,8 +148,10 @@ void RoomScene::onUsingCard(const QString &pattern)
         const ClientPlayer *self = m_client->findPlayer(m_client->self());
         QList<Card *> cards = self->handcards()->cards();
         QVariantList cardIds;
-        foreach (Card *card, cards)
-            cardIds << card->id();
+        foreach (Card *card, cards) {
+            if (card->isAvailable(self))
+                cardIds << card->id();
+        }
         enableCards(cardIds);
     }
 }

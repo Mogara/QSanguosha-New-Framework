@@ -40,6 +40,7 @@ protected:
     void onGameStart(ServerPlayer *current, QVariant &) const;
     void onTurnStart(ServerPlayer *current, QVariant &) const;
     void onPhaseProceeding(ServerPlayer *current, QVariant &) const;
+    void onPhaseEnd(ServerPlayer *current, QVariant &) const;
 
     GameLogic *m_logic;
     static QMap<EventType, Callback> m_callbacks;

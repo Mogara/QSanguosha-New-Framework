@@ -30,7 +30,7 @@ GameRule::GameRule(GameLogic *logic)
     : m_logic(logic)
 {
     m_events << GameStart;
-    m_events << TurnStart << PhaseProceeding;
+    m_events << TurnStart << PhaseProceeding << PhaseEnd;
 }
 
 bool GameRule::triggerable(ServerPlayer *) const
@@ -127,11 +127,22 @@ void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
     }
 }
 
+void GameRule::onPhaseEnd(ServerPlayer *current, QVariant &) const
+{
+    switch (current->phase()) {
+    case Player::Play: {
+        current->clearCardHistory();
+    }
+    default:;
+    }
+}
+
 #define ADD_GAMERULE(name) m_callbacks[name] = &GameRule::on##name
 void GameRule::Init()
 {
     ADD_GAMERULE(GameStart);
     ADD_GAMERULE(TurnStart);
     ADD_GAMERULE(PhaseProceeding);
+    ADD_GAMERULE(PhaseEnd);
 }
 C_INITIALIZE_CLASS(GameRule)

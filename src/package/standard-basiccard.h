@@ -47,7 +47,10 @@ class Slash : public BasicCard
 public:
     Q_INVOKABLE Slash(Suit suit, int number);
 
+    bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
     void onEffect(GameLogic *logic, CardEffectStruct &cardEffect) override;
+    bool isAvailable(const Player *player) const override;
 
 protected:
     DamageStruct::Nature m_nature;
@@ -78,6 +81,7 @@ public:
 
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void onEffect(GameLogic *, CardEffectStruct &effect) override;
+    bool isAvailable(const Player *) const override;
 };
 
 class Peach : public BasicCard
@@ -86,6 +90,7 @@ class Peach : public BasicCard
 
 public:
     Q_INVOKABLE Peach(Suit suit, int number);
+
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
     bool isAvailable(const Player *player) const override;
@@ -100,6 +105,7 @@ public:
 
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    bool isAvailable(const Player *player) const override;
 };
 
 #endif // STANDARDBASICCARD_H

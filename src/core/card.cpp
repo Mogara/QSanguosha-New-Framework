@@ -200,23 +200,23 @@ QList<const Card *> Card::realCards() const
 
 bool Card::targetFeasible(const QList<const Player *> &targets, const Player *self) const
 {
-    Q_UNUSED(self)
-
-    if (isTargetFixed())
-        return true;
-    return !targets.isEmpty();
+    C_UNUSED(targets);
+    C_UNUSED(self);
+    return isTargetFixed();
 }
 
 bool Card::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
 {
-    return targets.isEmpty() && toSelect != self;
+    C_UNUSED(targets);
+    C_UNUSED(toSelect);
+    C_UNUSED(self);
+    return false;
 }
 
-bool Card::isAvailable(const Player *player) const
+bool Card::isAvailable(const Player *) const
 {
-    //@todo:
-    Q_UNUSED(player)
-    return false;
+    //@to-do: check Jilei here
+    return true;
 }
 
 void Card::onUse(GameLogic *logic, CardUseStruct &use)

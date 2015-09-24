@@ -43,6 +43,16 @@ Slash::Slash(Card::Suit suit, int number)
     setObjectName("slash");
 }
 
+bool Slash::targetFeasible(const QList<const Player *> &targets, const Player *) const
+{
+    return targets.length() == 1;
+}
+
+bool Slash::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+{
+    return targets.isEmpty() && self->distanceTo(toSelect) <= self->attackRange();
+}
+
 void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
 {
     SlashEffectStruct effect;
@@ -105,6 +115,11 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
     }
 }
 
+bool Slash::isAvailable(const Player *player) const
+{
+    return player->phase() == Player::Play && player->cardHistory("slash") < 1 && BasicCard::isAvailable(player);
+}
+
 FireSlash::FireSlash(Card::Suit suit, int number)
     : Slash(suit, number)
 {
@@ -138,6 +153,11 @@ void Jink::onEffect(GameLogic *, CardEffectStruct &effect)
     SlashEffectStruct *slashEffect = effect.extra.value<SlashEffectStruct *>();
     if (slashEffect)
         slashEffect->jink << this;
+}
+
+bool Jink::isAvailable(const Player *) const
+{
+    return false;
 }
 
 Peach::Peach(Card::Suit suit, int number)
@@ -192,6 +212,11 @@ void Analeptic::onEffect(GameLogic *logic, CardEffectStruct &effect)
         recover.to = effect.to;
         logic->recover(recover);
     }
+}
+
+bool Analeptic::isAvailable(const Player *player) const
+{
+    return player->phase() == Player::Play && player->cardHistory("analeptic") < 1 && BasicCard::isAvailable(player);
 }
 
 void StandardPackage::addBasicCards()

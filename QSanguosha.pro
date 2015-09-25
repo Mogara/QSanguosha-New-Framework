@@ -71,11 +71,6 @@ INCLUDEPATH += src \
     src/gui \
     src/package
 
-DEFINES += MCD_STATIC
-#DEFINES += MCD_BUILD
-INCLUDEPATH += Cardirector/include
-LIBS += -L"$$_PRO_FILE_PWD_/Cardirector/lib"
-
 defineTest(copy) {
     file = $$1
     path = $$2
@@ -86,13 +81,7 @@ defineTest(copy) {
 }
 
 win32 {
-    !contains(DEFINES, MCD_STATIC){
-        CONFIG(debug, debug|release): copy(Cardirector/bin/Cardirectord.dll, $$_PRO_FILE_PWD_/)
-        else:copy(Cardirector/bin/Cardirector.dll, $$_PRO_FILE_PWD_/)
-    }
-
     RC_FILE = src/resource/icons/icon.rc
-
     QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
 }
 
@@ -100,13 +89,9 @@ macx {
     ICON = src/resource/icons/icon.icns
 }
 
-android {
-    CONFIG += embeded_resource
+android{
     QT += androidextras
-    !contains(DEFINES, MCD_STATIC): ANDROID_EXTRA_LIBS += $$PWD/Cardirector/lib/libCardirector.so
 }
-
-LIBS += -l$$qtLibraryTarget(Cardirector)
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH = $$PWD
@@ -189,6 +174,7 @@ CONFIG(embeded_resource){
 lupdate_only {
     SOURCES += $$QML_FILES
 }
+QML_FILES =
 
 TRANSLATIONS += \
     translations/zh_CN.ts \
@@ -200,3 +186,6 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/src/resource/android
 
 # Default rules for deployment.
 include(deployment.pri)
+
+DEFINES += MCD_STATIC
+include(Cardirector/Cardirector.pri)

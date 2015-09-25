@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
     app.installTranslator(&translator);
 
     CMainWindow window;
-    window.setIcon(QIcon(QSanguoshaSource"image/mogara/logo.png"));
-    window.setSource(QUrl(QStringLiteral(QSanguoshaSource"script/main.qml")));
+    window.setIcon(QIcon("image/mogara/logo.png"));
+    window.setSource(QUrl(QStringLiteral("script/main.qml")));
     window.show();
 
     cRegisterUrlScheme(window.title());

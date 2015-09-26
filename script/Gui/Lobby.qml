@@ -197,7 +197,7 @@ Lobby {
 
                         Image{
                             id: roomLogoItem
-                            source: "image://mogara/logo"
+                            source: "image://system/mogara/logo"
                             width: Device.gu(100)
                             height: Device.gu(100)
                             x: Device.gu(20)
@@ -382,7 +382,7 @@ Lobby {
                                 }
 
                                 Image {
-                                    source: "image://mogara/enter_icon"
+                                    source: "image://system/mogara/enter_icon"
                                     width: Device.gu(34)
                                     height: Device.gu(22)
                                     x: parent.width - width

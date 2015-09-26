@@ -91,6 +91,7 @@ macx {
 
 android{
     QT += androidextras
+    CONFIG += embedresource
 }
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -134,8 +135,8 @@ QML_FILES = \
     script/utility.js \
     script/main.qml
 
-# Create the resource file
-CONFIG(embeded_resource){
+# Embed some essential system resources
+embedresource{
     !build_pass{
         defineTest(generate_qrc){
             qrc_path = $$1
@@ -158,17 +159,17 @@ CONFIG(embeded_resource){
 
         generate_qrc("qml.qrc", $$QML_FILES)
 
-        equals(QMAKE_HOST.os, Windows): MCD_LS = "dir /A:-D /B /S image"
-        equals(QMAKE_HOST.os, Linux): MCD_LS = "find image -type f"
+        equals(QMAKE_HOST.os, Windows): MCD_LS = "dir /A:-D /B /S \"image/system\""
+        equals(QMAKE_HOST.os, Linux): MCD_LS = "find \"image/system\" -type f"
         defined(MCD_LS, var): generate_qrc("image.qrc", $$system($$MCD_LS))
     }
 
     RESOURCES += \
         image.qrc \
         qml.qrc
-    DEFINES += QSanguoshaSource=\\\"qrc:/\\\"
+    DEFINES += QsSrc=\\\"qrc:/\\\"
 } else {
-    DEFINES += QSanguoshaSource=""
+    DEFINES += QsSrc=""
 }
 
 lupdate_only {

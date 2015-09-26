@@ -27,7 +27,7 @@ Rectangle {
     Image {
         id: logo
         anchors.centerIn: parent
-        source: "image://mogara/logo"
+        source: "image://system/mogara/logo"
     }
 
     //--------------Text-------------

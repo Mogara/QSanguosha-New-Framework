@@ -16,22 +16,14 @@ RoomScene {
     id: roomScene
     anchors.fill: parent
 
-    CSound {
+    Sound {
         id: backgroundMusic
         source: config.backgroundMusic
         Component.onCompleted: play();
     }
 
-    CSound {
+    Sound {
         id: soundEffect
-
-        Connections {
-            target: roomScene
-            onPlayAudio: {
-                soundEffect.source = "audio/" + path;
-                soundEffect.play();
-            }
-        }
     }
 
     Image {
@@ -43,16 +35,6 @@ RoomScene {
     MouseArea {
         anchors.fill: parent
         onPressed: parent.forceActiveFocus();
-    }
-
-    ImageProvider {
-        id: generalImage
-        providerId: "general"
-
-        function imagePath(imageId, requestedSize)
-        {
-            return "image/general/" + imageId + ".png";
-        }
     }
 
     ColumnLayout {
@@ -244,6 +226,11 @@ RoomScene {
             photo = getItemBySeat(seat);
             photo.selectable = true;
         }
+    }
+
+    onPlayAudio: {
+        soundEffect.source = "audio/" + path;
+        soundEffect.play();
     }
 
     onPlayerNumChanged: arrangePhotos();

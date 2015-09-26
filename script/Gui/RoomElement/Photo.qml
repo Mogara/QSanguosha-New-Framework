@@ -66,16 +66,6 @@ Item {
     ]
     state: "normal"
 
-    ImageProvider {
-        id: photoImage
-        providerId: "photo"
-
-        function imagePath(imageId, requestedSize)
-        {
-            return "image/photo/" + imageId + ".png";
-        }
-    }
-
     RectangularGlow {
         id: outerGlow
         anchors.fill: parent
@@ -92,7 +82,7 @@ Item {
         Image {
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
-            source: "image://general/fullphoto/" + (headGeneral != "" ? headGeneral : "blank")
+            source: "image://root/general/fullphoto/" + (headGeneral != "" ? headGeneral : "blank")
         }
     }
 
@@ -104,25 +94,25 @@ Item {
         Image {
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
-            source: deputyGeneral != "" ? "image://general/fullphoto/" + deputyGeneral : ""
+            source: deputyGeneral != "" ? "image://root/general/fullphoto/" + deputyGeneral : ""
         }
     }
 
     Image {
-        source: "image://photo/circle-photo"
+        source: "image://root/photo/circle-photo"
         visible: deputyGeneral != ""
     }
 
     Image {
         id: faceTurnedCover
         anchors.fill: parent
-        source: "image://photo/faceturned"
+        source: "image://root/photo/faceturned"
         visible: false
     }
 
     Image {
         anchors.fill: parent
-        source: "image://photo/photo-back"
+        source: "image://root/photo/photo-back"
     }
 
     HandcardNumber {

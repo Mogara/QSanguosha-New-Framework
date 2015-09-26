@@ -227,8 +227,8 @@ protected:
     bool m_deputyGeneralShown;
 
     QMap<const Player *, int> m_fixedDistance;
-    int m_extraInDistance;
     int m_extraOutDistance;
+    int m_extraInDistance;
 
     QHash<QString, int> m_cardHistory;
     CardArea *m_handcards;

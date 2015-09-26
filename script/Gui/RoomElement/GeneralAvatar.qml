@@ -11,19 +11,19 @@ Item {
     height: Device.gu(153)
 
     Image {
-        source: "image://general/fullphoto/" + avatar
+        source: "image://root/general/fullphoto/" + avatar
         anchors.fill: parent
     }
 
     Image {
-        source: "image://dashboard/avatar"
+        source: "image://root/dashboard/avatar"
         anchors.fill: parent
     }
 
     Image {
         x: Device.gu(2)
         y: Device.gu(2)
-        source: "image://dashboard/title/" + (kingdom != "" ? kingdom : "god")
+        source: "image://root/dashboard/title/" + (kingdom != "" ? kingdom : "god")
         visible: kingdom != ""
 
         Item {
@@ -49,6 +49,6 @@ Item {
     }
 
     Image {
-        source: "image://dashboard/" + generalPosition
+        source: "image://root/dashboard/" + generalPosition
     }
 }

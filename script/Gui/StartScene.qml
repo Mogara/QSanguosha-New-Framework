@@ -12,7 +12,7 @@ Image {
 
     Image {
         id: logo
-        source: "image://mogara/logo" + (isFeteDay ? "-moxuan" : "")
+        source: "image://system/mogara/logo" + (isFeteDay ? "-moxuan" : "")
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: -parent.width / 4
         opacity: 0
@@ -47,7 +47,7 @@ Image {
 
         TileButton {
             text: name
-            iconSource: "image://tileicon/" + icon
+            iconSource: "image://system/tileicon/" + icon
             onClicked: {
                 var dialog = icon.substr(0, 1).toUpperCase() + icon.substr(1);
                 dialog = dialog.replace(/\_([a-z])/g, function(str, group1){

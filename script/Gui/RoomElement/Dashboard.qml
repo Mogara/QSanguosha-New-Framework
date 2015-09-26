@@ -32,25 +32,15 @@ RowLayout {
     Layout.fillHeight: false
     Layout.preferredHeight: Device.gu(150)
 
-    ImageProvider {
-        id: roomSceneImage
-        providerId: "dashboard"
-
-        function imagePath(imageId, requestedSize)
-        {
-            return "image/dashboard/" + imageId + ".png";
-        }
-    }
-
     Image {
         id: equipAreaItem
-        source: "image://dashboard/equip"
+        source: "image://root/dashboard/equip"
         Layout.preferredWidth: Device.gu(164)
         Layout.fillHeight: true
     }
 
     Image {
-        source: "image://dashboard/hand"
+        source: "image://root/dashboard/hand"
         Layout.fillWidth: true
         Layout.fillHeight: true
 
@@ -104,7 +94,7 @@ RowLayout {
 
             Image {
                 id: platter
-                source: "image://dashboard/platter"
+                source: "image://root/dashboard/platter"
 
                 IrregularButton {
                     id: acceptButtonItem
@@ -145,7 +135,7 @@ RowLayout {
                 Image {
                     x: Device.gu(71)
                     y: Device.gu(117)
-                    source: seatNumber > 0 ? "image://dashboard/seatnum/" + seatNumber : ""
+                    source: seatNumber > 0 ? "image://root/dashboard/seatnum/" + seatNumber : ""
                     visible: seatNumber > 0
                 }
             }
@@ -157,11 +147,11 @@ RowLayout {
         height: Device.gu(149)
 
         Image {
-            source: "image://dashboard/base"
+            source: "image://root/dashboard/base"
         }
 
         Image {
-            source: "image://dashboard/hpbase"
+            source: "image://root/dashboard/hpbase"
             anchors.bottom: parent.bottom
             anchors.left: deputyGeneralItem.right
 
@@ -177,7 +167,7 @@ RowLayout {
         }
 
         Image {
-            source: "image://dashboard/avatarbg"
+            source: "image://root/dashboard/avatarbg"
         }
 
         GeneralAvatar {

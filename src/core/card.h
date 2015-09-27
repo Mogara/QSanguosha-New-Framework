@@ -45,6 +45,8 @@ class Card : public QObject
     Q_PROPERTY(bool transferable READ isTransferable WRITE setTransferable)
     Q_PROPERTY(QString skillName READ skillName WRITE setSkillName)
 
+    friend class Package;
+
 public:
     enum Suit
     {

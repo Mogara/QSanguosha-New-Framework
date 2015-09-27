@@ -54,3 +54,23 @@ QList<const Card *> Package::cards() const
         cards << card;
     return cards;
 }
+
+void Package::addCard(Card *card)
+{
+    card->m_id = generateCardId();
+    m_cards << card;
+}
+
+void Package::addCards(const QList<Card *> &cards)
+{
+    foreach (Card *card, cards)
+        card->m_id = generateCardId();
+    m_cards << cards;
+}
+
+uint Package::generateCardId()
+{
+    static uint cardId = 0;
+    cardId++;
+    return cardId;
+}

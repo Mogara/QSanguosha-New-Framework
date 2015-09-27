@@ -23,7 +23,8 @@
 #include "serverplayer.h"
 
 Card::Card(Suit suit, int number)
-    : m_suit(suit)
+    : m_id(0)
+    , m_suit(suit)
     , m_number(number)
     , m_color(NoColor)
     , m_transferable(false)
@@ -31,13 +32,6 @@ Card::Card(Suit suit, int number)
     , m_canRecast(false)
     , m_targetFixed(false)
 {
-    static uint cardId = 0;
-    if (m_suit != NoSuit && 1 <= number && number <= 13) {
-        cardId++;
-        m_id = cardId;
-    } else {
-        m_id = 0;
-    }
 }
 
 Card *Card::clone() const

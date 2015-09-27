@@ -39,8 +39,10 @@ public:
 protected:
     void addGeneral(General *general) { m_generals << general; }
     void addGenerals(const QList<General *> &generals) { m_generals << generals; }
-    void addCard(Card *card) { m_cards << card; }
-    void addCards(const QList<Card *> &cards) { m_cards << cards; }
+
+    void addCard(Card *card);
+    void addCards(const QList<Card *> &cards);
+    uint generateCardId();
 
     QString m_name;
     QList<General *> m_generals;

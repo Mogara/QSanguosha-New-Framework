@@ -20,8 +20,6 @@
 #ifndef SERVERPLAYER_H
 #define SERVERPLAYER_H
 
-#include <QPointer>
-
 #include "event.h"
 #include "player.h"
 #include "structs.h"
@@ -54,10 +52,11 @@ public:
 
     Event askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable);
     Card *askForCard(const QString &pattern, const QString &prompt);
+    QList<Card *> askForCards(const QString &pattern, const QString &prompt, int num, bool optional = false);
 
     void broadcastProperty(const char *name) const;
     void broadcastProperty(const char *name, const QVariant &value, ServerPlayer *except = nullptr) const;
-    void notifyPropertyTo(const char *name, ServerPlayer *player);
+    void unicastPropertyTo(const char *name, ServerPlayer *player);
 
     void addCardHistory(const QString &name, int times = 1);
     void clearCardHistory();
@@ -65,7 +64,7 @@ public:
 private:
     GameLogic *m_logic;
     CRoom *m_room;
-    QPointer<CServerAgent> m_agent;
+    CServerAgent *m_agent;
     CardArea *m_handcards;
 };
 

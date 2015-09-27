@@ -38,7 +38,7 @@ ServerPlayer::~ServerPlayer()
 
 CServerAgent *ServerPlayer::agent() const
 {
-    return m_agent.data();
+    return m_agent;
 }
 
 void ServerPlayer::setAgent(CServerAgent *agent)
@@ -113,11 +113,7 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
 void ServerPlayer::activate(CardUseStruct &use)
 {
     int timeout = 15 * 1000;
-    if (m_agent.isNull())
-        return;
     m_agent->request(S_COMMAND_USE_CARD, QVariant(), timeout);
-    if (m_agent.isNull())
-        return;
     QVariant replyData = m_agent->waitForReply(timeout);
     if (replyData.isNull())
         return;
@@ -152,27 +148,41 @@ Event ServerPlayer::askForTriggerOrder(const QString &reason, QList<Event> &opti
 
 Card *ServerPlayer::askForCard(const QString &pattern, const QString &prompt)
 {
-    if (!m_agent.isNull()) {
-        QVariantMap data;
-        data["pattern"] = pattern;
-        data["prompt"] = prompt;
+    QVariantMap data;
+    data["pattern"] = pattern;
+    data["prompt"] = prompt;
 
-        QVariant replyData;
-        forever {
-            m_agent->request(S_COMMAND_ASK_FOR_CARD, data, 15000);
-            replyData = m_agent->waitForReply(15000);
-            if (replyData.toString() == "cancel")
-                break;
+    QVariant replyData;
+    forever {
+        m_agent->request(S_COMMAND_ASK_FOR_CARD, data, 15000);
+        replyData = m_agent->waitForReply(15000);
+        if (replyData.toString() == "cancel")
+            break;
 
-            const QVariantMap reply = replyData.toMap();
-            QList<Card *> cards = m_logic->findCards(reply["cards"]);
-            //@to-do: filter cards with skill reply["skill"]
-            if (cards.length() != 1)
-                break;
-            return cards.first();
-        }
+        const QVariantMap reply = replyData.toMap();
+        QList<Card *> cards = m_logic->findCards(reply["cards"]);
+        //@to-do: filter cards with skill reply["skill"]
+        if (cards.length() != 1)
+            break;
+        return cards.first();
     }
     return nullptr;
+}
+
+QList<Card *> ServerPlayer::askForCards(const QString &pattern, const QString &prompt, int num, bool optional)
+{
+    QList<Card *> cards;
+
+    QVariantMap data;
+    data["pattern"] = pattern;
+    data["prompt"] = prompt;
+    data["num"] = num;
+    data["optional"] = optional;
+
+    m_agent->request(S_COMMAND_ASK_FOR_CARD, data, 15000);
+    QVariant replyData = m_agent->waitForReply(15000);
+
+    return cards;
 }
 
 void ServerPlayer::broadcastProperty(const char *name) const
@@ -193,7 +203,7 @@ void ServerPlayer::broadcastProperty(const char *name, const QVariant &value, Se
     m_room->broadcastNotification(S_COMMAND_UPDATE_PLAYER_PROPERTY, data, except->agent());
 }
 
-void ServerPlayer::notifyPropertyTo(const char *name, ServerPlayer *player)
+void ServerPlayer::unicastPropertyTo(const char *name, ServerPlayer *player)
 {
     QVariantList data;
     data << id();
@@ -211,13 +221,11 @@ void ServerPlayer::addCardHistory(const QString &name, int times)
     data << name;
     data << times;
 
-    if (!m_agent.isNull())
-        m_agent->notify(S_COMMAND_ADD_CARD_HISTORY, data);
+    m_agent->notify(S_COMMAND_ADD_CARD_HISTORY, data);
 }
 
 void ServerPlayer::clearCardHistory()
 {
     Player::clearCardHistory();
-    if (!m_agent.isNull())
-        m_agent->notify(S_COMMAND_ADD_CARD_HISTORY);
+    m_agent->notify(S_COMMAND_ADD_CARD_HISTORY);
 }

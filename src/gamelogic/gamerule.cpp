@@ -57,8 +57,8 @@ void GameRule::onGameStart(ServerPlayer *current, QVariant &) const
     current->broadcastProperty("headGeneralName", "anjiang", current);
     current->broadcastProperty("deputyGeneralName", "anjiang", current);
 
-    current->notifyPropertyTo("headGeneralName", current);
-    current->notifyPropertyTo("deputyGeneralName", current);
+    current->unicastPropertyTo("headGeneralName", current);
+    current->unicastPropertyTo("deputyGeneralName", current);
 
     const General *headGeneral = current->headGeneral();
     const General *deputyGeneral = current->deputyGeneral();
@@ -72,9 +72,9 @@ void GameRule::onGameStart(ServerPlayer *current, QVariant &) const
     current->broadcastProperty("hp");
 
     current->setRole(headGeneral->kingdom());
-    current->notifyPropertyTo("role", current);
+    current->unicastPropertyTo("role", current);
     current->setKingdom(headGeneral->kingdom());
-    current->notifyPropertyTo("kingdom", current);
+    current->unicastPropertyTo("kingdom", current);
 
     current->drawCards(4);
 }

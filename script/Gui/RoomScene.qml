@@ -64,6 +64,8 @@ RoomScene {
                             deputyGeneral: modelData.deputyGeneralName
                             phase: modelData.phase
                             seat: modelData.seat
+
+                            onSelectedChanged: roomScene.onPhotoSelected(roomScene.getSelectedSeats());
                         }
                     }
 
@@ -114,7 +116,20 @@ RoomScene {
         Dashboard {
             id: dashboard
 
-            onAccepted: roomScene.accepted();
+            onAccepted: {
+                popupBox.source = "";
+                roomScene.onAccepted();
+            }
+
+            onRejected: {
+                popupBox.source = "";
+                roomScene.onRejected();
+            }
+
+            onFinished: {
+                popupBox.source = "";
+                roomScene.onFinished();
+            }
 
             Connections {
                 target: roomScene
@@ -129,9 +144,9 @@ RoomScene {
                     dashboard.headGeneralKingdom = dashboard.deputyGeneralKingdom = Qt.binding(function(){return model.kingdom});
                 }
 
-                onSetAcceptEnabled: acceptButton.enabled = enabled;
-                onSetRejectEnabled: rejectButton.enabled = enabled;
-                onSetFinishEnabled: finishButton.enabled = enabled;
+                onSetAcceptEnabled: dashboard.acceptButton.enabled = enabled;
+                onSetRejectEnabled: dashboard.rejectButton.enabled = enabled;
+                onSetFinishEnabled: dashboard.finishButton.enabled = enabled;
             }
 
             Connections {
@@ -141,7 +156,7 @@ RoomScene {
                     var cards = dashboard.handcardArea.getSelectedCards();
                     for (var i = 0; i < cards.length; i++)
                         ids.push(cards[i].cid);
-                    roomScene.cardSelected(ids);
+                    roomScene.onCardSelected(ids);
                 }
             }
         }
@@ -175,7 +190,7 @@ RoomScene {
         popupBox.source = "RoomElement/ChooseGeneralBox.qml";
         var box = popupBox.item;
         box.accepted.connect(function(){
-            roomScene.chooseGeneralFinished(box.headGeneral, box.deputyGeneral);
+            roomScene.onChooseGeneralFinished(box.headGeneral, box.deputyGeneral);
         });
         for (var i = 0; i < generals.length; i++)
             box.model.append(generals[i]);
@@ -231,6 +246,11 @@ RoomScene {
     onPlayAudio: {
         soundEffect.source = "audio/" + path;
         soundEffect.play();
+    }
+
+    onShowPrompt: {
+        popupBox.source = "RoomElement/Prompt.qml";
+        popupBox.item.text = qsTr(prompt);
     }
 
     onPlayerNumChanged: arrangePhotos();

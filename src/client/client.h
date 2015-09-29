@@ -38,6 +38,7 @@ public:
     ~Client();
 
     const ClientPlayer *findPlayer(CClientUser *user) const;
+    const ClientPlayer *selfPlayer() const { return m_user2player.value(self()); }
     QList<const ClientPlayer *> players() const;
     int playerNum() const;
 

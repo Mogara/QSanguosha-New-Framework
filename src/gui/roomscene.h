@@ -34,15 +34,15 @@ class RoomScene : public QQuickItem
 public:
     RoomScene(QQuickItem *parent = 0);
 
-signals:
-    //Signals from QML to C++
-    void chooseGeneralFinished(const QString &head, const QString &deputy);
-    void cardSelected(const QVariantList &cardIds);
-    void photoSelected(const QVariantList &seats);
-    void accepted();
-    void rejected();
-    void finished();
+    //From QML to C++
+    Q_INVOKABLE void onChooseGeneralFinished(const QString &head, const QString &deputy);
+    Q_INVOKABLE void onCardSelected(const QVariantList &cardIds);
+    Q_INVOKABLE void onPhotoSelected(const QVariantList &seats);
+    Q_INVOKABLE void onAccepted();
+    Q_INVOKABLE void onRejected();
+    Q_INVOKABLE void onFinished();
 
+signals:
     //Signals from C++ to QML
     void moveCards(const QVariant &moves);
     void enableCards(const QVariant &cardIds);
@@ -64,17 +64,13 @@ private:
         RespondingCardState
     };
 
-    void animateCardsMoving(const QList<CardsMoveStruct> &moves);
+    void updateButtonState();
+    void resetDashboard();
 
     void onSeatArranged();
     void onChooseGeneralRequested(const QStringList &candidates);
-    void onChooseGeneralFinished(const QString &head, const QString &deputy);
+    void onCardsMoved(const QList<CardsMoveStruct> &moves);
     void onUsingCard(const QString &pattern);
-    void onCardSelected(const QVariantList &cardIds);
-    void onPhotoSelected(const QVariantList &seats);
-    void onAccepted();
-    void onRejected();
-    void onFinished();
     void onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
     void onRecoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
     void onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos);

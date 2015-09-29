@@ -164,6 +164,7 @@ Peach::Peach(Card::Suit suit, int number)
     : BasicCard(suit, number)
 {
     setObjectName("peach");
+    m_targetFixed = true;
 }
 
 void Peach::onUse(GameLogic *logic, CardUseStruct &use)
@@ -191,6 +192,7 @@ Analeptic::Analeptic(Card::Suit suit, int number)
     : BasicCard(suit, number)
 {
     setObjectName("analeptic");
+    m_targetFixed = true;
 }
 
 void Analeptic::onUse(GameLogic *logic, CardUseStruct &use)

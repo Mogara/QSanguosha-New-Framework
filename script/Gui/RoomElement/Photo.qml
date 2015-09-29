@@ -228,7 +228,6 @@ Item {
             if (parent.state != "candidate" || !parent.selectable)
                 return;
             parent.selected = !parent.selected;
-            roomScene.photoSelected(roomScene.getSelectedSeats());
         }
     }
 

@@ -22,6 +22,8 @@
 #include "client.h"
 #include "clientplayer.h"
 #include "cardpattern.h"
+#include "engine.h"
+#include "general.h"
 #include "protocol.h"
 #include "roomscene.h"
 #include "util.h"
@@ -62,22 +64,15 @@ RoomScene::RoomScene(QQuickItem *parent)
 {
     connect(m_client, &Client::chooseGeneralRequested, this, &RoomScene::onChooseGeneralRequested);
     connect(m_client, &Client::seatArranged, this, &RoomScene::onSeatArranged);
-    connect(m_client, &Client::cardsMoved, this, &RoomScene::animateCardsMoving);
+    connect(m_client, &Client::cardsMoved, this, &RoomScene::onCardsMoved);
     connect(m_client, &Client::usingCard, this, &RoomScene::onUsingCard);
     connect(m_client, &Client::damageDone, this, &RoomScene::onDamageDone);
     connect(m_client, &Client::recoverDone, this, &RoomScene::onRecoverDone);
     connect(m_client, &Client::cardUsed, this, &RoomScene::onCardUsed);
     connect(m_client, &Client::cardAsked, this, &RoomScene::onCardAsked);
-
-    connect(this, &RoomScene::chooseGeneralFinished, this, &RoomScene::onChooseGeneralFinished);
-    connect(this, &RoomScene::cardSelected, this, &RoomScene::onCardSelected);
-    connect(this, &RoomScene::photoSelected, this, &RoomScene::onPhotoSelected);
-    connect(this, &RoomScene::accepted, this, &RoomScene::onAccepted);
-    connect(this, &RoomScene::rejected, this, &RoomScene::onRejected);
-    connect(this, &RoomScene::finished, this, &RoomScene::onFinished);
 }
 
-void RoomScene::animateCardsMoving(const QList<CardsMoveStruct> &moves)
+void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
 {
     QVariantList paths;
     foreach (const CardsMoveStruct &move, moves) {
@@ -108,10 +103,35 @@ void RoomScene::animateCardsMoving(const QList<CardsMoveStruct> &moves)
     moveCards(paths);
 }
 
+void RoomScene::updateButtonState()
+{
+    if (m_selectedCard.length() == 1) {
+        const Card *card = m_selectedCard.first();
+        const ClientPlayer *self = m_client->selfPlayer();
+        setAcceptEnabled(card->targetFeasible(m_selectedPlayer, self));
+    } else {
+        setAcceptEnabled(false);
+    }
+}
+
+void RoomScene::resetDashboard()
+{
+    m_respondingState = InactiveState;
+
+    m_selectedCard.clear();
+    enableCards(QVariantList());
+    m_selectedPlayer.clear();
+    enablePhotos(QVariantList());
+
+    setAcceptEnabled(false);
+    setRejectEnabled(false);
+    setFinishEnabled(false);
+}
+
 void RoomScene::onSeatArranged()
 {
     QList<const ClientPlayer *> players = m_client->players();
-    const ClientPlayer *self = m_client->findPlayer(m_client->self());
+    const ClientPlayer *self = m_client->selfPlayer();
     players.removeOne(self);
     setProperty("dashboardModel", qConvertToModel(self));
     setProperty("photoModel", qConvertToModel(players));
@@ -120,13 +140,18 @@ void RoomScene::onSeatArranged()
 
 void RoomScene::onChooseGeneralRequested(const QStringList &candidates)
 {
+    Engine *engine = Engine::instance();
+
     QVariantList generals;
     foreach (const QString &candidate, candidates) {
-        QVariantMap general;
-        general["name"] = candidate;
-        //@to-do: resolve this
-        general["kingdom"] = "shu";
-        generals << general;
+        const General *general = engine->getGeneral(candidate);
+        if (general == nullptr)
+            continue;
+
+        QVariantMap generalData;
+        generalData["name"] = candidate;
+        generalData["kingdom"] = general->kingdom();
+        generals << generalData;
     }
     chooseGeneral(generals);
 }
@@ -147,7 +172,7 @@ void RoomScene::onUsingCard(const QString &pattern)
         //@todo: load CardPattern
     } else {
         //@todo: filter usable cards
-        const ClientPlayer *self = m_client->findPlayer(m_client->self());
+        const ClientPlayer *self = m_client->selfPlayer();
         QList<Card *> cards = self->handcards()->cards();
         QVariantList cardIds;
         foreach (Card *card, cards) {
@@ -160,24 +185,25 @@ void RoomScene::onUsingCard(const QString &pattern)
 
 void RoomScene::onCardSelected(const QVariantList &cardIds)
 {
+    m_selectedCard.clear();
+    foreach (const QVariant &cardId, cardIds) {
+        const Card *card = m_client->findCard(cardId.toUInt());
+        if (card)
+            m_selectedCard << card;
+    }
+
     switch (m_respondingState) {
     case UsingCardState:{
-        m_selectedCard.clear();
-        foreach (const QVariant &cardId, cardIds) {
-            const Card *card = m_client->findCard(cardId.toUInt());
-            if (card)
-                m_selectedCard << card;
-        }
-
         if (m_selectedCard.isEmpty()) {
             onUsingCard(QString());
         } else {
             const Card *card = m_selectedCard.first();
             uint id = card->id();
             enableCards(QVariantList() << id);
+            m_selectedPlayer.clear();
 
             QVariantList seats;
-            const ClientPlayer *self = m_client->findPlayer(m_client->self());
+            const ClientPlayer *self = m_client->selfPlayer();
             QList<const ClientPlayer *> players = m_client->players();
             foreach (const ClientPlayer *player, players) {
                 if (card->targetFilter(m_selectedPlayer, player, self))
@@ -185,6 +211,12 @@ void RoomScene::onCardSelected(const QVariantList &cardIds)
             }
             enablePhotos(seats);
         }
+        updateButtonState();
+        break;
+    }
+    case RespondingCardState:{
+        setAcceptEnabled(!m_selectedCard.isEmpty());
+        break;
     }
     default:;
     }
@@ -202,6 +234,8 @@ void RoomScene::onPhotoSelected(const QVariantList &seats)
         if (selectedSeats.contains(player->seat()))
             m_selectedPlayer << player;
     }
+
+    updateButtonState();
 }
 
 void RoomScene::onAccepted()
@@ -219,18 +253,24 @@ void RoomScene::onAccepted()
     }
     default:;
     }
-    enableCards(QVariantList());
+
+    resetDashboard();
 }
 
 void RoomScene::onRejected()
 {
+    if (m_respondingState == RespondingCardState)
+        m_client->replyToServer(S_COMMAND_ASK_FOR_CARD, "cancel");
 
+    resetDashboard();
 }
 
 void RoomScene::onFinished()
 {
     if (m_respondingState == UsingCardState)
         m_client->replyToServer(S_COMMAND_USE_CARD, "finish");
+
+    resetDashboard();
 }
 
 void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage)
@@ -273,7 +313,7 @@ void RoomScene::onCardAsked(const QString &pattern, const QString &prompt)
     showPrompt(prompt);
 
     QVariantList cardIds;
-    const ClientPlayer *self = m_client->findPlayer(m_client->self());
+    const ClientPlayer *self = m_client->selfPlayer();
     CardPattern exp(pattern);
     QList<Card *> handcards = self->handcards()->cards();
     foreach (const Card *card, handcards) {
@@ -286,6 +326,8 @@ void RoomScene::onCardAsked(const QString &pattern, const QString &prompt)
             cardIds << card->id();
     }
     enableCards(cardIds);
+
+    setRejectEnabled(true);
 }
 
 C_REGISTER_QMLTYPE("Sanguosha", 1, 0, RoomScene)

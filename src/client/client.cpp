@@ -332,14 +332,22 @@ void Client::RecoverCommand(QObject *receiver, const QVariant &data)
 
 void Client::AskForCardRequestCommand(QObject *receiver, const QVariant &data)
 {
-    QVariantMap arg = data.toMap();
+    const QVariantMap arg = data.toMap();
     if (!arg.contains("pattern") || !arg.contains("prompt"))
         return;
 
     QString pattern = arg["pattern"].toString();
     QString prompt = arg["prompt"].toString();
     Client *client = qobject_cast<Client *>(receiver);
-    emit client->cardAsked(pattern, prompt);
+
+    if (arg.contains("minNum") && arg.contains("maxNum")) {
+        int minNum = arg["minNum"].toInt();
+        int maxNum = arg["maxNum"].toInt();
+        int optional = arg["optional"].toBool();
+        emit client->cardsAsked(pattern, prompt, minNum, maxNum, optional);
+    } else {
+        emit client->cardAsked(pattern, prompt);
+    }
 }
 
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)

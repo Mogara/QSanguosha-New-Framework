@@ -164,6 +164,7 @@ RoomScene {
 
     Loader {
         id: popupBox
+        z: 1000
         onSourceChanged: {
             if (item === null)
                 return;

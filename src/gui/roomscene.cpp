@@ -61,6 +61,9 @@ RoomScene::RoomScene(QQuickItem *parent)
     : QQuickItem(parent)
     , m_client(Client::instance())
     , m_respondingState(InactiveState)
+    , m_minRespondingCardNum(1)
+    , m_maxRespondingCardNum(1)
+    , m_respondingOptional(true)
 {
     connect(m_client, &Client::chooseGeneralRequested, this, &RoomScene::onChooseGeneralRequested);
     connect(m_client, &Client::seatArranged, this, &RoomScene::onSeatArranged);
@@ -70,6 +73,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::recoverDone, this, &RoomScene::onRecoverDone);
     connect(m_client, &Client::cardUsed, this, &RoomScene::onCardUsed);
     connect(m_client, &Client::cardAsked, this, &RoomScene::onCardAsked);
+    connect(m_client, &Client::cardsAsked, this, &RoomScene::onCardsAsked);
 }
 
 void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
@@ -128,6 +132,32 @@ void RoomScene::resetDashboard()
     setFinishEnabled(false);
 }
 
+void RoomScene::enableCards(const QString &pattern)
+{
+    QVariantList cardIds;
+    const ClientPlayer *self = m_client->selfPlayer();
+    CardPattern exp(pattern);
+    QList<Card *> handcards = self->handcards()->cards();
+    foreach (const Card *card, handcards) {
+        if (exp.match(self, card))
+            cardIds << card->id();
+    }
+    QList<Card *> equips = self->equips()->cards();
+    foreach (const Card *card, equips) {
+        if (exp.match(self, card))
+            cardIds << card->id();
+    }
+    enableCards(cardIds);
+}
+
+void RoomScene::enableCards(const QList<const Card *> &cards)
+{
+    QVariantList cardIds;
+    foreach (const Card *card, cards)
+        cardIds << card->id();
+    enableCards(cardIds);
+}
+
 void RoomScene::onSeatArranged()
 {
     QList<const ClientPlayer *> players = m_client->players();
@@ -181,6 +211,8 @@ void RoomScene::onUsingCard(const QString &pattern)
         }
         enableCards(cardIds);
     }
+
+    setFinishEnabled(true);
 }
 
 void RoomScene::onCardSelected(const QVariantList &cardIds)
@@ -215,7 +247,13 @@ void RoomScene::onCardSelected(const QVariantList &cardIds)
         break;
     }
     case RespondingCardState:{
-        setAcceptEnabled(!m_selectedCard.isEmpty());
+        int selectedNum = m_selectedCard.length();
+        setAcceptEnabled(m_minRespondingCardNum <= selectedNum && selectedNum <= m_maxRespondingCardNum);
+        if (selectedNum >= m_maxRespondingCardNum) {
+            enableCards(m_selectedCard);
+        } else {
+            enableCards(m_respondingPattern);
+        }
         break;
     }
     default:;
@@ -260,7 +298,7 @@ void RoomScene::onAccepted()
 void RoomScene::onRejected()
 {
     if (m_respondingState == RespondingCardState)
-        m_client->replyToServer(S_COMMAND_ASK_FOR_CARD, "cancel");
+        m_client->replyToServer(S_COMMAND_ASK_FOR_CARD);
 
     resetDashboard();
 }
@@ -268,7 +306,7 @@ void RoomScene::onRejected()
 void RoomScene::onFinished()
 {
     if (m_respondingState == UsingCardState)
-        m_client->replyToServer(S_COMMAND_USE_CARD, "finish");
+        m_client->replyToServer(S_COMMAND_USE_CARD);
 
     resetDashboard();
 }
@@ -310,24 +348,24 @@ void RoomScene::onCardUsed(const ClientPlayer *from, const QList<const ClientPla
 void RoomScene::onCardAsked(const QString &pattern, const QString &prompt)
 {
     m_respondingState = RespondingCardState;
+    m_respondingPattern = pattern;
+    m_minRespondingCardNum = m_maxRespondingCardNum = 1;
+    m_respondingOptional = true;
     showPrompt(prompt);
-
-    QVariantList cardIds;
-    const ClientPlayer *self = m_client->selfPlayer();
-    CardPattern exp(pattern);
-    QList<Card *> handcards = self->handcards()->cards();
-    foreach (const Card *card, handcards) {
-        if (exp.match(self, card))
-            cardIds << card->id();
-    }
-    QList<Card *> equips = self->equips()->cards();
-    foreach (const Card *card, equips) {
-        if (exp.match(self, card))
-            cardIds << card->id();
-    }
-    enableCards(cardIds);
-
+    enableCards(pattern);
     setRejectEnabled(true);
+}
+
+void RoomScene::onCardsAsked(const QString &pattern, const QString &prompt, int minNum, int maxNum, bool optional)
+{
+    m_respondingState = RespondingCardState;
+    m_respondingPattern = pattern;
+    m_minRespondingCardNum = minNum;
+    m_maxRespondingCardNum = maxNum;
+    m_respondingOptional = optional;
+    showPrompt(prompt);
+    enableCards(pattern);
+    setRejectEnabled(optional);
 }
 
 C_REGISTER_QMLTYPE("Sanguosha", 1, 0, RoomScene)

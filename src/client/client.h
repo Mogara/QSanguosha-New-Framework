@@ -55,6 +55,7 @@ signals:
     void usingCard(const QString &pattern);
     void cardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &to);
     void cardAsked(const QString &pattern, const QString &prompt);
+    void cardsAsked(const QString &pattern, const QString &prompt, int minNum, int maxNum, bool optional);
 
 private:
     Client(QObject *parent = 0);

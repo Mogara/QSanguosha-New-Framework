@@ -120,7 +120,14 @@ void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
         m_logic->trigger(CountMaxCardNum, current, data);
         maxCardNum = data.toInt();
         int discardNum = current->handcardNum() - maxCardNum;
-        //@to-do: discarding cards if (discardNum > 0)
+        QList<Card *> cards = current->askForCards(".|.|.|hand", "gamerule:discard", discardNum);
+
+        CardsMoveStruct move;
+        move.cards = cards;
+        move.to.type = CardArea::DiscardPile;
+        move.isOpen = true;
+        m_logic->moveCards(move);
+
         break;
     }
     default:;

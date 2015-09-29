@@ -66,6 +66,8 @@ private:
 
     void updateButtonState();
     void resetDashboard();
+    void enableCards(const QString &pattern);
+    void enableCards(const QList<const Card *> &cards);
 
     void onSeatArranged();
     void onChooseGeneralRequested(const QStringList &candidates);
@@ -75,11 +77,16 @@ private:
     void onRecoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
     void onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos);
     void onCardAsked(const QString &pattern, const QString &prompt);
+    void onCardsAsked(const QString &pattern, const QString &prompt, int minNum, int maxNum, bool optional);
 
     Client *m_client;
     QList<const Card *> m_selectedCard;
     QList<const Player *> m_selectedPlayer;
     RespondingState m_respondingState;
+    int m_minRespondingCardNum;
+    int m_maxRespondingCardNum;
+    bool m_respondingOptional;
+    QString m_respondingPattern;
 };
 
 #endif // ROOMSCENE_H

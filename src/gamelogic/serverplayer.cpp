@@ -17,6 +17,7 @@
     Mogara
 *********************************************************************/
 
+#include "cardpattern.h"
 #include "gamelogic.h"
 #include "protocol.h"
 #include "serverplayer.h"
@@ -156,7 +157,7 @@ Card *ServerPlayer::askForCard(const QString &pattern, const QString &prompt)
     forever {
         m_agent->request(S_COMMAND_ASK_FOR_CARD, data, 15000);
         replyData = m_agent->waitForReply(15000);
-        if (replyData.toString() == "cancel")
+        if (replyData.isNull())
             break;
 
         const QVariantMap reply = replyData.toMap();
@@ -171,18 +172,47 @@ Card *ServerPlayer::askForCard(const QString &pattern, const QString &prompt)
 
 QList<Card *> ServerPlayer::askForCards(const QString &pattern, const QString &prompt, int num, bool optional)
 {
-    QList<Card *> cards;
+    return askForCards(pattern, prompt, num, num, optional);
+}
+
+QList<Card *> ServerPlayer::askForCards(const QString &pattern, const QString &prompt, int minNum, int maxNum, bool optional)
+{
+    if (maxNum < minNum)
+        maxNum = minNum;
 
     QVariantMap data;
     data["pattern"] = pattern;
     data["prompt"] = prompt;
-    data["num"] = num;
+    data["minNum"] = minNum;
+    data["maxNum"] = maxNum;
     data["optional"] = optional;
 
     m_agent->request(S_COMMAND_ASK_FOR_CARD, data, 15000);
-    QVariant replyData = m_agent->waitForReply(15000);
+    const QVariantMap replyData = m_agent->waitForReply(15000).toMap();
 
-    return cards;
+    if (optional) {
+        if (replyData.isEmpty())
+            return QList<Card *>();
+        return m_logic->findCards(replyData["cards"]);
+    } else {
+        QList<Card *> cards = m_logic->findCards(replyData["cards"]);
+        if (!optional) {
+            if (cards.length() < minNum) {
+                QList<Card *> allCards = handcards()->cards() + equips()->cards();
+                CardPattern p(pattern);
+                foreach (Card *card, allCards) {
+                    if (!cards.contains(card) && p.match(this, card)) {
+                        cards << card;
+                        if (cards.length() >= minNum)
+                            break;
+                    }
+                }
+            } else if (cards.length() > maxNum) {
+                cards = cards.mid(0, maxNum);
+            }
+        }
+        return cards;
+    }
 }
 
 void ServerPlayer::broadcastProperty(const char *name) const

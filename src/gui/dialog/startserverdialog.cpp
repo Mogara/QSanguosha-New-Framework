@@ -80,6 +80,7 @@ void StartServerDialog::onRoomCreated(CRoom *room)
 {
     connect(room, &CRoom::abandoned, this, &StartServerDialog::onRoomAbandoned);
 
+    //@to-do: load game logic on owner updating configurations
     GameLogic *logic = new GameLogic(room);
     logic->setGameRule(new GameRule(logic));
     Engine *engine = Engine::instance();

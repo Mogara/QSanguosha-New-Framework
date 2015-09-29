@@ -65,7 +65,6 @@ private:
     GameLogic *m_logic;
     CRoom *m_room;
     CServerAgent *m_agent;
-    CardArea *m_handcards;
 };
 
 #endif // SERVERPLAYER_H

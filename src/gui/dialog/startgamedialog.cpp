@@ -18,7 +18,7 @@
 *********************************************************************/
 
 #include "startgamedialog.h"
-#include "client/client.h"
+#include "client.h"
 
 StartGameDialog::StartGameDialog(QQuickItem *parent)
     : QQuickItem(parent)

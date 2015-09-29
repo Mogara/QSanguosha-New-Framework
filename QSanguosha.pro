@@ -22,6 +22,7 @@ SOURCES += src/main.cpp \
     src/gamelogic/gamelogic.cpp \
     src/gamelogic/gamerule.cpp \
     src/gamelogic/serverplayer.cpp \
+    src/gui/dialog/pcconsolestartdialog.cpp \
     src/gui/dialog/startserverdialog.cpp \
     src/gui/dialog/startgamedialog.cpp \
     src/gui/lobby.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
     src/gamelogic/gamelogic.h \
     src/gamelogic/gamerule.h \
     src/gamelogic/serverplayer.h \
+    src/gui/dialog/pcconsolestartdialog.h \
     src/gui/dialog/startserverdialog.h \
     src/gui/dialog/startgamedialog.h \
     src/gui/lobby.h \
@@ -102,6 +104,7 @@ QML_FILES = \
     script/Gui/Splash.qml \
     script/Gui/StartScene.qml \
     script/Gui/Lobby.qml \
+    script/Gui/Dialog/PcConsoleStartDialog.qml \
     script/Gui/Dialog/StartGameDialog.qml \
     script/Gui/Dialog/StartServerDialog.qml \
     script/Gui/RoomScene.qml \

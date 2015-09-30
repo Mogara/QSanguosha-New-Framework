@@ -64,6 +64,7 @@ Item {
                 state.opacity = 0;
                 card = component.createObject(roomScene, state);
                 card.x -= card.width / 2;
+                card.x += (i - outputs.length / 2) * Device.gu(15);
                 card.y -= card.height / 2;
                 items.push(card);
                 if (checkExisting) {
@@ -88,7 +89,7 @@ Item {
             var parentPos = roomScene.mapFromItem(root, 0, 0);
             for (i = 0; i < pendingInput.length; i++) {
                 card = pendingInput[i];
-                card.homeX = parentPos.x - card.width / 2;
+                card.homeX = parentPos.x - card.width / 2 + ((i - pendingInput.length / 2) * Device.gu(15));
                 card.homeY = parentPos.y - card.height / 2;
                 card.homeOpacity = 1;
                 card.destroyOnStop();

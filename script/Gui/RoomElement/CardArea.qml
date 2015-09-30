@@ -27,6 +27,7 @@ Item {
                     result.push(cards[i]);
                     cards.splice(i, 1);
                     i--;
+                    break;
                 }
             }
         }

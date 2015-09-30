@@ -161,8 +161,13 @@ void RoomScene::enableCards(const QList<const Card *> &cards)
 void RoomScene::onSeatArranged()
 {
     QList<const ClientPlayer *> players = m_client->players();
+    qSort(players.begin(), players.end(), [](const ClientPlayer *p1, const ClientPlayer *p2){
+        return p1->seat() < p2->seat();
+    });
+
     const ClientPlayer *self = m_client->selfPlayer();
-    players.removeOne(self);
+    int selfIndex = players.indexOf(self);
+    players = players.mid(selfIndex + 1) + players.mid(0, selfIndex);
     setProperty("dashboardModel", qConvertToModel(self));
     setProperty("photoModel", qConvertToModel(players));
     setProperty("playerNum", players.length() + 1);

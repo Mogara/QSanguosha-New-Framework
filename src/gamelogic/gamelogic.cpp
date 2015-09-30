@@ -594,6 +594,9 @@ void GameLogic::prepareToStart()
     //Choose 7 random generals for each player
     //@to-do: config
     int candidateLimit = 7;
+    int minCandidateNum = candidateLimit * players.length();
+    while (minCandidateNum > generals.length())
+        generals << generals.mid(0, minCandidateNum - generals.length());
     qShuffle(generals);
 
     QMap<ServerPlayer *, QList<const General *>> playerCandidates;

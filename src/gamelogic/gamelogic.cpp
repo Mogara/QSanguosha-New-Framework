@@ -42,6 +42,7 @@ GameLogic::GameLogic(CRoom *parent)
     , m_gameRule(nullptr)
     , m_skipGameRule(false)
     , m_round(0)
+    , m_reshufflingCount(0)
 {
     m_drawPile = new CardArea(CardArea::DrawPile);
     m_discardPile = new CardArea(CardArea::DiscardPile);
@@ -269,6 +270,26 @@ void GameLogic::sortByActionOrder(QList<ServerPlayer *> &players) const
     qSort(allPlayers.begin(), allPlayers.end(), [&actionOrder](ServerPlayer *a, ServerPlayer *b){
         return actionOrder.value(a) < actionOrder.value(b);
     });
+}
+
+void GameLogic::reshuffleDrawPile()
+{
+    if (m_discardPile->length() <= 0) {
+        //@to-do: stand off. Game over.
+    }
+
+    m_reshufflingCount++;
+
+    //@to-do: check reshuffling count limit
+    /*if (limit > 0 && times == limit)
+        gameOver(".");*/
+
+    QList<Card *> cards = m_discardPile->cards();
+    m_discardPile->clear();
+    qShuffle(cards);
+    foreach (Card *card, cards)
+        m_cardPosition[card] = m_drawPile;
+    m_drawPile->add(cards, CardArea::Bottom);
 }
 
 void GameLogic::moveCards(const CardsMoveStruct &move)
@@ -593,11 +614,11 @@ void GameLogic::prepareToStart()
 
     //Choose 7 random generals for each player
     //@to-do: config
+    qShuffle(generals);
     int candidateLimit = 7;
     int minCandidateNum = candidateLimit * players.length();
     while (minCandidateNum > generals.length())
         generals << generals.mid(0, minCandidateNum - generals.length());
-    qShuffle(generals);
 
     QMap<ServerPlayer *, QList<const General *>> playerCandidates;
 

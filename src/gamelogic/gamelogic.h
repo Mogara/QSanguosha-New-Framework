@@ -64,6 +64,9 @@ public:
     bool isGlobalRequestEnabled() const { return m_globalRequestEnabled; }
     bool skipGameRule() const { return m_skipGameRule; }
 
+    void reshuffleDrawPile();
+    int reshufflingCount() const { return m_reshufflingCount; }
+
     const CardArea *drawPile() const { return m_drawPile; }
     const CardArea *discardPile() const { return m_discardPile; }
     const CardArea *table() const { return m_table; }
@@ -102,6 +105,7 @@ private:
     bool m_globalRequestEnabled;
     bool m_skipGameRule;
     int m_round;
+    int m_reshufflingCount;
 
     CardArea *m_drawPile;
     CardArea *m_discardPile;

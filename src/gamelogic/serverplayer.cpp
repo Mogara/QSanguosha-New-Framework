@@ -61,7 +61,12 @@ void ServerPlayer::drawCards(int n)
     move.from.direction = CardArea::Top;
     move.to.type = CardArea::Hand;
     move.to.owner = this;
-    move.cards = m_logic->drawPile()->first(n);
+
+    const CardArea *drawPile = m_logic->drawPile();
+    if (drawPile->length() < n)
+        m_logic->reshuffleDrawPile();
+    move.cards = drawPile->first(n);
+
     m_logic->moveCards(move);
 }
 

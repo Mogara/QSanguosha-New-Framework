@@ -44,7 +44,7 @@ bool CardArea::add(const QList<Card *> &cards, Direction direction)
     foreach (Card *card, cards) {
         if (m_cards.contains(card))
             continue;
-        if (direction == Bottom)
+        if (direction == Top)
             m_cards.prepend(card);
         else
             m_cards.append(card);

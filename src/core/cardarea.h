@@ -57,6 +57,7 @@ public:
     bool add(const QList<Card *> &cards, Direction direction = UndefinedDirection);
     bool remove(Card *card);
     bool remove(const QList<Card *> &cards);
+    void clear() { m_cards.clear(); }
 
     Card *first() const { return m_cards.first(); }
     Card *takeFirst() { return m_cards.takeFirst(); }

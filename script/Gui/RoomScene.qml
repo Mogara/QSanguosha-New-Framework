@@ -230,21 +230,34 @@ RoomScene {
 
     onEnableCards: {
         dashboard.handcardArea.enableCards(cardIds);
-        for (var i = 0; i < photos.count; i++)
-            photos.itemAt(i).state = cardIds.length === 1 ? "candidate" : "normal";
+        for (var i = 0; i < photos.count; i++) {
+            var photo = photos.itemAt(i);
+            if (cardIds.length === 1) {
+                photo.state = "candidate";
+            } else {
+                photo.state = "normal";
+                photo.selectable = photo.selected = false;
+            }
+        }
     }
 
     onEnablePhotos: {
         var photo, i;
         for (i = 0; i < photos.count; i++) {
             photo = photos.itemAt(i);
-            photo.selectable = photo.selected = false;
+            photo.selectable = false;
         }
 
         for (i  = 0; i < seats.length; i++) {
             var seat = seats[i];
             photo = getItemBySeat(seat);
             photo.selectable = true;
+        }
+
+        for (i = 0; i < photos.count; i++) {
+            photo = photos.itemAt(i);
+            if (!photo.selectable)
+                photo.selected = false;
         }
     }
 

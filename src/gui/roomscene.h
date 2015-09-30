@@ -64,7 +64,7 @@ private:
         RespondingCardState
     };
 
-    void updateButtonState();
+    void checkTargetFeasibility();
     void resetDashboard();
     void enableCards(const QString &pattern);
     void enableCards(const QList<const Card *> &cards);

@@ -107,12 +107,28 @@ void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
     moveCards(paths);
 }
 
-void RoomScene::updateButtonState()
+void RoomScene::checkTargetFeasibility()
 {
     if (m_selectedCard.length() == 1) {
         const Card *card = m_selectedCard.first();
         const ClientPlayer *self = m_client->selfPlayer();
-        setAcceptEnabled(card->targetFeasible(m_selectedPlayer, self));
+        bool acceptable = card->targetFeasible(m_selectedPlayer, self);
+        setAcceptEnabled(acceptable);
+        if (acceptable) {
+            QVariantList seats;
+            foreach (const Player *player, m_selectedPlayer)
+                seats << player->seat();
+            enablePhotos(seats);
+        } else {
+            QVariantList seats;
+            const ClientPlayer *self = m_client->selfPlayer();
+            QList<const ClientPlayer *> players = m_client->players();
+            foreach (const ClientPlayer *player, players) {
+                if (card->targetFilter(m_selectedPlayer, player, self))
+                    seats << player->seat();
+            }
+            enablePhotos(seats);
+        }
     } else {
         setAcceptEnabled(false);
     }
@@ -217,6 +233,8 @@ void RoomScene::onUsingCard(const QString &pattern)
         enableCards(cardIds);
     }
 
+    setAcceptEnabled(false);
+    setRejectEnabled(false);
     setFinishEnabled(true);
 }
 
@@ -238,17 +256,8 @@ void RoomScene::onCardSelected(const QVariantList &cardIds)
             uint id = card->id();
             enableCards(QVariantList() << id);
             m_selectedPlayer.clear();
-
-            QVariantList seats;
-            const ClientPlayer *self = m_client->selfPlayer();
-            QList<const ClientPlayer *> players = m_client->players();
-            foreach (const ClientPlayer *player, players) {
-                if (card->targetFilter(m_selectedPlayer, player, self))
-                    seats << player->seat();
-            }
-            enablePhotos(seats);
+            checkTargetFeasibility();
         }
-        updateButtonState();
         break;
     }
     case RespondingCardState:{
@@ -278,7 +287,7 @@ void RoomScene::onPhotoSelected(const QVariantList &seats)
             m_selectedPlayer << player;
     }
 
-    updateButtonState();
+    checkTargetFeasibility();
 }
 
 void RoomScene::onAccepted()

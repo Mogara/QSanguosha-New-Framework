@@ -16,6 +16,10 @@ RoomScene {
     id: roomScene
     anchors.fill: parent
 
+    FontLoader {
+        source: "../../font/simli.ttf"
+    }
+
     Sound {
         id: backgroundMusic
         source: config.backgroundMusic

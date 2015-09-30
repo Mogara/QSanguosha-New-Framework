@@ -28,7 +28,7 @@ Item {
     signal released()
     signal entered()
     signal exited()
-    signal movementAnimationFinished()
+    signal moveFinished()
     signal generalChanged()
     signal hoverChanged(bool enter)
 
@@ -154,7 +154,7 @@ Item {
             duration: goBackDuration
         }
 
-        onStopped: root.movementAnimationFinished();
+        onStopped: root.moveFinished();
     }
 
     function setData(data)
@@ -184,19 +184,15 @@ Item {
         } else {
             x = homeX;
             y = homeY;
+            opacity = homeOpacity;
         }
     }
 
     function destroyOnStop()
     {
-        root.movementAnimationFinished.connect(function(){
+        root.moveFinished.connect(function(){
             destroy();
         });
-    }
-
-    Component.onCompleted: {
-        x = homeX;
-        y = homeY;
     }
 }
 

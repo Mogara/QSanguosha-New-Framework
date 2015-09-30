@@ -17,7 +17,6 @@ Item {
                 card = inputs[i];
                 pendingInput.push(card);
                 cards.push(card.toData());
-                card.destroy();
             }
 
             if (checkExisting)
@@ -60,16 +59,17 @@ Item {
         for (var i = 0; i < outputs.length; i++) {
             if (contains(outputs[i].cid)) {
                 var state = outputs[i];
-                state.homeX = parentPos.x;
-                state.homeY = parentPos.y;
+                state.x = parentPos.x;
+                state.y = parentPos.y;
                 state.opacity = 0;
                 card = component.createObject(roomScene, state);
                 card.x -= card.width / 2;
                 card.y -= card.height / 2;
                 items.push(card);
                 if (checkExisting) {
-                    cards.splice(i, 1);
-                    i--;
+                    //@to-do: remove it from cards
+                    /*cards.splice(i, 1);
+                    i--;*/
                 }
             }
         }

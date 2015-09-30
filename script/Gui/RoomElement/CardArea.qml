@@ -68,7 +68,6 @@ Item {
             card.homeY += parentPos.y;
         }
 
-
         if (animated) {
             for (i = 0; i < cards.length; i++)
                 cards[i].goBack(true);

@@ -203,7 +203,7 @@ RoomScene {
     }
 
     onMoveCards: {
-        var cardItems = [], i;
+        var i;
         for (i = 0; i < moves.length; i++) {
             var move = moves[i];
             var from = getAreaItem(move.from);

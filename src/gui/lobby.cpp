@@ -69,6 +69,11 @@ void Lobby::onReadyButtonClicked()
     m_client->startGame();
 }
 
+void Lobby::onAddRobotButtonClicked()
+{
+    m_client->addRobot();
+}
+
 void Lobby::onRoomPropertyUpdated(const QString &name, const QVariant &value)
 {
     if (name == "ownerId") {

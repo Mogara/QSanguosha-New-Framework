@@ -48,6 +48,7 @@ protected:
     Q_INVOKABLE void onCreateButtonClicked();
     Q_INVOKABLE void onRoomListItemClicked(uint id);
     Q_INVOKABLE void onReadyButtonClicked();
+    Q_INVOKABLE void onAddRobotButtonClicked();
 
     void onRoomPropertyUpdated(const QString &name, const QVariant &value);
 

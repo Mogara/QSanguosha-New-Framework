@@ -132,19 +132,24 @@ void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
 
     foreach (const QVariant &rawInfo, infos) {
         const QVariantMap info = rawInfo.toMap();
+
+        CClientUser *agent = nullptr;
         if (info.contains("userId")) {
             uint userId = info["userId"].toUInt();
-            CClientUser *user = client->findUser(userId);
+            agent = client->findUser(userId);
+        } else if (info.contains("robotId")) {
+            uint robotId = info["robotId"].toUInt();
+            agent = client->findRobot(robotId);
+        }
 
-            ClientPlayer *player = new ClientPlayer(user, client);
+        if (agent) {
+            ClientPlayer *player = new ClientPlayer(agent, client);
             player->setId(info["playerId"].toUInt());
             client->m_players[player->id()] = player;
-            client->m_user2player[user] = player;
-            player->setScreenName(user->screenName());
+            client->m_user2player[agent] = player;
+            player->setScreenName(agent->screenName());
 
             players << player;
-        } else if (info.contains("robotId")) {
-            //@to-do:
         }
     }
 

@@ -275,19 +275,32 @@ Lobby {
                         Layout.fillWidth: true
                         height: Device.gu(60)
 
-                        MetroButton {
-                            width: Device.gu(80)
-                            height: Device.gu(36)
-                            backgroundColor: "#A46061"
-                            anchors.bottom: parent.bottom
-                            anchors.right: parent.right
-                            anchors.bottomMargin: Device.gu(10)
-                            anchors.rightMargin: Device.gu(10)
-                            text: isOwner ? qsTr("Start") : qsTr("Ready")
-                            textColor: "#EDC5C5"
-                            textFont.pixelSize: Device.gu(18)
-                            border.width: 0
-                            onClicked: onReadyButtonClicked();
+                        Row {
+                            spacing: Device.gu(5)
+                            anchors.fill: parent
+                            anchors.margins: Device.gu(12)
+
+                            MetroButton {
+                                height: Device.gu(36)
+                                backgroundColor: "#A46061"
+                                text: isOwner ? qsTr("Start") : qsTr("Ready")
+                                textColor: "#EDC5C5"
+                                textFont.pixelSize: Device.gu(18)
+                                border.width: 0
+                                onClicked: onReadyButtonClicked();
+                            }
+
+                            MetroButton {
+                                height: Device.gu(36)
+                                backgroundColor: "#A46061"
+                                text: qsTr("Add Robot")
+                                textColor: "#EDC5C5"
+                                textFont.pixelSize: Device.gu(18)
+                                border.width: 0
+                                visible: isOwner
+
+                                onClicked: onAddRobotButtonClicked();
+                            }
                         }
                     }
                 }

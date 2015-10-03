@@ -1,5 +1,6 @@
 import QtQuick 2.4
 import Cardirector.Device 1.0
+import "../../engine.js" as Engine
 
 Item {
     property string name: null
@@ -22,7 +23,7 @@ Item {
     }
 
     GlowText {
-        text: number ? (convertNumber(number)) : ""
+        text: number ? (Engine.convertNumber(number)) : ""
         font.pixelSize: Device.gu(14)
         x: parent.width - Device.gu(28)
         y: Device.gu(2)
@@ -31,19 +32,6 @@ Item {
         glow.radius: 1
         glow.spread: 1
         glow.samples: 2
-
-        function convertNumber(number)
-        {
-            if (number === 1)
-                return "A";
-            if (number >= 2 && number <= 10)
-                return number;
-            if (number >= 11 && number <= 13) {
-                var strs = ["J", "Q", "K"];
-                return strs[number - 11];
-            }
-            return "";
-        }
     }
 
     ParallelAnimation {

@@ -135,6 +135,7 @@ QML_FILES = \
     script/Gui/RoomElement/ProgressBar.qml \
     script/Gui/RoomElement/Prompt.qml \
     script/Gui/RoomElement/RoleComboBox.qml \
+    script/Gui/RoomElement/SimpleEquipItem.qml \
     script/Gui/RoomElement/SimpleRoleIcon.qml \
     script/Gui/RoomElement/TablePile.qml \
     script/engine.js \

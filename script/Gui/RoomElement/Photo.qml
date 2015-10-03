@@ -14,6 +14,7 @@ Item {
     property alias maxHp: hpBar.maxValue
     property alias hp: hpBar.value
     property alias handcardArea: handcardAreaItem
+    property alias equipArea: equipAreaItem
     property string phase: "inactive"
     property alias progressBar: progressBarItem
     property int seat: 0
@@ -115,10 +116,62 @@ Item {
         source: "image://root/photo/photo-back"
     }
 
+    Item {
+        id: equipAreaItem
+
+        width: parent.width - Device.gu(20)
+        height: Device.gu(60)
+        y: parent.height - height
+
+        Column {
+            SimpleEquipItem {
+                id: weaponItem
+                width: equipArea.width
+                height: Device.gu(15)
+                icon: "sword" //@to-do: assign icon for different weapons
+                opacity: 0
+            }
+
+            SimpleEquipItem {
+                id: armorItem
+                width: equipArea.width
+                height: Device.gu(15)
+                icon: "shield"
+                opacity: 0
+            }
+
+            Row {
+                SimpleEquipItem {
+                    id: defensiveHorseItem
+                    width: Math.floor(equipArea.width / 2)
+                    height: Device.gu(15)
+                    icon: "horse"
+                    opacity: 0
+                }
+
+                SimpleEquipItem {
+                    id: offensiveHorseItem
+                    width: equipArea.width - defensiveHorseItem.width
+                    height: Device.gu(15)
+                    icon: "horse"
+                    opacity: 0
+                }
+            }
+
+            SimpleEquipItem {
+                id: treasureItem
+                width: equipArea.width
+                height: Device.gu(15)
+                //@to-do: add icon for treasures
+                opacity: 0
+            }
+        }
+    }
+
     HandcardNumber {
         id: handcardNumItem
         x: Device.gu(-10)
-        y: Device.gu(110)
+        y: Device.gu(102)
         kingdom: parent.userRole
         value: handcardArea.length
     }

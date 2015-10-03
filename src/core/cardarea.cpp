@@ -29,7 +29,7 @@ CardArea::CardArea(CardArea::Type type, Player *owner, const QString &name)
 bool CardArea::add(Card *card, Direction direction) {
     if (m_cards.contains(card))
         return false;
-    if (direction == Bottom)
+    if (direction == Top)
         m_cards.prepend(card);
     else
         m_cards.append(card);

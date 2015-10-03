@@ -22,8 +22,6 @@ RoomScene {
 
     Sound {
         id: backgroundMusic
-        source: config.backgroundMusic
-        Component.onCompleted: play();
     }
 
     Sound {

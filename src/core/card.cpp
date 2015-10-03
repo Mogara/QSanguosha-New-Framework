@@ -292,11 +292,12 @@ bool TrickCard::isCancelable(const CardEffectStruct &) const
     return m_cancelable;
 }
 
-EquipCard::EquipCard(Card::Suit suit, int number, Skill *skill)
+EquipCard::EquipCard(Card::Suit suit, int number)
     : Card(suit, number)
-    , m_skill(skill)
+    , m_skill(nullptr)
 {
     m_type = EquipType;
+    m_targetFixed = true;
 }
 
 void EquipCard::onUse(GameLogic *logic, CardUseStruct &use)
@@ -372,7 +373,7 @@ GlobalEffect::GlobalEffect(Card::Suit suit, int number)
 void GlobalEffect::onUse(GameLogic *logic, CardUseStruct &use)
 {
     if (use.to.isEmpty())
-        use.to = logic->otherPlayers(use.from);
+        use.to = logic->allPlayers();
     TrickCard::onUse(logic, use);
 }
 
@@ -401,7 +402,6 @@ bool SingleTargetTrick::targetFilter(const QList<const Player *> &, const Player
     return true;
 }
 
-
 DelayedTrick::DelayedTrick(Card::Suit suit, int number)
     : TrickCard(suit, number)
 {
@@ -421,4 +421,51 @@ void DelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)
     move.to.owner = use.to.first();
     move.isOpen = true;
     logic->moveCards(move);
+}
+
+Weapon::Weapon(Card::Suit suit, int number)
+    : EquipCard(suit, number)
+    , m_attackRange(0)
+{
+    m_subtype = WeaponType;
+}
+
+
+Armor::Armor(Card::Suit suit, int number)
+    : EquipCard(suit, number)
+{
+    m_subtype = ArmorType;
+}
+
+
+Horse::Horse(Card::Suit suit, int number)
+    : EquipCard(suit, number)
+{
+}
+
+Card *Horse::clone() const
+{
+    Card *card = Card::clone();
+    card->setObjectName(objectName());
+    return card;
+}
+
+OffensiveHorse::OffensiveHorse(Card::Suit suit, int number)
+    : Horse(suit, number)
+    , m_extraOutDistance(-1)
+{
+    m_subtype = OffensiveHorseType;
+}
+
+DefensiveHorse::DefensiveHorse(Card::Suit suit, int number)
+    : Horse(suit, number)
+    , m_extraInDistance(+1)
+{
+    m_subtype = DefensiveHorseType;
+}
+
+Treasure::Treasure(Card::Suit suit, int number)
+    : EquipCard(suit, number)
+{
+    m_subtype = TreasureType;
 }

@@ -74,8 +74,8 @@ public:
         EquipType
     };
 
-    Q_INVOKABLE Card(Suit suit = NoSuit, int number = 0);
-    Card *clone() const;
+    Card(Suit suit = NoSuit, int number = 0);
+    virtual Card *clone() const;
 
     uint id() const { return m_id; }
     bool isVirtual() const { return id() == 0; }
@@ -200,10 +200,12 @@ public:
         TreasureType
     };
 
-    EquipCard(Suit suit, int number, Skill *skill = nullptr);
+    EquipCard(Suit suit, int number);
 
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void use(GameLogic *logic, CardUseStruct &use) override;
+
+    Skill *skill() const { return m_skill; }
 
 protected:
     Skill *m_skill;
@@ -250,6 +252,71 @@ public:
 
 protected:
     bool m_movable;
+};
+
+class Weapon : public EquipCard
+{
+    Q_OBJECT
+
+public:
+    Weapon(Suit suit, int number);
+
+    int attackRange() const;
+
+protected:
+    int m_attackRange;
+};
+
+class Armor : public EquipCard
+{
+    Q_OBJECT
+
+public:
+    Armor(Suit suit, int number);
+};
+
+class Horse : public EquipCard
+{
+    Q_OBJECT
+
+public:
+    Horse(Suit suit, int number);
+
+    Card *clone() const override;
+};
+
+class OffensiveHorse : public Horse
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE OffensiveHorse(Suit suit, int number);
+
+    int extraOutDistance() const;
+
+protected:
+    int m_extraOutDistance;
+};
+
+class DefensiveHorse : public Horse
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DefensiveHorse(Suit suit, int number);
+
+    int extraInDistance() const;
+
+protected:
+    int m_extraInDistance;
+};
+
+class Treasure : public EquipCard
+{
+    Q_OBJECT
+
+public:
+    Treasure(Suit suit, int number);
 };
 
 #endif // CARD_H

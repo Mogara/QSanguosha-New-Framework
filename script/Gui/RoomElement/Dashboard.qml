@@ -32,15 +32,14 @@ RowLayout {
     Layout.fillHeight: false
     Layout.preferredHeight: Device.gu(150)
 
-    Image {
+    EquipArea {
         id: equipAreaItem
-        source: "image://root/dashboard/equip"
         Layout.preferredWidth: Device.gu(164)
         Layout.fillHeight: true
     }
 
-    Image {
-        source: "image://root/dashboard/hand"
+    Rectangle {
+        color: Qt.rgba(0, 0, 0, 0.65)
         Layout.fillWidth: true
         Layout.fillHeight: true
 

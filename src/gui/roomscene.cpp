@@ -92,11 +92,13 @@ void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
                 cardData["name"] = card->objectName();
                 cardData["number"] = card->number();
                 cardData["suit"] = card->suitString();
+                cardData["subtype"] = card->subtype();
             } else {
                 cardData["cid"] = 0;
                 cardData["name"] = "hegback";
                 cardData["number"] = 0;
                 cardData["suit"] = "";
+                cardData["subtype"] = 0;
             }
             cards << cardData;
         }

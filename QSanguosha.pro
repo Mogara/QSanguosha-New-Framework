@@ -64,6 +64,7 @@ HEADERS += \
     src/gui/roomscene.h \
     src/package/standardpackage.h \
     src/package/standard-basiccard.h \
+    src/package/standard-equipcard.h \
     src/package/systempackage.h
 
 INCLUDEPATH += src \
@@ -114,6 +115,8 @@ QML_FILES = \
     script/Gui/RoomElement/ChooseGeneralBox.qml \
     script/Gui/RoomElement/ChooseOptionBox.qml \
     script/Gui/RoomElement/Dashboard.qml \
+    script/Gui/RoomElement/EquipArea.qml \
+    script/Gui/RoomElement/EquipItem.qml \
     script/Gui/RoomElement/GeneralAvatar.qml \
     script/Gui/RoomElement/GeneralCardItem.qml \
     script/Gui/RoomElement/GlowText.qml \

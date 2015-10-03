@@ -8,6 +8,7 @@ Item {
     property int number: 2
     property string name: "slash"
     readonly property string color: (suit == "heart" || suit == "diamond") ? "red" : "black"
+    property int subtype: 0
     property int homeX: 0
     property int homeY: 0
     property real homeOpacity: 1.0
@@ -163,6 +164,7 @@ Item {
         name = data.name;
         suit = data.suit;
         number = data.number;
+        subtype = data.subtype;
     }
 
     function toData()
@@ -171,7 +173,8 @@ Item {
             cid: cid,
             name: name,
             suit: suit,
-            number: number
+            number: number,
+            subtype: subtype
         };
         return data;
     }

@@ -125,6 +125,7 @@ QML_FILES = \
     script/Gui/RoomElement/ChooseGeneralBox.qml \
     script/Gui/RoomElement/ChooseOptionBox.qml \
     script/Gui/RoomElement/Dashboard.qml \
+    script/Gui/RoomElement/DelayedTrickArea.qml \
     script/Gui/RoomElement/EquipArea.qml \
     script/Gui/RoomElement/EquipItem.qml \
     script/Gui/RoomElement/GeneralAvatar.qml \

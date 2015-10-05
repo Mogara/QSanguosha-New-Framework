@@ -21,6 +21,7 @@ RowLayout {
     property alias finishButton: finishButtonItem
     property alias handcardArea: handcardAreaItem
     property alias equipArea: equipAreaItem
+    property alias delayedTrickArea: delayedTrickAreaItem
     property alias progressBar: progressBarItem
 
     signal accepted()
@@ -54,7 +55,15 @@ RowLayout {
                     id: handcardAreaItem
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    Layout.topMargin: Device.gu(5)
+                    Layout.topMargin: Device.gu(15)
+
+                    DelayedTrickArea {
+                        id: delayedTrickAreaItem
+                        width: parent.width
+                        height: Device.gu(30)
+                        rows: 1
+                        y: -height
+                    }
 
                     ProgressBar {
                         id: progressBarItem

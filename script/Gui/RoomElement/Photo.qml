@@ -15,6 +15,7 @@ Item {
     property alias hp: hpBar.value
     property alias handcardArea: handcardAreaItem
     property alias equipArea: equipAreaItem
+    property alias delayedTrickArea: delayedTrickAreaItem
     property string phase: "inactive"
     property alias progressBar: progressBarItem
     property int seat: 0
@@ -168,7 +169,11 @@ Item {
         id: screenNameItem
         color: "white"
         font.pixelSize: Device.gu(12)
-        x: Device.gu(5)
+        anchors.left: parent.left
+        anchors.leftMargin: Device.gu(20)
+        anchors.right: parent.right
+        anchors.rightMargin: Device.gu(35)
+        horizontalAlignment: Text.AlignHCenter
         y: Device.gu(3)
     }
 
@@ -207,6 +212,12 @@ Item {
         glow.spread: 0.7
         glow.radius: Device.gu(12)
         glow.samples: 24
+    }
+
+    DelayedTrickArea {
+        id: delayedTrickAreaItem
+        columns: 1
+        x: -Device.gu(15)
     }
 
     RoleComboBox {

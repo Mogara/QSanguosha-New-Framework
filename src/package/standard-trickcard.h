@@ -50,4 +50,24 @@ public:
     bool isNullifiable(const CardEffectStruct &effect) const override;
 };
 
+class SavageAssault :public AreaOfEffect
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SavageAssault(Suit suit, int number);
+
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+};
+
+class ArcheryAttack : public AreaOfEffect
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ArcheryAttack(Suit suit, int number);
+
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+};
+
 #endif // STANDARDTRICKCARD_H

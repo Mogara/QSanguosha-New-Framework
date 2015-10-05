@@ -130,6 +130,56 @@ void GodSalvation::onEffect(GameLogic *logic, CardEffectStruct &effect)
     }
 }
 
+SavageAssault::SavageAssault(Card::Suit suit, int number)
+    : AreaOfEffect(suit, number)
+{
+    setObjectName("savage_assault");
+}
+
+void SavageAssault::onEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    Card *slash = effect.to->askForCard("Slash", "savage-assault-slash");
+    if (slash) {
+        CardResponseStruct response;
+        response.from = effect.from;
+        response.to = effect.to;
+        response.card = slash;
+        response.target = this;
+        logic->respondCard(response);
+    } else {
+        DamageStruct damage;
+        damage.card = this;
+        damage.from = effect.from->isAlive() ? effect.from : nullptr;
+        damage.to = effect.to;
+        logic->damage(damage);
+    }
+}
+
+ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
+    : AreaOfEffect(suit, number)
+{
+    setObjectName("archery_attack");
+}
+
+void ArcheryAttack::onEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    Card *jink = effect.to->askForCard("Jink", "archery-attack-jink");
+    if (jink) {
+        CardResponseStruct response;
+        response.from = effect.from;
+        response.to = effect.to;
+        response.card = jink;
+        response.target = this;
+        logic->respondCard(response);
+    } else {
+        DamageStruct damage;
+        damage.card = this;
+        damage.from = effect.from->isAlive() ? effect.from : nullptr;
+        damage.to = effect.to;
+        logic->damage(damage);
+    }
+}
+
 void StandardPackage::addTrickCards()
 {
     for (int i = 0; i < 100; i++)

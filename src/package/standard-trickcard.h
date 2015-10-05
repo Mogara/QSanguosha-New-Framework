@@ -24,12 +24,28 @@
 
 class GameLogic;
 
+class AmazingGrace : public GlobalEffect
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE AmazingGrace(Suit suit, int number);
+
+    void onUse(GameLogic *logic, CardUseStruct &use) override;
+    void use(GameLogic *logic, CardUseStruct &use) override;
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+
+private:
+    void clearRestCards(GameLogic *logic) const;
+};
+
 class GodSalvation : public GlobalEffect
 {
     Q_OBJECT
 
 public:
     Q_INVOKABLE GodSalvation(Suit suit, int number);
+
     void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
     bool isNullifiable(const CardEffectStruct &effect) const override;
 };

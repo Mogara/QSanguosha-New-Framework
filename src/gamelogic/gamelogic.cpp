@@ -47,10 +47,12 @@ GameLogic::GameLogic(CRoom *parent)
     m_drawPile = new CardArea(CardArea::DrawPile);
     m_discardPile = new CardArea(CardArea::DiscardPile);
     m_table = new CardArea(CardArea::Table);
+    m_wugu = new CardArea(CardArea::Wugu);
 }
 
 GameLogic::~GameLogic()
 {
+    delete m_wugu;
     delete m_table;
     delete m_discardPile;
     delete m_drawPile;
@@ -270,6 +272,13 @@ void GameLogic::sortByActionOrder(QList<ServerPlayer *> &players) const
     qSort(allPlayers.begin(), allPlayers.end(), [&actionOrder](ServerPlayer *a, ServerPlayer *b){
         return actionOrder.value(a) < actionOrder.value(b);
     });
+}
+
+QList<Card *> GameLogic::getDrawPileCards(int n)
+{
+    if (m_drawPile->length() < n)
+        reshuffleDrawPile();
+    return m_drawPile->first(n);
 }
 
 void GameLogic::reshuffleDrawPile()
@@ -699,6 +708,8 @@ CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)
             return m_discardPile;
         case CardArea::Table:
             return m_table;
+        case CardArea::Wugu:
+            return m_wugu;
         default: qWarning("Global Area Not Found");
         }
     }

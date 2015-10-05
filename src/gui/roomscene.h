@@ -41,6 +41,7 @@ public:
     Q_INVOKABLE void onAccepted();
     Q_INVOKABLE void onRejected();
     Q_INVOKABLE void onFinished();
+    Q_INVOKABLE void onAmazingGraceTaken(uint cid);
 
 signals:
     //Signals from C++ to QML
@@ -55,6 +56,8 @@ signals:
     void setAcceptEnabled(bool enabled);
     void setRejectEnabled(bool enabled);
     void setFinishEnabled(bool enabled);
+    void askToChooseCards(const QVariant &cards);
+    void clearPopupBox();
 
 private:
     enum RespondingState
@@ -78,6 +81,7 @@ private:
     void onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos);
     void onCardAsked(const QString &pattern, const QString &prompt);
     void onCardsAsked(const QString &pattern, const QString &prompt, int minNum, int maxNum, bool optional);
+    void onAmazingGraceStarted();
 
     Client *m_client;
     QList<const Card *> m_selectedCard;

@@ -34,6 +34,7 @@ enum EventType
     PhaseChanging,
     PhaseSkipping,
     TurnBroken,
+    StageChange,
 
     BeforeCardsMove,
     CardsMove,

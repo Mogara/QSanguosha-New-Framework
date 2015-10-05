@@ -31,6 +31,7 @@ static Client *ClientInstance = nullptr;
 
 Client::Client(QObject *parent)
     : CClient(parent)
+    , m_wugu(new CardArea(CardArea::Wugu))
 {
     ClientInstance = this;
     connect(this, &CClient::gameStarted, this, &Client::restart);
@@ -44,6 +45,8 @@ Client *Client::instance()
 
 Client::~Client()
 {
+    delete m_wugu;
+
     if (ClientInstance == this)
         ClientInstance = nullptr;
 }
@@ -112,6 +115,13 @@ CardArea *Client::findArea(const CardsMoveStruct::Area &area)
             return area.owner->delayedTricks();
         case CardArea::Judge:
             return area.owner->judgeCards();
+        default:
+            return nullptr;
+        }
+    } else {
+        switch (area.type) {
+        case CardArea::Wugu:
+            return m_wugu;
         default:
             return nullptr;
         }
@@ -355,6 +365,24 @@ void Client::AskForCardRequestCommand(QObject *receiver, const QVariant &data)
     }
 }
 
+void Client::ShowAmazingGraceCommand(QObject *receiver, const QVariant &)
+{
+    Client *client = qobject_cast<Client *>(receiver);
+    emit client->amazingGraceStarted();
+}
+
+void Client::ClearAmazingGraceCommand(QObject *receiver, const QVariant &)
+{
+    Client *client = qobject_cast<Client *>(receiver);
+    emit client->amazingGraceFinished();
+}
+
+void Client::TakeAmazingGraceRequestCommand(QObject *receiver, const QVariant &)
+{
+    Client *client = qobject_cast<Client *>(receiver);
+    emit client->amazingGraceRequested();
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -372,9 +400,12 @@ void Client::Init()
     AddCallback(S_COMMAND_DAMAGE, DamageCommand);
     AddCallback(S_COMMAND_RECOVER, RecoverCommand);
     AddCallback(S_COMMAND_USE_CARD, UseCardCommand);
+    AddCallback(S_COMMAND_SHOW_AMAZING_GRACE, ShowAmazingGraceCommand);
+    AddCallback(S_COMMAND_CLEAR_AMAZING_GRACE, ClearAmazingGraceCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);
     AddInteraction(S_COMMAND_ASK_FOR_CARD, AskForCardRequestCommand);
+    AddInteraction(S_COMMAND_TAKE_AMAZING_GRACE, TakeAmazingGraceRequestCommand);
 }
 C_INITIALIZE_CLASS(Client)

@@ -64,12 +64,14 @@ public:
     bool isGlobalRequestEnabled() const { return m_globalRequestEnabled; }
     bool skipGameRule() const { return m_skipGameRule; }
 
+    QList<Card *> getDrawPileCards(int n);
     void reshuffleDrawPile();
     int reshufflingCount() const { return m_reshufflingCount; }
 
     const CardArea *drawPile() const { return m_drawPile; }
     const CardArea *discardPile() const { return m_discardPile; }
     const CardArea *table() const { return m_table; }
+    const CardArea *wugu() const { return m_wugu; }
 
     void moveCards(const CardsMoveStruct &move);
     void moveCards(QList<CardsMoveStruct> moves);
@@ -110,6 +112,7 @@ private:
     CardArea *m_drawPile;
     CardArea *m_discardPile;
     CardArea *m_table;
+    CardArea *m_wugu;
 
     QMap<Card *, CardArea *> m_cardPosition;
 };

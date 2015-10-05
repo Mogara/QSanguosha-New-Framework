@@ -35,6 +35,8 @@ static QString AreaTypeToString(CardArea::Type type)
     case CardArea::Table:
     case CardArea::DiscardPile:
         return "table";
+    case CardArea::Wugu:
+        return "wugu";
     case CardArea::DrawPile:
         return "drawPile";
     case CardArea::Hand:
@@ -74,6 +76,8 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::cardUsed, this, &RoomScene::onCardUsed);
     connect(m_client, &Client::cardAsked, this, &RoomScene::onCardAsked);
     connect(m_client, &Client::cardsAsked, this, &RoomScene::onCardsAsked);
+    connect(m_client, &Client::amazingGraceStarted, this, &RoomScene::onAmazingGraceStarted);
+    connect(m_client, &Client::amazingGraceFinished, this, &RoomScene::clearPopupBox);
 }
 
 void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
@@ -327,6 +331,11 @@ void RoomScene::onFinished()
     resetDashboard();
 }
 
+void RoomScene::onAmazingGraceTaken(uint cid)
+{
+    m_client->replyToServer(S_COMMAND_TAKE_AMAZING_GRACE, cid);
+}
+
 void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage)
 {
     if (damage <= 0)
@@ -382,6 +391,23 @@ void RoomScene::onCardsAsked(const QString &pattern, const QString &prompt, int 
     showPrompt(prompt);
     enableCards(pattern);
     setRejectEnabled(optional);
+}
+
+void RoomScene::onAmazingGraceStarted()
+{
+    const CardArea *wugu = m_client->wugu();
+    QList<Card *> cards = wugu->cards();
+    QVariantList cardList;
+    foreach (Card *card, cards) {
+        QVariantMap data;
+        data["cid"] = card->id();
+        data["name"] = card->objectName();
+        data["suit"] = card->suitString();
+        data["number"] = card->number();
+        data["selectable"] = true;
+        cardList << data;
+    }
+    askToChooseCards(cardList);
 }
 
 C_REGISTER_QMLTYPE("Sanguosha", 1, 0, RoomScene)

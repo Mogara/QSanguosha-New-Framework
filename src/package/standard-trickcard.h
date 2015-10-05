@@ -77,8 +77,19 @@ class ExNihilo : public SingleTargetTrick
 public:
     Q_INVOKABLE ExNihilo(Suit suit, int number);
 
-    void onUse(GameLogic *logic, CardUseStruct &use) const override;
-    void onEffect(GameLogic *logic, const CardEffectStruct &effect) const override;
+    void onUse(GameLogic *logic, CardUseStruct &use) override;
+    void onEffect(GameLogic *, CardEffectStruct &effect) override;
+};
+
+class Duel : public SingleTargetTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Duel(Suit suit, int number);
+
+    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
 #endif // STANDARDTRICKCARD_H

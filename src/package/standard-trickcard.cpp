@@ -187,16 +187,56 @@ ExNihilo::ExNihilo(Card::Suit suit, int number)
     m_targetFixed = true;
 }
 
-void ExNihilo::onUse(GameLogic *logic, CardUseStruct &use) const
+void ExNihilo::onUse(GameLogic *logic, CardUseStruct &use)
 {
     if (use.to.isEmpty())
         use.to << use.from;
     SingleTargetTrick::onUse(logic, use);
 }
 
-void ExNihilo::onEffect(GameLogic *, const CardEffectStruct &effect) const
+void ExNihilo::onEffect(GameLogic *, CardEffectStruct &effect)
 {
     effect.to->drawCards(2);
+}
+
+Duel::Duel(Card::Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+{
+    setObjectName("duel");
+}
+
+bool Duel::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+{
+    return targets.isEmpty() && toSelect != self;
+}
+
+void Duel::onEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    ServerPlayer *first = effect.to;
+    ServerPlayer *second = effect.from;
+
+    forever {
+        if (!first->isAlive())
+            break;
+        Card *slash = first->askForCard("Slash", "duel-slash");
+        if (slash == nullptr)
+            break;
+        CardResponseStruct response;
+        response.card = slash;
+        response.target = this;
+        response.from = first;
+        response.to = second;
+        logic->respondCard(response);
+        qSwap(first, second);
+    }
+
+    DamageStruct damage;
+    damage.card = this;
+    damage.from = second->isAlive() ? second : nullptr;
+    damage.to = first;
+    if (second != effect.from)
+        damage.byUser = false;
+    logic->damage(damage);
 }
 
 void StandardPackage::addTrickCards()

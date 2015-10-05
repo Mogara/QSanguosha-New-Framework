@@ -392,6 +392,11 @@ SingleTargetTrick::SingleTargetTrick(Card::Suit suit, int number)
     m_subtype = SingleTargetType;
 }
 
+bool SingleTargetTrick::targetFeasible(const QList<const Player *> &targets, const Player *) const
+{
+    return isTargetFixed() || targets.length() == 1;
+}
+
 bool SingleTargetTrick::targetFilter(const QList<const Player *> &, const Player *, const Player *) const
 {
     return true;

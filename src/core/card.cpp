@@ -121,9 +121,10 @@ void Card::setColorString(const QString &color)
 
 QString Card::colorString() const
 {
-    if (m_color == Black)
+    Color color = this->color();
+    if (color == Black)
         return "black";
-    else if (m_color == Red)
+    else if (color == Red)
         return "red";
     else
         return "no_color";

@@ -113,6 +113,7 @@ QML_FILES = \
     script/Gui/RoomElement/CardArea.qml \
     script/Gui/RoomElement/CardItem.qml \
     script/Gui/RoomElement/ChatBox.qml \
+    script/Gui/RoomElement/ChooseCardBox.qml \
     script/Gui/RoomElement/ChooseGeneralBox.qml \
     script/Gui/RoomElement/ChooseOptionBox.qml \
     script/Gui/RoomElement/Dashboard.qml \

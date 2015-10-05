@@ -268,6 +268,19 @@ RoomScene {
         popupBox.item.text = qsTr(prompt);
     }
 
+    onAskToChooseCards: {
+        popupBox.source = "RoomElement/ChooseCardBox.qml";
+        popupBox.item.addCards(cards);
+        popupBox.moveToCenter();
+        popupBox.item.cardSelected.connect(function(cid){
+            roomScene.onAmazingGraceTaken(cid);
+        });
+    }
+
+    onClearPopupBox: {
+        popupBox.source = "";
+    }
+
     onPlayerNumChanged: arrangePhotos();
 
     function arrangePhotos()
@@ -394,6 +407,8 @@ RoomScene {
             return drawPile;
         } else if (area.type === "table") {
             return tablePile;
+        } else if (area.type === "wugu") {
+            return popupBox.item;
         }
 
         var photo = getItemBySeat(area.seat);

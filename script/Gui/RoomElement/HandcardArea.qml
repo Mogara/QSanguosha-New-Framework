@@ -29,6 +29,7 @@ Item {
 
     function filterInputCard(card)
     {
+        card.autoBack = true;
         card.draggable = true;
         card.selectedChanged.connect(adjustCards);
     }

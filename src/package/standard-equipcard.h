@@ -27,7 +27,7 @@ class Crossbow : public Weapon
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Crossbow(Suit suit = Diamond, int number = 1);
+    Q_INVOKABLE Crossbow(Suit suit, int number);
 };
 
 class DoubleSword : public Weapon
@@ -86,14 +86,6 @@ public:
     Q_INVOKABLE Triblade(Suit suit = Diamond, int number = 12);
 };
 
-class Fan : public Weapon
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE Fan(Suit suit = Diamond, int number = 1);
-};
-
 class KylinBow : public Weapon
 {
     Q_OBJECT
@@ -107,7 +99,7 @@ class EightDiagram : public Armor
     Q_OBJECT
 
 public:
-    Q_INVOKABLE EightDiagram(Suit suit = Spade, int number = 2);
+    Q_INVOKABLE EightDiagram(Suit suit, int number);
 };
 
 class RenwangShield : public Armor
@@ -116,22 +108,6 @@ class RenwangShield : public Armor
 
 public:
     Q_INVOKABLE RenwangShield(Suit suit = Club, int number = 2);
-};
-
-class Vine : public Armor
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE Vine(Suit suit = Club, int number = 2);
-};
-
-class SilverLion : public Armor
-{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE SilverLion(Suit suit = Club, int number = 1);
 };
 
 #endif // STANDARDEQUIPCARD_H

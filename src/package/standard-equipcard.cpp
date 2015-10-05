@@ -76,13 +76,6 @@ Triblade::Triblade(Card::Suit suit, int number)
     m_attackRange = 3;
 }
 
-Fan::Fan(Card::Suit suit, int number)
-    : Weapon(suit, number)
-{
-    setObjectName("fan");
-    m_attackRange = 4;
-}
-
 KylinBow::KylinBow(Card::Suit suit, int number)
     : Weapon(suit, number)
 {
@@ -102,37 +95,22 @@ RenwangShield::RenwangShield(Card::Suit suit, int number)
     setObjectName("renwang_shield");
 }
 
-Vine::Vine(Card::Suit suit, int number)
-    : Armor(suit, number)
-{
-    setObjectName("vine");
-}
-
-SilverLion::SilverLion(Card::Suit suit, int number)
-    : Armor(suit, number)
-{
-    setObjectName("silver_lion");
-}
-
 void StandardPackage::addEquipCards()
 {
     QList<Card *> cards;
     cards
-        << new Crossbow
+        << new Crossbow(Card::Club, 1)
+        << new Crossbow(Card::Diamond, 1)
         << new DoubleSword
         << new QinggangSword
-        << new IceSword
+        //@to-do: add Blade
         << new Spear
-        << new Fan
         << new Axe
+        //@to-do: add Halberd
         << new KylinBow
-        << new SixSwords
-        << new Triblade
 
-        << new EightDiagram
-        << new RenwangShield
-        << new Vine
-        << new SilverLion;
+        << new EightDiagram(Card::Spade, 2)
+        << new EightDiagram(Card::Club, 2);
     addCards(cards);
 
     Card *jueying = new DefensiveHorse(Card::Spade, 5);

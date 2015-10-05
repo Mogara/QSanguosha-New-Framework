@@ -117,20 +117,6 @@ bool Slash::isAvailable(const Player *player) const
     return player->phase() == Player::Play && player->cardHistory("slash") < 1 && BasicCard::isAvailable(player);
 }
 
-FireSlash::FireSlash(Card::Suit suit, int number)
-    : Slash(suit, number)
-{
-    setObjectName("fire_slash");
-    m_nature = DamageStruct::Fire;
-}
-
-ThunderSlash::ThunderSlash(Card::Suit suit, int number)
-    : Slash(suit, number)
-{
-    setObjectName("thunder_slash");
-    m_nature = DamageStruct::Thunder;
-}
-
 Jink::Jink(Card::Suit suit, int number)
     : BasicCard(suit, number)
 {
@@ -185,111 +171,70 @@ bool Peach::isAvailable(const Player *player) const
     return player->isWounded() && BasicCard::isAvailable(player);
 }
 
-Analeptic::Analeptic(Card::Suit suit, int number)
-    : BasicCard(suit, number)
-{
-    setObjectName("analeptic");
-    m_targetFixed = true;
-}
-
-void Analeptic::onUse(GameLogic *logic, CardUseStruct &use)
-{
-    if (use.to.isEmpty())
-        use.to << use.from;
-    BasicCard::onUse(logic, use);
-}
-
-void Analeptic::onEffect(GameLogic *logic, CardEffectStruct &effect)
-{
-    if (effect.to->phase() == Player::Play) {
-        effect.to->setDrank(true);
-        effect.to->broadcastProperty("isDrank");
-    } else {
-        RecoverStruct recover;
-        recover.card = this;
-        recover.from = effect.from;
-        recover.to = effect.to;
-        logic->recover(recover);
-    }
-}
-
-bool Analeptic::isAvailable(const Player *player) const
-{
-    return player->phase() == Player::Play && player->cardHistory("analeptic") < 1 && BasicCard::isAvailable(player);
-}
-
 void StandardPackage::addBasicCards()
 {
     QList<Card *> cards;
     cards
-        << new Slash(Card::Spade, 5)
         << new Slash(Card::Spade, 7)
         << new Slash(Card::Spade, 8)
         << new Slash(Card::Spade, 8)
         << new Slash(Card::Spade, 9)
+        << new Slash(Card::Spade, 9)
         << new Slash(Card::Spade, 10)
-        << new Slash(Card::Spade, 11)
+        << new Slash(Card::Spade, 10)
 
         << new Slash(Card::Club, 2)
         << new Slash(Card::Club, 3)
         << new Slash(Card::Club, 4)
         << new Slash(Card::Club, 5)
+        << new Slash(Card::Club, 6)
+        << new Slash(Card::Club, 7)
+        << new Slash(Card::Club, 8)
         << new Slash(Card::Club, 8)
         << new Slash(Card::Club, 9)
+        << new Slash(Card::Club, 9)
+        << new Slash(Card::Club, 10)
         << new Slash(Card::Club, 10)
         << new Slash(Card::Club, 11)
         << new Slash(Card::Club, 11)
 
         << new Slash(Card::Heart, 10)
-        << new Slash(Card::Heart, 12)
+        << new Slash(Card::Heart, 10)
+        << new Slash(Card::Heart, 11)
 
+        << new Slash(Card::Diamond, 6)
+        << new Slash(Card::Diamond, 7)
+        << new Slash(Card::Diamond, 8)
+        << new Slash(Card::Diamond, 9)
         << new Slash(Card::Diamond, 10)
-        << new Slash(Card::Diamond, 11)
-        << new Slash(Card::Diamond, 12)
-
-        << new FireSlash(Card::Heart, 4)
-
-        << new FireSlash(Card::Diamond, 4)
-        << new FireSlash(Card::Diamond, 5)
-
-        << new ThunderSlash(Card::Spade, 6)
-        << new ThunderSlash(Card::Spade, 7)
-
-        << new ThunderSlash(Card::Club, 6)
-        << new ThunderSlash(Card::Club, 7)
-        << new ThunderSlash(Card::Club, 8)
+        << new Slash(Card::Diamond, 13)
 
         << new Jink(Card::Heart, 2)
-        << new Jink(Card::Heart, 11)
+        << new Jink(Card::Heart, 2)
         << new Jink(Card::Heart, 13)
 
         << new Jink(Card::Diamond, 2)
+        << new Jink(Card::Diamond, 2)
         << new Jink(Card::Diamond, 3)
+        << new Jink(Card::Diamond, 4)
+        << new Jink(Card::Diamond, 5)
         << new Jink(Card::Diamond, 6)
         << new Jink(Card::Diamond, 7)
-        << new Jink(Card::Diamond, 7)
-        << new Jink(Card::Diamond, 8)
         << new Jink(Card::Diamond, 8)
         << new Jink(Card::Diamond, 9)
         << new Jink(Card::Diamond, 10)
         << new Jink(Card::Diamond, 11)
-        << new Jink(Card::Diamond, 13)
+        << new Jink(Card::Diamond, 11)
 
+        << new Peach(Card::Heart, 3)
         << new Peach(Card::Heart, 4)
         << new Peach(Card::Heart, 6)
         << new Peach(Card::Heart, 7)
         << new Peach(Card::Heart, 8)
         << new Peach(Card::Heart, 9)
-        << new Peach(Card::Heart, 10)
         << new Peach(Card::Heart, 12)
 
-        << new Peach(Card::Diamond, 2)
-
-        << new Analeptic(Card::Spade, 9)
-
-        << new Analeptic(Card::Club, 9)
-
-        << new Analeptic(Card::Diamond, 9);
+        << new Peach(Card::Diamond, 12);
 
     addCards(cards);
 }

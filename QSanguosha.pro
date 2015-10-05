@@ -27,6 +27,11 @@ SOURCES += src/main.cpp \
     src/gui/dialog/startgamedialog.cpp \
     src/gui/lobby.cpp \
     src/gui/roomscene.cpp \
+    src/package/hegstandardpackage.cpp \
+    src/package/hegstandard-qun.cpp \
+    src/package/hegstandard-shu.cpp \
+    src/package/hegstandard-wei.cpp \
+    src/package/hegstandard-wu.cpp \
     src/package/standardpackage.cpp \
     src/package/standard-basiccard.cpp \
     src/package/standard-equipcard.cpp \
@@ -35,7 +40,8 @@ SOURCES += src/main.cpp \
     src/package/standard-trickcard.cpp \
     src/package/standard-wei.cpp \
     src/package/standard-wu.cpp \
-    src/package/systempackage.cpp
+    src/package/systempackage.cpp \
+    src/package/maneuveringpackage.cpp
 
 HEADERS += \
     src/client/client.h \
@@ -62,11 +68,13 @@ HEADERS += \
     src/gui/dialog/startgamedialog.h \
     src/gui/lobby.h \
     src/gui/roomscene.h \
+    src/package/hegstandardpackage.h \
     src/package/standardpackage.h \
     src/package/standard-basiccard.h \
     src/package/standard-equipcard.h \
     src/package/standard-trickcard.h \
-    src/package/systempackage.h
+    src/package/systempackage.h \
+    src/package/maneuveringpackage.h
 
 INCLUDEPATH += src \
     src/client \

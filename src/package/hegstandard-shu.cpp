@@ -17,11 +17,11 @@
     Mogara
 *********************************************************************/
 
-#include "standardpackage.h"
+#include "hegstandardpackage.h"
 #include "general.h"
 #include "skill.h"
 
-void StandardPackage::addShuGenerals()
+void HegStandardPackage::addShuGenerals()
 {
     General *liubei = new General("liubei", "shu", 4);
     addGeneral(liubei);
@@ -43,4 +43,25 @@ void StandardPackage::addShuGenerals()
 
     General *huangzhong = new General("huangzhong", "shu", 4);
     addGeneral(huangzhong);
+
+    General *weiyan = new General("weiyan", "shu", 4);
+    addGeneral(weiyan);
+
+    General *pangtong = new General("pangtong", "shu", 3);
+    addGeneral(pangtong);
+
+    General *wolong = new General("wolong", "shu", 3);
+    addGeneral(wolong);
+
+    General *liushan = new General("liushan", "shu", 3);
+    addGeneral(liushan);
+
+    General *menghuo = new General("menghuo", "shu", 4);
+    addGeneral(menghuo);
+
+    General *zhurong = new General("zhurong", "shu", 4, General::Female);
+    addGeneral(zhurong);
+
+    General *ganfuren = new General("ganfuren", "shu", 3, General::Female);
+    addGeneral(ganfuren);
 }

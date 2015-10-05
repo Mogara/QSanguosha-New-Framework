@@ -241,6 +241,4 @@ void Duel::onEffect(GameLogic *logic, CardEffectStruct &effect)
 
 void StandardPackage::addTrickCards()
 {
-    for (int i = 0; i < 100; i++)
-        addCard(new AmazingGrace(Card::Heart, i % 13 + 1));
 }

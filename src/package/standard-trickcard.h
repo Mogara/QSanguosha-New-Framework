@@ -70,4 +70,15 @@ public:
     void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
+class ExNihilo : public SingleTargetTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ExNihilo(Suit suit, int number);
+
+    void onUse(GameLogic *logic, CardUseStruct &use) const override;
+    void onEffect(GameLogic *logic, const CardEffectStruct &effect) const override;
+};
+
 #endif // STANDARDTRICKCARD_H

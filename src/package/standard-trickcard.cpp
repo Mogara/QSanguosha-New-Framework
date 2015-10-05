@@ -180,6 +180,25 @@ void ArcheryAttack::onEffect(GameLogic *logic, CardEffectStruct &effect)
     }
 }
 
+ExNihilo::ExNihilo(Card::Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+{
+    setObjectName("ex_nihilo");
+    m_targetFixed = true;
+}
+
+void ExNihilo::onUse(GameLogic *logic, CardUseStruct &use) const
+{
+    if (use.to.isEmpty())
+        use.to << use.from;
+    SingleTargetTrick::onUse(logic, use);
+}
+
+void ExNihilo::onEffect(GameLogic *, const CardEffectStruct &effect) const
+{
+    effect.to->drawCards(2);
+}
+
 void StandardPackage::addTrickCards()
 {
     for (int i = 0; i < 100; i++)

@@ -19,7 +19,6 @@
 
 #include "standardpackage.h"
 #include "standard-equipcard.h"
-#include "card.h"
 
 Crossbow::Crossbow(Card::Suit suit, int number)
     : Weapon(suit, number)

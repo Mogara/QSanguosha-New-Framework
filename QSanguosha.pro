@@ -65,6 +65,7 @@ HEADERS += \
     src/package/standardpackage.h \
     src/package/standard-basiccard.h \
     src/package/standard-equipcard.h \
+    src/package/standard-trickcard.h \
     src/package/systempackage.h
 
 INCLUDEPATH += src \

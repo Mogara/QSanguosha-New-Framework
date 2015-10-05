@@ -130,9 +130,6 @@ public:
     virtual void use(GameLogic *logic, CardUseStruct &use);
     virtual void onEffect(GameLogic *logic, CardEffectStruct &effect);
 
-    virtual bool isCancelable(const CardEffectStruct &effect) const;
-    virtual void onNullified(ServerPlayer *target) const;
-
 protected:
     uint m_id;
     Suit m_suit;
@@ -179,10 +176,8 @@ public:
 
     TrickCard(Suit suit, int number);
 
-    bool isCancelable(const CardEffectStruct &effect) const override;
-
-protected:
-    bool m_cancelable;
+    virtual bool isNullifiable(const CardEffectStruct &effect) const;
+    virtual void onNullified(ServerPlayer *target) const;
 };
 
 class EquipCard : public Card

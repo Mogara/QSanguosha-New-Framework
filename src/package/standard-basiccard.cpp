@@ -17,12 +17,10 @@
     Mogara
 *********************************************************************/
 
-#include "card.h"
 #include "gamelogic.h"
 #include "serverplayer.h"
 #include "standardpackage.h"
 #include "standard-basiccard.h"
-
 
 SlashEffectStruct::SlashEffectStruct()
     : from(nullptr)
@@ -34,7 +32,6 @@ SlashEffectStruct::SlashEffectStruct()
     , nullified(false)
 {
 }
-
 
 Slash::Slash(Card::Suit suit, int number)
     : BasicCard(suit, number)

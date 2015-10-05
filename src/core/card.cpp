@@ -264,15 +264,6 @@ void Card::onEffect(GameLogic *, CardEffectStruct &)
 {
 }
 
-bool Card::isCancelable(const CardEffectStruct &) const
-{
-    return false;
-}
-
-void Card::onNullified(ServerPlayer *) const
-{
-}
-
 BasicCard::BasicCard(Card::Suit suit, int number)
     : Card(suit, number)
 {
@@ -282,14 +273,17 @@ BasicCard::BasicCard(Card::Suit suit, int number)
 
 TrickCard::TrickCard(Card::Suit suit, int number)
     : Card(suit, number)
-    , m_cancelable(true)
 {
     m_type = TrickType;
 }
 
-bool TrickCard::isCancelable(const CardEffectStruct &) const
+bool TrickCard::isNullifiable(const CardEffectStruct &) const
 {
-    return m_cancelable;
+    return true;
+}
+
+void TrickCard::onNullified(ServerPlayer *) const
+{
 }
 
 EquipCard::EquipCard(Card::Suit suit, int number)

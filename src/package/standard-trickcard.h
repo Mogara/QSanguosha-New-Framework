@@ -17,33 +17,21 @@
     Mogara
 *********************************************************************/
 
-#include "gamelogic.h"
-#include "serverplayer.h"
-#include "standardpackage.h"
-#include "standard-trickcard.h"
+#ifndef STANDARDTRICKCARD_H
+#define STANDARDTRICKCARD_H
 
-GodSalvation::GodSalvation(Card::Suit suit, int number)
-    : GlobalEffect(suit, number)
-{
-    setObjectName("god_salvation");
-}
+#include "card.h"
 
-bool GodSalvation::isNullifiable(const CardEffectStruct &effect) const
-{
-    return effect.to->isWounded() && TrickCard::isNullifiable(effect);
-}
+class GameLogic;
 
-void GodSalvation::onEffect(GameLogic *logic, CardEffectStruct &effect)
+class GodSalvation : public GlobalEffect
 {
-    if (effect.to->isWounded()) {
-        RecoverStruct recover;
-        recover.card = this;
-        recover.from = effect.from;
-        recover.to = effect.to;
-        logic->recover(recover);
-    }
-}
+    Q_OBJECT
 
-void StandardPackage::addTrickCards()
-{
-}
+public:
+    Q_INVOKABLE GodSalvation(Suit suit, int number);
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    bool isNullifiable(const CardEffectStruct &effect) const override;
+};
+
+#endif // STANDARDTRICKCARD_H

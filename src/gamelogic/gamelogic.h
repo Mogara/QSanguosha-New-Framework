@@ -79,6 +79,8 @@ public:
     bool useCard(CardUseStruct &use);
     bool takeCardEffect(CardEffectStruct &effect);
 
+    void respondCard(CardResponseStruct &response);
+
     Card *findCard(uint id) const { return m_cards.value(id); }
     QList<Card *> findCards(const QVariant &data);
 

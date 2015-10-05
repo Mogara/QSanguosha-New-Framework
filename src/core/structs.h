@@ -99,7 +99,7 @@ struct CardEffectStruct
     Card *target;
     ServerPlayer *from;
     ServerPlayer *to;
-    bool multiple;  //It's true iff the card has more than 1 target
+    bool multiple;  //It's true iff the card has more than 1 target player
     bool nullified; //Does not make sense if it's a skill card
     QVariant extra;
 
@@ -145,5 +145,17 @@ struct RecoverStruct
 };
 
 Q_DECLARE_METATYPE(RecoverStruct *)
+
+struct CardResponseStruct
+{
+    ServerPlayer *from;
+    ServerPlayer *to;
+    Card *card;
+    Card *target;
+
+    CardResponseStruct();
+};
+
+Q_DECLARE_METATYPE(CardResponseStruct *)
 
 #endif // STRUCTS_H

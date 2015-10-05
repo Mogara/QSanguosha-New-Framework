@@ -110,11 +110,18 @@ DamageStruct::DamageStruct()
 {
 }
 
-
 RecoverStruct::RecoverStruct()
     : from(nullptr)
     , to(nullptr)
     , recover(1)
     , card(nullptr)
+{
+}
+
+CardResponseStruct::CardResponseStruct()
+    : from(nullptr)
+    , to(nullptr)
+    , card(nullptr)
+    , target(nullptr)
 {
 }

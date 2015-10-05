@@ -469,6 +469,26 @@ bool GameLogic::takeCardEffect(CardEffectStruct &effect)
     return !canceled;
 }
 
+void GameLogic::respondCard(CardResponseStruct &response)
+{
+    CardsMoveStruct move;
+    move.cards << response.card;
+    move.to.type = CardArea::Table;
+    move.isOpen = true;
+    moveCards(move);
+
+    QVariant data = QVariant::fromValue(&response);
+    trigger(CardResponded, response.from, data);
+
+    if (m_table->contains(response.card)) {
+        CardsMoveStruct move;
+        move.cards << response.card;
+        move.to.type = CardArea::DiscardPile;
+        move.isOpen = true;
+        moveCards(move);
+    }
+}
+
 QList<Card *> GameLogic::findCards(const QVariant &data)
 {
     QList<Card *> cards;

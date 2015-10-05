@@ -56,6 +56,8 @@ enum EventType
     CardFinished,
     TrickCardCanceling,
 
+    CardResponded,
+
     SlashEffect,
     SlashEffected,
     SlashProceed,

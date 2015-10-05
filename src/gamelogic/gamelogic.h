@@ -64,6 +64,7 @@ public:
     bool isGlobalRequestEnabled() const { return m_globalRequestEnabled; }
     bool skipGameRule() const { return m_skipGameRule; }
 
+    Card *getDrawPileCard();
     QList<Card *> getDrawPileCards(int n);
     void reshuffleDrawPile();
     int reshufflingCount() const { return m_reshufflingCount; }
@@ -80,6 +81,8 @@ public:
     bool takeCardEffect(CardEffectStruct &effect);
 
     void respondCard(CardResponseStruct &response);
+
+    void judge(JudgeStruct &judge);
 
     Card *findCard(uint id) const { return m_cards.value(id); }
     QList<Card *> findCards(const QVariant &data);

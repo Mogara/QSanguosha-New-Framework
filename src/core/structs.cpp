@@ -19,6 +19,7 @@
 
 #include "card.h"
 #include "player.h"
+#include "serverplayer.h"
 #include "structs.h"
 
 CardsMoveStruct::Area::Area()
@@ -124,4 +125,17 @@ CardResponseStruct::CardResponseStruct()
     , card(nullptr)
     , target(nullptr)
 {
+}
+
+JudgeStruct::JudgeStruct(const QString &pattern)
+    : who(nullptr)
+    , card(nullptr)
+    , matched(false)
+    , m_pattern(pattern)
+{
+}
+
+void JudgeStruct::updateResult()
+{
+    matched = m_pattern.match(who, card);
 }

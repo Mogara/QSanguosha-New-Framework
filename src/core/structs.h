@@ -21,6 +21,7 @@
 #define STRUCTS_H
 
 #include "cardarea.h"
+#include "cardpattern.h"
 #include "player.h"
 
 #include <QList>
@@ -157,5 +158,20 @@ struct CardResponseStruct
 };
 
 Q_DECLARE_METATYPE(CardResponseStruct *)
+
+struct JudgeStruct
+{
+    ServerPlayer *who;
+    Card *card;
+    bool matched;
+
+    JudgeStruct(const QString &pattern);
+    void updateResult();
+
+private:
+    CardPattern m_pattern;
+};
+
+Q_DECLARE_METATYPE(JudgeStruct *)
 
 #endif // STRUCTS_H

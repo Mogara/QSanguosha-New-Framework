@@ -80,6 +80,11 @@ enum EventType
 
     MaxHpChanged,
 
+    StartJudge,
+    AskForRetrial,
+    FinishRetrial,
+    FinishJudge,
+
     EventTypeCount
 };
 

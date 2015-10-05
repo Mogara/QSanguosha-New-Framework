@@ -274,6 +274,13 @@ void GameLogic::sortByActionOrder(QList<ServerPlayer *> &players) const
     });
 }
 
+Card *GameLogic::getDrawPileCard()
+{
+    if (m_drawPile->length() < 1)
+        reshuffleDrawPile();
+    return m_drawPile->first();
+}
+
 QList<Card *> GameLogic::getDrawPileCards(int n)
 {
     if (m_drawPile->length() < n)
@@ -487,6 +494,32 @@ void GameLogic::respondCard(CardResponseStruct &response)
         move.isOpen = true;
         moveCards(move);
     }
+}
+
+void GameLogic::judge(JudgeStruct &judge)
+{
+    QVariant data = QVariant::fromValue(&judge);
+
+    if (trigger(StartJudge, judge.who, data))
+        return;
+
+    judge.card = getDrawPileCard();
+    judge.updateResult();
+
+    CardsMoveStruct move;
+    move.cards << judge.card;
+    move.to.type = CardArea::Judge;
+    move.to.owner = judge.who;
+    move.isOpen = true;
+    moveCards(move);
+
+    QList<ServerPlayer *> players = allPlayers();
+    foreach (ServerPlayer *player, players) {
+        if (trigger(AskForRetrial, player, data))
+            break;
+    }
+    trigger(FinishRetrial, judge.who, data);
+    trigger(FinishJudge, judge.who, data);
 }
 
 QList<Card *> GameLogic::findCards(const QVariant &data)

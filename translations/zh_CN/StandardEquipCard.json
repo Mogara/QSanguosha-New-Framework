@@ -1,0 +1,58 @@
+{
+	"crossbow" : "诸葛连弩",
+	"crossbow:brief-description" : "一 诸葛连弩",
+
+	"double_sword" : "雌雄双股剑",
+	"double_sword:brief-description" : "二 雌雄双股剑",
+
+	"ice_sword" : "寒冰剑",
+	"ice_sword:brief-description" : "二 寒冰剑",
+
+	"six_swords" : "吴六剑",
+	"six_swords:brief-description" : "二 吴六剑",
+
+	"spear" : "丈八蛇矛",
+	"spear:brief-description" : "三 丈八蛇矛",
+
+	"axe" : "贯石斧",
+	"axe:brief-description" : "三 贯石斧",
+
+	"triblade" : "三尖两刃刀",
+	"triblade:brief-description" : "三 三尖两刃刀",
+
+	"fan" : "朱雀羽扇",
+	"fan:brief-description" : "四 朱雀羽扇",
+
+	"kylin_bow" : "麒麟弓",
+	"kylin_bow:brief-description" : "五 麒麟弓",
+
+	"eight_diagram" : "八卦阵",
+	"eight_diagram:brief-description" : "八卦阵",
+
+	"renwang_shield" : "仁王盾",
+	"renwang_shield:brief-description" : "仁王盾",
+
+	"vine" : "藤甲",
+	"vine:brief-description" : "藤甲",
+
+	"silver_lion" : "白银狮子",
+	"silver_lion:brief-description" : "白银狮子",
+
+	"jueying" : "绝影",
+	"jueying:brief-description" : "+1",
+
+	"dilu" : "的卢",
+	"dilu:brief-description" : "+1",
+
+	"zhuahuangfeidian" : "爪黄飞电",
+	"zhuahuangfeidian:brief-description" : "+1",
+
+	"chitu" : "赤兔",
+	"chitu:brief-description" : "-1",
+
+	"dayuan" : "大宛",
+	"dayuan:brief-description" : "-1",
+
+	"zixing" : "梓骍",
+	"zixing:brief-description" : "-1"
+}

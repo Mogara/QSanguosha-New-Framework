@@ -45,6 +45,7 @@ QinggangSword::QinggangSword(Card::Suit suit, int number)
 IceSword::IceSword(Card::Suit suit, int number)
     : Weapon(suit, number)
 {
+    setObjectName("ice_sword");
     m_attackRange = 2;
 }
 

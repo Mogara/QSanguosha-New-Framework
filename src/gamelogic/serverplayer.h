@@ -43,12 +43,17 @@ public:
 
     ServerPlayer *next() const { return qobject_cast<ServerPlayer *>(Player::next()); }
     ServerPlayer *next(bool ignoreRemoved) const{ return qobject_cast<ServerPlayer *>(Player::next(ignoreRemoved)); }
-    ServerPlayer *nextAlive(int step = 1, bool ignoreRemoved = true) const{ return qobject_cast<ServerPlayer *>(Player::nextAlive(step, ignoreRemoved)); }
+    ServerPlayer *nextAlive(int step = 1, bool ignoreRemoved = true) const { return qobject_cast<ServerPlayer *>(Player::nextAlive(step, ignoreRemoved)); }
 
     void drawCards(int n);
+
     void play();
     void play(const QList<Phase> &phases);
     void activate(CardUseStruct &use);
+
+    void skipPhase(Phase phase) { m_skippedPhase.insert(phase); }
+    bool isPhaseSkipped(Phase phase) { return m_skippedPhase.contains(phase); }
+    void clearSkippedPhase() { m_skippedPhase.clear(); }
 
     Event askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable);
     Card *askForCard(const QString &pattern, const QString &prompt);
@@ -66,6 +71,7 @@ private:
     GameLogic *m_logic;
     CRoom *m_room;
     CServerAgent *m_agent;
+    QSet<Phase> m_skippedPhase;
 };
 
 #endif // SERVERPLAYER_H

@@ -94,7 +94,7 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
         setPhase(change.to);
         broadcastProperty("phase");
 
-        if (skip && !m_logic->trigger(PhaseSkipping, this, data))
+        if ((skip || isPhaseSkipped(change.to)) && !m_logic->trigger(PhaseSkipping, this, data))
             continue;
 
         if (!m_logic->trigger(PhaseStart, this))
@@ -110,6 +110,8 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
 
     setPhase(change.to);
     broadcastProperty("phase");
+
+    clearSkippedPhase();
 }
 
 void ServerPlayer::activate(CardUseStruct &use)

@@ -246,7 +246,7 @@ Indulgence::Indulgence(Card::Suit suit, int number)
     m_judgePattern = ".|^heart";
 }
 
-void Indulgence::takeEffect(GameLogic *, CardEffectStruct &effect) const
+void Indulgence::takeEffect(GameLogic *, CardEffectStruct &effect)
 {
     effect.to->clearCardHistory();
     effect.to->skipPhase(Player::Play);
@@ -306,6 +306,23 @@ void Dismantlement::onEffect(GameLogic *logic, CardEffectStruct &effect)
         move.isOpen = true;
         logic->moveCards(move);
     }
+}
+
+Lightning::Lightning(Card::Suit suit, int number)
+    : MovableDelayedTrick(suit, number)
+{
+    setObjectName("lightning");
+    m_judgePattern = ".|spade|2~9";
+}
+
+void Lightning::takeEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    DamageStruct damage;
+    damage.to = effect.to;
+    damage.card = this;
+    damage.damage = 3;
+    damage.nature = DamageStruct::Thunder;
+    logic->damage(damage);
 }
 
 void StandardPackage::addTrickCards()

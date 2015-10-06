@@ -475,6 +475,94 @@ void DelayedTrick::onEffect(GameLogic *logic, CardEffectStruct &effect)
     }
 }
 
+MovableDelayedTrick::MovableDelayedTrick(Card::Suit suit, int number)
+    : DelayedTrick(suit, number)
+{
+    m_targetFixed = true;
+}
+
+bool MovableDelayedTrick::targetFeasible(const QList<const Player *> &targets, const Player *) const
+{
+    return targets.isEmpty();
+}
+
+bool MovableDelayedTrick::targetFilter(const QList<const Player *> &, const Player *, const Player *) const
+{
+    return false;
+}
+
+void MovableDelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)
+{
+    if (use.to.isEmpty())
+        use.to << use.from;
+    DelayedTrick::onUse(logic, use);
+}
+
+void MovableDelayedTrick::onEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    CardsMoveStruct move;
+    move.cards << this;
+    move.to.type = CardArea::Table;
+    move.isOpen = true;
+    logic->moveCards(move);
+
+    JudgeStruct judge(m_judgePattern);
+    judge.who = effect.to;
+    logic->judge(judge);
+
+    if (judge.matched) {
+        takeEffect(logic, effect);
+        const CardArea *table = logic->table();
+        if (table->contains(this)) {
+            CardsMoveStruct move;
+            move.cards << this;
+            move.to.type = CardArea::DiscardPile;
+            move.isOpen = true;
+            logic->moveCards(move);
+        }
+    } else {
+        ServerPlayer *target = nullptr;
+        forever {
+            target = effect.to->nextAlive();
+            if (!targetFilter(QList<const Player *>(), target, effect.to))
+                continue;
+
+            CardsMoveStruct move;
+            move.cards << this;
+            move.to.type = CardArea::DelayedTrick;
+            move.to.owner = target;
+            move.isOpen = true;
+            logic->moveCards(move);
+
+            CardUseStruct use;
+            use.from = effect.to;
+            use.card = this;
+            use.to << target;
+
+            QVariant data = QVariant::fromValue(&use);
+            logic->trigger(TargetConfirming, target, data);
+            if (use.to.isEmpty())
+                continue;
+            logic->trigger(TargetChosen, use.from, data);
+            foreach (ServerPlayer *to, use.to)
+                logic->trigger(TargetConfirmed, to, data);
+            if (!use.to.isEmpty())
+                break;
+        }
+    }
+}
+
+bool MovableDelayedTrick::isAvailable(const Player *player) const
+{
+    const char *className = metaObject()->className();
+    QList<Card *> cards = player->delayedTricks()->cards();
+    foreach (const Card *card, cards) {
+        if (card->inherits(className))
+            return false;
+    }
+    return DelayedTrick::isAvailable(player);
+}
+
 Weapon::Weapon(Card::Suit suit, int number)
     : EquipCard(suit, number)
     , m_attackRange(0)

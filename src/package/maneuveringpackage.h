@@ -84,7 +84,7 @@ public:
     Q_INVOKABLE SupplyShortage(Suit suit, int number);
 
     bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
-    void takeEffect(GameLogic *, CardEffectStruct &effect) const override;
+    void takeEffect(GameLogic *, CardEffectStruct &effect) override;
 };
 
 class ManeuveringPackage : public Package

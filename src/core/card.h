@@ -249,10 +249,24 @@ public:
     void use(GameLogic *logic, CardUseStruct &use) override;
     void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
 
-    virtual void takeEffect(GameLogic *logic, CardEffectStruct &effect) const = 0;
+    virtual void takeEffect(GameLogic *logic, CardEffectStruct &effect) = 0;
 
 protected:
     QString m_judgePattern;
+};
+
+class MovableDelayedTrick : public DelayedTrick
+{
+    Q_OBJECT
+
+public:
+    MovableDelayedTrick(Suit suit, int number);
+
+    bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
+    bool targetFilter(const QList<const Player *> &, const Player *, const Player *) const override;
+    void onUse(GameLogic *logic, CardUseStruct &use) override;
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    bool isAvailable(const Player *player) const override;
 };
 
 class Weapon : public EquipCard

@@ -100,7 +100,7 @@ bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Pl
     return self->distanceTo(toSelect) <= 1 && DelayedTrick::targetFilter(targets, toSelect, self);
 }
 
-void SupplyShortage::takeEffect(GameLogic *, CardEffectStruct &effect) const
+void SupplyShortage::takeEffect(GameLogic *, CardEffectStruct &effect)
 {
     effect.to->clearCardHistory();
     effect.to->skipPhase(Player::Draw);

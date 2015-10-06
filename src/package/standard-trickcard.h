@@ -121,7 +121,17 @@ class Indulgence : public DelayedTrick
 public:
     Q_INVOKABLE Indulgence(Suit suit, int number);
 
-    void takeEffect(GameLogic *, CardEffectStruct &effect) const override;
+    void takeEffect(GameLogic *, CardEffectStruct &effect) override;
+};
+
+class Lightning : public MovableDelayedTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Lightning(Suit suit, int number);
+
+    void takeEffect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
 #endif // STANDARDTRICKCARD_H

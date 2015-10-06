@@ -2,6 +2,20 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
+    <name>CRoom</name>
+    <message>
+        <source>Robot %1</source>
+        <translation>机器人%1</translation>
+    </message>
+</context>
+<context>
+    <name>ChooseCardBox</name>
+    <message>
+        <source>Please choose cards</source>
+        <translation>请选择卡牌</translation>
+    </message>
+</context>
+<context>
     <name>ChooseGeneralBox</name>
     <message>
         <source>Please choose 2 generals of the same kingdom</source>
@@ -10,6 +24,28 @@
     <message>
         <source>Fight</source>
         <translation>出战</translation>
+    </message>
+</context>
+<context>
+    <name>ChooseOptionBox</name>
+    <message>
+        <source>Please choose</source>
+        <translation>请选择一项</translation>
+    </message>
+</context>
+<context>
+    <name>GuanxingBox</name>
+    <message>
+        <source>Please arrange cards</source>
+        <translation>请排列卡牌</translation>
+    </message>
+    <message>
+        <source>Cards on the top of card pile</source>
+        <translation>置于牌堆顶的牌</translation>
+    </message>
+    <message>
+        <source>Cards on the bottom of card pile</source>
+        <translation>置于牌堆底的牌</translation>
     </message>
 </context>
 <context>
@@ -57,6 +93,52 @@
     <message>
         <source>System: %1</source>
         <translation>系统：%1</translation>
+    </message>
+    <message>
+        <source>Start</source>
+        <translation>开始</translation>
+    </message>
+    <message>
+        <source>Add Robot</source>
+        <translation>添加电脑</translation>
+    </message>
+</context>
+<context>
+    <name>PcConsoleStartDialog</name>
+    <message>
+        <source>Screen Name</source>
+        <translation>名称</translation>
+    </message>
+    <message>
+        <source>Create</source>
+        <translation>创建</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <source>%1&apos;s Room</source>
+        <translation>%1的房间</translation>
+    </message>
+</context>
+<context>
+    <name>PlayerCardBox</name>
+    <message>
+        <source>Please choose one card</source>
+        <translation>请选择一张牌</translation>
+    </message>
+    <message>
+        <source>Handcard Area</source>
+        <translation>手牌区</translation>
+    </message>
+    <message>
+        <source>Equip Area</source>
+        <translation>装备区</translation>
+    </message>
+    <message>
+        <source>Delayed Trick Area</source>
+        <translation>判定区</translation>
     </message>
 </context>
 <context>

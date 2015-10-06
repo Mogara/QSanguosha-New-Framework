@@ -150,22 +150,22 @@
 <context>
     <name>PlayerCardBox</name>
     <message>
-        <location filename="../script/Gui/RoomElement/PlayerCardBox.qml" line="6"/>
+        <location filename="../script/Gui/RoomElement/PlayerCardBox.qml" line="9"/>
         <source>Please choose one card</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../script/Gui/RoomElement/PlayerCardBox.qml" line="36"/>
+        <location filename="../script/Gui/RoomElement/PlayerCardBox.qml" line="47"/>
         <source>Handcard Area</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../script/Gui/RoomElement/PlayerCardBox.qml" line="62"/>
+        <location filename="../script/Gui/RoomElement/PlayerCardBox.qml" line="85"/>
         <source>Equip Area</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../script/Gui/RoomElement/PlayerCardBox.qml" line="90"/>
+        <location filename="../script/Gui/RoomElement/PlayerCardBox.qml" line="126"/>
         <source>Delayed Trick Area</source>
         <translation type="unfinished"></translation>
     </message>
@@ -229,47 +229,47 @@
 <context>
     <name>StartScene</name>
     <message>
-        <location filename="../script/Gui/StartScene.qml" line="22"/>
+        <location filename="../script/Gui/StartScene.qml" line="21"/>
         <source>At 10:40 a.m., August 19, 2014, Moxuanyanyun, a developer of QSanguosha, passed away peacefully in Dalian Medical College. He was 18 and had struggled with leukemia for more than 4 years. May there is no pain in Heaven.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../script/Gui/StartScene.qml" line="68"/>
+        <location filename="../script/Gui/StartScene.qml" line="63"/>
         <source>Start Game</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../script/Gui/StartScene.qml" line="69"/>
+        <location filename="../script/Gui/StartScene.qml" line="64"/>
         <source>Start Server</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../script/Gui/StartScene.qml" line="70"/>
+        <location filename="../script/Gui/StartScene.qml" line="65"/>
         <source>PC Console Start</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../script/Gui/StartScene.qml" line="71"/>
+        <location filename="../script/Gui/StartScene.qml" line="66"/>
         <source>Replay</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../script/Gui/StartScene.qml" line="72"/>
+        <location filename="../script/Gui/StartScene.qml" line="67"/>
         <source>Configure</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../script/Gui/StartScene.qml" line="73"/>
+        <location filename="../script/Gui/StartScene.qml" line="68"/>
         <source>General Overview</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../script/Gui/StartScene.qml" line="74"/>
+        <location filename="../script/Gui/StartScene.qml" line="69"/>
         <source>Card Overview</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../script/Gui/StartScene.qml" line="75"/>
+        <location filename="../script/Gui/StartScene.qml" line="70"/>
         <source>About</source>
         <translation></translation>
     </message>

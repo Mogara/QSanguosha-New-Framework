@@ -141,8 +141,8 @@ void SavageAssault::onEffect(GameLogic *logic, CardEffectStruct &effect)
     Card *slash = effect.to->askForCard("Slash", "savage-assault-slash");
     if (slash) {
         CardResponseStruct response;
-        response.from = effect.from;
-        response.to = effect.to;
+        response.from = effect.to;
+        response.to = effect.from;
         response.card = slash;
         response.target = this;
         logic->respondCard(response);
@@ -166,8 +166,8 @@ void ArcheryAttack::onEffect(GameLogic *logic, CardEffectStruct &effect)
     Card *jink = effect.to->askForCard("Jink", "archery-attack-jink");
     if (jink) {
         CardResponseStruct response;
-        response.from = effect.from;
-        response.to = effect.to;
+        response.from = effect.to;
+        response.to = effect.from;
         response.card = jink;
         response.target = this;
         logic->respondCard(response);

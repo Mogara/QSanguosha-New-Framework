@@ -92,6 +92,17 @@ void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
 {
     m_logic->delay(500);
     switch (current->phase()) {
+    case Player::Judge: {
+        const CardArea *area = current->delayedTricks();
+        while (area->length() > 0 && current->isAlive()) {
+            Card *trick = area->last();
+            CardEffectStruct effect;
+            effect.card = trick;
+            effect.to = current;
+            m_logic->takeCardEffect(effect);
+        }
+        break;
+    }
     case Player::Draw: {
         int num = 2;
         QVariant data(num);

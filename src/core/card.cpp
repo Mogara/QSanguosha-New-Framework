@@ -283,10 +283,6 @@ bool TrickCard::isNullifiable(const CardEffectStruct &) const
     return true;
 }
 
-void TrickCard::onNullified(ServerPlayer *) const
-{
-}
-
 EquipCard::EquipCard(Card::Suit suit, int number)
     : Card(suit, number)
     , m_skill(nullptr)
@@ -408,19 +404,75 @@ DelayedTrick::DelayedTrick(Card::Suit suit, int number)
     m_subtype = DelayedType;
 }
 
+bool DelayedTrick::targetFeasible(const QList<const Player *> &targets, const Player *) const
+{
+    return targets.length() == 1;
+}
+
+bool DelayedTrick::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+{
+    if (!targets.isEmpty() || toSelect == self)
+        return false;
+
+    const CardArea *area = toSelect->delayedTricks();
+    if (area->length() <= 0)
+        return true;
+
+    const char *className = metaObject()->className();
+    QList<Card *> cards = area->cards();
+    foreach (Card *card, cards) {
+        if (card->inherits(className))
+            return false;
+    }
+
+    return true;
+}
+
 void DelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)
 {
-    use.card = this;
+    logic->sortByActionOrder(use.to);
 
-    QVariant data = QVariant::fromValue(&use);
-    logic->trigger(PreCardUsed, use.from, data);
+    QVariant useData = QVariant::fromValue(&use);
+    logic->trigger(PreCardUsed, use.from, useData);
+}
 
+void DelayedTrick::use(GameLogic *logic, CardUseStruct &use)
+{
     CardsMoveStruct move;
     move.cards = use.card->realCards();
-    move.to.type = CardArea::DelayedTrick;
-    move.to.owner = use.to.first();
+    move.isOpen = true;
+    if (use.to.isEmpty()) {
+        move.to.type = CardArea::DiscardPile;
+    } else {
+        move.to.type = CardArea::DelayedTrick;
+        move.to.owner = use.to.first();
+    }
+    logic->moveCards(move);
+}
+
+void DelayedTrick::onEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    CardsMoveStruct move;
+    move.cards << this;
+    move.to.type = CardArea::Table;
     move.isOpen = true;
     logic->moveCards(move);
+
+    JudgeStruct judge(m_judgePattern);
+    judge.who = effect.to;
+    logic->judge(judge);
+
+    if (judge.matched)
+        takeEffect(logic, effect);
+
+    const CardArea *table = logic->table();
+    if (table->contains(this)) {
+        CardsMoveStruct move;
+        move.cards << this;
+        move.to.type = CardArea::DiscardPile;
+        move.isOpen = true;
+        logic->moveCards(move);
+    }
 }
 
 Weapon::Weapon(Card::Suit suit, int number)

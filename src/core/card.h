@@ -177,7 +177,6 @@ public:
     TrickCard(Suit suit, int number);
 
     virtual bool isNullifiable(const CardEffectStruct &effect) const;
-    virtual void onNullified(ServerPlayer *target) const;
 };
 
 class EquipCard : public Card
@@ -244,10 +243,16 @@ class DelayedTrick : public TrickCard
 public:
     DelayedTrick(Suit suit, int number);
 
+    bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
     void onUse(GameLogic *logic, CardUseStruct &use) override;
+    void use(GameLogic *logic, CardUseStruct &use) override;
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+
+    virtual void takeEffect(GameLogic *logic, CardEffectStruct &effect) const = 0;
 
 protected:
-    bool m_movable;
+    QString m_judgePattern;
 };
 
 class Weapon : public EquipCard

@@ -92,4 +92,14 @@ public:
     void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
+class Indulgence : public DelayedTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Indulgence(Suit suit, int number);
+
+    void takeEffect(GameLogic *, CardEffectStruct &effect) const override;
+};
+
 #endif // STANDARDTRICKCARD_H

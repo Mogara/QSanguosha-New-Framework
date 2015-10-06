@@ -239,6 +239,19 @@ void Duel::onEffect(GameLogic *logic, CardEffectStruct &effect)
     logic->damage(damage);
 }
 
+Indulgence::Indulgence(Card::Suit suit, int number)
+    : DelayedTrick(suit, number)
+{
+    setObjectName("indulgence");
+    m_judgePattern = ".|^heart";
+}
+
+void Indulgence::takeEffect(GameLogic *, CardEffectStruct &effect) const
+{
+    effect.to->clearCardHistory();
+    effect.to->skipPhase(Player::Play);
+}
+
 void StandardPackage::addTrickCards()
 {
 }

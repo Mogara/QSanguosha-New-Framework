@@ -231,6 +231,10 @@ QList<ServerPlayer *> GameLogic::allPlayers(bool includeDead) const
     if (current == nullptr)
         return players;
 
+    qSort(players.begin(), players.end(), [](const ServerPlayer *a, const ServerPlayer *b){
+        return a->seat() < b->seat();
+    });
+
     int currentIndex = players.indexOf(current);
     if (currentIndex == -1)
         return players;

@@ -61,6 +61,7 @@ signals:
     void amazingGraceStarted();
     void amazingGraceFinished();
     void amazingGraceRequested();
+    void choosePlayerCardRequested(const QList<Card *> &handcards, const QList<Card *> &equips, const QList<Card *> &delayedTricks);
 
 private:
     Client(QObject *parent = 0);
@@ -68,6 +69,7 @@ private:
     void restart();
     ClientPlayer *findPlayer(uint id) { return m_players.value(id); }
     CardArea *findArea(const CardsMoveStruct::Area &area);
+    QList<Card *> findCards(const QVariant &data);
 
     C_DECLARE_INITIALIZER(Client)
     static void ArrangeSeatCommand(QObject *receiver, const QVariant &data);
@@ -84,6 +86,7 @@ private:
     static void ShowAmazingGraceCommand(QObject *receiver, const QVariant &);
     static void ClearAmazingGraceCommand(QObject *receiver, const QVariant &);
     static void TakeAmazingGraceRequestCommand(QObject *receiver, const QVariant &data);
+    static void ChoosePlayerCardRequestCommand(QObject *receiver, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

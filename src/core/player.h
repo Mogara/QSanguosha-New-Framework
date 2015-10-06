@@ -169,14 +169,19 @@ public:
     CardArea *handcards() { return m_handcards; }
     const CardArea *handcards() const { return m_handcards; }
     int handcardNum() const { return m_handcardNum; }
+    bool hasHandcard() const { return handcardNum() > 0; }
 
     const CardArea *equips() const { return m_equips; }
     CardArea *equips() { return m_equips; }
     int equipNum() const;
+    bool hasEquip() const { return equipNum() > 0; }
 
     CardArea *delayedTricks() { return m_delayedTricks; }
     const CardArea *delayedTricks() const { return m_delayedTricks; }
     int delayedTrickNum() const;
+
+    bool isNude() const { return !hasHandcard() && !hasEquip(); }
+    bool isAllNude() const { return isNude() && delayedTrickNum() <= 0; }
 
     CardArea *judgeCards() { return m_judgeCards; }
     const CardArea *judgeCards() const { return m_judgeCards; }

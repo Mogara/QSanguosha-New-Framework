@@ -59,6 +59,7 @@ public:
     Card *askForCard(const QString &pattern, const QString &prompt);
     QList<Card *> askForCards(const QString &pattern, const QString &prompt, int num, bool optional = false);
     QList<Card *> askForCards(const QString &pattern, const QString &prompt, int minNum, int maxNum, bool optional = false);
+    Card *askToChooseCard(ServerPlayer *owner, const QString &areaFlag = "hej", bool handcardVisible = false);
 
     void broadcastProperty(const char *name) const;
     void broadcastProperty(const char *name, const QVariant &value, ServerPlayer *except = nullptr) const;

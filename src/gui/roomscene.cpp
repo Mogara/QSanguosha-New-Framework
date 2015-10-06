@@ -78,6 +78,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::cardsAsked, this, &RoomScene::onCardsAsked);
     connect(m_client, &Client::amazingGraceStarted, this, &RoomScene::onAmazingGraceStarted);
     connect(m_client, &Client::amazingGraceFinished, this, &RoomScene::clearPopupBox);
+    connect(m_client, &Client::choosePlayerCardRequested, this, &RoomScene::onChoosePlayerCardRequested);
 }
 
 void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
@@ -90,20 +91,8 @@ void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
 
         QVariantList cards;
         foreach (const Card *card, move.cards) {
-            QVariantMap cardData;
-            if (card) {
-                cardData["cid"] = card->id();
-                cardData["name"] = card->objectName();
-                cardData["number"] = card->number();
-                cardData["suit"] = card->suitString();
-                cardData["subtype"] = card->subtype();
-            } else {
-                cardData["cid"] = 0;
-                cardData["name"] = "hegback";
-                cardData["number"] = 0;
-                cardData["suit"] = "";
-                cardData["subtype"] = 0;
-            }
+            QVariantMap cardData = convertToMap(card);
+            cardData["subtype"] = card ? card->subtype() : 0;
             cards << cardData;
         }
         path["cards"] = cards;
@@ -336,6 +325,11 @@ void RoomScene::onAmazingGraceTaken(uint cid)
     m_client->replyToServer(S_COMMAND_TAKE_AMAZING_GRACE, cid);
 }
 
+void RoomScene::onPlayerCardSelected(uint cid)
+{
+    m_client->replyToServer(S_COMMAND_CHOOSE_PLAYER_CARD, cid);
+}
+
 void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage)
 {
     if (damage <= 0)
@@ -399,15 +393,42 @@ void RoomScene::onAmazingGraceStarted()
     QList<Card *> cards = wugu->cards();
     QVariantList cardList;
     foreach (Card *card, cards) {
-        QVariantMap data;
-        data["cid"] = card->id();
-        data["name"] = card->objectName();
-        data["suit"] = card->suitString();
-        data["number"] = card->number();
+        QVariantMap data = convertToMap(card);
         data["selectable"] = true;
         cardList << data;
     }
     askToChooseCards(cardList);
+}
+
+void RoomScene::onChoosePlayerCardRequested(const QList<Card *> &handcards, const QList<Card *> &equips, const QList<Card *> &delayedTricks)
+{
+    QVariantList h;
+    foreach (Card *card, handcards)
+        h << convertToMap(card);
+    QVariantList e;
+    foreach (Card *card, equips)
+        e << convertToMap(card);
+    QVariantList j;
+    foreach (Card *card, delayedTricks)
+        j << convertToMap(card);
+    askToChoosePlayerCard(h, e, j);
+}
+
+QVariantMap RoomScene::convertToMap(const Card *card) const
+{
+    QVariantMap data;
+    if (card) {
+        data["cid"] = card->id();
+        data["name"] = card->objectName();
+        data["suit"] = card->suitString();
+        data["number"] = card->number();
+    } else {
+        data["cid"] = 0;
+        data["name"] = "hegback";
+        data["number"] = 0;
+        data["suit"] = "";
+    }
+    return data;
 }
 
 C_REGISTER_QMLTYPE("Sanguosha", 1, 0, RoomScene)

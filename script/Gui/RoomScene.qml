@@ -277,6 +277,17 @@ RoomScene {
         });
     }
 
+    onAskToChoosePlayerCard: {
+        popupBox.source = "RoomElement/PlayerCardBox.qml";
+        popupBox.item.addHandcards(handcards);
+        popupBox.item.addEquips(equips);
+        popupBox.item.addDelayedTricks(delayedTricks);
+        popupBox.moveToCenter();
+        popupBox.item.cardSelected.connect(function(cid){
+            roomScene.onPlayerCardSelected(cid);
+        });
+    }
+
     onClearPopupBox: {
         popupBox.source = "";
     }

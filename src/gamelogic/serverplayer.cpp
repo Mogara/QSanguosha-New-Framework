@@ -17,6 +17,7 @@
     Mogara
 *********************************************************************/
 
+#include "card.h"
 #include "cardpattern.h"
 #include "gamelogic.h"
 #include "protocol.h"
@@ -216,6 +217,74 @@ QList<Card *> ServerPlayer::askForCards(const QString &pattern, const QString &p
         }
         return cards;
     }
+}
+
+Card *ServerPlayer::askToChooseCard(ServerPlayer *owner, const QString &areaFlag, bool handcardVisible)
+{
+    const CardArea *handcards = owner->handcards();
+    const CardArea *equips = owner->equips();
+    const CardArea *delayedTricks = owner->delayedTricks();
+
+    QVariantMap data;
+
+    if (areaFlag.contains('h')) {
+        QVariantList handcardData;
+        if (handcardVisible) {
+            QList<Card *> cards = handcards->cards();
+            foreach (const Card *card, cards)
+                handcardData << card->id();
+            data["handcards"] = handcardData;
+        } else {
+            data["handcards"] = owner->handcardNum();
+        }
+    }
+
+    if (areaFlag.contains('e')) {
+        QVariantList equipData;
+        QList<Card *> cards = equips->cards();
+        foreach (const Card *card, cards)
+            equipData << card->id();
+        data["equips"] = equipData;
+    }
+
+    if (areaFlag.contains('j')) {
+        QVariantList trickData;
+        QList<Card *> cards = delayedTricks->cards();
+        foreach (const Card *card, cards)
+            trickData << card->id();
+        data["delayedTricks"] = trickData;
+    }
+
+    m_agent->request(S_COMMAND_CHOOSE_PLAYER_CARD, data, 15000);
+    uint cardId = m_agent->waitForReply(15000).toUInt();
+    if (cardId > 0) {
+        if (areaFlag.contains('h') && handcardVisible) {
+            Card *card = handcards->findCard(cardId);
+            if (card)
+                return card;
+        }
+        if (areaFlag.contains('e')) {
+            Card *card = equips->findCard(cardId);
+            if (card)
+                return card;
+        }
+        if (areaFlag.contains('j')) {
+            Card *card = delayedTricks->findCard(cardId);
+            if (card)
+                return card;
+        }
+    }
+
+    if (areaFlag.contains('h') && handcards->length() > 0)
+        return handcards->rand();
+
+    if (areaFlag.contains('e') && equips->length() > 0)
+        return equips->rand();
+
+    if (areaFlag.contains('j') && delayedTricks->length() > 0)
+        return delayedTricks->rand();
+
+    return nullptr;
 }
 
 void ServerPlayer::broadcastProperty(const char *name) const

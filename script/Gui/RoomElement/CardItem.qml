@@ -4,8 +4,8 @@ import Cardirector.Device 1.0
 
 Item {
     property int cid: 0
-    property string suit: "heart"
-    property int number: 2
+    property string suit: ""
+    property int number: 0
     property string name: "slash"
     readonly property string color: (suit == "heart" || suit == "diamond") ? "red" : "black"
     property int subtype: 0

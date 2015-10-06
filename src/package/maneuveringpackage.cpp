@@ -50,7 +50,7 @@ void Analeptic::onUse(GameLogic *logic, CardUseStruct &use)
     BasicCard::onUse(logic, use);
 }
 
-void Analeptic::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void Analeptic::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     if (effect.to->phase() == Player::Play) {
         effect.to->setDrank(true);

@@ -81,6 +81,7 @@ CardUseStruct::CardUseStruct()
     : from(nullptr)
     , card(nullptr)
     , target(nullptr)
+    , isNullified(false)
     , isOwnerUse(true)
     , addHistory(true)
     , isHandcard(true)
@@ -88,13 +89,10 @@ CardUseStruct::CardUseStruct()
 {
 }
 
-CardEffectStruct::CardEffectStruct()
-    : card(nullptr)
-    , target(nullptr)
-    , from(nullptr)
+CardEffectStruct::CardEffectStruct(CardUseStruct &use)
+    : use(use)
+    , from(use.from)
     , to(nullptr)
-    , multiple(false)
-    , nullified(false)
 {
 }
 

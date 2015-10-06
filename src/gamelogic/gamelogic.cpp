@@ -456,22 +456,24 @@ bool GameLogic::useCard(CardUseStruct &use)
 
 bool GameLogic::takeCardEffect(CardEffectStruct &effect)
 {
+    if (effect.to || effect.use.target)
+        effect.use.card->onEffect(this, effect);
+
     QVariant data = QVariant::fromValue(&effect);
     bool canceled = false;
     if (effect.to) {
         if (effect.to->isAlive()) {
-            // No skills should be triggered here!
-            trigger(CardEffect, effect.to, data);
-            // Make sure that effectiveness of Slash isn't judged here!
-            canceled = trigger(CardEffected, effect.to, data);
+            canceled = trigger(CardEffect, effect.to, data);
             if (!canceled) {
-                trigger(CardEffectConfirmed, effect.to, data);
-                if (effect.to->isAlive())
-                    effect.card->onEffect(this, effect);
+                canceled = trigger(CardEffected, effect.to, data);
+                if (!canceled) {
+                    if (effect.to->isAlive() && !effect.isNullified())
+                        effect.use.card->effect(this, effect);
+                }
             }
         }
-    } else if (effect.target)
-        effect.card->onEffect(this, effect);
+    } else if (effect.use.target && !effect.isNullified())
+        effect.use.card->effect(this, effect);
     trigger(PostCardEffected, effect.to, data);
     return !canceled;
 }

@@ -231,23 +231,13 @@ void Card::onUse(GameLogic *logic, CardUseStruct &use)
 void Card::use(GameLogic *logic, CardUseStruct &use)
 {
     foreach (ServerPlayer *target, use.to) {
-        CardEffectStruct effect;
-        effect.card = this;
-        effect.from = use.from;
+        CardEffectStruct effect(use);
         effect.to = target;
-        effect.extra = use.extra;
-        effect.multiple = (use.to.length() > 1);
-        //@to-do: effect.nullified = ?
         logic->takeCardEffect(effect);
     }
 
     if (use.target) {
-        CardEffectStruct effect;
-        effect.card = this;
-        effect.from = use.from;
-        effect.target = use.target;
-        effect.extra = use.extra;
-        effect.multiple = false;
+        CardEffectStruct effect(use);
         logic->takeCardEffect(effect);
     }
 
@@ -265,6 +255,10 @@ void Card::onEffect(GameLogic *, CardEffectStruct &)
 {
 }
 
+void Card::effect(GameLogic *, CardEffectStruct &)
+{
+}
+
 BasicCard::BasicCard(Card::Suit suit, int number)
     : Card(suit, number)
 {
@@ -276,6 +270,26 @@ TrickCard::TrickCard(Card::Suit suit, int number)
     : Card(suit, number)
 {
     m_type = TrickType;
+}
+
+void TrickCard::onEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    if (isNullifiable(effect)) {
+        QList<ServerPlayer *> players = logic->allPlayers();
+        //@to-do: do not ask if no player can use nullification
+        foreach (ServerPlayer *player, players) {
+            Card *card = player->askForCard("Nullification", "trick-nullification");
+            if (card) {
+                CardUseStruct use;
+                use.from = player;
+                use.card = card;
+                use.target = effect.use.card;
+                use.extra = QVariant::fromValue(&effect);
+                logic->useCard(use);
+                break;
+            }
+        }
+    }
 }
 
 bool TrickCard::isNullifiable(const CardEffectStruct &) const
@@ -443,7 +457,7 @@ void DelayedTrick::use(GameLogic *logic, CardUseStruct &use)
     logic->moveCards(move);
 }
 
-void DelayedTrick::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void DelayedTrick::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     CardsMoveStruct move;
     move.cards << this;
@@ -491,7 +505,7 @@ void MovableDelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)
     DelayedTrick::onUse(logic, use);
 }
 
-void MovableDelayedTrick::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void MovableDelayedTrick::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     CardsMoveStruct move;
     move.cards << this;

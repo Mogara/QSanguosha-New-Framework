@@ -48,7 +48,7 @@ public:
     Q_INVOKABLE Analeptic(Suit suit, int number);
 
     void onUse(GameLogic *logic, CardUseStruct &use) override;
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
     bool isAvailable(const Player *player) const override;
 };
 

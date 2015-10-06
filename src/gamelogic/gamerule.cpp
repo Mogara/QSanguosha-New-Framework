@@ -96,8 +96,11 @@ void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
         const CardArea *area = current->delayedTricks();
         while (area->length() > 0 && current->isAlive()) {
             Card *trick = area->last();
-            CardEffectStruct effect;
-            effect.card = trick;
+
+            CardUseStruct use;
+            use.card = trick;
+            use.to << current;
+            CardEffectStruct effect(use);
             effect.to = current;
             m_logic->takeCardEffect(effect);
         }

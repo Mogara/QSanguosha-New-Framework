@@ -33,7 +33,7 @@ public:
 
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void use(GameLogic *logic, CardUseStruct &use) override;
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
 
 private:
     void clearRestCards(GameLogic *logic) const;
@@ -46,7 +46,7 @@ class GodSalvation : public GlobalEffect
 public:
     Q_INVOKABLE GodSalvation(Suit suit, int number);
 
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
     bool isNullifiable(const CardEffectStruct &effect) const override;
 };
 
@@ -57,7 +57,7 @@ class SavageAssault :public AreaOfEffect
 public:
     Q_INVOKABLE SavageAssault(Suit suit, int number);
 
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
 class ArcheryAttack : public AreaOfEffect
@@ -67,7 +67,7 @@ class ArcheryAttack : public AreaOfEffect
 public:
     Q_INVOKABLE ArcheryAttack(Suit suit, int number);
 
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
 class ExNihilo : public SingleTargetTrick
@@ -78,7 +78,7 @@ public:
     Q_INVOKABLE ExNihilo(Suit suit, int number);
 
     void onUse(GameLogic *logic, CardUseStruct &use) override;
-    void onEffect(GameLogic *, CardEffectStruct &effect) override;
+    void effect(GameLogic *, CardEffectStruct &effect) override;
 };
 
 class Duel : public SingleTargetTrick
@@ -89,7 +89,7 @@ public:
     Q_INVOKABLE Duel(Suit suit, int number);
 
     bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
 class Snatch : public SingleTargetTrick
@@ -100,7 +100,7 @@ public:
     Q_INVOKABLE Snatch(Suit suit, int number);
 
     bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
 class Dismantlement : public SingleTargetTrick
@@ -111,7 +111,7 @@ public:
     Q_INVOKABLE Dismantlement(Suit suit, int number);
 
     bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
 class Collateral : public SingleTargetTrick
@@ -124,12 +124,26 @@ public:
     bool targetFeasible(const QList<const Player *> &targets, const Player *self) const override;
     bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
     void onUse(GameLogic *logic, CardUseStruct &use) override;
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
 
 private:
     bool doCollateral(ServerPlayer *killer, const QString &prompt) const;
 
     ServerPlayer *m_victim;
+};
+
+class Nullification : public SingleTargetTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Nullification(Suit suit, int number);
+
+    bool isAvailable(const Player *) const override;
+    bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
+    bool targetFilter(const QList<const Player *> &, const Player *, const Player *) const override;
+    void onUse(GameLogic *logic, CardUseStruct &use);
+    void effect(GameLogic *, CardEffectStruct &effect) override;
 };
 
 class Indulgence : public DelayedTrick

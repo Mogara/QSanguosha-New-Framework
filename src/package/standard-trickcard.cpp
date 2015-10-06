@@ -64,7 +64,7 @@ void AmazingGrace::use(GameLogic *logic, CardUseStruct &use)
     }
 }
 
-void AmazingGrace::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void AmazingGrace::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     CServerAgent *agent = effect.to->agent();
     agent->request(S_COMMAND_TAKE_AMAZING_GRACE, QVariant(), 15000);
@@ -119,7 +119,7 @@ bool GodSalvation::isNullifiable(const CardEffectStruct &effect) const
     return effect.to->isWounded() && TrickCard::isNullifiable(effect);
 }
 
-void GodSalvation::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void GodSalvation::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     if (effect.to->isWounded()) {
         RecoverStruct recover;
@@ -136,7 +136,7 @@ SavageAssault::SavageAssault(Card::Suit suit, int number)
     setObjectName("savage_assault");
 }
 
-void SavageAssault::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void SavageAssault::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     Card *slash = effect.to->askForCard("Slash", "savage-assault-slash");
     if (slash) {
@@ -161,7 +161,7 @@ ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
     setObjectName("archery_attack");
 }
 
-void ArcheryAttack::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void ArcheryAttack::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     Card *jink = effect.to->askForCard("Jink", "archery-attack-jink");
     if (jink) {
@@ -194,7 +194,7 @@ void ExNihilo::onUse(GameLogic *logic, CardUseStruct &use)
     SingleTargetTrick::onUse(logic, use);
 }
 
-void ExNihilo::onEffect(GameLogic *, CardEffectStruct &effect)
+void ExNihilo::effect(GameLogic *, CardEffectStruct &effect)
 {
     effect.to->drawCards(2);
 }
@@ -210,7 +210,7 @@ bool Duel::targetFilter(const QList<const Player *> &targets, const Player *toSe
     return targets.isEmpty() && toSelect != self;
 }
 
-void Duel::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void Duel::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     ServerPlayer *first = effect.to;
     ServerPlayer *second = effect.from;
@@ -263,7 +263,7 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
     return toSelect != self && self->distanceTo(toSelect) <= 1 && !toSelect->isAllNude() && SingleTargetTrick::targetFilter(targets, toSelect, self);
 }
 
-void Snatch::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void Snatch::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     if (effect.from->isDead())
         return;
@@ -291,7 +291,7 @@ bool Dismantlement::targetFilter(const QList<const Player *> &targets, const Pla
     return toSelect != self && !toSelect->isAllNude() && SingleTargetTrick::targetFilter(targets, toSelect, self);
 }
 
-void Dismantlement::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void Dismantlement::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     if (effect.from->isDead())
         return;
@@ -366,7 +366,7 @@ bool Collateral::doCollateral(ServerPlayer *killer, const QString &prompt) const
     return slash != nullptr;
 }
 
-void Collateral::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void Collateral::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     Card *weapon = nullptr;
     foreach (Card *card, effect.to->equips()->cards()) {
@@ -404,6 +404,46 @@ void Collateral::onEffect(GameLogic *logic, CardEffectStruct &effect)
                 }
             }
         }
+    }
+}
+
+Nullification::Nullification(Card::Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+{
+    setObjectName("nullification");
+}
+
+bool Nullification::isAvailable(const Player *) const
+{
+    return false;
+}
+
+bool Nullification::targetFeasible(const QList<const Player *> &targets, const Player *) const
+{
+    return targets.isEmpty();
+}
+
+bool Nullification::targetFilter(const QList<const Player *> &, const Player *, const Player *) const
+{
+    return false;
+}
+
+void Nullification::onUse(GameLogic *logic, CardUseStruct &use)
+{
+    CardUseStruct *trickUse = use.extra.value<CardUseStruct *>();
+    if (trickUse)
+        use.card = trickUse->card;
+    SingleTargetTrick::onUse(logic, use);
+}
+
+void Nullification::effect(GameLogic *, CardEffectStruct &effect)
+{
+    CardEffectStruct *trickEffect = effect.use.extra.value<CardEffectStruct *>();
+    if (trickEffect) {
+        if (trickEffect->to)
+            trickEffect->use.nullifiedList << trickEffect->to;
+        else if (trickEffect->use.card->inherits("Nullification"))
+            trickEffect->use.isNullified = true;
     }
 }
 

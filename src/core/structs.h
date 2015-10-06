@@ -83,6 +83,7 @@ struct CardUseStruct
     Card *card;
     Card *target;
     QList<ServerPlayer *> nullifiedList;
+    bool isNullified;
     bool isOwnerUse;
     bool addHistory;
     bool isHandcard;
@@ -96,15 +97,14 @@ Q_DECLARE_METATYPE(CardUseStruct *)
 
 struct CardEffectStruct
 {
-    Card *card;
-    Card *target;
-    ServerPlayer *from;
+    CardUseStruct &use;
+    ServerPlayer *&from;
     ServerPlayer *to;
-    bool multiple;  //It's true iff the card has more than 1 target player
-    bool nullified; //Does not make sense if it's a skill card
-    QVariant extra;
 
-    CardEffectStruct();
+    CardEffectStruct(CardUseStruct &use);
+    bool isNullified() const {
+        return use.isNullified || (to && use.nullifiedList.contains(to));
+    }
 };
 
 Q_DECLARE_METATYPE(CardEffectStruct *)

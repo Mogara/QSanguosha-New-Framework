@@ -33,7 +33,6 @@ struct SlashEffectStruct
     DamageStruct::Nature nature;
     bool drank;
     int jinkNum;
-    bool nullified;
 
     SlashEffectStruct();
 };
@@ -49,7 +48,7 @@ public:
 
     bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
     bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
-    void onEffect(GameLogic *logic, CardEffectStruct &cardEffect) override;
+    void effect(GameLogic *logic, CardEffectStruct &cardEffect) override;
     bool isAvailable(const Player *player) const override;
 
 protected:
@@ -64,7 +63,7 @@ public:
     Q_INVOKABLE Jink(Suit suit, int number);
 
     void onUse(GameLogic *logic, CardUseStruct &use) override;
-    void onEffect(GameLogic *, CardEffectStruct &effect) override;
+    void effect(GameLogic *, CardEffectStruct &effect) override;
     bool isAvailable(const Player *) const override;
 };
 
@@ -76,7 +75,7 @@ public:
     Q_INVOKABLE Peach(Suit suit, int number);
 
     void onUse(GameLogic *logic, CardUseStruct &use) override;
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
     bool isAvailable(const Player *player) const override;
 };
 

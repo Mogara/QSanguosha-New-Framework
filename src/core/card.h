@@ -129,6 +129,7 @@ public:
     virtual void onUse(GameLogic *logic, CardUseStruct &use);
     virtual void use(GameLogic *logic, CardUseStruct &use);
     virtual void onEffect(GameLogic *logic, CardEffectStruct &effect);
+    virtual void effect(GameLogic *logic, CardEffectStruct &effect);
 
 protected:
     uint m_id;
@@ -176,6 +177,7 @@ public:
 
     TrickCard(Suit suit, int number);
 
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
     virtual bool isNullifiable(const CardEffectStruct &effect) const;
 };
 
@@ -247,7 +249,7 @@ public:
     bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void use(GameLogic *logic, CardUseStruct &use) override;
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
 
     virtual void takeEffect(GameLogic *logic, CardEffectStruct &effect) = 0;
 
@@ -265,7 +267,7 @@ public:
     bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
     bool targetFilter(const QList<const Player *> &, const Player *, const Player *) const override;
     void onUse(GameLogic *logic, CardUseStruct &use) override;
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
     bool isAvailable(const Player *player) const override;
 };
 

@@ -29,7 +29,6 @@ SlashEffectStruct::SlashEffectStruct()
     , nature(DamageStruct::Normal)
     , drank(false)
     , jinkNum(1)
-    , nullified(false)
 {
 }
 
@@ -50,7 +49,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *toS
     return targets.isEmpty() && self->distanceTo(toSelect) <= self->attackRange();
 }
 
-void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
+void Slash::effect(GameLogic *logic, CardEffectStruct &cardEffect)
 {
     SlashEffectStruct effect;
     effect.from = cardEffect.from;
@@ -63,22 +62,21 @@ void Slash::onEffect(GameLogic *logic, CardEffectStruct &cardEffect)
         cardEffect.from->setDrank(false);
         cardEffect.from->broadcastProperty("isDrank");
     }
-    effect.nullified = cardEffect.nullified;
 
     QVariant data = QVariant::fromValue(&effect);
 
     do {
         if (logic->trigger(SlashEffect, effect.from, data))
-            break;
+            return;
 
         if (logic->trigger(SlashEffected, effect.to, data))
-            break;
+            return;
 
         if (effect.jinkNum <= 0)
-            break;
+            return;
 
         if (logic->trigger(SlashProceed, effect.from, data))
-            break;
+            return;
 
         while (effect.jink.length() < effect.jinkNum) {
             Card *card = effect.to->askForCard("Jink", "slash-jink");
@@ -131,9 +129,9 @@ void Jink::onUse(GameLogic *logic, CardUseStruct &use)
     BasicCard::onUse(logic, use);
 }
 
-void Jink::onEffect(GameLogic *, CardEffectStruct &effect)
+void Jink::effect(GameLogic *, CardEffectStruct &effect)
 {
-    SlashEffectStruct *slashEffect = effect.extra.value<SlashEffectStruct *>();
+    SlashEffectStruct *slashEffect = effect.use.extra.value<SlashEffectStruct *>();
     if (slashEffect)
         slashEffect->jink << this;
 }
@@ -157,7 +155,7 @@ void Peach::onUse(GameLogic *logic, CardUseStruct &use)
     BasicCard::onUse(logic, use);
 }
 
-void Peach::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void Peach::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     RecoverStruct recover;
     recover.card = this;

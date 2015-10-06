@@ -127,3 +127,11 @@ bool CardArea::contains(uint id) const
             return true;
     return false;
 }
+
+bool CardArea::contains(const char *className) const
+{
+    foreach (const Card *card, m_cards)
+        if (card->inherits(className))
+            return true;
+    return false;
+}

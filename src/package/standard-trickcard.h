@@ -114,6 +114,24 @@ public:
     void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
+class Collateral : public SingleTargetTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Collateral(Suit suit, int number);
+    bool isAvailable(const Player *player) const override;
+    bool targetFeasible(const QList<const Player *> &targets, const Player *self) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
+    void onUse(GameLogic *logic, CardUseStruct &use) override;
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+
+private:
+    bool doCollateral(ServerPlayer *killer, const QString &prompt) const;
+
+    ServerPlayer *m_victim;
+};
+
 class Indulgence : public DelayedTrick
 {
     Q_OBJECT

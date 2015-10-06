@@ -77,7 +77,7 @@ private:
     void onSeatArranged();
     void onChooseGeneralRequested(const QStringList &candidates);
     void onCardsMoved(const QList<CardsMoveStruct> &moves);
-    void onUsingCard(const QString &pattern);
+    void onUsingCard(const QString &pattern = QString(), const QString &prompt = QString(), const QList<const Player *> &assignedTargets = QList<const Player *>());
     void onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
     void onRecoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
     void onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos);
@@ -96,6 +96,7 @@ private:
     int m_maxRespondingCardNum;
     bool m_respondingOptional;
     QString m_respondingPattern;
+    QList<const Player *> m_assignedTargets;
 };
 
 #endif // ROOMSCENE_H

@@ -418,14 +418,7 @@ bool DelayedTrick::targetFilter(const QList<const Player *> &targets, const Play
     if (area->length() <= 0)
         return true;
 
-    const char *className = metaObject()->className();
-    QList<Card *> cards = area->cards();
-    foreach (Card *card, cards) {
-        if (card->inherits(className))
-            return false;
-    }
-
-    return true;
+    return !area->contains(metaObject()->className());
 }
 
 void DelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)

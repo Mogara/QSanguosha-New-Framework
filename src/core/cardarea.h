@@ -76,6 +76,7 @@ public:
 
     bool contains(const Card *card) const;
     bool contains(uint id) const;
+    bool contains(const char *className) const;
 
     QList<Card *> &cards() { return m_cards; }
     QList<Card *> cards() const { return m_cards; }

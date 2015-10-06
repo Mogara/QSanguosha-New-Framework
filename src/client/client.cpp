@@ -286,8 +286,22 @@ void Client::MoveCardsCommand(QObject *receiver, const QVariant &data)
 
 void Client::UseCardRequestCommand(QObject *receiver, const QVariant &data)
 {
+    const QVariantMap arg = data.toMap();
     Client *client = qobject_cast<Client *>(receiver);
-    emit client->usingCard(data.toString());
+    if (arg.size() != 3) {
+        emit client->usingCard(".", QString(), QList<const Player *>());
+    } else {
+        QString pattern = arg["pattern"].toString();
+        QString prompt = arg["prompt"].toString();
+        QList<const Player *> targets;
+        QVariantList dataList = arg["assignedTargets"].toList();
+        foreach (const QVariant &data, dataList) {
+            const ClientPlayer *target = client->findPlayer(data.toUInt());
+            if (target)
+                targets << target;
+        }
+        emit client->usingCard(pattern, prompt, targets);
+    }
 }
 
 void Client::UseCardCommand(QObject *receiver, const QVariant &data)

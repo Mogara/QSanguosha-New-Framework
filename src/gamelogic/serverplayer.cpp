@@ -287,6 +287,45 @@ Card *ServerPlayer::askToChooseCard(ServerPlayer *owner, const QString &areaFlag
     return nullptr;
 }
 
+Card *ServerPlayer::askToUseCard(const QString &pattern, const QString &prompt, const QList<ServerPlayer *> &assignedTargets)
+{
+    QVariantMap data;
+    data["pattern"] = pattern;
+    data["prompt"] = prompt;
+
+    QVariantList targetIds;
+    foreach (ServerPlayer *target, assignedTargets)
+        targetIds << target->id();
+    data["assignedTargets"] = targetIds;
+
+    m_agent->request(S_COMMAND_USE_CARD, data, 15000);
+    const QVariantMap reply = m_agent->waitForReply(15000).toMap();
+    if (reply.isEmpty())
+        return nullptr;
+
+    uint cardId = reply["cardId"].toUInt();
+    Card *card = m_logic->findCard(cardId);
+    if (card == nullptr)
+        return nullptr;
+
+    CardUseStruct use;
+    use.from = this;
+    use.card = card;
+
+    QVariantList targets = reply["to"].toList();
+    foreach (const QVariant &target, targets) {
+        ServerPlayer *player = m_logic->findPlayer(target.toUInt());
+        if (player)
+            use.to << player;
+    }
+    foreach (ServerPlayer *target, assignedTargets) {
+        if (!use.to.contains(target))
+            return nullptr;
+    }
+    m_logic->useCard(use);
+    return card;
+}
+
 void ServerPlayer::broadcastProperty(const char *name) const
 {
     QVariantList data;

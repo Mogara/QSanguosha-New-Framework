@@ -308,6 +308,105 @@ void Dismantlement::onEffect(GameLogic *logic, CardEffectStruct &effect)
     }
 }
 
+Collateral::Collateral(Card::Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+    , m_victim(nullptr)
+{
+    setObjectName("collateral");
+}
+
+bool Collateral::isAvailable(const Player *player) const
+{
+    bool canUse = false;
+    const Player *next = player->nextAlive();
+    while (next && next != player) {
+        const CardArea *equips = next->equips();
+        if (equips->contains("Weapon")) {
+            canUse = true;
+            break;
+        }
+        next = next->nextAlive();
+    }
+    return canUse && SingleTargetTrick::isAvailable(player);
+}
+
+bool Collateral::targetFeasible(const QList<const Player *> &targets, const Player *) const
+{
+    return targets.length() == 2;
+}
+
+bool Collateral::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+{
+    if (!targets.isEmpty()) {
+        if (targets.length() >= 2)
+            return false;
+        const Player *slashSource = targets.first();
+        // @to-do: Check prohibit skills like Kongcheng
+        return slashSource->distanceTo(toSelect) <= slashSource->attackRange();
+    } else {
+        const CardArea *equips = toSelect->equips();
+        return equips->contains("Weapon") && toSelect != self;
+    }
+}
+
+void Collateral::onUse(GameLogic *logic, CardUseStruct &use)
+{
+    m_victim = use.to.at(1);
+    use.to.removeAt(1);
+    SingleTargetTrick::onUse(logic, use);
+}
+
+bool Collateral::doCollateral(ServerPlayer *killer, const QString &prompt) const
+{
+    if (killer->distanceTo(m_victim) > killer->attackRange())
+        return false;
+    QList<ServerPlayer *> targets;
+    targets << m_victim;
+    Card *slash = killer->askToUseCard("Slash", prompt, targets);
+    return slash != nullptr;
+}
+
+void Collateral::onEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    Card *weapon = nullptr;
+    foreach (Card *card, effect.to->equips()->cards()) {
+        if (card->subtype() == EquipCard::WeaponType) {
+            weapon = card;
+            break;
+        }
+    }
+
+    QString prompt = QString("collateral-slash:%1:%2").arg(effect.from->id()).arg(m_victim->id());
+    if (m_victim->isDead()) {
+        if (effect.from->isAlive() && effect.to->isAlive() && weapon) {
+            CardsMoveStruct move;
+            move.cards << weapon;
+            move.to.type = CardArea::Hand;
+            move.to.owner = effect.from;
+            logic->moveCards(move);
+        }
+    } else if (effect.from->isDead()) {
+        if (effect.to->isAlive())
+            doCollateral(effect.to, prompt);
+    } else {
+        if (effect.to->isDead()) {
+            ; // do nothing
+        } else if (weapon == nullptr) {
+            doCollateral(effect.to, prompt);
+        } else {
+            if (!doCollateral(effect.to, prompt)) {
+                if (weapon) {
+                    CardsMoveStruct move;
+                    move.cards << weapon;
+                    move.to.type = CardArea::Hand;
+                    move.to.owner = effect.from;
+                    logic->moveCards(move);
+                }
+            }
+        }
+    }
+}
+
 Lightning::Lightning(Card::Suit suit, int number)
     : MovableDelayedTrick(suit, number)
 {

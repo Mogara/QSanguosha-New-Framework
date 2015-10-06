@@ -60,6 +60,7 @@ public:
     QList<Card *> askForCards(const QString &pattern, const QString &prompt, int num, bool optional = false);
     QList<Card *> askForCards(const QString &pattern, const QString &prompt, int minNum, int maxNum, bool optional = false);
     Card *askToChooseCard(ServerPlayer *owner, const QString &areaFlag = "hej", bool handcardVisible = false);
+    Card *askToUseCard(const QString &pattern, const QString &prompt, const QList<ServerPlayer *> &assignedTargets);
 
     void broadcastProperty(const char *name) const;
     void broadcastProperty(const char *name, const QVariant &value, ServerPlayer *except = nullptr) const;

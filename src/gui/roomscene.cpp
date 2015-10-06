@@ -108,6 +108,14 @@ void RoomScene::checkTargetFeasibility()
         const Card *card = m_selectedCard.first();
         const ClientPlayer *self = m_client->selfPlayer();
         bool acceptable = card->targetFeasible(m_selectedPlayer, self);
+        if (acceptable && !m_assignedTargets.isEmpty()) {
+            foreach (const Player *target, m_assignedTargets) {
+                if (!m_selectedPlayer.contains(target)) {
+                    acceptable = false;
+                    break;
+                }
+            }
+        }
         setAcceptEnabled(acceptable);
         if (acceptable) {
             QVariantList seats;
@@ -210,23 +218,29 @@ void RoomScene::onChooseGeneralFinished(const QString &head, const QString &depu
     m_client->replyToServer(S_COMMAND_CHOOSE_GENERAL, data);
 }
 
-void RoomScene::onUsingCard(const QString &pattern)
+void RoomScene::onUsingCard(const QString &pattern, const QString &prompt, const QList<const Player *> &assignedTargets)
 {
     m_respondingState = UsingCardState;
+    if (!prompt.isEmpty())
+        showPrompt(prompt);
+    m_assignedTargets = assignedTargets;
 
+    QVariantList cardIds;
+    const ClientPlayer *self = m_client->selfPlayer();
+    QList<Card *> cards = self->handcards()->cards();
     if (!pattern.isEmpty()) {
-        //@todo: load CardPattern
+        CardPattern cardPattern(pattern);
+        foreach (Card *card, cards) {
+            if (cardPattern.match(self, card))
+                cardIds << card->id();
+        }
     } else {
-        //@todo: filter usable cards
-        const ClientPlayer *self = m_client->selfPlayer();
-        QList<Card *> cards = self->handcards()->cards();
-        QVariantList cardIds;
         foreach (Card *card, cards) {
             if (card->isAvailable(self))
                 cardIds << card->id();
         }
-        enableCards(cardIds);
     }
+    enableCards(cardIds);
 
     setAcceptEnabled(false);
     setRejectEnabled(false);
@@ -245,7 +259,7 @@ void RoomScene::onCardSelected(const QVariantList &cardIds)
     switch (m_respondingState) {
     case UsingCardState:{
         if (m_selectedCard.isEmpty()) {
-            onUsingCard(QString());
+            onUsingCard();
         } else {
             const Card *card = m_selectedCard.first();
             uint id = card->id();

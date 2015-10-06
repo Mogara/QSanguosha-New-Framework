@@ -393,9 +393,9 @@ bool SingleTargetTrick::targetFeasible(const QList<const Player *> &targets, con
     return isTargetFixed() || targets.length() == 1;
 }
 
-bool SingleTargetTrick::targetFilter(const QList<const Player *> &, const Player *, const Player *) const
+bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const
 {
-    return true;
+    return targets.length() < 1;
 }
 
 DelayedTrick::DelayedTrick(Card::Suit suit, int number)

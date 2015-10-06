@@ -252,6 +252,62 @@ void Indulgence::takeEffect(GameLogic *, CardEffectStruct &effect) const
     effect.to->skipPhase(Player::Play);
 }
 
+Snatch::Snatch(Card::Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+{
+    setObjectName("snatch");
+}
+
+bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+{
+    return toSelect != self && self->distanceTo(toSelect) <= 1 && !toSelect->isAllNude() && SingleTargetTrick::targetFilter(targets, toSelect, self);
+}
+
+void Snatch::onEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    if (effect.from->isDead())
+        return;
+    if (effect.to->isAllNude())
+        return;
+
+    Card *card = effect.from->askToChooseCard(effect.to);
+    if (card) {
+        CardsMoveStruct move;
+        move.cards << card;
+        move.to.owner = effect.from;
+        move.to.type = CardArea::Hand;
+        logic->moveCards(move);
+    }
+}
+
+Dismantlement::Dismantlement(Card::Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+{
+    setObjectName("dismantlement");
+}
+
+bool Dismantlement::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+{
+    return toSelect != self && !toSelect->isAllNude() && SingleTargetTrick::targetFilter(targets, toSelect, self);
+}
+
+void Dismantlement::onEffect(GameLogic *logic, CardEffectStruct &effect)
+{
+    if (effect.from->isDead())
+        return;
+    if (effect.to->isAllNude())
+        return;
+
+    Card *card = effect.from->askToChooseCard(effect.to);
+    if (card) {
+        CardsMoveStruct move;
+        move.cards << card;
+        move.to.type = CardArea::DiscardPile;
+        move.isOpen = true;
+        logic->moveCards(move);
+    }
+}
+
 void StandardPackage::addTrickCards()
 {
 }

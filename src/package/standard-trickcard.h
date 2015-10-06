@@ -92,6 +92,28 @@ public:
     void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
+class Snatch : public SingleTargetTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Snatch(Suit suit, int number);
+
+    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+};
+
+class Dismantlement : public SingleTargetTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Dismantlement(Suit suit, int number);
+
+    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
+};
+
 class Indulgence : public DelayedTrick
 {
     Q_OBJECT

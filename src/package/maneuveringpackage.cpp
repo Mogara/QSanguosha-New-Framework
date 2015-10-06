@@ -88,6 +88,24 @@ SilverLion::SilverLion(Card::Suit suit, int number)
     setObjectName("silver_lion");
 }
 
+SupplyShortage::SupplyShortage(Card::Suit suit, int number)
+    : DelayedTrick(suit, number)
+{
+    setObjectName("supply_shortage");
+    m_judgePattern = ".|^club";
+}
+
+bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+{
+    return self->distanceTo(toSelect) <= 1 && DelayedTrick::targetFilter(targets, toSelect, self);
+}
+
+void SupplyShortage::takeEffect(GameLogic *, CardEffectStruct &effect) const
+{
+    effect.to->clearCardHistory();
+    effect.to->skipPhase(Player::Draw);
+}
+
 ManeuveringPackage::ManeuveringPackage()
     : Package("maneuvering")
 {

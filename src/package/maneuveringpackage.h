@@ -76,6 +76,17 @@ public:
     Q_INVOKABLE SilverLion(Suit suit = Club, int number = 1);
 };
 
+class SupplyShortage : public DelayedTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SupplyShortage(Suit suit, int number);
+
+    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
+    void takeEffect(GameLogic *, CardEffectStruct &effect) const override;
+};
+
 class ManeuveringPackage : public Package
 {
 public:

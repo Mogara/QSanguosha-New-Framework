@@ -54,6 +54,7 @@ signals:
     void playAudio(const QString &path);
     void showIndicatorLine(int from, const QVariantList &tos);
     void showPrompt(const QString &prompt);
+    void hidePrompt();
     void setAcceptEnabled(bool enabled);
     void setRejectEnabled(bool enabled);
     void setFinishEnabled(bool enabled);

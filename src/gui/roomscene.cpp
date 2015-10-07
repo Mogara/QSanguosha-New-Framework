@@ -149,6 +149,8 @@ void RoomScene::resetDashboard()
     setAcceptEnabled(false);
     setRejectEnabled(false);
     setFinishEnabled(false);
+
+    hidePrompt();
 }
 
 void RoomScene::enableCards(const QString &pattern)

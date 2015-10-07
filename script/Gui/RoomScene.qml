@@ -119,17 +119,17 @@ RoomScene {
             id: dashboard
 
             onAccepted: {
-                popupBox.source = "";
+                closeDialog();
                 roomScene.onAccepted();
             }
 
             onRejected: {
-                popupBox.source = "";
+                closeDialog();
                 roomScene.onRejected();
             }
 
             onFinished: {
-                popupBox.source = "";
+                closeDialog();
                 roomScene.onFinished();
             }
 
@@ -187,6 +187,16 @@ RoomScene {
             item.x = Math.round((roomArea.width - item.width) / 2);
             item.y = Math.round(roomArea.height * 0.67 - item.height / 2);
         }
+    }
+
+    Prompt {
+        id: promptBox
+        x: Math.round((roomArea.width - width) / 2)
+        y: Math.round(roomArea.height * 0.67 - height / 2);
+        z: 1000
+        visible: false
+
+        onFinished: visible = false;
     }
 
     onChooseGeneral: {
@@ -264,8 +274,12 @@ RoomScene {
     }
 
     onShowPrompt: {
-        popupBox.source = "RoomElement/Prompt.qml";
-        popupBox.item.text = qsTr(prompt);
+        promptBox.text = qsTr(prompt);
+        promptBox.visible = true;
+    }
+
+    onHidePrompt: {
+        promptBox.visible = false;
     }
 
     onAskToChooseCards: {
@@ -445,5 +459,15 @@ RoomScene {
                 selected.push(photo.seat);
         }
         return selected;
+    }
+
+    //@to-do: hide the latest dialog. We need a better solution
+    function closeDialog()
+    {
+        if (promptBox.visible) {
+            promptBox.visible = false;
+        } else {
+            popupBox.source = "";
+        }
     }
 }

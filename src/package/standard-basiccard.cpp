@@ -79,7 +79,11 @@ void Slash::effect(GameLogic *logic, CardEffectStruct &cardEffect)
             return;
 
         while (effect.jink.length() < effect.jinkNum) {
-            Card *card = effect.to->askForCard("Jink", "slash-jink");
+            QVariantList args;
+            args << "player" << effect.from->id();
+            args << effect.jinkNum;
+            effect.to->showPrompt("slash-jink", args);
+            Card *card = effect.to->askForCard("Jink");
             if (card) {
                 CardUseStruct use;
                 use.from = effect.to;

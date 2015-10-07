@@ -138,7 +138,8 @@ SavageAssault::SavageAssault(Card::Suit suit, int number)
 
 void SavageAssault::effect(GameLogic *logic, CardEffectStruct &effect)
 {
-    Card *slash = effect.to->askForCard("Slash", "savage-assault-slash");
+    effect.to->showPrompt("savage-assault-slash", effect.from);
+    Card *slash = effect.to->askForCard("Slash");
     if (slash) {
         CardResponseStruct response;
         response.from = effect.to;
@@ -163,7 +164,8 @@ ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
 
 void ArcheryAttack::effect(GameLogic *logic, CardEffectStruct &effect)
 {
-    Card *jink = effect.to->askForCard("Jink", "archery-attack-jink");
+    effect.to->showPrompt("archery-attack-jink", effect.from);
+    Card *jink = effect.to->askForCard("Jink");
     if (jink) {
         CardResponseStruct response;
         response.from = effect.to;
@@ -218,7 +220,8 @@ void Duel::effect(GameLogic *logic, CardEffectStruct &effect)
     forever {
         if (!first->isAlive())
             break;
-        Card *slash = first->askForCard("Slash", "duel-slash");
+        first->showPrompt("duel-slash", second);
+        Card *slash = first->askForCard("Slash");
         if (slash == nullptr)
             break;
         CardResponseStruct response;
@@ -356,13 +359,14 @@ void Collateral::onUse(GameLogic *logic, CardUseStruct &use)
     SingleTargetTrick::onUse(logic, use);
 }
 
-bool Collateral::doCollateral(ServerPlayer *killer, const QString &prompt) const
+bool Collateral::doCollateral(CardEffectStruct &effect) const
 {
-    if (killer->distanceTo(m_victim) > killer->attackRange())
+    if (effect.to->distanceTo(m_victim) > effect.to->attackRange())
         return false;
     QList<ServerPlayer *> targets;
     targets << m_victim;
-    Card *slash = killer->askToUseCard("Slash", prompt, targets);
+    effect.to->showPrompt("collateral-slash", effect.from, m_victim);
+    Card *slash = effect.to->askToUseCard("Slash", targets);
     return slash != nullptr;
 }
 
@@ -376,7 +380,6 @@ void Collateral::effect(GameLogic *logic, CardEffectStruct &effect)
         }
     }
 
-    QString prompt = QString("collateral-slash:%1:%2").arg(effect.from->id()).arg(m_victim->id());
     if (m_victim->isDead()) {
         if (effect.from->isAlive() && effect.to->isAlive() && weapon) {
             CardsMoveStruct move;
@@ -387,14 +390,14 @@ void Collateral::effect(GameLogic *logic, CardEffectStruct &effect)
         }
     } else if (effect.from->isDead()) {
         if (effect.to->isAlive())
-            doCollateral(effect.to, prompt);
+            doCollateral(effect);
     } else {
         if (effect.to->isDead()) {
             ; // do nothing
         } else if (weapon == nullptr) {
-            doCollateral(effect.to, prompt);
+            doCollateral(effect);
         } else {
-            if (!doCollateral(effect.to, prompt)) {
+            if (!doCollateral(effect)) {
                 if (weapon) {
                     CardsMoveStruct move;
                     move.cards << weapon;

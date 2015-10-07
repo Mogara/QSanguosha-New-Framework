@@ -142,6 +142,40 @@ void ServerPlayer::activate(CardUseStruct &use)
     }
 }
 
+void ServerPlayer::showPrompt(const QString &message, const QVariantList &args)
+{
+    QVariantList data;
+    data << message;
+    data << args;
+    m_agent->notify(S_COMMAND_SHOW_PROMPT, data);
+}
+
+void ServerPlayer::showPrompt(const QString &message, const Card *card)
+{
+    QVariantList args;
+    args << "card" << card->id();
+    showPrompt(message, args);
+}
+
+void ServerPlayer::showPrompt(const QString &message, const ServerPlayer *from, const Card *card)
+{
+    QVariantList args;
+    args << "player" << from->id();
+    if (card)
+        args << "card" << card->id();
+    showPrompt(message, args);
+}
+
+void ServerPlayer::showPrompt(const QString &message, const ServerPlayer *p1, const ServerPlayer *p2, const Card *card)
+{
+    QVariantList args;
+    args << "player" << p1->id();
+    args << "player" << p2->id();
+    if (card)
+        args << "card" << card->id();
+    showPrompt(message, args);
+}
+
 Event ServerPlayer::askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable)
 {
     //@todo:
@@ -151,11 +185,10 @@ Event ServerPlayer::askForTriggerOrder(const QString &reason, QList<Event> &opti
     return Event();
 }
 
-Card *ServerPlayer::askForCard(const QString &pattern, const QString &prompt)
+Card *ServerPlayer::askForCard(const QString &pattern)
 {
     QVariantMap data;
     data["pattern"] = pattern;
-    data["prompt"] = prompt;
 
     QVariant replyData;
     forever {
@@ -174,19 +207,18 @@ Card *ServerPlayer::askForCard(const QString &pattern, const QString &prompt)
     return nullptr;
 }
 
-QList<Card *> ServerPlayer::askForCards(const QString &pattern, const QString &prompt, int num, bool optional)
+QList<Card *> ServerPlayer::askForCards(const QString &pattern, int num, bool optional)
 {
-    return askForCards(pattern, prompt, num, num, optional);
+    return askForCards(pattern, num, num, optional);
 }
 
-QList<Card *> ServerPlayer::askForCards(const QString &pattern, const QString &prompt, int minNum, int maxNum, bool optional)
+QList<Card *> ServerPlayer::askForCards(const QString &pattern, int minNum, int maxNum, bool optional)
 {
     if (maxNum < minNum)
         maxNum = minNum;
 
     QVariantMap data;
     data["pattern"] = pattern;
-    data["prompt"] = prompt;
     data["minNum"] = minNum;
     data["maxNum"] = maxNum;
     data["optional"] = optional;
@@ -287,11 +319,10 @@ Card *ServerPlayer::askToChooseCard(ServerPlayer *owner, const QString &areaFlag
     return nullptr;
 }
 
-Card *ServerPlayer::askToUseCard(const QString &pattern, const QString &prompt, const QList<ServerPlayer *> &assignedTargets)
+Card *ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets)
 {
     QVariantMap data;
     data["pattern"] = pattern;
-    data["prompt"] = prompt;
 
     QVariantList targetIds;
     foreach (ServerPlayer *target, assignedTargets)

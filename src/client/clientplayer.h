@@ -32,7 +32,7 @@ public:
     ClientPlayer(CClientUser *user, QObject *parent = 0);
 
     void setId(uint id) { CAbstractPlayer::setId(id); }
-
+    QString fullGeneralName() const;
     CClientUser *user() const { return m_user; }
 
 private:

@@ -78,12 +78,12 @@ private:
     void onSeatArranged();
     void onChooseGeneralRequested(const QStringList &candidates);
     void onCardsMoved(const QList<CardsMoveStruct> &moves);
-    void onUsingCard(const QString &pattern = QString(), const QString &prompt = QString(), const QList<const Player *> &assignedTargets = QList<const Player *>());
+    void onUsingCard(const QString &pattern = QString(), const QList<const Player *> &assignedTargets = QList<const Player *>());
     void onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
     void onRecoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
     void onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos);
-    void onCardAsked(const QString &pattern, const QString &prompt);
-    void onCardsAsked(const QString &pattern, const QString &prompt, int minNum, int maxNum, bool optional);
+    void onCardAsked(const QString &pattern);
+    void onCardsAsked(const QString &pattern, int minNum, int maxNum, bool optional);
     void onAmazingGraceStarted();
     void onChoosePlayerCardRequested(const QList<Card *> &handcards, const QList<Card *> &equips, const QList<Card *> &delayedTricks);
 

@@ -67,6 +67,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     , m_maxRespondingCardNum(1)
     , m_respondingOptional(true)
 {
+    connect(m_client, &Client::promptReceived, this, &RoomScene::showPrompt);
     connect(m_client, &Client::chooseGeneralRequested, this, &RoomScene::onChooseGeneralRequested);
     connect(m_client, &Client::seatArranged, this, &RoomScene::onSeatArranged);
     connect(m_client, &Client::cardsMoved, this, &RoomScene::onCardsMoved);
@@ -220,11 +221,9 @@ void RoomScene::onChooseGeneralFinished(const QString &head, const QString &depu
     m_client->replyToServer(S_COMMAND_CHOOSE_GENERAL, data);
 }
 
-void RoomScene::onUsingCard(const QString &pattern, const QString &prompt, const QList<const Player *> &assignedTargets)
+void RoomScene::onUsingCard(const QString &pattern, const QList<const Player *> &assignedTargets)
 {
     m_respondingState = UsingCardState;
-    if (!prompt.isEmpty())
-        showPrompt(prompt);
     m_assignedTargets = assignedTargets;
 
     QVariantList cardIds;
@@ -380,25 +379,23 @@ void RoomScene::onCardUsed(const ClientPlayer *from, const QList<const ClientPla
     showIndicatorLine(from->seat(), toSeats);
 }
 
-void RoomScene::onCardAsked(const QString &pattern, const QString &prompt)
+void RoomScene::onCardAsked(const QString &pattern)
 {
     m_respondingState = RespondingCardState;
     m_respondingPattern = pattern;
     m_minRespondingCardNum = m_maxRespondingCardNum = 1;
     m_respondingOptional = true;
-    showPrompt(prompt);
     enableCards(pattern);
     setRejectEnabled(true);
 }
 
-void RoomScene::onCardsAsked(const QString &pattern, const QString &prompt, int minNum, int maxNum, bool optional)
+void RoomScene::onCardsAsked(const QString &pattern, int minNum, int maxNum, bool optional)
 {
     m_respondingState = RespondingCardState;
     m_respondingPattern = pattern;
     m_minRespondingCardNum = minNum;
     m_maxRespondingCardNum = maxNum;
     m_respondingOptional = optional;
-    showPrompt(prompt);
     enableCards(pattern);
     setRejectEnabled(optional);
 }

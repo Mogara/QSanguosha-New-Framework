@@ -278,7 +278,17 @@ void TrickCard::onEffect(GameLogic *logic, CardEffectStruct &effect)
         QList<ServerPlayer *> players = logic->allPlayers();
         //@to-do: do not ask if no player can use nullification
         foreach (ServerPlayer *player, players) {
-            Card *card = player->askForCard("Nullification", "trick-nullification");
+            if (effect.from) {
+                if (effect.to)
+                    player->showPrompt("trick-nullification-1", effect.from, effect.to, effect.use.card);
+                else
+                    player->showPrompt("trick-nullification-2", effect.from, effect.use.card);
+            } else if (effect.to) {
+                player->showPrompt("trick-nullification-3", effect.to, effect.use.card);
+            } else {
+                player->showPrompt("trick-nullification-4", effect.use.card);
+            }
+            Card *card = player->askForCard("Nullification");
             if (card) {
                 CardUseStruct use;
                 use.from = player;

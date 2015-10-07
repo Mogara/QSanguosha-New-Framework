@@ -49,15 +49,16 @@ public:
     const CardArea *wugu() const { return m_wugu; }
 
 signals:
+    void promptReceived(const QString &prompt);
     void seatArranged();
     void chooseGeneralRequested(const QStringList &candidates /* @to-do: add banned pair */);
     void cardsMoved(const QList<CardsMoveStruct> &moves);
     void damageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
     void recoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
-    void usingCard(const QString &pattern, const QString &prompt, const QList<const Player *> &assignedTarget);
+    void usingCard(const QString &pattern, const QList<const Player *> &assignedTarget);
     void cardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &to);
-    void cardAsked(const QString &pattern, const QString &prompt);
-    void cardsAsked(const QString &pattern, const QString &prompt, int minNum, int maxNum, bool optional);
+    void cardAsked(const QString &pattern);
+    void cardsAsked(const QString &pattern, int minNum, int maxNum, bool optional);
     void amazingGraceStarted();
     void amazingGraceFinished();
     void amazingGraceRequested();
@@ -70,8 +71,11 @@ private:
     ClientPlayer *findPlayer(uint id) { return m_players.value(id); }
     CardArea *findArea(const CardsMoveStruct::Area &area);
     QList<Card *> findCards(const QVariant &data);
+    static inline QString tr(const QString &text) { return tr(text.toLatin1().constData()); }
 
     C_DECLARE_INITIALIZER(Client)
+
+    static void ShowPromptCommand(QObject *receiver, const QVariant &data);
     static void ArrangeSeatCommand(QObject *receiver, const QVariant &data);
     static void PrepareCardsCommand(QObject *receiver, const QVariant &data);
     static void UpdatePlayerPropertyCommand(QObject *receiver, const QVariant &data);

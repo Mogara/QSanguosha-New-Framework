@@ -274,7 +274,7 @@ RoomScene {
     }
 
     onShowPrompt: {
-        promptBox.text = qsTr(prompt);
+        promptBox.text = prompt;
         promptBox.visible = true;
     }
 

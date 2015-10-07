@@ -127,7 +127,7 @@ public:
     void effect(GameLogic *logic, CardEffectStruct &effect) override;
 
 private:
-    bool doCollateral(ServerPlayer *killer, const QString &prompt) const;
+    bool doCollateral(CardEffectStruct &effect) const;
 
     ServerPlayer *m_victim;
 };

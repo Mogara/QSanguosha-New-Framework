@@ -150,6 +150,48 @@ QList<Card *> Client::findCards(const QVariant &data)
     return result;
 }
 
+void Client::ShowPromptCommand(QObject *receiver, const QVariant &data)
+{
+    const QVariantList args = data.toList();
+    if (args.isEmpty())
+        return;
+
+    QString message = args.first().toString();
+    if (message.isEmpty())
+        return;
+
+
+    Client *client = qobject_cast<Client *>(receiver);
+
+    message = tr(message.toLatin1().constData());
+    for (int i = 1; i < args.length(); i++) {
+        QString arg = args.at(i).toString();
+        if (arg == "player") {
+            i++;
+            if (i >= args.length())
+                break;
+            uint playerId = args.at(i).toUInt();
+            const ClientPlayer *player = client->findPlayer(playerId);
+            if (player)
+                message = message.arg(player->fullGeneralName());
+            else
+                message = message.arg(tr("Unknown"));
+        } else if (arg == "card") {
+            i++;
+            if (i >= args.length())
+                break;
+            uint cardId = args.at(i).toUInt();
+            const Card *card = client->findCard(cardId);
+            if (card)
+                message = message.arg(tr(card->objectName()));
+        } else {
+            message = message.arg(arg);
+        }
+    }
+
+    emit client->promptReceived(message);
+}
+
 void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
 {
     QVariantList infos = data.toList();
@@ -289,10 +331,9 @@ void Client::UseCardRequestCommand(QObject *receiver, const QVariant &data)
     const QVariantMap arg = data.toMap();
     Client *client = qobject_cast<Client *>(receiver);
     if (arg.size() != 3) {
-        emit client->usingCard(QString(), QString(), QList<const Player *>());
+        emit client->usingCard(QString(), QList<const Player *>());
     } else {
         QString pattern = arg["pattern"].toString();
-        QString prompt = arg["prompt"].toString();
         QList<const Player *> targets;
         QVariantList dataList = arg["assignedTargets"].toList();
         foreach (const QVariant &data, dataList) {
@@ -300,7 +341,7 @@ void Client::UseCardRequestCommand(QObject *receiver, const QVariant &data)
             if (target)
                 targets << target;
         }
-        emit client->usingCard(pattern, prompt, targets);
+        emit client->usingCard(pattern, targets);
     }
 }
 
@@ -368,20 +409,19 @@ void Client::RecoverCommand(QObject *receiver, const QVariant &data)
 void Client::AskForCardRequestCommand(QObject *receiver, const QVariant &data)
 {
     const QVariantMap arg = data.toMap();
-    if (!arg.contains("pattern") || !arg.contains("prompt"))
+    if (!arg.contains("pattern"))
         return;
 
     QString pattern = arg["pattern"].toString();
-    QString prompt = arg["prompt"].toString();
     Client *client = qobject_cast<Client *>(receiver);
 
     if (arg.contains("minNum") && arg.contains("maxNum")) {
         int minNum = arg["minNum"].toInt();
         int maxNum = arg["maxNum"].toInt();
         int optional = arg["optional"].toBool();
-        emit client->cardsAsked(pattern, prompt, minNum, maxNum, optional);
+        emit client->cardsAsked(pattern, minNum, maxNum, optional);
     } else {
-        emit client->cardAsked(pattern, prompt);
+        emit client->cardAsked(pattern);
     }
 }
 
@@ -422,6 +462,7 @@ void Client::Init()
 {
     qmlRegisterSingletonType<Client>("Sanguosha", 1, 0, "Client", ClientInstanceCallback);
 
+    AddCallback(S_COMMAND_SHOW_PROMPT, ShowPromptCommand);
     AddCallback(S_COMMAND_ARRANGE_SEAT, ArrangeSeatCommand);
     AddCallback(S_COMMAND_PREPARE_CARDS, PrepareCardsCommand);
     AddCallback(S_COMMAND_UPDATE_PLAYER_PROPERTY, UpdatePlayerPropertyCommand);

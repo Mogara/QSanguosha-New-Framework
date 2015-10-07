@@ -5,3 +5,14 @@ ClientPlayer::ClientPlayer(CClientUser *user, QObject *parent)
     , m_user(user)
 {
 }
+
+QString ClientPlayer::fullGeneralName() const
+{
+    if (deputyGeneral()) {
+        QString headName = tr(headGeneralName().toLatin1().constData());
+        QString deputyName = tr(deputyGeneralName().toLatin1().constData());
+        return QString("%1/%2").arg(headName).arg(deputyName);
+    } else {
+        return tr(generalName().toLatin1().constData());
+    }
+}

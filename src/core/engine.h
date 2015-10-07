@@ -39,7 +39,7 @@ public:
     const Package *package(const QString &name) const;
     QList<const Package *> packages() const;
 
-    QList<const General *> getGenerals() const;
+    QList<const General *> getGenerals(bool includeHidden = false) const;
     const General *getGeneral(const QString &name) const { return m_generals.value(name); }
 
     QList<const Card *> getCards() const;

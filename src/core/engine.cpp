@@ -42,7 +42,7 @@ void Engine::addPackage(Package *package)
 {
     m_packages << package;
 
-    QList<const General *> generals = package->generals();
+    QList<const General *> generals = package->generals(true);
     foreach (const General *general, generals)
         m_generals.insert(general->name(), general);
 
@@ -70,11 +70,11 @@ QList<const Package *> Engine::packages() const
     return packages;
 }
 
-QList<const General *> Engine::getGenerals() const
+QList<const General *> Engine::getGenerals(bool includeHidden) const
 {
     QList<const General *> generals;
     foreach (const Package *package, m_packages)
-        generals << package->generals();
+        generals << package->generals(includeHidden);
     return generals;
 }
 

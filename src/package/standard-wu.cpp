@@ -24,6 +24,7 @@
 void StandardPackage::addWuGenerals()
 {
     General *sunquan = new General("sunquan", "wu", 4);
+    sunquan->setLord(true);
     addGeneral(sunquan);
 
     General *ganning = new General("ganning", "wu", 4);

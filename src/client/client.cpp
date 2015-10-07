@@ -289,7 +289,7 @@ void Client::UseCardRequestCommand(QObject *receiver, const QVariant &data)
     const QVariantMap arg = data.toMap();
     Client *client = qobject_cast<Client *>(receiver);
     if (arg.size() != 3) {
-        emit client->usingCard(".", QString(), QList<const Player *>());
+        emit client->usingCard(QString(), QString(), QList<const Player *>());
     } else {
         QString pattern = arg["pattern"].toString();
         QString prompt = arg["prompt"].toString();

@@ -24,7 +24,8 @@
 void StandardPackage::addWeiGenerals()
 {
     // WEI 001
-    General *caocao = new General("caocao$", "wei", 4);
+    General *caocao = new General("caocao", "wei", 4);
+    caocao->setLord(true);
     addGeneral(caocao);
 
     // WEI 002

@@ -25,6 +25,7 @@ void StandardPackage::addShuGenerals()
 {
     // SHU 001
     General *liubei = new General("liubei", "shu", 4);
+    liubei->setLord(true);
     addGeneral(liubei);
 
     // SHU 002

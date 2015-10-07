@@ -23,5 +23,15 @@
 
 void StandardPackage::addQunGenerals()
 {
-}
+    // QUN 001
+    General *huatuo = new General("huatuo", "qun", 3);
+    addGeneral(huatuo);
 
+    // QUN 002
+    General *lvbu = new General("lvbu", "qun", 4);
+    addGeneral(lvbu);
+
+    // QUN 003
+    General *diaochan = new General("diaochan", "qun", 3, General::Female);
+    addGeneral(diaochan);
+}

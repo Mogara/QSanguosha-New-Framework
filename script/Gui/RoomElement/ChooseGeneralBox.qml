@@ -105,6 +105,8 @@ GraphicsBox {
         GeneralCardItem {
             name: model.name
             kingdom: model.kingdom
+            selectable: true
+            draggable: true
 
             onClicked: {
                 if (headGeneral == name) {

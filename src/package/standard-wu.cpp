@@ -23,6 +23,27 @@
 
 void StandardPackage::addWuGenerals()
 {
+    General *sunquan = new General("sunquan", "wu", 4);
+    addGeneral(sunquan);
+
+    General *ganning = new General("ganning", "wu", 4);
+    addGeneral(ganning);
+
+    General *lvmeng = new General("lvmeng", "wu", 4);
+    addGeneral(lvmeng);
+
+    General *huanggai = new General("huanggai", "wu", 4);
+    addGeneral(huanggai);
+
+    General *zhouyu = new General("zhouyu", "wu", 3);
+    addGeneral(zhouyu);
+
+    General *daqiao = new General("daqiao", "wu", 3, General::Female);
+    addGeneral(daqiao);
+
+    General *luxun = new General("luxun", "wu", 3);
+    addGeneral(luxun);
+
+    General *sunshangxiang = new General("sunshangxiang", "wu", 3, General::Female);
+    addGeneral(sunshangxiang);
 }
-
-

@@ -23,6 +23,31 @@
 
 void StandardPackage::addWeiGenerals()
 {
+    // WEI 001
+    General *caocao = new General("caocao$", "wei", 4);
+    addGeneral(caocao);
+
+    // WEI 002
+    General *simayi = new General("simayi", "wei", 3);
+    addGeneral(simayi);
+
+    // WEI 003
+    General *xiahoudun = new General("xiahoudun", "wei", 4);
+    addGeneral(xiahoudun);
+
+    // WEI 004
+    General *zhangliao = new General("zhangliao", "wei", 4);
+    addGeneral(zhangliao);
+
+    // WEI 005
+    General *xuchu = new General("xuchu", "wei", 4);
+    addGeneral(xuchu);
+
+    // WEI 006
+    General *guojia = new General("guojia", "wei", 3);
+    addGeneral(guojia);
+
+    // WEI 007
+    General *zhenji = new General("zhenji", "wei", 3, General::Female);
+    addGeneral(zhenji);
 }
-
-

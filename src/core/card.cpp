@@ -541,8 +541,6 @@ void MovableDelayedTrick::effect(GameLogic *logic, CardEffectStruct &effect)
         ServerPlayer *target = nullptr;
         forever {
             target = effect.to->nextAlive();
-            if (!targetFilter(QList<const Player *>(), target, effect.to))
-                continue;
 
             CardsMoveStruct move;
             move.cards << this;
@@ -557,7 +555,8 @@ void MovableDelayedTrick::effect(GameLogic *logic, CardEffectStruct &effect)
             use.to << target;
 
             QVariant data = QVariant::fromValue(&use);
-            logic->trigger(TargetConfirming, target, data);
+            foreach (ServerPlayer *to, use.to)
+                logic->trigger(TargetConfirmed, to, data);
             if (use.to.isEmpty())
                 continue;
             logic->trigger(TargetChosen, use.from, data);

@@ -8,6 +8,9 @@ ClientPlayer::ClientPlayer(CClientUser *user, QObject *parent)
 
 QString ClientPlayer::fullGeneralName() const
 {
+    if (!hasShownGeneral())
+        return tr("Seat %1").arg(seat());
+
     if (deputyGeneral()) {
         QString headName = tr(headGeneralName().toLatin1().constData());
         QString deputyName = tr(deputyGeneralName().toLatin1().constData());

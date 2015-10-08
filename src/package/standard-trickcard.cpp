@@ -414,19 +414,10 @@ Nullification::Nullification(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
     setObjectName("nullification");
+    m_targetFixed = true;
 }
 
 bool Nullification::isAvailable(const Player *) const
-{
-    return false;
-}
-
-bool Nullification::targetFeasible(const QList<const Player *> &targets, const Player *) const
-{
-    return targets.isEmpty();
-}
-
-bool Nullification::targetFilter(const QList<const Player *> &, const Player *, const Player *) const
 {
     return false;
 }
@@ -506,4 +497,9 @@ void StandardPackage::addTrickCards()
         << new Indulgence(Card::Heart, 6)
         << new Lightning(Card::Spade, 1);
     addCards(cards);
+
+    for (int i = 0; i < 100; i++) {
+        addCard(new Lightning(Card::Heart, 1));
+        addCard(new Nullification(Card::Heart, 1));
+    }
 }

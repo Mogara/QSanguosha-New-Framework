@@ -197,7 +197,7 @@ bool Card::targetFeasible(const QList<const Player *> &targets, const Player *se
 {
     C_UNUSED(targets);
     C_UNUSED(self);
-    return isTargetFixed();
+    return false;
 }
 
 bool Card::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
@@ -241,14 +241,7 @@ void Card::use(GameLogic *logic, CardUseStruct &use)
         logic->takeCardEffect(effect);
     }
 
-    const CardArea *table = logic->table();
-    if (table->length() > 0) {
-        CardsMoveStruct move;
-        move.cards = table->cards();
-        move.to.type = CardArea::DiscardPile;
-        move.isOpen = true;
-        logic->moveCards(move);
-    }
+    complete(logic);
 }
 
 void Card::onEffect(GameLogic *, CardEffectStruct &)
@@ -257,6 +250,18 @@ void Card::onEffect(GameLogic *, CardEffectStruct &)
 
 void Card::effect(GameLogic *, CardEffectStruct &)
 {
+}
+
+void Card::complete(GameLogic *logic)
+{
+    const CardArea *table = logic->table();
+    if (table->contains(this)) {
+        CardsMoveStruct move;
+        move.cards << this;
+        move.to.type = CardArea::DiscardPile;
+        move.isOpen = true;
+        logic->moveCards(move);
+    }
 }
 
 BasicCard::BasicCard(Card::Suit suit, int number)
@@ -378,6 +383,10 @@ void EquipCard::use(GameLogic *logic, CardUseStruct &use)
     }
 }
 
+void EquipCard::complete(GameLogic *)
+{
+}
+
 GlobalEffect::GlobalEffect(Card::Suit suit, int number)
     : TrickCard(suit, number)
 {
@@ -414,7 +423,7 @@ SingleTargetTrick::SingleTargetTrick(Card::Suit suit, int number)
 
 bool SingleTargetTrick::targetFeasible(const QList<const Player *> &targets, const Player *) const
 {
-    return isTargetFixed() || targets.length() == 1;
+    return targets.length() == 1;
 }
 
 bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const
@@ -467,7 +476,7 @@ void DelayedTrick::use(GameLogic *logic, CardUseStruct &use)
     logic->moveCards(move);
 }
 
-void DelayedTrick::effect(GameLogic *logic, CardEffectStruct &effect)
+void DelayedTrick::onEffect(GameLogic *logic, CardEffectStruct &effect)
 {
     CardsMoveStruct move;
     move.cards << this;
@@ -475,37 +484,23 @@ void DelayedTrick::effect(GameLogic *logic, CardEffectStruct &effect)
     move.isOpen = true;
     logic->moveCards(move);
 
+    TrickCard::onEffect(logic, effect);
+}
+
+void DelayedTrick::effect(GameLogic *logic, CardEffectStruct &effect)
+{
     JudgeStruct judge(m_judgePattern);
     judge.who = effect.to;
     logic->judge(judge);
 
     if (judge.matched)
         takeEffect(logic, effect);
-
-    const CardArea *table = logic->table();
-    if (table->contains(this)) {
-        CardsMoveStruct move;
-        move.cards << this;
-        move.to.type = CardArea::DiscardPile;
-        move.isOpen = true;
-        logic->moveCards(move);
-    }
 }
 
 MovableDelayedTrick::MovableDelayedTrick(Card::Suit suit, int number)
     : DelayedTrick(suit, number)
 {
     m_targetFixed = true;
-}
-
-bool MovableDelayedTrick::targetFeasible(const QList<const Player *> &targets, const Player *) const
-{
-    return targets.isEmpty();
-}
-
-bool MovableDelayedTrick::targetFilter(const QList<const Player *> &, const Player *, const Player *) const
-{
-    return false;
 }
 
 void MovableDelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)
@@ -517,12 +512,6 @@ void MovableDelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)
 
 void MovableDelayedTrick::effect(GameLogic *logic, CardEffectStruct &effect)
 {
-    CardsMoveStruct move;
-    move.cards << this;
-    move.to.type = CardArea::Table;
-    move.isOpen = true;
-    logic->moveCards(move);
-
     JudgeStruct judge(m_judgePattern);
     judge.who = effect.to;
     logic->judge(judge);
@@ -537,34 +526,41 @@ void MovableDelayedTrick::effect(GameLogic *logic, CardEffectStruct &effect)
             move.isOpen = true;
             logic->moveCards(move);
         }
-    } else {
-        ServerPlayer *target = nullptr;
-        forever {
-            target = effect.to->nextAlive();
+    }
+}
 
-            CardsMoveStruct move;
-            move.cards << this;
-            move.to.type = CardArea::DelayedTrick;
-            move.to.owner = target;
-            move.isOpen = true;
-            logic->moveCards(move);
+void MovableDelayedTrick::complete(GameLogic *logic)
+{
+    const CardArea *table = logic->table();
+    if (!table->contains(this))
+        return;
 
-            CardUseStruct use;
-            use.from = effect.to;
-            use.card = this;
-            use.to << target;
+    ServerPlayer *target = logic->currentPlayer();
+    forever {
+        target = target->nextAlive();
+        if (!targetFilter(QList<const Player *>(), target, nullptr))
+            continue;
 
-            QVariant data = QVariant::fromValue(&use);
-            foreach (ServerPlayer *to, use.to)
-                logic->trigger(TargetConfirmed, to, data);
-            if (use.to.isEmpty())
-                continue;
-            logic->trigger(TargetChosen, use.from, data);
-            foreach (ServerPlayer *to, use.to)
-                logic->trigger(TargetConfirmed, to, data);
-            if (!use.to.isEmpty())
-                break;
-        }
+        CardsMoveStruct move;
+        move.cards << this;
+        move.to.type = CardArea::DelayedTrick;
+        move.to.owner = target;
+        move.isOpen = true;
+        logic->moveCards(move);
+
+        CardUseStruct use;
+        use.card = this;
+        use.to << target;
+
+        QVariant data = QVariant::fromValue(&use);
+        foreach (ServerPlayer *to, use.to)
+            logic->trigger(TargetConfirming, to, data);
+        if (use.to.isEmpty())
+            continue;
+        foreach (ServerPlayer *to, use.to)
+            logic->trigger(TargetConfirmed, to, data);
+        if (!use.to.isEmpty())
+            break;
     }
 }
 

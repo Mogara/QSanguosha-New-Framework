@@ -44,6 +44,7 @@ public:
     void setPackages(const QList<const Package *> &packages) { m_packages = packages; }
 
     void addEventHandler(const EventHandler *handler);
+    void removeEventHandler(const EventHandler *handler);
     bool trigger(EventType event, ServerPlayer *target);
     bool trigger(EventType event, ServerPlayer *target, QVariant &data);
 

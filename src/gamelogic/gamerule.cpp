@@ -17,6 +17,7 @@
     Mogara
 *********************************************************************/
 
+#include "card.h"
 #include "gamelogic.h"
 #include "gamerule.h"
 #include "general.h"
@@ -93,9 +94,9 @@ void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
     m_logic->delay(500);
     switch (current->phase()) {
     case Player::Judge: {
-        const CardArea *area = current->delayedTricks();
-        while (area->length() > 0 && current->isAlive()) {
-            Card *trick = area->last();
+        QList<Card *> tricks = current->delayedTricks()->cards();
+        while (tricks.length() > 0 && current->isAlive()) {
+            Card *trick = tricks.takeLast();
 
             CardUseStruct use;
             use.card = trick;
@@ -103,6 +104,7 @@ void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
             CardEffectStruct effect(use);
             effect.to = current;
             m_logic->takeCardEffect(effect);
+            trick->complete(m_logic);
         }
         break;
     }

@@ -108,7 +108,7 @@ void RoomScene::checkTargetFeasibility()
     if (m_selectedCard.length() == 1) {
         const Card *card = m_selectedCard.first();
         const ClientPlayer *self = m_client->selfPlayer();
-        bool acceptable = card->targetFeasible(m_selectedPlayer, self);
+        bool acceptable = card->isTargetFixed() || card->targetFeasible(m_selectedPlayer, self);
         if (acceptable && !m_assignedTargets.isEmpty()) {
             foreach (const Player *target, m_assignedTargets) {
                 if (!m_selectedPlayer.contains(target)) {
@@ -125,11 +125,13 @@ void RoomScene::checkTargetFeasibility()
             enablePhotos(seats);
         } else {
             QVariantList seats;
-            const ClientPlayer *self = m_client->selfPlayer();
-            QList<const ClientPlayer *> players = m_client->players();
-            foreach (const ClientPlayer *player, players) {
-                if (card->targetFilter(m_selectedPlayer, player, self))
-                    seats << player->seat();
+            if (!card->isTargetFixed()) {
+                const ClientPlayer *self = m_client->selfPlayer();
+                QList<const ClientPlayer *> players = m_client->players();
+                foreach (const ClientPlayer *player, players) {
+                    if (card->targetFilter(m_selectedPlayer, player, self))
+                        seats << player->seat();
+                }
             }
             enablePhotos(seats);
         }

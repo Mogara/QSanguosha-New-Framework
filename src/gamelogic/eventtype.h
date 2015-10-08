@@ -51,7 +51,6 @@ enum EventType
     TargetConfirmed,
     CardEffect,
     CardEffected,
-    CardEffectConfirmed,
     PostCardEffected,
     CardFinished,
     TrickCardCanceling,

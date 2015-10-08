@@ -130,6 +130,7 @@ public:
     virtual void use(GameLogic *logic, CardUseStruct &use);
     virtual void onEffect(GameLogic *logic, CardEffectStruct &effect);
     virtual void effect(GameLogic *logic, CardEffectStruct &effect);
+    virtual void complete(GameLogic *logic);
 
 protected:
     uint m_id;
@@ -200,6 +201,7 @@ public:
 
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void use(GameLogic *logic, CardUseStruct &use) override;
+    void complete(GameLogic *) override;
 
     Skill *skill() const { return m_skill; }
 
@@ -249,6 +251,7 @@ public:
     bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void use(GameLogic *logic, CardUseStruct &use) override;
+    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
     void effect(GameLogic *logic, CardEffectStruct &effect) override;
 
     virtual void takeEffect(GameLogic *logic, CardEffectStruct &effect) = 0;
@@ -264,10 +267,9 @@ class MovableDelayedTrick : public DelayedTrick
 public:
     MovableDelayedTrick(Suit suit, int number);
 
-    bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
-    bool targetFilter(const QList<const Player *> &, const Player *, const Player *) const override;
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void effect(GameLogic *logic, CardEffectStruct &effect) override;
+    void complete(GameLogic *logic);
     bool isAvailable(const Player *player) const override;
 };
 

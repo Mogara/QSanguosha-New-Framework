@@ -140,8 +140,6 @@ public:
     Q_INVOKABLE Nullification(Suit suit, int number);
 
     bool isAvailable(const Player *) const override;
-    bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
-    bool targetFilter(const QList<const Player *> &, const Player *, const Player *) const override;
     void onUse(GameLogic *logic, CardUseStruct &use);
     void effect(GameLogic *, CardEffectStruct &effect) override;
 };

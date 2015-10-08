@@ -83,6 +83,13 @@ void GameLogic::addEventHandler(const EventHandler *handler)
         m_handlers[event] << handler;
 }
 
+void GameLogic::removeEventHandler(const EventHandler *handler)
+{
+    QList<EventType> events = handler->events();
+    foreach (EventType event, events)
+        m_handlers[event].removeOne(handler);
+}
+
 bool GameLogic::trigger(EventType event, ServerPlayer *target)
 {
     QVariant data;
@@ -460,9 +467,6 @@ bool GameLogic::useCard(CardUseStruct &use)
 
 bool GameLogic::takeCardEffect(CardEffectStruct &effect)
 {
-    if (effect.to || effect.use.target)
-        effect.use.card->onEffect(this, effect);
-
     QVariant data = QVariant::fromValue(&effect);
     bool canceled = false;
     if (effect.to) {
@@ -471,13 +475,17 @@ bool GameLogic::takeCardEffect(CardEffectStruct &effect)
             if (!canceled) {
                 canceled = trigger(CardEffected, effect.to, data);
                 if (!canceled) {
+                    effect.use.card->onEffect(this, effect);
                     if (effect.to->isAlive() && !effect.isNullified())
                         effect.use.card->effect(this, effect);
                 }
             }
         }
-    } else if (effect.use.target && !effect.isNullified())
-        effect.use.card->effect(this, effect);
+    } else if (effect.use.target) {
+        effect.use.card->onEffect(this, effect);
+        if (!effect.isNullified())
+            effect.use.card->effect(this, effect);
+    }
     trigger(PostCardEffected, effect.to, data);
     return !canceled;
 }

@@ -1,9 +1,14 @@
 import QtQuick 2.4
 
-CardArea {
+Item {
     property var discardedCards: []
+    property alias cards: area.cards
 
     id: root
+
+    CardArea {
+        id: area
+    }
 
     Timer {
         id: vanishTimer
@@ -26,6 +31,26 @@ CardArea {
             for (i = 0; i < cards.length; i++)
                 discardedCards[i] = cards[i];
         }
+    }
+
+    function add(inputs)
+    {
+        area.add(inputs);
+    }
+
+    function remove(outputs)
+    {
+        var result = area.remove(outputs);
+        for (var i = 0; i < result.length; i++) {
+            for (var j = 0; j < discardedCards.length; j++) {
+                if (result[i].cid === discardedCards[j].cid) {
+                    discardedCards.splice(j, 1);
+                    break;
+                }
+            }
+        }
+        updateCardPosition(true);
+        return result;
     }
 
     function updateCardPosition(animated)

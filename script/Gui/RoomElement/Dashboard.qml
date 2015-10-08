@@ -184,6 +184,12 @@ RowLayout {
             avatar: headGeneralName ? headGeneralName: "huangyueying"
             generalName: qsTr(headGeneralName)
             generalPosition: "head"
+
+            SkillPanel {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: Device.gu(3)
+            }
         }
 
         GeneralAvatar {
@@ -193,6 +199,12 @@ RowLayout {
             avatar: deputyGeneralName ? deputyGeneralName : "zhugeliang"
             generalName: qsTr(deputyGeneralName)
             generalPosition: "deputy"
+
+            SkillPanel {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: Device.gu(3)
+            }
         }
     }
 }

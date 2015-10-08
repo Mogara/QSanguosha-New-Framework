@@ -150,6 +150,8 @@ QML_FILES = \
     script/Gui/RoomElement/SimpleEquipArea.qml \
     script/Gui/RoomElement/SimpleEquipItem.qml \
     script/Gui/RoomElement/SimpleRoleIcon.qml \
+    script/Gui/RoomElement/SkillButton.qml \
+    script/Gui/RoomElement/SkillPanel.qml \
     script/Gui/RoomElement/TablePile.qml \
     script/engine.js \
     script/utility.js \

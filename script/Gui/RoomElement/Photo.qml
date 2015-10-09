@@ -257,6 +257,15 @@ Item {
         visible: root.phase != "inactive"
     }
 
+    Colorize {
+        anchors.fill: parent
+        source: parent
+        hue: 0
+        saturation: 0
+        lightness: 0
+        visible: !parent.alive
+    }
+
     MouseArea {
         anchors.fill: parent
         onClicked: {

@@ -63,6 +63,7 @@ signals:
     void amazingGraceFinished();
     void amazingGraceRequested();
     void choosePlayerCardRequested(const QList<Card *> &handcards, const QList<Card *> &equips, const QList<Card *> &delayedTricks);
+    void cardShown(const ClientPlayer *from, const QList<const Card *> &cards);
 
 private:
     Client(QObject *parent = 0);
@@ -91,6 +92,7 @@ private:
     static void ClearAmazingGraceCommand(QObject *receiver, const QVariant &);
     static void TakeAmazingGraceRequestCommand(QObject *receiver, const QVariant &data);
     static void ChoosePlayerCardRequestCommand(QObject *receiver, const QVariant &data);
+    static void ShowCardCommand(QObject *receiver, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

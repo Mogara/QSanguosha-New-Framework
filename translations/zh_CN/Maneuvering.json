@@ -1,0 +1,5 @@
+{
+	"fire_attack" : "火攻",
+	"fire-attack-show-card" : "%1 对你使用了【火攻】，请展示1张手牌",
+	"fire-attack-discard-card" : "%1 展示的手牌是【%2】，请弃置1张相同花色的牌"
+}

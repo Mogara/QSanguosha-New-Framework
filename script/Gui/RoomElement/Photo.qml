@@ -270,4 +270,24 @@ Item {
         id: handcardAreaItem
         anchors.centerIn: parent
     }
+
+    InvisibleCardArea {
+        id: defaultArea
+        anchors.centerIn: parent
+    }
+
+    function add(inputs)
+    {
+        defaultArea.add(inputs);
+    }
+
+    function remove(outputs)
+    {
+        return defaultArea.remove(outputs);
+    }
+
+    function updateCardPosition(animated)
+    {
+        defaultArea.updateCardPosition(animated);
+    }
 }

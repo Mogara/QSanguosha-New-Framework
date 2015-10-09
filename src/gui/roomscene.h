@@ -61,6 +61,7 @@ signals:
     void askToChooseCards(const QVariant &cards);
     void clearPopupBox();
     void askToChoosePlayerCard(const QVariant &handcards, const QVariant &equips, const QVariant &delayedTricks);
+    void showCard(int fromSeat, const QVariant &cards);
 
 private:
     enum RespondingState
@@ -86,6 +87,7 @@ private:
     void onCardsAsked(const QString &pattern, int minNum, int maxNum, bool optional);
     void onAmazingGraceStarted();
     void onChoosePlayerCardRequested(const QList<Card *> &handcards, const QList<Card *> &equips, const QList<Card *> &delayedTricks);
+    void onCardShown(const ClientPlayer *from, const QList<const Card *> &cards);
 
     QVariantMap convertToMap(const Card *card) const;
 

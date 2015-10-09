@@ -80,6 +80,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::amazingGraceStarted, this, &RoomScene::onAmazingGraceStarted);
     connect(m_client, &Client::amazingGraceFinished, this, &RoomScene::clearPopupBox);
     connect(m_client, &Client::choosePlayerCardRequested, this, &RoomScene::onChoosePlayerCardRequested);
+    connect(m_client, &Client::cardShown, this, &RoomScene::onCardShown);
 }
 
 void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
@@ -421,6 +422,14 @@ void RoomScene::onChoosePlayerCardRequested(const QList<Card *> &handcards, cons
     foreach (Card *card, delayedTricks)
         j << convertToMap(card);
     askToChoosePlayerCard(h, e, j);
+}
+
+void RoomScene::onCardShown(const ClientPlayer *from, const QList<const Card *> &cards)
+{
+    QVariantList data;
+    foreach (const Card *card, cards)
+        data << convertToMap(card);
+    showCard(from->seat(), data);
 }
 
 QVariantMap RoomScene::convertToMap(const Card *card) const

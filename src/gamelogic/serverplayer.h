@@ -48,6 +48,9 @@ public:
     void drawCards(int n);
     void recastCard(Card *card);
 
+    void showCard(Card *card);
+    void showCards(const QList<Card *> &cards);
+
     void play();
     void play(const QList<Phase> &phases);
     void activate(CardUseStruct &use);
@@ -56,13 +59,14 @@ public:
     bool isPhaseSkipped(Phase phase) { return m_skippedPhase.contains(phase); }
     void clearSkippedPhase() { m_skippedPhase.clear(); }
 
-    void showPrompt(const QString &message, const QVariantList &args = QVariantList());
+    void showPrompt(const QString &message, int number);
     void showPrompt(const QString &message, const Card *card = nullptr);
     void showPrompt(const QString &message, const ServerPlayer *p1, const Card *card = nullptr);
     void showPrompt(const QString &message, const ServerPlayer *p1, const ServerPlayer *p2, const Card *card = nullptr);
+    void showPrompt(const QString &message, const QVariantList &args = QVariantList());
 
     Event askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable);
-    Card *askForCard(const QString &pattern);
+    Card *askForCard(const QString &pattern, bool optional = true);
     QList<Card *> askForCards(const QString &pattern, int num, bool optional = false);
     QList<Card *> askForCards(const QString &pattern, int minNum, int maxNum, bool optional = false);
     Card *askToChooseCard(ServerPlayer *owner, const QString &areaFlag = "hej", bool handcardVisible = false);

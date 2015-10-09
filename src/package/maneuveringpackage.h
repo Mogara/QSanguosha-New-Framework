@@ -60,6 +60,14 @@ public:
     Q_INVOKABLE Fan(Suit suit = Diamond, int number = 1);
 };
 
+class GudingBlade : public Weapon
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE GudingBlade(Suit = Spade, int number = 1);
+};
+
 class Vine : public Armor
 {
     Q_OBJECT
@@ -98,6 +106,17 @@ public:
     bool targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const override;
 
     void effect(GameLogic *, CardEffectStruct &effect) override;
+};
+
+class FireAttack : public SingleTargetTrick
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE FireAttack(Suit suit, int number);
+
+    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
+    void effect(GameLogic *logic, CardEffectStruct &effect) override;
 };
 
 class ManeuveringPackage : public Package

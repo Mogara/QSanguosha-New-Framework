@@ -141,7 +141,7 @@ void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
         maxCardNum = data.toInt();
         int discardNum = current->handcardNum() - maxCardNum;
         if (discardNum > 0) {
-            current->showPrompt("ask_to_discard", QVariantList() << discardNum);
+            current->showPrompt("ask_to_discard", discardNum);
             QList<Card *> cards = current->askForCards(".|.|.|hand", discardNum);
 
             CardsMoveStruct move;

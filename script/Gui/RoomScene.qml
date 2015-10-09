@@ -294,6 +294,17 @@ RoomScene {
         });
     }
 
+    onShowCard: {
+        if (cards.length === 1) {
+            var photo = getItemBySeat(fromSeat);
+            var items = photo.remove(cards);
+            tablePile.add(items);
+            tablePile.updateCardPosition(true);
+        } else if (cards.length > 1) {
+            //@to-do: skills like Gongxin show multiple cards
+        }
+    }
+
     onClearPopupBox: {
         popupBox.source = "";
     }

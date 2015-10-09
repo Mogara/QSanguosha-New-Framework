@@ -182,8 +182,12 @@ void Client::ShowPromptCommand(QObject *receiver, const QVariant &data)
                 break;
             uint cardId = args.at(i).toUInt();
             const Card *card = client->findCard(cardId);
-            if (card)
-                message = message.arg(tr(card->objectName()));
+            if (card) {
+                message = message.arg(QString("%1<img src=\"image://root/card/suit/%2.png\" />%3")
+                                      .arg(tr(card->objectName()))
+                                      .arg(card->suitString())
+                                      .arg(card->number()));
+            }
         } else {
             message = message.arg(arg);
         }
@@ -453,6 +457,28 @@ void Client::ChoosePlayerCardRequestCommand(QObject *receiver, const QVariant &d
     emit client->choosePlayerCardRequested(handcards, equips, delayedTricks);
 }
 
+void Client::ShowCardCommand(QObject *receiver, const QVariant &data)
+{
+    const QVariantMap arg = data.toMap();
+    if (arg.isEmpty())
+        return;
+
+    Client *client = qobject_cast<Client *>(receiver);
+    const ClientPlayer *from = client->findPlayer(arg["from"].toUInt());
+    if (from == nullptr)
+        return;
+
+    QVariantList dataList = arg["cards"].toList();
+    QList<const Card *> cards;
+    foreach (const QVariant &var, dataList) {
+        const Card *card = client->findCard(var.toUInt());
+        if (card)
+            cards << card;
+    }
+
+    emit client->cardShown(from, cards);
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -473,6 +499,7 @@ void Client::Init()
     AddCallback(S_COMMAND_USE_CARD, UseCardCommand);
     AddCallback(S_COMMAND_SHOW_AMAZING_GRACE, ShowAmazingGraceCommand);
     AddCallback(S_COMMAND_CLEAR_AMAZING_GRACE, ClearAmazingGraceCommand);
+    AddCallback(S_COMMAND_SHOW_CARD, ShowCardCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);

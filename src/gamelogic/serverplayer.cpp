@@ -87,6 +87,29 @@ void ServerPlayer::recastCard(Card *card)
     drawCards(1);
 }
 
+void ServerPlayer::showCard(Card *card)
+{
+    QVariantList cardData;
+    cardData << card->id();
+
+    QVariantMap data;
+    data["from"] = id();
+    data["cards"] = cardData;
+    m_room->broadcastNotification(S_COMMAND_SHOW_CARD, data);
+}
+
+void ServerPlayer::showCards(const QList<Card *> &cards)
+{
+    QVariantList cardData;
+    foreach (Card *card, cards)
+        cardData << card->id();
+
+    QVariantMap data;
+    data["from"] = id();
+    data["cards"] = cardData;
+    m_agent->notify(S_COMMAND_SHOW_CARD, data);
+}
+
 void ServerPlayer::play()
 {
     QList<Phase> phases;
@@ -162,6 +185,14 @@ void ServerPlayer::activate(CardUseStruct &use)
     }
 }
 
+void ServerPlayer::showPrompt(const QString &message, int number)
+{
+    QVariantList data;
+    data << message;
+    data << number;
+    m_agent->notify(S_COMMAND_SHOW_PROMPT, data);
+}
+
 void ServerPlayer::showPrompt(const QString &message, const QVariantList &args)
 {
     QVariantList data;
@@ -205,10 +236,11 @@ Event ServerPlayer::askForTriggerOrder(const QString &reason, QList<Event> &opti
     return Event();
 }
 
-Card *ServerPlayer::askForCard(const QString &pattern)
+Card *ServerPlayer::askForCard(const QString &pattern, bool optional)
 {
     QVariantMap data;
     data["pattern"] = pattern;
+    data["optional"] = optional;
 
     QVariant replyData;
     forever {
@@ -224,6 +256,23 @@ Card *ServerPlayer::askForCard(const QString &pattern)
             break;
         return cards.first();
     }
+
+    if (!optional) {
+        CardPattern p(pattern);
+
+        QList<Card *> allCards = handcards()->cards();
+        foreach (Card *card, allCards) {
+            if (p.match(this, card))
+                return card;
+        }
+
+        allCards = equips()->cards();
+        foreach (Card *card, allCards) {
+            if (p.match(this, card))
+                return card;
+        }
+    }
+
     return nullptr;
 }
 

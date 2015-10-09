@@ -21,6 +21,7 @@
 #include "gamelogic.h"
 #include "maneuveringpackage.h"
 #include "serverplayer.h"
+#include "standard-trickcard.h"
 
 FireSlash::FireSlash(Card::Suit suit, int number)
     : Slash(suit, number)
@@ -74,6 +75,13 @@ Fan::Fan(Card::Suit suit, int number)
 {
     setObjectName("fan");
     m_attackRange = 4;
+}
+
+GudingBlade::GudingBlade(Card::Suit suit, int number)
+    : Weapon(suit, number)
+{
+    setObjectName("guding_blade");
+    m_attackRange = 2;
 }
 
 Vine::Vine(Card::Suit suit, int number)
@@ -130,9 +138,118 @@ void IronChain::effect(GameLogic *, CardEffectStruct &effect)
     effect.to->broadcastProperty("isChained");
 }
 
+FireAttack::FireAttack(Card::Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+{
+    setObjectName("fire_attack");
+}
+
+bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+{
+    return toSelect->handcardNum() > 0 && SingleTargetTrick::targetFilter(targets, toSelect, self);
+}
+
+void FireAttack::effect(GameLogic *logic, CardEffectStruct &effect)
+{
+    if (effect.to->handcardNum() <= 0)
+        return;
+
+    effect.to->showPrompt("fire-attack-show-card", effect.from);
+    Card *card = effect.to->askForCard(".", false);
+    if (card)
+        effect.to->showCard(card);
+    else
+        return;
+
+    if (effect.from->isAlive()) {
+        QString pattern = QString(".|") + card->suitString();
+        effect.from->showPrompt("fire-attack-discard-card", effect.to, card);
+        Card *discarded = effect.from->askForCard(pattern);
+        if (discarded) {
+            CardsMoveStruct move;
+            move.cards << discarded;
+            move.to.type = CardArea::DiscardPile;
+            logic->moveCards(move);
+
+            DamageStruct damage;
+            damage.from = effect.from;
+            damage.to = effect.to;
+            damage.nature = DamageStruct::Fire;
+            logic->damage(damage);
+        }
+    }
+}
+
 ManeuveringPackage::ManeuveringPackage()
     : Package("maneuvering")
 {
+    QList<Card *> cards;
+
+    // spade
+    cards
+        //<< new GudingBlade(Card::Spade, 1)
+        << new Vine(Card::Spade, 2)
+        << new Analeptic(Card::Spade, 3)
+        << new ThunderSlash(Card::Spade, 4)
+        << new ThunderSlash(Card::Spade, 5)
+        << new ThunderSlash(Card::Spade, 6)
+        << new ThunderSlash(Card::Spade, 7)
+        << new ThunderSlash(Card::Spade, 8)
+        << new Analeptic(Card::Spade, 9)
+        << new SupplyShortage(Card::Spade, 10)
+        << new IronChain(Card::Spade, 11)
+        << new IronChain(Card::Spade, 12)
+        << new Nullification(Card::Spade, 13);
+
+    // club
+    cards << new SilverLion(Card::Club, 1)
+        << new Vine(Card::Club, 2)
+        << new Analeptic(Card::Club, 3)
+        << new SupplyShortage(Card::Club, 4)
+        << new ThunderSlash(Card::Club, 5)
+        << new ThunderSlash(Card::Club, 6)
+        << new ThunderSlash(Card::Club, 7)
+        << new ThunderSlash(Card::Club, 8)
+        << new Analeptic(Card::Club, 9)
+        << new IronChain(Card::Club, 10)
+        << new IronChain(Card::Club, 11)
+        << new IronChain(Card::Club, 12)
+        << new IronChain(Card::Club, 13);
+
+    // heart
+    cards << new Nullification(Card::Heart, 1)
+        << new FireAttack(Card::Heart, 2)
+        << new FireAttack(Card::Heart, 3)
+        << new FireSlash(Card::Heart, 4)
+        << new Peach(Card::Heart, 5)
+        << new Peach(Card::Heart, 6)
+        << new FireSlash(Card::Heart, 7)
+        << new Jink(Card::Heart, 8)
+        << new Jink(Card::Heart, 9)
+        << new FireSlash(Card::Heart, 10)
+        << new Jink(Card::Heart, 11)
+        << new Jink(Card::Heart, 12)
+        << new Nullification(Card::Heart, 13);
+
+    // diamond
+    cards << new Fan(Card::Diamond, 1)
+        << new Peach(Card::Diamond, 2)
+        << new Peach(Card::Diamond, 3)
+        << new FireSlash(Card::Diamond, 4)
+        << new FireSlash(Card::Diamond, 5)
+        << new Jink(Card::Diamond, 6)
+        << new Jink(Card::Diamond, 7)
+        << new Jink(Card::Diamond, 8)
+        << new Analeptic(Card::Diamond, 9)
+        << new Jink(Card::Diamond, 10)
+        << new Jink(Card::Diamond, 11)
+        << new FireAttack(Card::Diamond, 12);
+
+    addCards(cards);
+
+    DefensiveHorse *hualiu = new DefensiveHorse(Card::Diamond, 13);
+    hualiu->setObjectName("hualiu");
+    addCard(hualiu);
 }
 
 ADD_PACKAGE(Maneuvering)

@@ -123,10 +123,14 @@ void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
         while (current->isAlive()) {
             CardUseStruct use;
             current->activate(use);
-            if (use.card != nullptr)
-                m_logic->useCard(use);
-            else
+            if (use.card != nullptr) {
+                if (use.card->canRecast() && use.target == nullptr && use.to.isEmpty())
+                    current->recastCard(use.card);
+                else
+                    m_logic->useCard(use);
+            } else {
                 break;
+            }
         }
         break;
     }

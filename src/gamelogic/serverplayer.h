@@ -46,6 +46,7 @@ public:
     ServerPlayer *nextAlive(int step = 1, bool ignoreRemoved = true) const { return qobject_cast<ServerPlayer *>(Player::nextAlive(step, ignoreRemoved)); }
 
     void drawCards(int n);
+    void recastCard(Card *card);
 
     void play();
     void play(const QList<Phase> &phases);

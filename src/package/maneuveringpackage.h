@@ -87,6 +87,19 @@ public:
     void takeEffect(GameLogic *, CardEffectStruct &effect) override;
 };
 
+class IronChain : public TrickCard
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE IronChain(Suit suit, int number);
+
+    bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const override;
+
+    void effect(GameLogic *, CardEffectStruct &effect) override;
+};
+
 class ManeuveringPackage : public Package
 {
 public:

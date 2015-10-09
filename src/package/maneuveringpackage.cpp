@@ -106,6 +106,30 @@ void SupplyShortage::takeEffect(GameLogic *, CardEffectStruct &effect)
     effect.to->skipPhase(Player::Draw);
 }
 
+IronChain::IronChain(Card::Suit suit, int number)
+    : TrickCard(suit, number)
+{
+    setObjectName("iron_chain");
+    m_subtype = DamageSpreadType;
+    m_canRecast = true;
+}
+
+bool IronChain::targetFeasible(const QList<const Player *> &targets, const Player *) const
+{
+    return targets.length() <= 2;
+}
+
+bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const
+{
+    return targets.length() < 2;
+}
+
+void IronChain::effect(GameLogic *, CardEffectStruct &effect)
+{
+    effect.to->setChained(!effect.to->isChained());
+    effect.to->broadcastProperty("isChained");
+}
+
 ManeuveringPackage::ManeuveringPackage()
     : Package("maneuvering")
 {

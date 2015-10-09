@@ -17,6 +17,7 @@ Item {
     property alias equipArea: equipAreaItem
     property alias delayedTrickArea: delayedTrickAreaItem
     property string phase: "inactive"
+    property bool chained: false
     property alias progressBar: progressBarItem
     property int seat: 0
     property bool selectable: false
@@ -212,6 +213,12 @@ Item {
         glow.spread: 0.7
         glow.radius: Device.gu(12)
         glow.samples: 24
+    }
+
+    Image {
+        source: "image://root/chain"
+        anchors.centerIn: parent
+        visible: parent.chained
     }
 
     DelayedTrickArea {

@@ -67,6 +67,26 @@ void ServerPlayer::drawCards(int n)
     m_logic->moveCards(move);
 }
 
+void ServerPlayer::recastCard(Card *card)
+{
+    CardsMoveStruct recast;
+    recast.cards << card;
+    recast.to.type = CardArea::Table;
+    recast.isOpen = true;
+    m_logic->moveCards(recast);
+
+    const CardArea *table = m_logic->table();
+    if (table->contains(card)) {
+        CardsMoveStruct discard;
+        discard.cards << card;
+        discard.to.type = CardArea::DiscardPile;
+        discard.isOpen = true;
+        m_logic->moveCards(discard);
+    }
+
+    drawCards(1);
+}
+
 void ServerPlayer::play()
 {
     QList<Phase> phases;

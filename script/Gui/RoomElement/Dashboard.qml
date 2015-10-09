@@ -13,6 +13,7 @@ RowLayout {
     property alias hp: hpBar.value
     property alias maxHp: hpBar.maxValue
     property string phase: "inactive"
+    property bool chained: false
     property bool selectable: false
     property bool selected: false
 
@@ -205,6 +206,13 @@ RowLayout {
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: Device.gu(3)
             }
+        }
+
+        Image {
+            source: "image://root/chain"
+            visible: root.chained
+            anchors.horizontalCenter: headGeneralItem.right
+            anchors.verticalCenter: headGeneralItem.verticalCenter
         }
     }
 }

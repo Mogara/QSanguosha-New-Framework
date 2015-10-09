@@ -66,6 +66,7 @@ RoomScene {
                             deputyGeneral: modelData.deputyGeneralName
                             phase: modelData.phase
                             seat: modelData.seat
+                            chained: modelData.isChained
 
                             onSelectedChanged: roomScene.onPhotoSelected(roomScene.getSelectedSeats());
                         }
@@ -144,6 +145,7 @@ RoomScene {
                     dashboard.headGeneralName = Qt.binding(function(){return model.headGeneralName});
                     dashboard.deputyGeneralName = Qt.binding(function(){return model.deputyGeneralName});
                     dashboard.headGeneralKingdom = dashboard.deputyGeneralKingdom = Qt.binding(function(){return model.kingdom});
+                    dashboard.chained = Qt.binding(function(){return model.isChained;});
                 }
 
                 onSetAcceptEnabled: dashboard.acceptButton.enabled = enabled;
@@ -249,23 +251,13 @@ RoomScene {
     }
 
     onEnablePhotos: {
-        var photo, i;
-        for (i = 0; i < photos.count; i++) {
-            photo = photos.itemAt(i);
-            photo.selectable = false;
+        for (var i = 0; i < photos.count; i++) {
+            var photo = photos.itemAt(i);
+            if (!photo.selected)
+                photo.selectable = seats.contains(photo.seat);
         }
-
-        for (i  = 0; i < seats.length; i++) {
-            var seat = seats[i];
-            photo = getItemBySeat(seat);
-            photo.selectable = true;
-        }
-
-        for (i = 0; i < photos.count; i++) {
-            photo = photos.itemAt(i);
-            if (!photo.selectable)
-                photo.selected = false;
-        }
+        if (!dashboard.selected)
+            dashboard.selectable = seats.contains(dashboard.seatNumber);
     }
 
     onPlayAudio: {

@@ -313,3 +313,9 @@ void Player::setAttackRange(int range)
     m_attackRange = range;
     emit attackRangeChanged();
 }
+
+void Player::setChained(bool chained)
+{
+    m_chained = chained;
+    emit chainedChanged();
+}

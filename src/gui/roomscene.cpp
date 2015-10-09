@@ -118,23 +118,17 @@ void RoomScene::checkTargetFeasibility()
             }
         }
         setAcceptEnabled(acceptable);
-        if (acceptable) {
-            QVariantList seats;
-            foreach (const Player *player, m_selectedPlayer)
-                seats << player->seat();
-            enablePhotos(seats);
-        } else {
-            QVariantList seats;
-            if (!card->isTargetFixed()) {
-                const ClientPlayer *self = m_client->selfPlayer();
-                QList<const ClientPlayer *> players = m_client->players();
-                foreach (const ClientPlayer *player, players) {
-                    if (card->targetFilter(m_selectedPlayer, player, self))
-                        seats << player->seat();
-                }
+
+        QVariantList seats;
+        if (!card->isTargetFixed()) {
+            const ClientPlayer *self = m_client->selfPlayer();
+            QList<const ClientPlayer *> players = m_client->players();
+            foreach (const ClientPlayer *player, players) {
+                if (card->targetFilter(m_selectedPlayer, player, self))
+                    seats << player->seat();
             }
-            enablePhotos(seats);
         }
+        enablePhotos(seats);
     } else {
         setAcceptEnabled(false);
     }

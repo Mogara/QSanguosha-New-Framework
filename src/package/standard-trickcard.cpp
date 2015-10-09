@@ -497,9 +497,4 @@ void StandardPackage::addTrickCards()
         << new Indulgence(Card::Heart, 6)
         << new Lightning(Card::Spade, 1);
     addCards(cards);
-
-    for (int i = 0; i < 100; i++) {
-        addCard(new Lightning(Card::Heart, 1));
-        addCard(new Nullification(Card::Heart, 1));
-    }
 }

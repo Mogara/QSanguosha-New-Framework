@@ -171,6 +171,7 @@ public:
         GlobalEffectType,
         AreaOfEffectType,
         SingleTargetType,
+        DamageSpreadType,
 
         //Delayed Types
         DelayedType

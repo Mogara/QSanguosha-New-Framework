@@ -56,6 +56,8 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(bool isDrank READ isDrank WRITE setDrank NOTIFY drankChanged)
     Q_PROPERTY(QString kingdom READ kingdom WRITE setKingdom NOTIFY kingdomChanged)
     Q_PROPERTY(QString role READ role WRITE setRole NOTIFY roleChanged)
+    Q_PROPERTY(int attackRange READ attackRange WRITE setAttackRange NOTIFY attackRangeChanged)
+    Q_PROPERTY(bool isChained READ isChained WRITE setChained NOTIFY chainedChanged)
     Q_PROPERTY(QString generalName READ generalName WRITE setGeneralName NOTIFY generalChanged)
     Q_PROPERTY(QString headGeneralName READ headGeneralName WRITE setHeadGeneralName NOTIFY headGeneralChanged)
     Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName WRITE setDeputyGeneralName NOTIFY deputyGeneralChanged)
@@ -124,6 +126,9 @@ public:
 
     int attackRange() const { return m_attackRange; }
     void setAttackRange(int range);
+
+    bool isChained() const { return m_chained; }
+    void setChained(bool chained);
 
     //Alias of head general.
     const General *general() const { return headGeneral(); }
@@ -208,6 +213,7 @@ signals:
     void kingdomChanged();
     void roleChanged();
     void attackRangeChanged();
+    void chainedChanged();
 
 protected:
     QString m_screenName;
@@ -225,6 +231,7 @@ protected:
     QString m_kingdom;
     QString m_role;
     int m_attackRange;
+    bool m_chained;
 
     const General *m_headGeneral;
     const General *m_deputyGeneral;

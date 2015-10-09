@@ -32,6 +32,7 @@ GameRule::GameRule(GameLogic *logic)
 {
     m_events << GameStart;
     m_events << TurnStart << PhaseProceeding << PhaseEnd;
+    m_events << AfterHpReduced << AskForPeach << AskForPeachDone;
 }
 
 bool GameRule::triggerable(ServerPlayer *) const
@@ -166,6 +167,78 @@ void GameRule::onPhaseEnd(ServerPlayer *current, QVariant &) const
     }
 }
 
+void GameRule::onAfterHpReduced(ServerPlayer *victim, QVariant &data) const
+{
+    if (victim->hp() > 0)
+        return;
+
+    victim->setDying(true);
+    victim->broadcastProperty("dying");
+
+    DeathStruct death;
+    death.who = victim;
+    death.damage = data.value<DamageStruct *>();
+
+    QVariant dyingData = QVariant::fromValue(&death);
+
+    QList<ServerPlayer *> allPlayers = m_logic->allPlayers();
+    foreach (ServerPlayer *player, allPlayers) {
+        if (m_logic->trigger(EnterDying, player, dyingData) || victim->hp() > 0 || victim->isDead())
+            break;
+    }
+
+    if (victim->isAlive() && victim->hp() <= 0) {
+        QList<ServerPlayer *> allPlayers = m_logic->allPlayers();
+        foreach (ServerPlayer *saver, allPlayers) {
+            if (victim->hp() > 0 || victim->isDead())
+                break;
+
+            m_logic->trigger(AskForPeach, saver, dyingData);
+        }
+        m_logic->trigger(AskForPeachDone, victim, dyingData);
+    }
+
+    victim->setDying(false);
+    victim->broadcastProperty("dying");
+    m_logic->trigger(QuitDying, victim, dyingData);
+}
+
+void GameRule::onAskForPeach(ServerPlayer *current, QVariant &data) const
+{
+    DeathStruct *dying = data.value<DeathStruct *>();
+    while (dying->who->hp() <= 0) {
+        Card *peach = nullptr;
+        if (dying->who->isAlive()) {
+            QVariantList args;
+            args << "player" << dying->who->id();
+            args << (1 - dying->who->hp());
+            if (current != dying->who) {
+                current->showPrompt("ask_for_peach", args);
+                peach = current->askForCard("Peach");
+            } else {
+                current->showPrompt("ask_self_for_peach_or_analeptic", 1 - current->hp());
+                peach = current->askForCard("Peach,Analeptic");
+            }
+        }
+        if (peach == nullptr)
+            break;
+
+        CardUseStruct use;
+        use.from = current;
+        use.card = peach;
+        use.to << dying->who;
+        m_logic->useCard(use);
+    }
+}
+
+void GameRule::onAskForPeachDone(ServerPlayer *victim, QVariant &data) const
+{
+    if (victim->hp() <= 0 && victim->isAlive()) {
+        DeathStruct *death = data.value<DeathStruct *>();
+        m_logic->killPlayer(victim, death->damage);
+    }
+}
+
 #define ADD_GAMERULE(name) m_callbacks[name] = &GameRule::on##name
 void GameRule::Init()
 {
@@ -173,5 +246,8 @@ void GameRule::Init()
     ADD_GAMERULE(TurnStart);
     ADD_GAMERULE(PhaseProceeding);
     ADD_GAMERULE(PhaseEnd);
+    ADD_GAMERULE(AfterHpReduced);
+    ADD_GAMERULE(AskForPeach);
+    ADD_GAMERULE(AskForPeachDone);
 }
 C_INITIALIZE_CLASS(GameRule)

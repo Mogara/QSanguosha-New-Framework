@@ -55,7 +55,7 @@ void Analeptic::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     if (effect.to->phase() == Player::Play) {
         effect.to->setDrank(true);
-        effect.to->broadcastProperty("isDrank");
+        effect.to->broadcastProperty("drank");
     } else {
         RecoverStruct recover;
         recover.card = this;
@@ -135,7 +135,7 @@ bool IronChain::targetFilter(const QList<const Player *> &targets, const Player 
 void IronChain::effect(GameLogic *, CardEffectStruct &effect)
 {
     effect.to->setChained(!effect.to->isChained());
-    effect.to->broadcastProperty("isChained");
+    effect.to->broadcastProperty("chained");
 }
 
 FireAttack::FireAttack(Card::Suit suit, int number)

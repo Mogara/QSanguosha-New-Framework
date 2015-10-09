@@ -558,26 +558,25 @@ void GameLogic::damage(DamageStruct &damage)
         trigger(ConfirmDamage, damage.from, data);
     }
 
-    // Predamage
-    if (trigger(Predamage, damage.from, data))
+    if (trigger(BeforeDamage, damage.from, data))
         return;
 
     try {
         do {
-            if (trigger(DamageForseen, damage.to, data))
+            if (trigger(DamageStart, damage.to, data))
                 break;
 
-            if (damage.from && trigger(DamageCaused, damage.from, data))
+            if (damage.from && trigger(Damaging, damage.from, data))
                 break;
 
-            if (damage.to && trigger(DamageInflicted, damage.to, data))
+            if (damage.to && trigger(Damaged, damage.to, data))
                 break;
         } while (false);
 
         if (damage.to)
-            trigger(PreDamageDone, damage.to, data);
+            trigger(BeforeHpReduced, damage.to, data);
 
-        if (damage.to && !trigger(DamageDone, damage.to, data)) {
+        if (damage.to) {
             QVariantList arg;
             arg << damage.to->id();
             arg << damage.nature;
@@ -587,13 +586,15 @@ void GameLogic::damage(DamageStruct &damage)
             int newHp = damage.to->hp() - damage.damage;
             damage.to->setHp(newHp);
             damage.to->broadcastProperty("hp");
+
+            trigger(AfterHpReduced, damage.to, data);
         }
 
         if (damage.from)
-            trigger(Damage, damage.from, data);
+            trigger(AfterDamaging, damage.from, data);
 
         if (damage.to)
-            trigger(Damaged, damage.to, data);
+            trigger(AfterDamaged, damage.to, data);
 
         if (damage.to)
             trigger(DamageComplete, damage.to, data);
@@ -610,7 +611,7 @@ void GameLogic::recover(RecoverStruct &recover)
         return;
 
     QVariant data = QVariant::fromValue(&recover);
-    if (trigger(PreHpRecover, recover.to, data))
+    if (trigger(BeforeRecover, recover.to, data))
         return;
     if (recover.to == nullptr)
         return;
@@ -625,7 +626,28 @@ void GameLogic::recover(RecoverStruct &recover)
     arg["num"] = recover.recover;
     room()->broadcastNotification(S_COMMAND_RECOVER, arg);
 
-    trigger(HpRecover, recover.to, data);
+    trigger(AfterRecover, recover.to, data);
+}
+
+void GameLogic::killPlayer(ServerPlayer *victim, DamageStruct *damage)
+{
+    QList<ServerPlayer *> allPlayers = this->allPlayers();
+
+    victim->setAlive(false);
+    victim->broadcastProperty("alive");
+    victim->broadcastProperty("role");
+
+    DeathStruct death;
+    death.who = victim;
+    death.damage = damage;
+    QVariant data = QVariant::fromValue(&death);
+
+    foreach (ServerPlayer *player, allPlayers) {
+        if (player->isAlive() || player == victim)
+            trigger(Died, player, data);
+    }
+
+    trigger(BuryVictim, victim, data);
 }
 
 void GameLogic::delay(ulong msecs)

@@ -42,10 +42,10 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(int hp READ hp WRITE setHp NOTIFY hpChanged)
     Q_PROPERTY(int maxHp READ maxHp WRITE setMaxHp NOTIFY maxHpChanged)
     Q_PROPERTY(int lostHp READ lostHp NOTIFY hpChanged)
-    Q_PROPERTY(bool isWounded READ isWounded)
-    Q_PROPERTY(bool isAlive READ isAlive WRITE setAlive NOTIFY aliveChanged)
-    Q_PROPERTY(bool isDead READ isDead WRITE setDead NOTIFY aliveChanged)
-    Q_PROPERTY(bool isRemoved READ isRemoved WRITE setRemoved NOTIFY removedChanged)
+    Q_PROPERTY(bool wounded READ isWounded)
+    Q_PROPERTY(bool alive READ isAlive WRITE setAlive NOTIFY aliveChanged)
+    Q_PROPERTY(bool dead READ isDead WRITE setDead NOTIFY aliveChanged)
+    Q_PROPERTY(bool removed READ isRemoved WRITE setRemoved NOTIFY removedChanged)
     Q_PROPERTY(int seat READ seat WRITE setSeat NOTIFY seatChanged)
     Q_PROPERTY(QString phase READ phaseString WRITE setPhaseString NOTIFY phaseChanged)
     Q_PROPERTY(int handcardNum READ handcardNum NOTIFY handcardNumChanged)
@@ -53,11 +53,12 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(int delayedTrickNum READ delayedTrickNum NOTIFY delayedTrickNumChanged)
     Q_PROPERTY(int turnCount READ turnCount WRITE setTurnCount)
     Q_PROPERTY(int faceUp READ faceUp WRITE setFaceUp NOTIFY faceUpChanged)
-    Q_PROPERTY(bool isDrank READ isDrank WRITE setDrank NOTIFY drankChanged)
+    Q_PROPERTY(bool drank READ isDrank WRITE setDrank NOTIFY drankChanged)
     Q_PROPERTY(QString kingdom READ kingdom WRITE setKingdom NOTIFY kingdomChanged)
     Q_PROPERTY(QString role READ role WRITE setRole NOTIFY roleChanged)
     Q_PROPERTY(int attackRange READ attackRange WRITE setAttackRange NOTIFY attackRangeChanged)
-    Q_PROPERTY(bool isChained READ isChained WRITE setChained NOTIFY chainedChanged)
+    Q_PROPERTY(bool chained READ isChained WRITE setChained NOTIFY chainedChanged)
+    Q_PROPERTY(bool dying READ isDying WRITE setDying NOTIFY dyingChanged)
     Q_PROPERTY(QString generalName READ generalName WRITE setGeneralName NOTIFY generalChanged)
     Q_PROPERTY(QString headGeneralName READ headGeneralName WRITE setHeadGeneralName NOTIFY headGeneralChanged)
     Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName WRITE setDeputyGeneralName NOTIFY deputyGeneralChanged)
@@ -129,6 +130,9 @@ public:
 
     bool isChained() const { return m_chained; }
     void setChained(bool chained);
+
+    bool isDying() const { return m_dying; }
+    void setDying(bool dying);
 
     //Alias of head general.
     const General *general() const { return headGeneral(); }
@@ -214,6 +218,7 @@ signals:
     void roleChanged();
     void attackRangeChanged();
     void chainedChanged();
+    void dyingChanged();
 
 protected:
     QString m_screenName;
@@ -232,6 +237,7 @@ protected:
     QString m_role;
     int m_attackRange;
     bool m_chained;
+    bool m_dying;
 
     const General *m_headGeneral;
     const General *m_deputyGeneral;

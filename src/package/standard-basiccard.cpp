@@ -60,7 +60,7 @@ void Slash::effect(GameLogic *logic, CardEffectStruct &cardEffect)
     effect.drank = cardEffect.from->isDrank();
     if (effect.drank) {
         cardEffect.from->setDrank(false);
-        cardEffect.from->broadcastProperty("isDrank");
+        cardEffect.from->broadcastProperty("drank");
     }
 
     QVariant data = QVariant::fromValue(&effect);

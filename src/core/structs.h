@@ -174,4 +174,14 @@ private:
 
 Q_DECLARE_METATYPE(JudgeStruct *)
 
+struct DeathStruct
+{
+    ServerPlayer *who;
+    DamageStruct *damage;
+
+    DeathStruct();
+};
+
+Q_DECLARE_METATYPE(DeathStruct *)
+
 #endif // STRUCTS_H

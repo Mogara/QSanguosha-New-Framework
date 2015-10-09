@@ -14,6 +14,8 @@ RowLayout {
     property alias maxHp: hpBar.maxValue
     property string phase: "inactive"
     property bool chained: false
+    property bool dying: false
+    property bool alive: true
     property bool selectable: false
     property bool selected: false
 

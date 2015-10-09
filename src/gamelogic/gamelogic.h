@@ -91,6 +91,8 @@ public:
     void damage(DamageStruct &damage);
     void recover(RecoverStruct &recover);
 
+    void killPlayer(ServerPlayer *victim, DamageStruct *damage = nullptr);
+
     void delay(ulong msecs);
 
 protected:

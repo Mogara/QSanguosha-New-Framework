@@ -137,3 +137,9 @@ void JudgeStruct::updateResult()
 {
     matched = m_pattern.match(who, card);
 }
+
+DeathStruct::DeathStruct()
+    : who(nullptr)
+    , damage(nullptr)
+{
+}

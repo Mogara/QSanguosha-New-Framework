@@ -66,7 +66,9 @@ RoomScene {
                             deputyGeneral: modelData.deputyGeneralName
                             phase: modelData.phase
                             seat: modelData.seat
-                            chained: modelData.isChained
+                            chained: modelData.chained
+                            dying: modelData.dying
+                            alive: modelData.alive
 
                             onSelectedChanged: roomScene.onPhotoSelected(roomScene.getSelectedSeats());
                         }
@@ -145,7 +147,9 @@ RoomScene {
                     dashboard.headGeneralName = Qt.binding(function(){return model.headGeneralName});
                     dashboard.deputyGeneralName = Qt.binding(function(){return model.deputyGeneralName});
                     dashboard.headGeneralKingdom = dashboard.deputyGeneralKingdom = Qt.binding(function(){return model.kingdom});
-                    dashboard.chained = Qt.binding(function(){return model.isChained;});
+                    dashboard.chained = Qt.binding(function(){return model.chained;});
+                    dashboard.dying = Qt.binding(function(){return model.dying;});
+                    dashboard.alive = Qt.binding(function(){return model.alive;});
                 }
 
                 onSetAcceptEnabled: dashboard.acceptButton.enabled = enabled;

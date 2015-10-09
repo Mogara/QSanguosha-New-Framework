@@ -18,6 +18,8 @@ Item {
     property alias delayedTrickArea: delayedTrickAreaItem
     property string phase: "inactive"
     property bool chained: false
+    property bool dying: false
+    property bool alive: true
     property alias progressBar: progressBarItem
     property int seat: 0
     property bool selectable: false
@@ -219,6 +221,12 @@ Item {
         source: "image://root/chain"
         anchors.centerIn: parent
         visible: parent.chained
+    }
+
+    Image {
+        source: "image://root/photo/save-me"
+        anchors.centerIn: parent
+        visible: parent.dying
     }
 
     DelayedTrickArea {

@@ -320,3 +320,9 @@ void Player::setChained(bool chained)
     m_chained = chained;
     emit chainedChanged();
 }
+
+void Player::setDying(bool dying)
+{
+    m_dying = dying;
+    emit dyingChanged();
+}

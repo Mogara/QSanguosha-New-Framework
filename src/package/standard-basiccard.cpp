@@ -27,7 +27,7 @@ SlashEffectStruct::SlashEffectStruct()
     , to(nullptr)
     , slash(nullptr)
     , nature(DamageStruct::Normal)
-    , drank(false)
+    , drunk(false)
     , jinkNum(1)
 {
 }
@@ -57,10 +57,10 @@ void Slash::effect(GameLogic *logic, CardEffectStruct &cardEffect)
     effect.slash = this;
 
     effect.to = cardEffect.to;
-    effect.drank = cardEffect.from->isDrank();
-    if (effect.drank) {
-        cardEffect.from->setDrank(false);
-        cardEffect.from->broadcastProperty("drank");
+    effect.drunk = cardEffect.from->isDrunk();
+    if (effect.drunk) {
+        cardEffect.from->setDrunk(false);
+        cardEffect.from->broadcastProperty("drunk");
     }
 
     QVariant data = QVariant::fromValue(&effect);
@@ -105,7 +105,7 @@ void Slash::effect(GameLogic *logic, CardEffectStruct &cardEffect)
             damage.to = effect.to;
             damage.nature = effect.nature;
             damage.card = this;
-            if (effect.drank)
+            if (effect.drunk)
                 damage.damage++;
             logic->damage(damage);
         }

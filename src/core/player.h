@@ -53,7 +53,7 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(int delayedTrickNum READ delayedTrickNum NOTIFY delayedTrickNumChanged)
     Q_PROPERTY(int turnCount READ turnCount WRITE setTurnCount)
     Q_PROPERTY(int faceUp READ faceUp WRITE setFaceUp NOTIFY faceUpChanged)
-    Q_PROPERTY(bool drank READ isDrank WRITE setDrank NOTIFY drankChanged)
+    Q_PROPERTY(bool drunk READ isDrunk WRITE setDrunk NOTIFY drunkChanged)
     Q_PROPERTY(QString kingdom READ kingdom WRITE setKingdom NOTIFY kingdomChanged)
     Q_PROPERTY(QString role READ role WRITE setRole NOTIFY roleChanged)
     Q_PROPERTY(int attackRange READ attackRange WRITE setAttackRange NOTIFY attackRangeChanged)
@@ -116,8 +116,8 @@ public:
     bool faceUp() const { return m_faceUp; }
     void setFaceUp(bool faceUp);
 
-    void setDrank(bool drank);
-    bool isDrank() const { return m_drank; }
+    void setDrunk(bool drunk);
+    bool isDrunk() const { return m_drunk; }
 
     QString kingdom() const { return m_kingdom; }
     void setKingdom(const QString &kingdom);
@@ -213,7 +213,7 @@ signals:
     void handcardNumChanged();
     void equipNumChanged();
     void delayedTrickNumChanged();
-    void drankChanged();
+    void drunkChanged();
     void kingdomChanged();
     void roleChanged();
     void attackRangeChanged();
@@ -232,7 +232,7 @@ protected:
     int m_turnCount;
     bool m_faceUp;
     int m_handcardNum;
-    bool m_drank;
+    bool m_drunk;
     QString m_kingdom;
     QString m_role;
     int m_attackRange;

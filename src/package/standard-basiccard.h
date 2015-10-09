@@ -31,7 +31,7 @@ struct SlashEffectStruct
     QList<Card *> jink;
 
     DamageStruct::Nature nature;
-    bool drank;
+    bool drunk;
     int jinkNum;
 
     SlashEffectStruct();

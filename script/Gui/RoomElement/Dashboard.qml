@@ -16,6 +16,7 @@ RowLayout {
     property bool chained: false
     property bool dying: false
     property bool alive: true
+    property bool drunk: false
     property bool selectable: false
     property bool selected: false
 
@@ -188,6 +189,12 @@ RowLayout {
             generalName: qsTr(headGeneralName)
             generalPosition: "head"
 
+            Rectangle {
+                color: Qt.rgba(250, 0, 0, 0.45)
+                anchors.fill: parent
+                visible: root.drunk
+            }
+
             SkillPanel {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
@@ -202,6 +209,12 @@ RowLayout {
             avatar: deputyGeneralName ? deputyGeneralName : "zhugeliang"
             generalName: qsTr(deputyGeneralName)
             generalPosition: "deputy"
+
+            Rectangle {
+                color: Qt.rgba(250, 0, 0, 0.45)
+                anchors.fill: parent
+                visible: root.drunk
+            }
 
             SkillPanel {
                 anchors.horizontalCenter: parent.horizontalCenter

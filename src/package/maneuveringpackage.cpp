@@ -54,8 +54,8 @@ void Analeptic::onUse(GameLogic *logic, CardUseStruct &use)
 void Analeptic::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     if (effect.to->phase() == Player::Play) {
-        effect.to->setDrank(true);
-        effect.to->broadcastProperty("drank");
+        effect.to->setDrunk(true);
+        effect.to->broadcastProperty("drunk");
     } else {
         RecoverStruct recover;
         recover.card = this;
@@ -250,6 +250,11 @@ ManeuveringPackage::ManeuveringPackage()
     DefensiveHorse *hualiu = new DefensiveHorse(Card::Diamond, 13);
     hualiu->setObjectName("hualiu");
     addCard(hualiu);
+
+
+
+    for (int i = 0; i < 200; i++)
+        addCard(new Analeptic(Card::Spade, 1));
 }
 
 ADD_PACKAGE(Maneuvering)

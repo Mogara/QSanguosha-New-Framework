@@ -34,7 +34,7 @@ Player::Player(QObject *parent)
     , m_turnCount(0)
     , m_faceUp(false)
     , m_handcardNum(0)
-    , m_drank(false)
+    , m_drunk(false)
     , m_attackRange(1)
     , m_chained(false)
     , m_headGeneral(nullptr)
@@ -291,10 +291,10 @@ void Player::addCardHistory(const QString &name, int times)
         m_cardHistory[name] = times;
 }
 
-void Player::setDrank(bool drank)
+void Player::setDrunk(bool drunk)
 {
-    m_drank = drank;
-    emit drankChanged();
+    m_drunk = drunk;
+    emit drunkChanged();
 }
 
 void Player::setKingdom(const QString &kingdom)

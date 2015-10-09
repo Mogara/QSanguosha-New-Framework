@@ -69,6 +69,7 @@ RoomScene {
                             chained: modelData.chained
                             dying: modelData.dying
                             alive: modelData.alive
+                            drunk: modelData.drunk
 
                             onSelectedChanged: roomScene.onPhotoSelected(roomScene.getSelectedSeats());
                         }
@@ -150,6 +151,7 @@ RoomScene {
                     dashboard.chained = Qt.binding(function(){return model.chained;});
                     dashboard.dying = Qt.binding(function(){return model.dying;});
                     dashboard.alive = Qt.binding(function(){return model.alive;});
+                    dashboard.drunk = Qt.binding(function(){return model.drunk;});
                 }
 
                 onSetAcceptEnabled: dashboard.acceptButton.enabled = enabled;

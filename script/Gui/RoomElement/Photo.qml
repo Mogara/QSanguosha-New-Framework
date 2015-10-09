@@ -20,6 +20,7 @@ Item {
     property bool chained: false
     property bool dying: false
     property bool alive: true
+    property bool drunk: false
     property alias progressBar: progressBarItem
     property int seat: 0
     property bool selectable: false
@@ -101,6 +102,12 @@ Item {
             fillMode: Image.PreserveAspectCrop
             source: deputyGeneral != "" ? "image://root/general/fullphoto/" + deputyGeneral : ""
         }
+    }
+
+    Rectangle {
+        color: Qt.rgba(250, 0, 0, 0.45)
+        anchors.fill: parent
+        visible: parent.drunk
     }
 
     Image {

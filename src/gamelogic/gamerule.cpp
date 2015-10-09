@@ -165,6 +165,10 @@ void GameRule::onPhaseEnd(ServerPlayer *current, QVariant &) const
     }
     default:;
     }
+    if (current->isDrunk()) {
+        current->setDrunk(false);
+        current->broadcastProperty("drunk");
+    }
 }
 
 void GameRule::onAfterHpReduced(ServerPlayer *victim, QVariant &data) const

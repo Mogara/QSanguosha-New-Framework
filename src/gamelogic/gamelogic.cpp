@@ -324,46 +324,20 @@ void GameLogic::moveCards(const CardsMoveStruct &move)
     moveCards(QList<CardsMoveStruct>() << move);
 }
 
-void GameLogic::moveCards(QList<CardsMoveStruct> moves)
+void GameLogic::moveCards(QList<CardsMoveStruct> &moves)
 {
-    //Fill card source information
-    for (int i = 0, maxi = moves.length(); i < maxi; i++) {
-        CardsMoveStruct &move = moves[i];
-        if (move.from.type != CardArea::Unknown)
-            continue;
-
-        QMap<CardArea *, QList<Card *>> cardSource;
-        foreach (Card *card, move.cards) {
-            CardArea *from = m_cardPosition[card];
-            if (from == nullptr)
-                continue;
-            cardSource[from].append(card);
-        }
-
-        QMapIterator<CardArea *, QList<Card *>> iter(cardSource);
-        while (iter.hasNext()) {
-            iter.next();
-            CardArea *from = iter.key();
-            CardsMoveStruct submove;
-            submove.from.type = from->type();
-            submove.from.owner = from->owner();
-            submove.from.name = from->name();
-            submove.cards = iter.value();
-            submove.to = move.to;
-            submove.isOpen = move.isOpen;
-            moves << submove;
-        }
-
-        moves.removeAt(i);
-        i--;
-        maxi--;
-    }
-
-    QList<ServerPlayer *> allPlayers = this->allPlayers();
+    filterCardsMove(moves);
     QVariant moveData = QVariant::fromValue(&moves);
+    QList<ServerPlayer *> allPlayers = this->allPlayers();
     foreach (ServerPlayer *player, allPlayers)
         trigger(BeforeCardsMove, player, moveData);
 
+    filterCardsMove(moves);
+    allPlayers = this->allPlayers();
+    foreach (ServerPlayer *player, allPlayers)
+        trigger(CardsMove, player, moveData);
+
+    filterCardsMove(moves);
     for (int i = 0 ; i < moves.length(); i++) {
         const CardsMoveStruct &move = moves.at(i);
         CardArea *from = findArea(move.from);
@@ -392,7 +366,7 @@ void GameLogic::moveCards(QList<CardsMoveStruct> moves)
 
     allPlayers = this->allPlayers();
     foreach (ServerPlayer *player, allPlayers)
-        trigger(CardsMove, player, moveData);
+        trigger(AfterCardsMove, player, moveData);
 }
 
 bool GameLogic::useCard(CardUseStruct &use)
@@ -812,6 +786,42 @@ CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)
         }
     }
     return nullptr;
+}
+
+void GameLogic::filterCardsMove(QList<CardsMoveStruct> &moves)
+{
+    //Fill card source information
+    for (int i = 0, maxi = moves.length(); i < maxi; i++) {
+        CardsMoveStruct &move = moves[i];
+        if (move.from.type != CardArea::Unknown)
+            continue;
+
+        QMap<CardArea *, QList<Card *>> cardSource;
+        foreach (Card *card, move.cards) {
+            CardArea *from = m_cardPosition[card];
+            if (from == nullptr)
+                continue;
+            cardSource[from].append(card);
+        }
+
+        QMapIterator<CardArea *, QList<Card *>> iter(cardSource);
+        while (iter.hasNext()) {
+            iter.next();
+            CardArea *from = iter.key();
+            CardsMoveStruct submove;
+            submove.from.type = from->type();
+            submove.from.owner = from->owner();
+            submove.from.name = from->name();
+            submove.cards = iter.value();
+            submove.to = move.to;
+            submove.isOpen = move.isOpen;
+            moves << submove;
+        }
+
+        moves.removeAt(i);
+        i--;
+        maxi--;
+    }
 }
 
 void GameLogic::run()

@@ -76,7 +76,7 @@ public:
     const CardArea *wugu() const { return m_wugu; }
 
     void moveCards(const CardsMoveStruct &move);
-    void moveCards(QList<CardsMoveStruct> moves);
+    void moveCards(QList<CardsMoveStruct> &moves);
 
     bool useCard(CardUseStruct &use);
     bool takeCardEffect(CardEffectStruct &effect);
@@ -101,6 +101,7 @@ protected:
 
     void prepareToStart();
     CardArea *findArea(const CardsMoveStruct::Area &area);
+    void filterCardsMove(QList<CardsMoveStruct> &moves);
 
     void run();
 

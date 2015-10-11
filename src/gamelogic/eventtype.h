@@ -38,6 +38,7 @@ enum EventType
 
     BeforeCardsMove,
     CardsMove,
+    AfterCardsMove,
 
     DrawNCards,
     AfterDrawNCards,

@@ -534,6 +534,15 @@ void GameLogic::judge(JudgeStruct &judge)
     }
     trigger(FinishRetrial, judge.who, data);
     trigger(FinishJudge, judge.who, data);
+
+    const CardArea *judgeCards = judge.who->judgeCards();
+    if (judgeCards->contains(judge.card)) {
+        CardsMoveStruct move;
+        move.cards << judge.card;
+        move.to.type = CardArea::DiscardPile;
+        move.isOpen = true;
+        moveCards(move);
+    }
 }
 
 QList<Card *> GameLogic::findCards(const QVariant &data)

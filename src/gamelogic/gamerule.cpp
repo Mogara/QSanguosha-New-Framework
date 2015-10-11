@@ -213,14 +213,15 @@ void GameRule::onAskForPeach(ServerPlayer *current, QVariant &data) const
     while (dying->who->hp() <= 0) {
         Card *peach = nullptr;
         if (dying->who->isAlive()) {
-            QVariantList args;
-            args << "player" << dying->who->id();
-            args << (1 - dying->who->hp());
+            int peachNum = 1 - dying->who->hp();
             if (current != dying->who) {
+                QVariantList args;
+                args << "player" << dying->who->id();
+                args << peachNum;
                 current->showPrompt("ask_for_peach", args);
                 peach = current->askForCard("Peach");
             } else {
-                current->showPrompt("ask_self_for_peach_or_analeptic", 1 - current->hp());
+                current->showPrompt("ask_self_for_peach_or_analeptic", peachNum);
                 peach = current->askForCard("Peach,Analeptic");
             }
         }

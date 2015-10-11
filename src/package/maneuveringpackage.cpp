@@ -250,11 +250,6 @@ ManeuveringPackage::ManeuveringPackage()
     DefensiveHorse *hualiu = new DefensiveHorse(Card::Diamond, 13);
     hualiu->setObjectName("hualiu");
     addCard(hualiu);
-
-
-
-    for (int i = 0; i < 200; i++)
-        addCard(new Analeptic(Card::Spade, 1));
 }
 
 ADD_PACKAGE(Maneuvering)

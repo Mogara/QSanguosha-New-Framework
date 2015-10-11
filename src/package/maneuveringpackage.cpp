@@ -127,9 +127,9 @@ bool IronChain::targetFeasible(const QList<const Player *> &targets, const Playe
     return targets.length() <= 2;
 }
 
-bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const
+bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
 {
-    return targets.length() < 2;
+    return targets.length() < 2 && TrickCard::targetFilter(targets, toSelect, self);
 }
 
 void IronChain::effect(GameLogic *, CardEffectStruct &effect)

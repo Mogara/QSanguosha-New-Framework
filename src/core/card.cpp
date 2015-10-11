@@ -203,9 +203,8 @@ bool Card::targetFeasible(const QList<const Player *> &targets, const Player *se
 bool Card::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
 {
     C_UNUSED(targets);
-    C_UNUSED(toSelect);
     C_UNUSED(self);
-    return false;
+    return toSelect->isAlive();
 }
 
 bool Card::isAvailable(const Player *) const
@@ -426,9 +425,9 @@ bool SingleTargetTrick::targetFeasible(const QList<const Player *> &targets, con
     return targets.length() == 1;
 }
 
-bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const
+bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
 {
-    return targets.length() < 1;
+    return targets.length() < 1 && TrickCard::targetFilter(targets, toSelect, self);
 }
 
 DelayedTrick::DelayedTrick(Card::Suit suit, int number)
@@ -451,7 +450,7 @@ bool DelayedTrick::targetFilter(const QList<const Player *> &targets, const Play
     if (area->length() <= 0)
         return true;
 
-    return !area->contains(metaObject()->className());
+    return !area->contains(metaObject()->className()) && TrickCard::targetFilter(targets, toSelect, self);
 }
 
 void DelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)

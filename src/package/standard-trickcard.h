@@ -31,7 +31,6 @@ class AmazingGrace : public GlobalEffect
 public:
     Q_INVOKABLE AmazingGrace(Suit suit, int number);
 
-    void onUse(GameLogic *logic, CardUseStruct &use) override;
     void use(GameLogic *logic, CardUseStruct &use) override;
     void effect(GameLogic *logic, CardEffectStruct &effect) override;
 

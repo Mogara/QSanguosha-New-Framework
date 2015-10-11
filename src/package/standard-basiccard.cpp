@@ -46,7 +46,7 @@ bool Slash::targetFeasible(const QList<const Player *> &targets, const Player *)
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
 {
-    return targets.isEmpty() && self->distanceTo(toSelect) <= self->attackRange();
+    return targets.isEmpty() && self->distanceTo(toSelect) <= self->attackRange() && BasicCard::targetFilter(targets, toSelect, self);
 }
 
 void Slash::effect(GameLogic *logic, CardEffectStruct &cardEffect)

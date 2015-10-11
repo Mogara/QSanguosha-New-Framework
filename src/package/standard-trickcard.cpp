@@ -33,10 +33,8 @@ AmazingGrace::AmazingGrace(Card::Suit suit, int number)
     setObjectName("amazing_grace");
 }
 
-void AmazingGrace::onUse(GameLogic *logic, CardUseStruct &use)
+void AmazingGrace::use(GameLogic *logic, CardUseStruct &use)
 {
-    GlobalEffect::onUse(logic, use);
-
     CardsMoveStruct move;
     move.from.type = CardArea::DrawPile;
     move.from.direction = CardArea::Top;
@@ -47,10 +45,7 @@ void AmazingGrace::onUse(GameLogic *logic, CardUseStruct &use)
     move.cards = logic->getDrawPileCards(n);
 
     logic->moveCards(move);
-}
 
-void AmazingGrace::use(GameLogic *logic, CardUseStruct &use)
-{
     CRoom *room = logic->room();
     room->broadcastNotification(S_COMMAND_SHOW_AMAZING_GRACE);
 
@@ -209,7 +204,7 @@ Duel::Duel(Card::Suit suit, int number)
 
 bool Duel::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
 {
-    return targets.isEmpty() && toSelect != self;
+    return targets.isEmpty() && toSelect != self && SingleTargetTrick::targetFilter(targets, toSelect, self);
 }
 
 void Duel::effect(GameLogic *logic, CardEffectStruct &effect)
@@ -348,7 +343,7 @@ bool Collateral::targetFilter(const QList<const Player *> &targets, const Player
         return slashSource->distanceTo(toSelect) <= slashSource->attackRange();
     } else {
         const CardArea *equips = toSelect->equips();
-        return equips->contains("Weapon") && toSelect != self;
+        return equips->contains("Weapon") && toSelect != self && SingleTargetTrick::targetFilter(targets, toSelect, self);
     }
 }
 

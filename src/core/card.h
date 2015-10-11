@@ -238,7 +238,7 @@ public:
     SingleTargetTrick(Suit suit, int number);
 
     bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
-    bool targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const override;
+    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
 };
 
 class DelayedTrick : public TrickCard

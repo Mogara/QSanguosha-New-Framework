@@ -39,6 +39,22 @@
     </message>
 </context>
 <context>
+    <name>Client</name>
+    <message>
+        <location filename="../src/client/client.cpp" line="178"/>
+        <source>Unknown</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ClientPlayer</name>
+    <message>
+        <location filename="../src/client/clientplayer.cpp" line="12"/>
+        <source>Seat %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>GuanxingBox</name>
     <message>
         <location filename="../script/Gui/RoomElement/GuanxingBox.qml" line="10"/>

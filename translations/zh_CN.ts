@@ -34,6 +34,20 @@
     </message>
 </context>
 <context>
+    <name>Client</name>
+    <message>
+        <source>Unknown</source>
+        <translation>未知</translation>
+    </message>
+</context>
+<context>
+    <name>ClientPlayer</name>
+    <message>
+        <source>Seat %1</source>
+        <translation>%1号位</translation>
+    </message>
+</context>
+<context>
     <name>GuanxingBox</name>
     <message>
         <source>Please arrange cards</source>

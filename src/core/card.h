@@ -132,7 +132,7 @@ public:
     bool isTargetFixed() const { return m_targetFixed; }
     virtual bool targetFeasible(const QList<const Player *> &targets, const Player *self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const;
-    virtual bool isAvailable(const Player *) const;
+    virtual bool isAvailable(const Player *self) const;
 
     virtual void onUse(GameLogic *logic, CardUseStruct &use);
     virtual void use(GameLogic *logic, CardUseStruct &use);

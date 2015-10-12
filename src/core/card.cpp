@@ -227,10 +227,10 @@ bool Card::targetFilter(const QList<const Player *> &targets, const Player *toSe
     return targets.length() < maxTargetNum() && toSelect->isAlive() && self->distanceTo(toSelect) <= distanceLimit();
 }
 
-bool Card::isAvailable(const Player *) const
+bool Card::isAvailable(const Player *self) const
 {
-    //@to-do: check Jilei here
-    return true;
+    int limit = useLimit();
+    return limit == InfinityNum || self->cardHistory(objectName()) < limit;
 }
 
 void Card::onUse(GameLogic *logic, CardUseStruct &use)

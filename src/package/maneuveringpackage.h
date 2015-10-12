@@ -49,7 +49,6 @@ public:
 
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void effect(GameLogic *logic, CardEffectStruct &effect) override;
-    bool isAvailable(const Player *player) const override;
 };
 
 class Fan : public Weapon

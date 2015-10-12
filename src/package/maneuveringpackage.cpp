@@ -65,11 +65,6 @@ void Analeptic::effect(GameLogic *logic, CardEffectStruct &effect)
     }
 }
 
-bool Analeptic::isAvailable(const Player *player) const
-{
-    return player->phase() == Player::Play && player->cardHistory("analeptic") < 1 && BasicCard::isAvailable(player);
-}
-
 Fan::Fan(Card::Suit suit, int number)
     : Weapon(suit, number)
 {

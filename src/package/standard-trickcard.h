@@ -139,7 +139,6 @@ public:
     Q_INVOKABLE Nullification(Suit suit, int number);
 
     bool isAvailable(const Player *) const override;
-    void onUse(GameLogic *logic, CardUseStruct &use);
     void effect(GameLogic *, CardEffectStruct &effect) override;
 };
 

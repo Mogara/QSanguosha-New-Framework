@@ -109,7 +109,7 @@ void RoomScene::checkTargetFeasibility()
     if (m_selectedCard.length() == 1) {
         const Card *card = m_selectedCard.first();
         const ClientPlayer *self = m_client->selfPlayer();
-        bool acceptable = card->isTargetFixed() || card->targetFeasible(m_selectedPlayer, self);
+        bool acceptable = card->isTargetFixed() || card->targetFeasible(m_selectedPlayer, self) || (m_selectedPlayer.isEmpty() && card->canRecast());
         if (acceptable && !m_assignedTargets.isEmpty()) {
             foreach (const Player *target, m_assignedTargets) {
                 if (!m_selectedPlayer.contains(target)) {

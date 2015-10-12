@@ -101,11 +101,7 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
 {
     setObjectName("supply_shortage");
     m_judgePattern = ".|^club";
-}
-
-bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
-{
-    return self->distanceTo(toSelect) <= 1 && DelayedTrick::targetFilter(targets, toSelect, self);
+    m_distanceLimit = 1;
 }
 
 void SupplyShortage::takeEffect(GameLogic *, CardEffectStruct &effect)
@@ -120,16 +116,7 @@ IronChain::IronChain(Card::Suit suit, int number)
     setObjectName("iron_chain");
     m_subtype = DamageSpreadType;
     m_canRecast = true;
-}
-
-bool IronChain::targetFeasible(const QList<const Player *> &targets, const Player *) const
-{
-    return targets.length() <= 2;
-}
-
-bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
-{
-    return targets.length() < 2 && TrickCard::targetFilter(targets, toSelect, self);
+    m_maxTargetNum = 2;
 }
 
 void IronChain::effect(GameLogic *, CardEffectStruct &effect)

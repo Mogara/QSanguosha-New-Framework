@@ -91,7 +91,6 @@ class SupplyShortage : public DelayedTrick
 public:
     Q_INVOKABLE SupplyShortage(Suit suit, int number);
 
-    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
     void takeEffect(GameLogic *, CardEffectStruct &effect) override;
 };
 
@@ -101,9 +100,6 @@ class IronChain : public TrickCard
 
 public:
     Q_INVOKABLE IronChain(Suit suit, int number);
-
-    bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
-    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
 
     void effect(GameLogic *, CardEffectStruct &effect) override;
 };

@@ -74,6 +74,11 @@ public:
         EquipType
     };
 
+    enum Number
+    {
+        InfinityNum = 1000
+    };
+
     Card(Suit suit = NoSuit, int number = 0);
     virtual Card *clone() const;
 
@@ -107,9 +112,6 @@ public:
     QList<Card *> realCards();
     QList<const Card *> realCards() const;
 
-    void setTransferable(bool transferable) { m_transferable = transferable; }
-    bool isTransferable() const { return m_transferable; }
-
     void setSkillName(const QString &name) { m_skillName = name; }
     QString skillName() const { return m_skillName; }
 
@@ -118,8 +120,14 @@ public:
     bool hasFlag(const QString &flag) const { return m_flags.contains(flag); }
     void clearFlags() { m_flags.clear(); }
 
-    bool willThrow() const { return m_willThrow; }
+    void setTransferable(bool transferable) { m_transferable = transferable; }
+    bool isTransferable() const { return m_transferable; }
+
     bool canRecast() const { return m_canRecast; }
+    int useLimit() const;
+    int maxTargetNum() const;
+    int minTargetNum() const;
+    int distanceLimit() const;
 
     bool isTargetFixed() const { return m_targetFixed; }
     virtual bool targetFeasible(const QList<const Player *> &targets, const Player *self) const;
@@ -139,10 +147,13 @@ protected:
     Color m_color;
     Type m_type;
     int m_subtype;
-    bool m_transferable;
 
-    bool m_willThrow;
+    bool m_transferable;
     bool m_canRecast;
+    int m_useLimit;
+    int m_maxTargetNum;
+    int m_minTargetNum;
+    int m_distanceLimit;
     bool m_targetFixed;
 
     QString m_skillName;
@@ -236,9 +247,6 @@ class SingleTargetTrick : public TrickCard
 
 public:
     SingleTargetTrick(Suit suit, int number);
-
-    bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
-    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
 };
 
 class DelayedTrick : public TrickCard

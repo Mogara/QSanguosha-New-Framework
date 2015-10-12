@@ -28,8 +28,11 @@ Card::Card(Suit suit, int number)
     , m_number(number)
     , m_color(NoColor)
     , m_transferable(false)
-    , m_willThrow(true)
     , m_canRecast(false)
+    , m_useLimit(InfinityNum)
+    , m_maxTargetNum(1)
+    , m_minTargetNum(1)
+    , m_distanceLimit(InfinityNum)
     , m_targetFixed(false)
 {
 }
@@ -193,18 +196,35 @@ QList<const Card *> Card::realCards() const
     return cards;
 }
 
+int Card::useLimit() const
+{
+    return m_useLimit;
+}
+
+int Card::maxTargetNum() const
+{
+    return m_maxTargetNum;
+}
+
+int Card::minTargetNum() const
+{
+    return m_minTargetNum;
+}
+
+int Card::distanceLimit() const
+{
+    return m_distanceLimit;
+}
+
 bool Card::targetFeasible(const QList<const Player *> &targets, const Player *self) const
 {
-    C_UNUSED(targets);
     C_UNUSED(self);
-    return false;
+    return minTargetNum() <= targets.length() && targets.length() <= maxTargetNum();
 }
 
 bool Card::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
 {
-    C_UNUSED(targets);
-    C_UNUSED(self);
-    return toSelect->isAlive();
+    return targets.length() < maxTargetNum() && toSelect->isAlive() && self->distanceTo(toSelect) <= distanceLimit();
 }
 
 bool Card::isAvailable(const Player *) const
@@ -391,6 +411,7 @@ GlobalEffect::GlobalEffect(Card::Suit suit, int number)
 {
     m_targetFixed = true;
     m_subtype = GlobalEffectType;
+    m_maxTargetNum = InfinityNum;
 }
 
 void GlobalEffect::onUse(GameLogic *logic, CardUseStruct &use)
@@ -405,6 +426,7 @@ AreaOfEffect::AreaOfEffect(Card::Suit suit, int number)
 {
     m_targetFixed = true;
     m_subtype = AreaOfEffectType;
+    m_maxTargetNum = InfinityNum;
 }
 
 void AreaOfEffect::onUse(GameLogic *logic, CardUseStruct &use)
@@ -418,16 +440,6 @@ SingleTargetTrick::SingleTargetTrick(Card::Suit suit, int number)
     : TrickCard(suit, number)
 {
     m_subtype = SingleTargetType;
-}
-
-bool SingleTargetTrick::targetFeasible(const QList<const Player *> &targets, const Player *) const
-{
-    return targets.length() == 1;
-}
-
-bool SingleTargetTrick::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
-{
-    return targets.length() < 1 && TrickCard::targetFilter(targets, toSelect, self);
 }
 
 DelayedTrick::DelayedTrick(Card::Suit suit, int number)

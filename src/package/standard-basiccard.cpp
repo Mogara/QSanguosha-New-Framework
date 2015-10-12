@@ -37,16 +37,12 @@ Slash::Slash(Card::Suit suit, int number)
     , m_nature(DamageStruct::Normal)
 {
     setObjectName("slash");
-}
-
-bool Slash::targetFeasible(const QList<const Player *> &targets, const Player *) const
-{
-    return targets.length() == 1;
+    m_useLimit = 1;
 }
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
 {
-    return targets.isEmpty() && self->distanceTo(toSelect) <= self->attackRange() && BasicCard::targetFilter(targets, toSelect, self);
+    return self->distanceTo(toSelect) <= self->attackRange() && BasicCard::targetFilter(targets, toSelect, self);
 }
 
 void Slash::effect(GameLogic *logic, CardEffectStruct &cardEffect)
@@ -116,13 +112,18 @@ void Slash::effect(GameLogic *logic, CardEffectStruct &cardEffect)
 
 bool Slash::isAvailable(const Player *player) const
 {
-    return player->phase() == Player::Play && player->cardHistory("slash") < 1 && BasicCard::isAvailable(player);
+    //@to-do: Find a better solution for slash use limit
+    int times = player->cardHistory("slash");
+    times += player->cardHistory("thunder_slash");
+    times += player->cardHistory("fire_slash");
+    return player->phase() == Player::Play && times < useLimit() && BasicCard::isAvailable(player);
 }
 
 Jink::Jink(Card::Suit suit, int number)
     : BasicCard(suit, number)
 {
     setObjectName("jink");
+    m_targetFixed = true;
 }
 
 void Jink::onUse(GameLogic *logic, CardUseStruct &use)

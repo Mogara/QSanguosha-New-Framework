@@ -46,7 +46,6 @@ class Slash : public BasicCard
 public:
     Q_INVOKABLE Slash(Suit suit, int number);
 
-    bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
     bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
     void effect(GameLogic *logic, CardEffectStruct &cardEffect) override;
     bool isAvailable(const Player *player) const override;

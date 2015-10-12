@@ -254,11 +254,12 @@ Snatch::Snatch(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
     setObjectName("snatch");
+    m_distanceLimit = 1;
 }
 
 bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
 {
-    return toSelect != self && self->distanceTo(toSelect) <= 1 && !toSelect->isAllNude() && SingleTargetTrick::targetFilter(targets, toSelect, self);
+    return toSelect != self && !toSelect->isAllNude() && SingleTargetTrick::targetFilter(targets, toSelect, self);
 }
 
 void Snatch::effect(GameLogic *logic, CardEffectStruct &effect)
@@ -415,14 +416,6 @@ Nullification::Nullification(Card::Suit suit, int number)
 bool Nullification::isAvailable(const Player *) const
 {
     return false;
-}
-
-void Nullification::onUse(GameLogic *logic, CardUseStruct &use)
-{
-    CardUseStruct *trickUse = use.extra.value<CardUseStruct *>();
-    if (trickUse)
-        use.card = trickUse->card;
-    SingleTargetTrick::onUse(logic, use);
 }
 
 void Nullification::effect(GameLogic *, CardEffectStruct &effect)

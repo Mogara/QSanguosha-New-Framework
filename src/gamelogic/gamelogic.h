@@ -93,8 +93,6 @@ public:
 
     void killPlayer(ServerPlayer *victim, DamageStruct *damage = nullptr);
 
-    void delay(ulong msecs);
-
 protected:
     CAbstractPlayer *createPlayer(CServerUser *user);
     CAbstractPlayer *createPlayer(CServerRobot *robot);

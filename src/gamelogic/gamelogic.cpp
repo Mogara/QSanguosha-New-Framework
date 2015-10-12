@@ -633,11 +633,6 @@ void GameLogic::killPlayer(ServerPlayer *victim, DamageStruct *damage)
     trigger(BuryVictim, victim, data);
 }
 
-void GameLogic::delay(ulong msecs)
-{
-    QThread::currentThread()->msleep(msecs);
-}
-
 CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
 {
     return new ServerPlayer(this, user);

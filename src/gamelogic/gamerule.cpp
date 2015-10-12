@@ -23,8 +23,6 @@
 #include "general.h"
 #include "serverplayer.h"
 
-#include <QThread>
-
 QMap<EventType, GameRule::Callback> GameRule::m_callbacks;
 
 GameRule::GameRule(GameLogic *logic)
@@ -92,7 +90,7 @@ void GameRule::onTurnStart(ServerPlayer *current, QVariant &) const
 
 void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
 {
-    m_logic->delay(500);
+    GameLogic::msleep(500);
     switch (current->phase()) {
     case Player::Judge: {
         QList<Card *> tricks = current->delayedTricks()->cards();

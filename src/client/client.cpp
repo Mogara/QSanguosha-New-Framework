@@ -47,6 +47,9 @@ Client::~Client()
 {
     delete m_wugu;
 
+    foreach (Card *card, m_cards)
+        card->deleteLater();
+
     if (ClientInstance == this)
         ClientInstance = nullptr;
 }
@@ -249,6 +252,11 @@ void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
 void Client::PrepareCardsCommand(QObject *receiver, const QVariant &data)
 {
     Client *client = qobject_cast<Client *>(receiver);
+
+    foreach (Card *card, client->m_cards)
+        card->deleteLater();
+    client->m_cards.clear();
+
     Engine *engine = Engine::instance();
     QVariantList cardData = data.toList();
     foreach (const QVariant &cardId, cardData) {

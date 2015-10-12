@@ -1,0 +1,41 @@
+INFORMATION OF HOW TO BUILD THE REPOSITORY
+Tips: "~" stands for the folder where the repo is in.
+
+To build QSanguosha targeting Windows
+
+1. Download and install Qt 5.5.0 from http://www.qt.io/download-open-source/.
+
+1.1 Choose Qt 5.5.0 for Windows 64-bit (VS 2013, 650 MB) if your OS is Windows 64-bit and you installed Visual Studio 2013.
+1.2 Choose Qt 5.5.0 for Windows 32-bit (VS 2013, 633 MB) if your OS is Windows 32-bit and you installed Visual Studio 2013.
+1.3 Choose Qt 5.5.0 for Windows 32-bit (MinGW 4.9.2, 959 MB) if you don't want Visual Studio 2013.
+
+2. Start up Qt Creator. Open Qsanguosha.pro right under ~, and click "Configure Project".
+
+3. Press Ctrl + 5 or click "Projects" on the left side bar, and then click the "Run" tab.
+
+4. Change the working directory to ~.
+
+5. Press Ctrl + B to build or Ctrl + R to run. Have fun!
+
+6. To release the Project,
+6.1 Copy the following files from <Qt Install Path>/bin to ~
+    Qt5Core.dll
+    Qt5Gui.dll
+    Qt5Multimedia.dll
+    Qt5Network.dll
+    Qt5Qml.dll
+    Qt5Quick.dll
+
+6.2 Copy the following files from <Qt Install Path>/plugins/imageformats/ to ~/imageformats
+    qjpeg.dll
+
+6.3 Copy the following directories from <Qt Install Path>/qml/ to ~
+    Qt/
+    QtGraphicalEffects/
+    QtQml/
+    QtQuick/Layouts/
+    QtQuick.2/
+
+6.4 Copy the following files from VS redist to ~,
+    msvcp120.dll
+    msvcr120.dll

@@ -18,11 +18,10 @@
 *********************************************************************/
 
 #include "eventhandler.h"
-#include "serverplayer.h"
 
 EventHandler::EventHandler()
+    : m_defaultPriority(0)
 {
-    m_defaultPriority = 0;
 }
 
 EventHandler::~EventHandler()
@@ -39,35 +38,30 @@ int EventHandler::priority(EventType event) const
     return m_priorityMap.contains(event) ? m_priorityMap.value(event) : m_defaultPriority;
 }
 
-bool EventHandler::triggerable(ServerPlayer *owner) const
-{
-    return owner != nullptr && owner->isAlive() && owner->hasSkill(this);
-}
-
 QMap<ServerPlayer *, Event> EventHandler::triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data) const
 {
     QMap<ServerPlayer *, Event> result;
-    QList<Event> events = triggerable(logic, event, owner, data, owner);
+    EventList events = triggerable(logic, event, owner, data, owner);
     foreach (const Event &d, events)
         result.insertMulti(owner, d);
     return result;
 }
 
-QList<Event> EventHandler::triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, Player *invoker) const
+EventList EventHandler::triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, ServerPlayer *invoker) const
 {
     Q_UNUSED(logic)
     Q_UNUSED(event)
     Q_UNUSED(data)
     Q_UNUSED(invoker)
 
-    QList<Event> Events;
+    EventList events;
     if (triggerable(owner))
-        Events << Event(this, owner);
+        events << Event(this, owner);
 
-    return Events;
+    return events;
 }
 
-bool EventHandler::cost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, Player *invoker) const
+bool EventHandler::cost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const
 {
     Q_UNUSED(logic)
     Q_UNUSED(event)
@@ -77,7 +71,7 @@ bool EventHandler::cost(GameLogic *logic, EventType event, ServerPlayer *target,
     return true;
 }
 
-bool EventHandler::effect(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, Player *invoker) const
+bool EventHandler::effect(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const
 {
     Q_UNUSED(logic)
     Q_UNUSED(event)

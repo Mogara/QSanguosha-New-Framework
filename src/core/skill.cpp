@@ -18,33 +18,61 @@
 *********************************************************************/
 
 #include "skill.h"
+#include "serverplayer.h"
 
-Skill::Skill(const QString &name, QObject *parent)
-    : QObject(parent)
+Skill::Skill(const QString &name)
+    : m_name(name)
+    , m_type(InvalidType)
     , m_frequency(NotFrequent)
     , m_lordSkill(false)
+    , m_topSkill(nullptr)
 {
-    setObjectName(name);
 }
 
-void Skill::addSubskill(Skill *skill)
+Skill::~Skill()
 {
-    skill->setParent(this);
-    m_subskills << skill;
+    foreach (const Skill *subskill, m_subskills)
+        delete subskill;
 }
 
-QList<const Skill *> Skill::subskills() const
+const Skill *Skill::topSkill() const
 {
-    QList<const Skill *> subskills;
-    subskills.reserve(m_subskills.length());
-    foreach (const Skill *skill, m_subskills)
-        subskills << skill;
-    return subskills;
+    if (m_topSkill == nullptr)
+        return this;
+    return m_topSkill;
 }
 
-
-TriggerSkill::TriggerSkill(const QString &name, QObject *parent)
-    : Skill(name, parent)
+void Skill::addSubskill(Skill *subskill)
 {
+    subskill->m_topSkill = this;
+    m_subskills << subskill;
+}
 
+TriggerSkill::TriggerSkill(const QString &name)
+    : Skill(name)
+{
+    m_type = TriggerType;
+    m_defaultPriority = 1;
+}
+
+bool TriggerSkill::triggerable(ServerPlayer *owner) const
+{
+    return owner != nullptr && owner->isAlive() && owner->hasSkill(this);
+}
+
+bool TriggerSkill::cost(GameLogic *, EventType, ServerPlayer *, QVariant &data, ServerPlayer *invoker) const
+{
+    return invoker->askToInvokeSkill(this, data);
+}
+
+ViewAsSkill::ViewAsSkill(const QString &name)
+    : Skill(name)
+{
+    m_type = ViewAsType;
+}
+
+bool ViewAsSkill::isAvailable(const Player *self, const QString &pattern) const
+{
+    Q_UNUSED(self)
+    return pattern.isEmpty();
 }

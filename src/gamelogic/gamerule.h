@@ -26,6 +26,7 @@
 #include "eventhandler.h"
 
 class GameLogic;
+class Skill;
 
 class GameRule : public EventHandler
 {
@@ -33,9 +34,11 @@ public:
     GameRule(GameLogic *logic);
 
     bool triggerable(ServerPlayer *) const override;
-    bool effect(GameLogic *logic, EventType event, ServerPlayer *current, QVariant &data, Player *) const override;
+    bool effect(GameLogic *logic, EventType event, ServerPlayer *current, QVariant &data, ServerPlayer *) const override;
 
 protected:
+    void addPlayerSkill(const Skill *skill);
+
     typedef void (GameRule::*Callback)(ServerPlayer *, QVariant &) const;
     void onGameStart(ServerPlayer *current, QVariant &) const;
     void onTurnStart(ServerPlayer *current, QVariant &) const;

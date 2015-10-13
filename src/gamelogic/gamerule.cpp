@@ -22,6 +22,7 @@
 #include "gamerule.h"
 #include "general.h"
 #include "serverplayer.h"
+#include "skill.h"
 
 QMap<EventType, GameRule::Callback> GameRule::m_callbacks;
 
@@ -38,7 +39,7 @@ bool GameRule::triggerable(ServerPlayer *) const
     return true;
 }
 
-bool GameRule::effect(GameLogic *logic, EventType event, ServerPlayer *current, QVariant &data, Player *) const
+bool GameRule::effect(GameLogic *logic, EventType event, ServerPlayer *current, QVariant &data, ServerPlayer *) const
 {
     if (logic->skipGameRule())
         return false;
@@ -75,6 +76,13 @@ void GameRule::onGameStart(ServerPlayer *current, QVariant &) const
     current->unicastPropertyTo("role", current);
     current->setKingdom(headGeneral->kingdom());
     current->unicastPropertyTo("kingdom", current);
+
+    QList<const Skill *> skills = headGeneral->skills();
+    foreach (const Skill *skill, skills)
+        current->addHeadSkill(skill);
+    skills = deputyGeneral->skills();
+    foreach (const Skill *skill, skills)
+        current->addDeputySkill(skill);
 
     current->drawCards(4);
 }

@@ -36,3 +36,8 @@ Event::Event(const EventHandler *handler, ServerPlayer *owner)
     , owner(owner)
 {
 }
+
+EventList::EventList(const Event &e)
+{
+    append(e);
+}

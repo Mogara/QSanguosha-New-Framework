@@ -109,7 +109,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
     int triggerableIndex = 0;
     while (triggerableIndex < handlers.length()) {
         int currentPriority = 0;
-        QMap<ServerPlayer *, QList<Event>> triggerableEvents;
+        QMap<ServerPlayer *, EventList> triggerableEvents;
 
         //Construct triggerableEvents
         do {
@@ -138,7 +138,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
                     continue;
 
                 forever {
-                    QList<Event> &events = triggerableEvents[invoker];
+                    EventList &events = triggerableEvents[invoker];
                     if (events.isEmpty())
                         break;
 
@@ -168,13 +168,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
                     ServerPlayer *eventTarget = choice.to.isEmpty() ? target : choice.to.first();
 
                     //Ask the invoker for cost
-                    if (!invoker->hasShownSkill(choice.handler))
-                        m_globalRequestEnabled = true;
                     bool takeEffect = choice.handler->cost(this, event, eventTarget, data, invoker);
-                    if (takeEffect && !invoker->hasShownSkill(choice.handler)) {
-                        //@todo: show skill here?
-                    }
-                    m_globalRequestEnabled = false;
 
                     //Take effect
                     if (takeEffect) {
@@ -834,6 +828,8 @@ void GameLogic::run()
         try {
             forever {
                 ServerPlayer *current = currentPlayer();
+
+                //@to-do: fix this if Seat 1 died
                 if (current->seat() == 1)
                     m_round++;
 

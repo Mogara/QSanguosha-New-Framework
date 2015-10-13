@@ -27,6 +27,7 @@
 class CRoom;
 class CServerAgent;
 class GameLogic;
+class Skill;
 
 class ServerPlayer : public Player
 {
@@ -65,12 +66,13 @@ public:
     void showPrompt(const QString &message, const ServerPlayer *p1, const ServerPlayer *p2, const Card *card = nullptr);
     void showPrompt(const QString &message, const QVariantList &args = QVariantList());
 
-    Event askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable);
+    Event askForTriggerOrder(const QString &reason, const EventList &options, bool cancelable);
     Card *askForCard(const QString &pattern, bool optional = true);
     QList<Card *> askForCards(const QString &pattern, int num, bool optional = false);
     QList<Card *> askForCards(const QString &pattern, int minNum, int maxNum, bool optional = false);
     Card *askToChooseCard(ServerPlayer *owner, const QString &areaFlag = "hej", bool handcardVisible = false);
     Card *askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets);
+    bool askToInvokeSkill(const Skill *skill, const QVariant &data);
 
     void broadcastProperty(const char *name) const;
     void broadcastProperty(const char *name, const QVariant &value, ServerPlayer *except = nullptr) const;
@@ -79,7 +81,13 @@ public:
     void addCardHistory(const QString &name, int times = 1);
     void clearCardHistory();
 
+    void addHeadSkill(const Skill *skill);
+    void addDeputySkill(const Skill *skill);
+    void addAcquiredSkill(const Skill *skill);
+
 private:
+    void addTriggerSkill(const Skill *skill);
+
     GameLogic *m_logic;
     CRoom *m_room;
     CServerAgent *m_agent;

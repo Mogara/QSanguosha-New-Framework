@@ -38,5 +38,12 @@ struct Event
     QList<ServerPlayer *> to;
 };
 
+class EventList : public QList<Event>
+{
+public:
+    EventList() {}
+    EventList(const Event &e);
+};
+
 #endif // EVENT_H
 

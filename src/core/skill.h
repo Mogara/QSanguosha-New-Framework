@@ -22,13 +22,11 @@
 
 #include "eventhandler.h"
 
-#include <QObject>
+#include <QString>
 #include <QList>
 
-class Skill : public QObject
+class Skill
 {
-    Q_OBJECT
-
 public:
     enum Frequency
     {
@@ -39,27 +37,58 @@ public:
         Wake
     };
 
-    Skill(const QString &name, QObject *parent = 0);
+    enum Type
+    {
+        InvalidType,
+        TriggerType,
+        ViewAsType
+    };
 
+    Skill(const QString &name);
+    virtual ~Skill();
+
+    QString name() const { return m_name; }
+    Type type() const { return m_type; }
     Frequency frequency() const { return m_frequency; }
-
-    void addSubskill(Skill *skill);
-    QList<const Skill *> subskills() const;
-
+    QList<const Skill *> subskills() const { return m_subskills; }
     bool isLordSkill() const { return m_lordSkill; }
+    const Skill *topSkill() const;
 
-private:
+protected:
+    void addSubskill(Skill *subskill);
+
+    QString m_name;
+    Type m_type;
     Frequency m_frequency;
-    QList<Skill *> m_subskills;
+    QList<const Skill *> m_subskills;
     bool m_lordSkill;
+    const Skill *m_topSkill;
 };
 
 class TriggerSkill : public Skill, public EventHandler
 {
-    Q_OBJECT
-
 public:
-    TriggerSkill(const QString &name, QObject *parent = 0);
+    TriggerSkill(const QString &name);
+
+    bool triggerable(ServerPlayer *owner) const override;
+    bool cost(GameLogic *, EventType, ServerPlayer *, QVariant &data, ServerPlayer *invoker) const override;
+};
+
+class Card;
+
+class ViewAsSkill : public Skill
+{
+public:
+    ViewAsSkill(const QString &name);
+
+    //Check if the card can be selected
+    virtual bool viewFilter(const Card *card, const Player *self) const = 0;
+
+    //Returns the generated new card
+    virtual Card *viewAs(const QList<Card *> &cards, const Player *self) const = 0;
+
+    //An empty pattern means it requires all kinds of cards
+    virtual bool isAvailable(const Player *self, const QString &pattern) const;
 };
 
 #endif // SKILL_H

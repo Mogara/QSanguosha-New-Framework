@@ -22,6 +22,7 @@
 #include "gamelogic.h"
 #include "protocol.h"
 #include "serverplayer.h"
+#include "skill.h"
 
 #include <croom.h>
 #include <cserveragent.h>
@@ -227,7 +228,7 @@ void ServerPlayer::showPrompt(const QString &message, const ServerPlayer *p1, co
     showPrompt(message, args);
 }
 
-Event ServerPlayer::askForTriggerOrder(const QString &reason, QList<Event> &options, bool cancelable)
+Event ServerPlayer::askForTriggerOrder(const QString &reason, const EventList &options, bool cancelable)
 {
     //@todo:
     C_UNUSED(reason);
@@ -426,6 +427,14 @@ Card *ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlaye
     return card;
 }
 
+bool ServerPlayer::askToInvokeSkill(const Skill *skill, const QVariant &data)
+{
+    Q_UNUSED(skill)
+    Q_UNUSED(data)
+    //@to-do: implement this
+    return true;
+}
+
 void ServerPlayer::broadcastProperty(const char *name) const
 {
     QVariantList data;
@@ -469,4 +478,34 @@ void ServerPlayer::clearCardHistory()
 {
     Player::clearCardHistory();
     m_agent->notify(S_COMMAND_ADD_CARD_HISTORY);
+}
+
+void ServerPlayer::addHeadSkill(const Skill *skill)
+{
+    Player::addHeadSkill(skill);
+    addTriggerSkill(skill);
+}
+
+void ServerPlayer::addDeputySkill(const Skill *skill)
+{
+    Player::addDeputySkill(skill);
+    addTriggerSkill(skill);
+}
+
+void ServerPlayer::addAcquiredSkill(const Skill *skill)
+{
+    Player::addAcquiredSkill(skill);
+    addTriggerSkill(skill);
+}
+
+void ServerPlayer::addTriggerSkill(const Skill *skill)
+{
+    if (skill->type() == Skill::TriggerType)
+        m_logic->addEventHandler(static_cast<const TriggerSkill *>(skill));
+
+    QList<const Skill *> subskills = skill->subskills();
+    foreach (const Skill *subskill, subskills) {
+        if (subskill->type() == Skill::TriggerType)
+            m_logic->addEventHandler(static_cast<const TriggerSkill *>(subskill));
+    }
 }

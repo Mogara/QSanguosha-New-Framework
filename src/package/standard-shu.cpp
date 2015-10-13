@@ -17,9 +17,38 @@
     Mogara
 *********************************************************************/
 
+#include "card.h"
 #include "standardpackage.h"
 #include "general.h"
+#include "serverplayer.h"
 #include "skill.h"
+#include "structs.h"
+
+class Jizhi : public TriggerSkill
+{
+public:
+    Jizhi() : TriggerSkill("jizhi")
+    {
+        m_events << TargetChosen;
+    }
+
+    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+    {
+        if (!TriggerSkill::triggerable(player))
+            return EventList();
+
+        CardUseStruct *use = data.value<CardUseStruct *>();
+        if (use->card && use->card->type() == Card::TrickType && use->card->subtype() != TrickCard::DelayedType)
+            return Event(this, player);
+        return EventList();
+    }
+
+    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+    {
+        target->drawCards(1);
+        return false;
+    }
+};
 
 void StandardPackage::addShuGenerals()
 {
@@ -50,5 +79,6 @@ void StandardPackage::addShuGenerals()
 
     // SHU 007
     General *huangyueying = new General("huangyueying", "shu", 3, General::Female);
+    huangyueying->addSkill(new Jizhi);
     addGeneral(huangyueying);
 }

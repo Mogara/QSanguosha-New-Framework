@@ -35,7 +35,7 @@ General::General(const QString &name, const QString &kingdom, int maxHp, Gender 
 
 General::~General()
 {
-    foreach (Skill *skill, m_skills)
+    foreach (const Skill *skill, m_skills)
         delete skill;
 }
 
@@ -45,4 +45,14 @@ bool General::isCompanionWith(const General *general) const
         return true;
 
     return kingdom() == general->kingdom() && (isLord() || general->isLord());
+}
+
+void General::addSkill(Skill *skill)
+{
+    m_skills << skill;
+}
+
+bool General::hasSkill(const Skill *skill) const
+{
+    return m_skills.contains(skill->topSkill());
 }

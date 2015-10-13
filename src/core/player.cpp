@@ -94,19 +94,6 @@ void Player::setAlive(bool alive)
     emit aliveChanged();
 }
 
-bool Player::hasSkill(const EventHandler *skill) const
-{
-    Q_UNUSED(skill)
-    return false;
-}
-
-bool Player::hasShownSkill(const EventHandler *skill) const
-{
-    //@todo:
-    C_UNUSED(skill);
-    return false;
-}
-
 void Player::setRemoved(bool removed)
 {
     m_removed = removed;
@@ -325,4 +312,36 @@ void Player::setDying(bool dying)
 {
     m_dying = dying;
     emit dyingChanged();
+}
+
+
+bool Player::hasSkill(const Skill *skill) const
+{
+    if (m_headSkills.contains(skill))
+        return true;
+    if (m_deputySkills.contains(skill))
+        return true;
+    return m_acquiredSkills.contains(skill);
+}
+
+bool Player::hasShownSkill(const Skill *skill) const
+{
+    if (hasShownHeadGeneral()) {
+        if (m_headSkills.contains(skill))
+            return true;
+    }
+    if (hasShownDeputyGeneral()) {
+        if (m_deputySkills.contains(skill))
+            return true;
+    }
+    return m_acquiredSkills.contains(skill);
+}
+
+void Player::removeSkill(const Skill *skill)
+{
+    if (m_acquiredSkills.removeOne(skill))
+        return;
+    if (m_headSkills.removeOne(skill))
+        return;
+    m_deputySkills.removeOne(skill);
 }

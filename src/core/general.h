@@ -74,7 +74,7 @@ public:
 
     void addSkill(Skill *skill);
     bool hasSkill(const Skill *skill) const;
-    QList<const Skill *> getSkillList() const;
+    QList<const Skill *> skills() const { return m_skills; }
 
 private:
     QString m_name;
@@ -90,7 +90,7 @@ private:
 
     QSet<QString> m_companions;
 
-    QList<Skill *> m_skills;
+    QList<const Skill *> m_skills;
 };
 
 #endif // GENERAL_H

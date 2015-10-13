@@ -24,6 +24,7 @@ class Card;
 class CardArea;
 class EventHandler;
 class General;
+class Skill;
 
 #include <cabstractplayer.h>
 
@@ -90,9 +91,6 @@ public:
     bool isAlive() const { return m_alive; }
     void setDead(bool dead) { setAlive(!dead); }
     bool isDead() const { return !m_alive; }
-
-    bool hasSkill(const EventHandler *skill) const;
-    bool hasShownSkill(const EventHandler *skill) const;
 
     void setRemoved(bool removed);
     bool isRemoved() const { return m_removed; }
@@ -195,6 +193,25 @@ public:
     CardArea *judgeCards() { return m_judgeCards; }
     const CardArea *judgeCards() const { return m_judgeCards; }
 
+    bool hasSkill(const Skill *skill) const;
+    bool hasShownSkill(const Skill *skill) const;
+
+    void addSkill(const Skill *skill) { addHeadSkill(skill); }
+    void removeSkill(const Skill *skill);
+    QList<const Skill *> skills() const { return m_headSkills + m_deputySkills; }
+
+    void addHeadSkill(const Skill *skill) { m_headSkills << skill; }
+    void removeHeadSkill(const Skill *skill) { m_headSkills.removeOne(skill); }
+    QList<const Skill *> headSkills() const { return m_headSkills; }
+
+    void addDeputySkill(const Skill *skill) { m_deputySkills << skill; }
+    void removeDeputySkill(const Skill *skill) { m_deputySkills.removeOne(skill); }
+    QList<const Skill *> deputySkills() const { return m_deputySkills; }
+
+    void addAcquiredSkill(const Skill *skill) { m_acquiredSkills << skill; }
+    void removeAcquiredSkill(const Skill *skill) { m_acquiredSkills.removeOne(skill); }
+    QList<const Skill *> acquiredSkills() const { return m_acquiredSkills; }
+
 signals:
     void screenNameChanged();
     void hpChanged();
@@ -253,6 +270,10 @@ protected:
     CardArea *m_equips;
     CardArea *m_delayedTricks;
     CardArea *m_judgeCards;
+
+    QList<const Skill *> m_headSkills;
+    QList<const Skill *> m_deputySkills;
+    QList<const Skill *> m_acquiredSkills;
 };
 
 #endif // PLAYER_H

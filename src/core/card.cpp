@@ -546,10 +546,11 @@ void MovableDelayedTrick::complete(GameLogic *logic)
     if (!table->contains(this))
         return;
 
+    ServerPlayer *current = logic->currentPlayer();
     ServerPlayer *target = logic->currentPlayer();
     forever {
         target = target->nextAlive();
-        if (!targetFilter(QList<const Player *>(), target, nullptr))
+        if (!targetFilter(QList<const Player *>(), target, nullptr) && target != current)
             continue;
 
         CardsMoveStruct move;
@@ -631,4 +632,10 @@ Treasure::Treasure(Card::Suit suit, int number)
     : EquipCard(suit, number)
 {
     m_subtype = TreasureType;
+}
+
+SkillCard::SkillCard(Card::Suit suit, int number)
+    : Card(suit, number)
+{
+    m_subtype = SkillType;
 }

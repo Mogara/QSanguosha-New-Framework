@@ -161,8 +161,6 @@ protected:
     QSet<QString> m_flags;
 };
 
-class Skill;
-
 class BasicCard : public Card
 {
     Q_OBJECT
@@ -193,6 +191,8 @@ public:
     void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
     virtual bool isNullifiable(const CardEffectStruct &effect) const;
 };
+
+class Skill;
 
 class EquipCard : public Card
 {
@@ -345,6 +345,14 @@ class Treasure : public EquipCard
 
 public:
     Treasure(Suit suit, int number);
+};
+
+class SkillCard : public Card
+{
+    Q_OBJECT
+
+public:
+    SkillCard(Suit suit, int number);
 };
 
 #endif // CARD_H

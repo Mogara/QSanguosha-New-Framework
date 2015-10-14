@@ -27,6 +27,8 @@ Card::Card(Suit suit, int number)
     , m_suit(suit)
     , m_number(number)
     , m_color(NoColor)
+    , m_type(InvalidType)
+    , m_subtype(0)
     , m_transferable(false)
     , m_canRecast(false)
     , m_useLimit(InfinityNum)
@@ -243,7 +245,7 @@ void Card::onUse(GameLogic *logic, CardUseStruct &use)
     CardsMoveStruct move;
     move.to.type = CardArea::Table;
     move.isOpen = true;
-    move.cards = use.card->realCards();
+    move.cards << use.card;
     logic->moveCards(move);
 }
 
@@ -476,7 +478,7 @@ void DelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)
 void DelayedTrick::use(GameLogic *logic, CardUseStruct &use)
 {
     CardsMoveStruct move;
-    move.cards = use.card->realCards();
+    move.cards << use.card;
     move.isOpen = true;
     if (use.to.isEmpty()) {
         move.to.type = CardArea::DiscardPile;
@@ -632,10 +634,4 @@ Treasure::Treasure(Card::Suit suit, int number)
     : EquipCard(suit, number)
 {
     m_subtype = TreasureType;
-}
-
-SkillCard::SkillCard(Card::Suit suit, int number)
-    : Card(suit, number)
-{
-    m_subtype = SkillType;
 }

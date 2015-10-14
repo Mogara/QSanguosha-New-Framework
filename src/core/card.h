@@ -68,7 +68,7 @@ public:
 
     enum Type
     {
-        SkillType,
+        InvalidType,
         BasicType,
         TrickType,
         EquipType
@@ -345,14 +345,6 @@ class Treasure : public EquipCard
 
 public:
     Treasure(Suit suit, int number);
-};
-
-class SkillCard : public Card
-{
-    Q_OBJECT
-
-public:
-    SkillCard(Suit suit, int number);
 };
 
 #endif // CARD_H

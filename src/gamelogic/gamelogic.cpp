@@ -400,25 +400,29 @@ bool GameLogic::useCard(CardUseStruct &use)
             args["to"] = tos;
             room()->broadcastNotification(S_COMMAND_USE_CARD, args);
 
-            if (use.from && (!use.to.isEmpty() || use.target)) {
-                foreach (ServerPlayer *to, use.to) {
-                    if (!use.to.contains(to))
-                        continue;
-                    trigger(TargetConfirming, to, data);
-                }
-
-                if (use.from && (!use.to.isEmpty() || use.target)) {
-                    trigger(TargetChosen, use.from, data);
-
-                    if (use.from && (!use.to.isEmpty() || use.target)) {
-                        foreach (ServerPlayer *to, use.to) {
-                            if (!use.to.contains(to))
-                                continue;
-                            trigger(TargetConfirmed, to, data);
-                        }
-
-                        use.card->use(this, use);
+            if (use.from) {
+                if (!use.to.isEmpty()) {
+                    foreach (ServerPlayer *to, use.to) {
+                        if (!use.to.contains(to))
+                            continue;
+                        trigger(TargetConfirming, to, data);
                     }
+
+                    if (use.from && !use.to.isEmpty()) {
+                        trigger(TargetChosen, use.from, data);
+
+                        if (use.from && !use.to.isEmpty()) {
+                            foreach (ServerPlayer *to, use.to) {
+                                if (!use.to.contains(to))
+                                    continue;
+                                trigger(TargetConfirmed, to, data);
+                            }
+
+                            use.card->use(this, use);
+                        }
+                    }
+                } else if (use.target) {
+                    use.card->use(this, use);
                 }
             }
         }
@@ -782,6 +786,15 @@ void GameLogic::filterCardsMove(QList<CardsMoveStruct> &moves)
     //Fill card source information
     for (int i = 0, maxi = moves.length(); i < maxi; i++) {
         CardsMoveStruct &move = moves[i];
+
+        foreach (Card *card, move.cards) {
+            if (card->isVirtual()) {
+                QList<Card *> subcards = card->realCards();
+                subcards.removeOne(card);
+                move.cards << subcards;
+            }
+        }
+
         if (move.from.type != CardArea::Unknown)
             continue;
 

@@ -22,7 +22,72 @@
 #include "general.h"
 #include "serverplayer.h"
 #include "skill.h"
+#include "standard-basiccard.h"
 #include "structs.h"
+
+class Wusheng : public OneCardViewAsSkill
+{
+public:
+    Wusheng() : OneCardViewAsSkill("wusheng")
+    {
+    }
+
+    bool viewFilter(const Card *card, const Player *) const override
+    {
+        return card->color() == Card::Red;
+    }
+
+    Card *viewAs(Card *subcard, const Player *) const override
+    {
+        Slash *slash = new Slash(subcard->suit(), subcard->number());
+        slash->setSkillName(name());
+        slash->addSubcard(subcard);
+        return slash;
+    }
+
+    bool isAvailable(const Player *self, const QString &pattern) const override
+    {
+        if (pattern.isEmpty())
+            return CheckAvailability<Slash>(self);
+        else
+            return pattern == "Slash";
+    }
+};
+
+class Longdan: public OneCardViewAsSkill
+{
+public:
+    Longdan() : OneCardViewAsSkill("longdan")
+    {
+    }
+
+    bool viewFilter(const Card *card, const Player *) const override
+    {
+        return card->inherits("Slash") || card->inherits("Jink");
+    }
+
+    Card *viewAs(Card *subcard, const Player *) const override
+    {
+        Card *card = nullptr;
+        if (subcard->inherits("Slash"))
+            card = new Jink(subcard->suit(), subcard->number());
+        else if (subcard->inherits("Jink"))
+            card = new Slash(subcard->suit(), subcard->number());
+        if (card) {
+            card->setSkillName(name());
+            card->addSubcard(subcard);
+        }
+        return card;
+    }
+
+    bool isAvailable(const Player *self, const QString &pattern) const override
+    {
+        if (pattern.isEmpty())
+            return CheckAvailability<Slash>(self);
+        else
+            return pattern == "Slash" || pattern == "Jink";
+    }
+};
 
 class Jizhi : public TriggerSkill
 {
@@ -59,6 +124,7 @@ void StandardPackage::addShuGenerals()
 
     // SHU 002
     General *guanyu = new General("guanyu", "shu", 5);
+    guanyu->addSkill(new Wusheng);
     addGeneral(guanyu);
 
     // SHU 003
@@ -71,6 +137,7 @@ void StandardPackage::addShuGenerals()
 
     // SHU 005
     General *zhaoyun = new General("zhaoyun", "shu", 4);
+    zhaoyun->addSkill(new Longdan);
     addGeneral(zhaoyun);
 
     // SHU 006

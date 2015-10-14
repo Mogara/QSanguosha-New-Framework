@@ -17,9 +17,37 @@
     Mogara
 *********************************************************************/
 
+#include "card.h"
 #include "standardpackage.h"
 #include "general.h"
 #include "skill.h"
+#include "standard-basiccard.h"
+
+class Qingguo : public OneCardViewAsSkill
+{
+public:
+    Qingguo() : OneCardViewAsSkill("qingguo")
+    {
+    }
+
+    bool viewFilter(const Card *card, const Player *) const override
+    {
+        return card->color() == Card::Black;
+    }
+
+    Card *viewAs(Card *subcard, const Player *) const override
+    {
+        Jink *jink = new Jink(subcard->suit(), subcard->number());
+        jink->setSkillName(name());
+        jink->addSubcard(subcard);
+        return jink;
+    }
+
+    bool isAvailable(const Player *, const QString &pattern) const override
+    {
+        return pattern == "Jink";
+    }
+};
 
 void StandardPackage::addWeiGenerals()
 {
@@ -50,5 +78,6 @@ void StandardPackage::addWeiGenerals()
 
     // WEI 007
     General *zhenji = new General("zhenji", "wei", 3, General::Female);
+    zhenji->addSkill(new Qingguo);
     addGeneral(zhenji);
 }

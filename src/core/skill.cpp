@@ -76,3 +76,20 @@ bool ViewAsSkill::isAvailable(const Player *self, const QString &pattern) const
     Q_UNUSED(self)
     return pattern.isEmpty();
 }
+
+OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
+    : ViewAsSkill(name)
+{
+}
+
+bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self) const
+{
+    return selected.isEmpty() && viewFilter(card, self);
+}
+
+Card *OneCardViewAsSkill::viewAs(const QList<Card *> &cards, const Player *self) const
+{
+    if (cards.length() == 1)
+        return viewAs(cards.first(), self);
+    return nullptr;
+}

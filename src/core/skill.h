@@ -76,19 +76,40 @@ public:
 
 class Card;
 
+template<typename T>
+static bool CheckAvailability(const Player *self)
+{
+    T *card = new T(Card::NoSuit, 0);
+    bool result = card->isAvailable(self);
+    delete card;
+    return result;
+}
+
 class ViewAsSkill : public Skill
 {
 public:
     ViewAsSkill(const QString &name);
 
     //Check if the card can be selected
-    virtual bool viewFilter(const Card *card, const Player *self) const = 0;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self) const = 0;
 
     //Returns the generated new card
     virtual Card *viewAs(const QList<Card *> &cards, const Player *self) const = 0;
 
     //An empty pattern means it requires all kinds of cards
     virtual bool isAvailable(const Player *self, const QString &pattern) const;
+};
+
+class OneCardViewAsSkill : public ViewAsSkill
+{
+public:
+    OneCardViewAsSkill(const QString &name);
+
+    bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self) const override;
+    Card *viewAs(const QList<Card *> &cards, const Player *self) const override;
+
+    virtual bool viewFilter(const Card *card, const Player *self) const = 0;
+    virtual Card *viewAs(Card *card, const Player *self) const = 0;
 };
 
 #endif // SKILL_H

@@ -21,6 +21,7 @@
 #include "engine.h"
 #include "package.h"
 #include "general.h"
+#include "skill.h"
 
 Engine::Engine()
 {
@@ -43,8 +44,13 @@ void Engine::addPackage(Package *package)
     m_packages << package;
 
     QList<const General *> generals = package->generals(true);
-    foreach (const General *general, generals)
+    foreach (const General *general, generals) {
         m_generals.insert(general->name(), general);
+
+        QList<const Skill *> skills = general->skills();
+        foreach (const Skill *skill, skills)
+            m_skills.insert(skill->name(), skill);
+    }
 
     QList<const Card *> cards = package->cards();
     foreach (const Card *card, cards)

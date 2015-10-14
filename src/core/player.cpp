@@ -337,11 +337,31 @@ bool Player::hasShownSkill(const Skill *skill) const
     return m_acquiredSkills.contains(skill);
 }
 
-void Player::removeSkill(const Skill *skill)
+void Player::addSkill(const Skill *skill, const QString &position)
 {
-    if (m_acquiredSkills.removeOne(skill))
+    if (position == "head")
+        addHeadSkill(skill);
+    else if (position == "deputy")
+        addDeputySkill(skill);
+    else
+        addAcquiredSkill(skill);
+}
+
+void Player::removeSkill(const Skill *skill, const QString &position)
+{
+    if (position.isEmpty()) {
+        if (m_acquiredSkills.removeOne(skill))
+            return;
+        if (m_headSkills.removeOne(skill))
+            return;
+        m_deputySkills.removeOne(skill);
         return;
-    if (m_headSkills.removeOne(skill))
-        return;
-    m_deputySkills.removeOne(skill);
+    }
+
+    if (position == "head")
+        m_headSkills.removeOne(skill);
+    else if (position == "deputy")
+        m_deputySkills.removeOne(skill);
+    else
+        m_acquiredSkills.removeOne(skill);
 }

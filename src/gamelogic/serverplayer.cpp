@@ -484,18 +484,36 @@ void ServerPlayer::addHeadSkill(const Skill *skill)
 {
     Player::addHeadSkill(skill);
     addTriggerSkill(skill);
+
+    QVariantMap data;
+    data["playerId"] = id();
+    data["name"] = skill->name();
+    data["position"] = "head";
+    m_room->broadcastNotification(S_COMMAND_ADD_SKILL, data);
 }
 
 void ServerPlayer::addDeputySkill(const Skill *skill)
 {
     Player::addDeputySkill(skill);
     addTriggerSkill(skill);
+
+    QVariantMap data;
+    data["playerId"] = id();
+    data["name"] = skill->name();
+    data["position"] = "deputy";
+    m_room->broadcastNotification(S_COMMAND_ADD_SKILL, data);
 }
 
 void ServerPlayer::addAcquiredSkill(const Skill *skill)
 {
     Player::addAcquiredSkill(skill);
     addTriggerSkill(skill);
+
+    QVariantMap data;
+    data["playerId"] = id();
+    data["name"] = skill->name();
+    data["position"] = "acquired";
+    m_room->broadcastNotification(S_COMMAND_ADD_SKILL, data);
 }
 
 void ServerPlayer::addTriggerSkill(const Skill *skill)

@@ -45,12 +45,15 @@ public:
     QList<const Card *> getCards() const;
     const Card *getCard(uint id) const { return m_cards.value(id); }
 
+    const Skill *getSkill(const QString &name) const { return m_skills.value(name); }
+
 private:
     Engine();
 
     QList<Package *> m_packages;
     QMap<QString, const General *> m_generals;
     QMap<uint, const Card *> m_cards;
+    QMap<QString, const Skill *> m_skills;
 };
 
 #define ADD_PACKAGE(name) struct name##PackageAdder\

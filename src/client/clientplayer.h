@@ -22,11 +22,17 @@
 
 #include "player.h"
 
+#include <QVariant>
+
 class CClientUser;
 
 class ClientPlayer : public Player
 {
     Q_OBJECT
+
+    Q_PROPERTY(QVariant headSkills READ headSkillModel NOTIFY headSkillChanged)
+    Q_PROPERTY(QVariant deputySkills READ deputySkillModel NOTIFY deputySkillChanged)
+    Q_PROPERTY(QVariant acquiredSkills READ acquiredSkillModel NOTIFY acquiredSkillChanged)
 
 public:
     ClientPlayer(CClientUser *user, QObject *parent = 0);
@@ -34,6 +40,17 @@ public:
     void setId(uint id) { CAbstractPlayer::setId(id); }
     QString fullGeneralName() const;
     CClientUser *user() const { return m_user; }
+
+    void addSkill(const Skill *skill, const QString &position);
+
+    QVariant headSkillModel() const;
+    QVariant deputySkillModel() const;
+    QVariant acquiredSkillModel() const;
+
+signals:
+    void headSkillChanged();
+    void deputySkillChanged();
+    void acquiredSkillChanged();
 
 private:
     CClientUser *m_user;

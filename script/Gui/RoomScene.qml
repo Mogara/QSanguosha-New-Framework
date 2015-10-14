@@ -152,6 +152,8 @@ RoomScene {
                     dashboard.dying = Qt.binding(function(){return model.dying;});
                     dashboard.alive = Qt.binding(function(){return model.alive;});
                     dashboard.drunk = Qt.binding(function(){return model.drunk;});
+                    dashboard.headSkills = Qt.binding(function(){return model.headSkills;});
+                    dashboard.deputySkills = Qt.binding(function(){return model.deputySkills;});
                 }
 
                 onSetAcceptEnabled: dashboard.acceptButton.enabled = enabled;

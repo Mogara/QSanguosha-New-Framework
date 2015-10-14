@@ -487,6 +487,31 @@ void Client::ShowCardCommand(QObject *receiver, const QVariant &data)
     emit client->cardShown(from, cards);
 }
 
+void Client::AddSkillCommand(QObject *receiver, const QVariant &data)
+{
+    const QVariantMap arg = data.toMap();
+    if (arg.isEmpty())
+        return;
+
+    Client *client = qobject_cast<Client *>(receiver);
+    ClientPlayer *player = client->findPlayer(arg["playerId"].toUInt());
+    if (player == nullptr)
+        return;
+
+    Engine *engine = Engine::instance();
+    const Skill *skill = engine->getSkill(arg["name"].toString());
+    if (skill == nullptr)
+        return;
+
+    QString position = arg["position"].toString();
+    player->addSkill(skill, position);
+
+    bool log = arg["log"].toBool();
+    if (log) {
+        //@to-do: add log message
+    }
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -508,6 +533,7 @@ void Client::Init()
     AddCallback(S_COMMAND_SHOW_AMAZING_GRACE, ShowAmazingGraceCommand);
     AddCallback(S_COMMAND_CLEAR_AMAZING_GRACE, ClearAmazingGraceCommand);
     AddCallback(S_COMMAND_SHOW_CARD, ShowCardCommand);
+    AddCallback(S_COMMAND_ADD_SKILL, AddSkillCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);

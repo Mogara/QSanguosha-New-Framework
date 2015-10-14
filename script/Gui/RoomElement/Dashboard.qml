@@ -27,6 +27,8 @@ RowLayout {
     property alias equipArea: equipAreaItem
     property alias delayedTrickArea: delayedTrickAreaItem
     property alias progressBar: progressBarItem
+    property alias headSkills: headSkillPanel.skills
+    property alias deputySkills: deputySkillPanel.skills
 
     signal accepted()
     signal rejected()
@@ -196,6 +198,7 @@ RowLayout {
             }
 
             SkillPanel {
+                id: headSkillPanel
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: Device.gu(3)
@@ -217,6 +220,7 @@ RowLayout {
             }
 
             SkillPanel {
+                id: deputySkillPanel
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: Device.gu(3)

@@ -93,6 +93,7 @@ private:
     static void TakeAmazingGraceRequestCommand(QObject *receiver, const QVariant &data);
     static void ChoosePlayerCardRequestCommand(QObject *receiver, const QVariant &data);
     static void ShowCardCommand(QObject *receiver, const QVariant &data);
+    static void AddSkillCommand(QObject *receiver, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

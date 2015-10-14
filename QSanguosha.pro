@@ -6,6 +6,7 @@ CONFIG += c++11
 SOURCES += src/main.cpp \
     src/client/client.cpp \
     src/client/clientplayer.cpp \
+    src/client/clientskill.cpp \
     src/core/card.cpp \
     src/core/cardarea.cpp \
     src/core/cardpattern.cpp \
@@ -46,6 +47,7 @@ SOURCES += src/main.cpp \
 HEADERS += \
     src/client/client.h \
     src/client/clientplayer.h \
+    src/client/clientskill.h \
     src/core/card.h \
     src/core/cardarea.h \
     src/core/cardpattern.h \

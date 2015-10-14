@@ -23,8 +23,10 @@
 #include "player.h"
 
 #include <QVariant>
+#include <QMap>
 
 class CClientUser;
+class ClientSkill;
 
 class ClientPlayer : public Player
 {
@@ -54,6 +56,10 @@ signals:
 
 private:
     CClientUser *m_user;
+
+    QMap<QString, ClientSkill *> m_headSkills;
+    QMap<QString, ClientSkill *> m_deputySkills;
+    QMap<QString, ClientSkill *> m_acquiredSkills;
 };
 
 #endif // CLIENTPLAYER_H

@@ -1,5 +1,7 @@
 #include "clientplayer.h"
+#include "clientskill.h"
 #include "skill.h"
+#include "util.h"
 
 ClientPlayer::ClientPlayer(CClientUser *user, QObject *parent)
     : Player(parent)
@@ -25,52 +27,30 @@ void ClientPlayer::addSkill(const Skill *skill, const QString &position)
 {
     if (position == "head") {
         addHeadSkill(skill);
+        m_headSkills.insert(skill->name(), new ClientSkill(skill, this));
         emit headSkillChanged();
     } else if (position == "deputy") {
         addDeputySkill(skill);
+        m_deputySkills.insert(skill->name(), new ClientSkill(skill, this));
         emit deputySkillChanged();
     } else {
         addAcquiredSkill(skill);
+        m_acquiredSkills.insert(skill->name(), new ClientSkill(skill, this));
         emit acquiredSkillChanged();
     }
 }
 
-static QVariant convertToModel(const QList<const Skill *> &skills)
-{
-    QVariantList data;
-    foreach (const Skill *skill, skills) {
-        QVariantMap e;
-        e["name"] = skill->name();
-        switch (skill->frequency()) {
-        case Skill::NotFrequent:
-        case Skill::Frequent:
-            e["type"] = "proactive";
-            break;
-        case Skill::Wake:
-        case Skill::Limited:
-            e["type"] = "limited";
-            break;
-        case Skill::Compulsory:
-        default:
-            //@to-do: battle array skill
-            e["type"] = "compulsory";
-        }
-        data << e;
-    }
-    return data;
-}
-
 QVariant ClientPlayer::headSkillModel() const
 {
-    return convertToModel(headSkills());
+    return qConvertToModel(m_headSkills.values());
 }
 
 QVariant ClientPlayer::deputySkillModel() const
 {
-    return convertToModel(deputySkills());
+    return qConvertToModel(m_deputySkills.values());
 }
 
 QVariant ClientPlayer::acquiredSkillModel() const
 {
-    return convertToModel(acquiredSkills());
+    return qConvertToModel(m_acquiredSkills.values());
 }

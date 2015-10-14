@@ -48,6 +48,10 @@ public:
 
     const CardArea *wugu() const { return m_wugu; }
 
+    typedef void (*Callback)(Client *, const QVariant &);
+    static void AddInteraction(int command, Callback callback);
+    static void AddCallback(int command, Callback callback);
+
 signals:
     void promptReceived(const QString &prompt);
     void seatArranged();
@@ -76,24 +80,24 @@ private:
 
     C_DECLARE_INITIALIZER(Client)
 
-    static void ShowPromptCommand(QObject *receiver, const QVariant &data);
-    static void ArrangeSeatCommand(QObject *receiver, const QVariant &data);
-    static void PrepareCardsCommand(QObject *receiver, const QVariant &data);
-    static void UpdatePlayerPropertyCommand(QObject *receiver, const QVariant &data);
-    static void ChooseGeneralRequestCommand(QObject *receiver, const QVariant &data);
-    static void MoveCardsCommand(QObject *receiver, const QVariant &data);
-    static void UseCardRequestCommand(QObject *receiver, const QVariant &data);
-    static void UseCardCommand(QObject *receiver, const QVariant &data);
-    static void AddCardHistoryCommand(QObject *receiver, const QVariant &data);
-    static void DamageCommand(QObject *receiver, const QVariant &data);
-    static void RecoverCommand(QObject *receiver, const QVariant &data);
-    static void AskForCardRequestCommand(QObject *receiver, const QVariant &data);
-    static void ShowAmazingGraceCommand(QObject *receiver, const QVariant &);
-    static void ClearAmazingGraceCommand(QObject *receiver, const QVariant &);
-    static void TakeAmazingGraceRequestCommand(QObject *receiver, const QVariant &data);
-    static void ChoosePlayerCardRequestCommand(QObject *receiver, const QVariant &data);
-    static void ShowCardCommand(QObject *receiver, const QVariant &data);
-    static void AddSkillCommand(QObject *receiver, const QVariant &data);
+    static void ShowPromptCommand(Client *client, const QVariant &data);
+    static void ArrangeSeatCommand(Client *client, const QVariant &data);
+    static void PrepareCardsCommand(Client *client, const QVariant &data);
+    static void UpdatePlayerPropertyCommand(Client *client, const QVariant &data);
+    static void ChooseGeneralRequestCommand(Client *client, const QVariant &data);
+    static void MoveCardsCommand(Client *client, const QVariant &data);
+    static void UseCardRequestCommand(Client *client, const QVariant &data);
+    static void UseCardCommand(Client *client, const QVariant &data);
+    static void AddCardHistoryCommand(Client *client, const QVariant &data);
+    static void DamageCommand(Client *client, const QVariant &data);
+    static void RecoverCommand(Client *client, const QVariant &data);
+    static void AskForCardRequestCommand(Client *client, const QVariant &data);
+    static void ShowAmazingGraceCommand(Client *client, const QVariant &);
+    static void ClearAmazingGraceCommand(Client *client, const QVariant &);
+    static void TakeAmazingGraceRequestCommand(Client *client, const QVariant &data);
+    static void ChoosePlayerCardRequestCommand(Client *client, const QVariant &data);
+    static void ShowCardCommand(Client *client, const QVariant &data);
+    static void AddSkillCommand(Client *client, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

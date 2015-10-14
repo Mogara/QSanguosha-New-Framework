@@ -95,6 +95,16 @@ void Client::respondCard(const QList<const Card *> &cards)
     replyToServer(S_COMMAND_ASK_FOR_CARD, data);
 }
 
+void Client::AddInteraction(int command, Client::Callback callback)
+{
+    CClient::AddInteraction(command, reinterpret_cast<CClient::Callback>(callback));
+}
+
+void Client::AddCallback(int command, Client::Callback callback)
+{
+    CClient::AddCallback(command, reinterpret_cast<CClient::Callback>(callback));
+}
+
 void Client::restart()
 {
     foreach (ClientPlayer *player, m_players)
@@ -153,7 +163,7 @@ QList<Card *> Client::findCards(const QVariant &data)
     return result;
 }
 
-void Client::ShowPromptCommand(QObject *receiver, const QVariant &data)
+void Client::ShowPromptCommand(Client *client, const QVariant &data)
 {
     const QVariantList args = data.toList();
     if (args.isEmpty())
@@ -162,9 +172,6 @@ void Client::ShowPromptCommand(QObject *receiver, const QVariant &data)
     QString message = args.first().toString();
     if (message.isEmpty())
         return;
-
-
-    Client *client = qobject_cast<Client *>(receiver);
 
     message = tr(message.toLatin1().constData());
     for (int i = 1; i < args.length(); i++) {
@@ -199,13 +206,11 @@ void Client::ShowPromptCommand(QObject *receiver, const QVariant &data)
     emit client->promptReceived(message);
 }
 
-void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
+void Client::ArrangeSeatCommand(Client *client, const QVariant &data)
 {
     QVariantList infos = data.toList();
     if (infos.isEmpty())
         return;
-
-    Client *client = qobject_cast<Client *>(receiver);
 
     QList<ClientPlayer *> players;
     players.reserve(infos.length());
@@ -249,10 +254,8 @@ void Client::ArrangeSeatCommand(QObject *receiver, const QVariant &data)
     emit client->seatArranged();
 }
 
-void Client::PrepareCardsCommand(QObject *receiver, const QVariant &data)
+void Client::PrepareCardsCommand(Client *client, const QVariant &data)
 {
-    Client *client = qobject_cast<Client *>(receiver);
-
     foreach (Card *card, client->m_cards)
         card->deleteLater();
     client->m_cards.clear();
@@ -266,13 +269,12 @@ void Client::PrepareCardsCommand(QObject *receiver, const QVariant &data)
     }
 }
 
-void Client::UpdatePlayerPropertyCommand(QObject *receiver, const QVariant &data)
+void Client::UpdatePlayerPropertyCommand(Client *client, const QVariant &data)
 {
     QVariantList dataList = data.toList();
     if (dataList.length() != 3)
         return;
 
-    Client *client = qobject_cast<Client *>(receiver);
     uint playerId = dataList.at(0).toUInt();
     ClientPlayer *player = client->m_players.value(playerId);
     if (player) {
@@ -282,7 +284,7 @@ void Client::UpdatePlayerPropertyCommand(QObject *receiver, const QVariant &data
     }
 }
 
-void Client::ChooseGeneralRequestCommand(QObject *receiver, const QVariant &data)
+void Client::ChooseGeneralRequestCommand(Client *client, const QVariant &data)
 {
     QVariantList dataList = data.toList();
     if (dataList.length() < 2)
@@ -296,14 +298,11 @@ void Client::ChooseGeneralRequestCommand(QObject *receiver, const QVariant &data
 
     //@to-do: parse banned pairs
 
-    Client *client = qobject_cast<Client *>(receiver);
     emit client->chooseGeneralRequested(generals);
 }
 
-void Client::MoveCardsCommand(QObject *receiver, const QVariant &data)
+void Client::MoveCardsCommand(Client *client, const QVariant &data)
 {
-    Client *client = qobject_cast<Client *>(receiver);
-
     QList<CardsMoveStruct> moves;
 
     QVariantList movesData = data.toList();
@@ -338,10 +337,9 @@ void Client::MoveCardsCommand(QObject *receiver, const QVariant &data)
     emit client->cardsMoved(moves);
 }
 
-void Client::UseCardRequestCommand(QObject *receiver, const QVariant &data)
+void Client::UseCardRequestCommand(Client *client, const QVariant &data)
 {
     const QVariantMap arg = data.toMap();
-    Client *client = qobject_cast<Client *>(receiver);
     if (arg.size() != 3) {
         emit client->usingCard(QString(), QList<const Player *>());
     } else {
@@ -357,9 +355,8 @@ void Client::UseCardRequestCommand(QObject *receiver, const QVariant &data)
     }
 }
 
-void Client::UseCardCommand(QObject *receiver, const QVariant &data)
+void Client::UseCardCommand(Client *client, const QVariant &data)
 {
-    Client *client = qobject_cast<Client *>(receiver);
     const QVariantMap args = data.toMap();
     const ClientPlayer *from = client->findPlayer(args["from"].toUInt());
     QList<const ClientPlayer *> targets;
@@ -374,9 +371,8 @@ void Client::UseCardCommand(QObject *receiver, const QVariant &data)
     emit client->cardUsed(from, targets);
 }
 
-void Client::AddCardHistoryCommand(QObject *receiver, const QVariant &data)
+void Client::AddCardHistoryCommand(Client *client, const QVariant &data)
 {
-    Client *client = qobject_cast<Client *>(receiver);
     ClientPlayer *self = client->m_user2player.value(client->self());
 
     if (data.isNull()) {
@@ -392,40 +388,37 @@ void Client::AddCardHistoryCommand(QObject *receiver, const QVariant &data)
     }
 }
 
-void Client::DamageCommand(QObject *receiver, const QVariant &data)
+void Client::DamageCommand(Client *client, const QVariant &data)
 {
     QVariantList dataList = data.toList();
     if (dataList.length() != 3)
         return;
 
-    Client *client = qobject_cast<Client *>(receiver);
     ClientPlayer *victim = client->findPlayer(dataList.at(0).toUInt());
     DamageStruct::Nature nature = static_cast<DamageStruct::Nature>(dataList.at(1).toInt());
     int damage = dataList.at(2).toInt();
     emit client->damageDone(victim, nature, damage);
 }
 
-void Client::RecoverCommand(QObject *receiver, const QVariant &data)
+void Client::RecoverCommand(Client *client, const QVariant &data)
 {
     QVariantMap arg = data.toMap();
     if (!arg.contains("from") || !arg.contains("to") || !arg.contains("num"))
         return;
 
-    Client *client = qobject_cast<Client *>(receiver);
     const ClientPlayer *from = client->findPlayer(arg["from"].toUInt());
     const ClientPlayer *to = client->findPlayer(arg["to"].toUInt());
     int num = arg["num"].toInt();
     emit client->recoverDone(from, to, num);
 }
 
-void Client::AskForCardRequestCommand(QObject *receiver, const QVariant &data)
+void Client::AskForCardRequestCommand(Client *client, const QVariant &data)
 {
     const QVariantMap arg = data.toMap();
     if (!arg.contains("pattern"))
         return;
 
     QString pattern = arg["pattern"].toString();
-    Client *client = qobject_cast<Client *>(receiver);
 
     if (arg.contains("minNum") && arg.contains("maxNum")) {
         int minNum = arg["minNum"].toInt();
@@ -437,27 +430,23 @@ void Client::AskForCardRequestCommand(QObject *receiver, const QVariant &data)
     }
 }
 
-void Client::ShowAmazingGraceCommand(QObject *receiver, const QVariant &)
+void Client::ShowAmazingGraceCommand(Client *client, const QVariant &)
 {
-    Client *client = qobject_cast<Client *>(receiver);
     emit client->amazingGraceStarted();
 }
 
-void Client::ClearAmazingGraceCommand(QObject *receiver, const QVariant &)
+void Client::ClearAmazingGraceCommand(Client *client, const QVariant &)
 {
-    Client *client = qobject_cast<Client *>(receiver);
     emit client->amazingGraceFinished();
 }
 
-void Client::TakeAmazingGraceRequestCommand(QObject *receiver, const QVariant &)
+void Client::TakeAmazingGraceRequestCommand(Client *client, const QVariant &)
 {
-    Client *client = qobject_cast<Client *>(receiver);
     emit client->amazingGraceRequested();
 }
 
-void Client::ChoosePlayerCardRequestCommand(QObject *receiver, const QVariant &data)
+void Client::ChoosePlayerCardRequestCommand(Client *client, const QVariant &data)
 {
-    Client *client = qobject_cast<Client *>(receiver);
     const QVariantMap args = data.toMap();
     QList<Card *> handcards = client->findCards(args["handcards"]);
     QList<Card *> equips = client->findCards(args["equips"]);
@@ -465,13 +454,12 @@ void Client::ChoosePlayerCardRequestCommand(QObject *receiver, const QVariant &d
     emit client->choosePlayerCardRequested(handcards, equips, delayedTricks);
 }
 
-void Client::ShowCardCommand(QObject *receiver, const QVariant &data)
+void Client::ShowCardCommand(Client *client, const QVariant &data)
 {
     const QVariantMap arg = data.toMap();
     if (arg.isEmpty())
         return;
 
-    Client *client = qobject_cast<Client *>(receiver);
     const ClientPlayer *from = client->findPlayer(arg["from"].toUInt());
     if (from == nullptr)
         return;
@@ -487,13 +475,12 @@ void Client::ShowCardCommand(QObject *receiver, const QVariant &data)
     emit client->cardShown(from, cards);
 }
 
-void Client::AddSkillCommand(QObject *receiver, const QVariant &data)
+void Client::AddSkillCommand(Client *client, const QVariant &data)
 {
     const QVariantMap arg = data.toMap();
     if (arg.isEmpty())
         return;
 
-    Client *client = qobject_cast<Client *>(receiver);
     ClientPlayer *player = client->findPlayer(arg["playerId"].toUInt());
     if (player == nullptr)
         return;

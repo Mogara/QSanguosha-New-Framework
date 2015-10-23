@@ -44,6 +44,7 @@ public:
     CClientUser *user() const { return m_user; }
 
     void addSkill(const Skill *skill, const QString &position);
+    ClientSkill *getSkill(const Skill *skill) const;
 
     QVariant headSkillModel() const;
     QVariant deputySkillModel() const;
@@ -57,9 +58,9 @@ signals:
 private:
     CClientUser *m_user;
 
-    QMap<QString, ClientSkill *> m_headSkills;
-    QMap<QString, ClientSkill *> m_deputySkills;
-    QMap<QString, ClientSkill *> m_acquiredSkills;
+    QMap<const Skill *, ClientSkill *> m_headSkills;
+    QMap<const Skill *, ClientSkill *> m_deputySkills;
+    QMap<const Skill *, ClientSkill *> m_acquiredSkills;
 };
 
 #endif // CLIENTPLAYER_H

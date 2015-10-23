@@ -5,11 +5,12 @@ Image {
     property string name
     property string type: "proactive"
     property int columns: 1
-    property string status: "disabled"
+
+    readonly property string status: mouseArea.containsMouse ? (mouseArea.pressed ? "down" : "hover") : "normal"
 
     width: Device.gu(columns === 1 ? 120 : 59)
     height: Device.gu(26)
-    source: "image://root/skill/button/" + type + "/" + columns + "-" + status
+    source: "image://root/skill/button/" + type + "/" + columns + "-" + (enabled ? status : "disabled")
     clip: true
 
     GlowText {
@@ -29,5 +30,11 @@ Image {
         glow.radius: 1
         glow.spread: 1
         glow.samples: 2
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
     }
 }

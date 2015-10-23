@@ -21,11 +21,13 @@
 #include "cglobal.h"
 #include "client.h"
 #include "clientplayer.h"
+#include "clientskill.h"
 #include "cardpattern.h"
 #include "engine.h"
 #include "general.h"
 #include "protocol.h"
 #include "roomscene.h"
+#include "skill.h"
 #include "util.h"
 
 static QString AreaTypeToString(CardArea::Type type)
@@ -155,18 +157,30 @@ void RoomScene::enableCards(const QString &pattern)
 {
     QVariantList cardIds;
     const ClientPlayer *self = m_client->selfPlayer();
-    CardPattern exp(pattern);
-    QList<Card *> handcards = self->handcards()->cards();
-    foreach (const Card *card, handcards) {
-        if (exp.match(self, card))
-            cardIds << card->id();
-    }
-    QList<Card *> equips = self->equips()->cards();
-    foreach (const Card *card, equips) {
-        if (exp.match(self, card))
-            cardIds << card->id();
+    QList<Card *> cards = self->handcards()->cards();
+    cards << self->equips()->cards();
+    if (pattern.isEmpty()) {
+        foreach (Card *card, cards) {
+            if (card->isAvailable(self))
+                cardIds << card->id();
+        }
+    } else {
+        CardPattern exp(pattern);
+        foreach (const Card *card, cards) {
+            if (exp.match(self, card))
+                cardIds << card->id();
+        }
     }
     enableCards(cardIds);
+
+    QList<const Skill *> skills = self->skills();
+    foreach (const Skill *skill, skills) {
+        if (skill->type() != Skill::ViewAsType)
+            continue;
+        const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
+        ClientSkill *model = self->getSkill(skill);
+        model->setEnabled(viewAsSkill->isAvailable(self, pattern));
+    }
 }
 
 void RoomScene::enableCards(const QList<const Card *> &cards)
@@ -223,22 +237,7 @@ void RoomScene::onUsingCard(const QString &pattern, const QList<const Player *> 
     m_respondingState = UsingCardState;
     m_assignedTargets = assignedTargets;
 
-    QVariantList cardIds;
-    const ClientPlayer *self = m_client->selfPlayer();
-    QList<Card *> cards = self->handcards()->cards();
-    if (!pattern.isEmpty()) {
-        CardPattern cardPattern(pattern);
-        foreach (Card *card, cards) {
-            if (cardPattern.match(self, card))
-                cardIds << card->id();
-        }
-    } else {
-        foreach (Card *card, cards) {
-            if (card->isAvailable(self))
-                cardIds << card->id();
-        }
-    }
-    enableCards(cardIds);
+    enableCards(pattern);
 
     setAcceptEnabled(false);
     setRejectEnabled(false);

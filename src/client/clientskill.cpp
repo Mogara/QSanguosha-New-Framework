@@ -23,6 +23,7 @@
 ClientSkill::ClientSkill(const Skill *skill, QObject *parent)
     : QObject(parent)
     , m_skill(skill)
+    , m_enabled(false)
 {
 }
 

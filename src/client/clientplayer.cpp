@@ -27,17 +27,28 @@ void ClientPlayer::addSkill(const Skill *skill, const QString &position)
 {
     if (position == "head") {
         addHeadSkill(skill);
-        m_headSkills.insert(skill->name(), new ClientSkill(skill, this));
+        m_headSkills.insert(skill, new ClientSkill(skill, this));
         emit headSkillChanged();
     } else if (position == "deputy") {
         addDeputySkill(skill);
-        m_deputySkills.insert(skill->name(), new ClientSkill(skill, this));
+        m_deputySkills.insert(skill, new ClientSkill(skill, this));
         emit deputySkillChanged();
     } else {
         addAcquiredSkill(skill);
-        m_acquiredSkills.insert(skill->name(), new ClientSkill(skill, this));
+        m_acquiredSkills.insert(skill, new ClientSkill(skill, this));
         emit acquiredSkillChanged();
     }
+}
+
+ClientSkill *ClientPlayer::getSkill(const Skill *skill) const
+{
+    ClientSkill *model = m_headSkills.value(skill);
+    if (model == nullptr) {
+        model = m_deputySkills.value(skill);
+        if (model == nullptr)
+            model = m_acquiredSkills.value(skill);
+    }
+    return model;
 }
 
 QVariant ClientPlayer::headSkillModel() const

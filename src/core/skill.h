@@ -91,7 +91,7 @@ public:
     ViewAsSkill(const QString &name);
 
     //Check if the card can be selected
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self) const = 0;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const = 0;
 
     //Returns the generated new card
     virtual Card *viewAs(const QList<Card *> &cards, const Player *self) const = 0;
@@ -105,10 +105,10 @@ class OneCardViewAsSkill : public ViewAsSkill
 public:
     OneCardViewAsSkill(const QString &name);
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self) const override;
+    bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const override;
     Card *viewAs(const QList<Card *> &cards, const Player *self) const override;
 
-    virtual bool viewFilter(const Card *card, const Player *self) const = 0;
+    virtual bool viewFilter(const Card *card, const Player *self, const QString &pattern) const = 0;
     virtual Card *viewAs(Card *card, const Player *self) const = 0;
 };
 

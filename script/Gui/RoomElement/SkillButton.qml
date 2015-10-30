@@ -5,13 +5,19 @@ Image {
     property string name
     property string type: "proactive"
     property int columns: 1
+    property bool pressed: false
 
-    readonly property string status: mouseArea.containsMouse ? (mouseArea.pressed ? "down" : "hover") : "normal"
+    readonly property string status: pressed ? "down" : mouseArea.containsMouse ? "hover" : "normal"
 
     width: Device.gu(columns === 1 ? 120 : 59)
     height: Device.gu(26)
     source: "image://root/skill/button/" + type + "/" + columns + "-" + (enabled ? status : "disabled")
     clip: true
+
+    onEnabledChanged: {
+        if (!enabled)
+            pressed = false;
+    }
 
     GlowText {
         text: qsTr(name)
@@ -36,5 +42,6 @@ Image {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
+        onClicked: parent.pressed = !parent.pressed;
     }
 }

@@ -32,7 +32,7 @@ public:
     {
     }
 
-    bool viewFilter(const Card *card, const Player *) const override
+    bool viewFilter(const Card *card, const Player *, const QString &) const override
     {
         return card->color() == Card::Red;
     }
@@ -61,9 +61,13 @@ public:
     {
     }
 
-    bool viewFilter(const Card *card, const Player *) const override
+    bool viewFilter(const Card *card, const Player *, const QString &pattern) const override
     {
-        return card->inherits("Slash") || card->inherits("Jink");
+        if (pattern == "Slash" || pattern.isEmpty())
+            return card->inherits("Jink");
+        else if (pattern == "Jink")
+            return card->inherits("Slash");
+        return false;
     }
 
     Card *viewAs(Card *subcard, const Player *) const override

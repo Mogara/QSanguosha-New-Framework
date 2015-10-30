@@ -18,6 +18,11 @@ Item {
             name: modelData.name
             type: modelData.type
             enabled: modelData.enabled
+
+            onPressedChanged: {
+                if (enabled)
+                    roomScene.onSkillActivated(name, pressed);
+            }
         }
     }
 }

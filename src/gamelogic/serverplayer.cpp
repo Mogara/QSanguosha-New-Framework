@@ -19,6 +19,7 @@
 
 #include "card.h"
 #include "cardpattern.h"
+#include "engine.h"
 #include "gamelogic.h"
 #include "protocol.h"
 #include "serverplayer.h"
@@ -166,16 +167,30 @@ void ServerPlayer::activate(CardUseStruct &use)
     QVariant replyData = m_agent->waitForReply(timeout);
     if (replyData.isNull())
         return;
-    QVariantMap reply = replyData.toMap();
+    const QVariantMap reply = replyData.toMap();
     if (reply.isEmpty())
         return;
 
     use.from = this;
 
-    uint cardId = reply["cardId"].toUInt();
-    use.card = cardId > 0 ? m_logic->findCard(cardId) : nullptr;
+    const Skill *skill = nullptr;
+    QString skillName = reply["skill"].toString();
+    if (!skillName.isEmpty()) {
+        Engine *engine = Engine::instance();
+        skill = engine->getSkill(reply["skill"].toString());
+    }
 
-    //@to-do: filter view as skills on server side
+    if (skill) {
+        if (skill->type() == Skill::ViewAsType) {
+            QList<Card *> cards = m_logic->findCards(reply["cards"]);;
+            const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
+            use.card = viewAsSkill->viewAs(cards, use.from);
+            //@to-do: the virtual card needs to be destroyed.
+        }
+    } else {
+        QList<Card *> cards = m_logic->findCards(reply["cards"]);;
+        use.card = cards.length() > 0 ? cards.first() : nullptr;
+    }
 
     QVariantList tos = reply["to"].toList();
     foreach (const QVariant &to, tos) {

@@ -68,6 +68,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     , m_minRespondingCardNum(1)
     , m_maxRespondingCardNum(1)
     , m_respondingOptional(true)
+    , m_viewAsSkill(nullptr)
 {
     connect(m_client, &Client::promptReceived, this, &RoomScene::showPrompt);
     connect(m_client, &Client::chooseGeneralRequested, this, &RoomScene::onChooseGeneralRequested);
@@ -108,9 +109,23 @@ void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
 
 void RoomScene::checkTargetFeasibility()
 {
-    if (m_selectedCard.length() == 1) {
-        const Card *card = m_selectedCard.first();
+    const Card *card = nullptr;
+    const ClientPlayer *self = m_client->selfPlayer();
+
+    if (m_viewAsSkill) {
         const ClientPlayer *self = m_client->selfPlayer();
+        QList<Card *> copy;
+        foreach (const Card *card, m_selectedCard)
+            copy << card->clone();
+        Card *result = m_viewAsSkill->viewAs(copy, self);
+        foreach (Card *card, copy)
+            delete card;
+        card = result;
+    } else if (m_selectedCard.length() == 1) {
+        card = m_selectedCard.first();
+    }
+
+    if (card) {
         bool acceptable = card->isTargetFixed() || card->targetFeasible(m_selectedPlayer, self) || (m_selectedPlayer.isEmpty() && card->canRecast());
         if (acceptable && !m_assignedTargets.isEmpty()) {
             foreach (const Player *target, m_assignedTargets) {
@@ -132,9 +147,13 @@ void RoomScene::checkTargetFeasibility()
             }
         }
         enablePhotos(seats);
+
+        if (card->isVirtual())
+            delete card;
     } else {
         setAcceptEnabled(false);
     }
+
 }
 
 void RoomScene::resetDashboard()
@@ -151,6 +170,14 @@ void RoomScene::resetDashboard()
     setFinishEnabled(false);
 
     hidePrompt();
+
+    m_viewAsSkill = nullptr;
+    const ClientPlayer *self = m_client->selfPlayer();
+    QList<const Skill *> skills = self->skills();
+    foreach (const Skill *skill, skills) {
+        ClientSkill *model = self->getSkill(skill);
+        model->setEnabled(false);
+    }
 }
 
 void RoomScene::enableCards(const QString &pattern)
@@ -236,6 +263,7 @@ void RoomScene::onUsingCard(const QString &pattern, const QList<const Player *> 
 {
     m_respondingState = UsingCardState;
     m_assignedTargets = assignedTargets;
+    m_respondingPattern.clear();
 
     enableCards(pattern);
 
@@ -256,7 +284,10 @@ void RoomScene::onCardSelected(const QVariantList &cardIds)
     switch (m_respondingState) {
     case UsingCardState:{
         if (m_selectedCard.isEmpty()) {
-            onUsingCard();
+            if (m_viewAsSkill)
+                onSkillActivated(m_viewAsSkill->name(), true);
+            else
+                onUsingCard();
         } else {
             const Card *card = m_selectedCard.first();
             uint id = card->id();
@@ -300,9 +331,7 @@ void RoomScene::onAccepted()
 {
     switch (m_respondingState) {
     case UsingCardState:{
-        if (m_selectedCard.length() == 1) {
-            m_client->useCard(m_selectedCard.first(), m_selectedPlayer);
-        }
+        m_client->useCard(m_selectedCard, m_selectedPlayer, m_viewAsSkill);
         break;
     }
     case RespondingCardState:{
@@ -339,6 +368,38 @@ void RoomScene::onAmazingGraceTaken(uint cid)
 void RoomScene::onPlayerCardSelected(uint cid)
 {
     m_client->replyToServer(S_COMMAND_CHOOSE_PLAYER_CARD, cid);
+}
+
+void RoomScene::onSkillActivated(const QString &skillName, bool activated)
+{
+    Engine *engine = Engine::instance();
+    const Skill *originalSkill = engine->getSkill(skillName);
+    if (originalSkill->type() != Skill::ViewAsType)
+        return;
+
+    if (activated) {
+        const ViewAsSkill *skill = static_cast<const ViewAsSkill *>(originalSkill);
+        m_viewAsSkill = skill;
+
+        const ClientPlayer *self = m_client->selfPlayer();
+
+        QList<Card *> cards = self->handcards()->cards() + self->equips()->cards();
+        QVariantList enabled;
+        foreach (Card *card, cards) {
+            if (skill->viewFilter(m_selectedCard, card, self, m_respondingPattern))
+                enabled << card->id();
+        }
+        enableCards(enabled);
+    } else {
+        m_viewAsSkill = nullptr;
+
+        if (m_respondingState == UsingCardState)
+            onUsingCard();
+        else if (m_respondingState == RespondingCardState)
+            enableCards(m_respondingPattern);
+        else if (m_respondingState == InactiveState)
+            enableCards(QVariantList());
+    }
 }
 
 void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage)

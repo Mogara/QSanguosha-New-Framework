@@ -22,6 +22,7 @@
 #include "clientplayer.h"
 #include "engine.h"
 #include "protocol.h"
+#include "skill.h"
 
 #include <cclientuser.h>
 
@@ -72,14 +73,22 @@ int Client::playerNum() const
     return m_players.size();
 }
 
-void Client::useCard(const Card *card, const QList<const Player *> &targets)
+void Client::useCard(const QList<const Card *> &cards, const QList<const Player *> &targets, const Skill *skill)
 {
     QVariantMap data;
-    data["cardId"] = card->id();
+
+    QVariantList cardData;
+    foreach (const Card *card, cards)
+        cardData << card->id();
+    data["cards"] = cardData;
+
     QVariantList to;
     foreach (const Player *target, targets)
         to << target->id();
     data["to"] = to;
+
+    data["skill"] = skill ? skill->name() : "";
+
     replyToServer(S_COMMAND_USE_CARD, data);
 }
 

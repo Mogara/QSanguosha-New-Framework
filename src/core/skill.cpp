@@ -82,9 +82,9 @@ OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
 {
 }
 
-bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self) const
+bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const
 {
-    return selected.isEmpty() && viewFilter(card, self);
+    return selected.isEmpty() && viewFilter(card, self, pattern);
 }
 
 Card *OneCardViewAsSkill::viewAs(const QList<Card *> &cards, const Player *self) const

@@ -26,6 +26,7 @@
 
 class Client;
 class ClientPlayer;
+class ViewAsSkill;
 
 class RoomScene : public QQuickItem
 {
@@ -43,6 +44,7 @@ public:
     Q_INVOKABLE void onFinished();
     Q_INVOKABLE void onAmazingGraceTaken(uint cid);
     Q_INVOKABLE void onPlayerCardSelected(uint cid);
+    Q_INVOKABLE void onSkillActivated(const QString &skillName, bool activated);
 
 signals:
     //Signals from C++ to QML
@@ -100,6 +102,7 @@ private:
     bool m_respondingOptional;
     QString m_respondingPattern;
     QList<const Player *> m_assignedTargets;
+    const ViewAsSkill *m_viewAsSkill;
 };
 
 #endif // ROOMSCENE_H

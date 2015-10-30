@@ -30,7 +30,7 @@ public:
     {
     }
 
-    bool viewFilter(const Card *card, const Player *) const override
+    bool viewFilter(const Card *card, const Player *, const QString &) const override
     {
         return card->color() == Card::Black;
     }

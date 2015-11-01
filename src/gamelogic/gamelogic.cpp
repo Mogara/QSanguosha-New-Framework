@@ -434,6 +434,11 @@ bool GameLogic::useCard(CardUseStruct &use)
         throw e;
     }
 
+    if (use.card && use.card->isVirtual()) {
+        delete use.card;
+        use.card = nullptr;
+    }
+
     return true;
 }
 
@@ -479,6 +484,11 @@ void GameLogic::respondCard(CardResponseStruct &response)
         move.to.type = CardArea::DiscardPile;
         move.isOpen = true;
         moveCards(move);
+    }
+
+    if (response.card && response.card->isVirtual()) {
+        delete response.card;
+        response.card = nullptr;
     }
 }
 
@@ -789,9 +799,9 @@ void GameLogic::filterCardsMove(QList<CardsMoveStruct> &moves)
 
         foreach (Card *card, move.cards) {
             if (card->isVirtual()) {
-                QList<Card *> subcards = card->realCards();
-                subcards.removeOne(card);
-                move.cards << subcards;
+                QList<Card *> realCards = card->realCards();
+                move.cards.removeOne(card);
+                move.cards << realCards;
             }
         }
 

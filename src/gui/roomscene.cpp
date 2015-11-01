@@ -335,7 +335,7 @@ void RoomScene::onAccepted()
         break;
     }
     case RespondingCardState:{
-        m_client->respondCard(m_selectedCard);
+        m_client->respondCard(m_selectedCard, m_viewAsSkill);
         break;
     }
     default:;

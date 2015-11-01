@@ -264,7 +264,14 @@ Card *ServerPlayer::askForCard(const QString &pattern, bool optional)
 
         const QVariantMap reply = replyData.toMap();
         QList<Card *> cards = m_logic->findCards(reply["cards"]);
-        //@to-do: filter cards with skill reply["skill"]
+        QString skillName = reply["skill"].toString();
+        if (!skillName.isEmpty()) {
+            const Skill *skill = getSkill(skillName);
+            if (skill->type() == Skill::ViewAsType) {
+                const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
+                return viewAsSkill->viewAs(cards, this);
+            }
+        }
         if (cards.length() != 1)
             break;
         return cards.first();

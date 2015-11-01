@@ -92,7 +92,7 @@ void Client::useCard(const QList<const Card *> &cards, const QList<const Player 
     replyToServer(S_COMMAND_USE_CARD, data);
 }
 
-void Client::respondCard(const QList<const Card *> &cards)
+void Client::respondCard(const QList<const Card *> &cards, const Skill *skill)
 {
     QVariantMap data;
 
@@ -100,6 +100,8 @@ void Client::respondCard(const QList<const Card *> &cards)
     foreach (const Card *card, cards)
         cardData << card->id();
     data["cards"] = cardData;
+
+    data["skill"] = skill ? skill->name() : "";
 
     replyToServer(S_COMMAND_ASK_FOR_CARD, data);
 }

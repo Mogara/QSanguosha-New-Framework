@@ -44,7 +44,7 @@ public:
 
     const Card *findCard(uint id) { return m_cards.value(id); }
     void useCard(const QList<const Card *> &cards, const QList<const Player *> &targets, const Skill *skill);
-    void respondCard(const QList<const Card *> &cards);
+    void respondCard(const QList<const Card *> &cards, const Skill *skill);
 
     const CardArea *wugu() const { return m_wugu; }
 

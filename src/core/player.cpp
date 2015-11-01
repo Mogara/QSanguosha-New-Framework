@@ -21,6 +21,7 @@
 #include "player.h"
 #include "general.h"
 #include "engine.h"
+#include "skill.h"
 
 Player::Player(QObject *parent)
     : CAbstractPlayer(parent)
@@ -336,6 +337,26 @@ bool Player::hasShownSkill(const Skill *skill) const
             return true;
     }
     return m_acquiredSkills.contains(skill);
+}
+
+const Skill *Player::getSkill(const QString &name) const
+{
+    foreach(const Skill *skill, m_headSkills) {
+        if (skill->name() == name)
+            return skill;
+    }
+
+    foreach(const Skill *skill, m_deputySkills) {
+        if (skill->name() == name)
+            return skill;
+    }
+
+    foreach(const Skill *skill, m_acquiredSkills) {
+        if (skill->name() == name)
+            return skill;
+    }
+
+    return nullptr;
 }
 
 void Player::addSkill(const Skill *skill, const QString &position)

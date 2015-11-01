@@ -19,7 +19,6 @@
 
 #include "card.h"
 #include "cardpattern.h"
-#include "engine.h"
 #include "gamelogic.h"
 #include "protocol.h"
 #include "serverplayer.h"
@@ -175,10 +174,8 @@ void ServerPlayer::activate(CardUseStruct &use)
 
     const Skill *skill = nullptr;
     QString skillName = reply["skill"].toString();
-    if (!skillName.isEmpty()) {
-        Engine *engine = Engine::instance();
-        skill = engine->getSkill(reply["skill"].toString());
-    }
+    if (!skillName.isEmpty())
+        skill = getSkill(reply["skill"].toString());
 
     if (skill) {
         if (skill->type() == Skill::ViewAsType) {

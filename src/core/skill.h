@@ -79,7 +79,7 @@ class Card;
 template<typename T>
 static bool CheckAvailability(const Player *self)
 {
-    T *card = new T(Card::NoSuit, 0);
+    T *card = new T(T::NoSuit, 0);
     bool result = card->isAvailable(self);
     delete card;
     return result;

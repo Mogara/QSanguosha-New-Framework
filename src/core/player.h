@@ -195,6 +195,7 @@ public:
 
     bool hasSkill(const Skill *skill) const;
     bool hasShownSkill(const Skill *skill) const;
+    const Skill *getSkill(const QString &name) const;
 
     void addSkill(const Skill *skill, const QString &position = "head");
     void removeSkill(const Skill *skill, const QString &position = QString());

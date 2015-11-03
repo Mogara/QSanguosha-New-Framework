@@ -40,7 +40,7 @@ public:
     Card *viewAs(Card *subcard, const Player *) const override
     {
         Slash *slash = new Slash(subcard->suit(), subcard->number());
-        slash->setSkillName(name());
+        slash->setSkill(this);
         slash->addSubcard(subcard);
         return slash;
     }
@@ -78,7 +78,7 @@ public:
         else if (subcard->inherits("Jink"))
             card = new Slash(subcard->suit(), subcard->number());
         if (card) {
-            card->setSkillName(name());
+            card->setSkill(this);
             card->addSubcard(subcard);
         }
         return card;

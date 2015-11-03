@@ -43,7 +43,7 @@ class Card : public QObject
     Q_PROPERTY(QString color READ colorString WRITE setColorString)
     Q_PROPERTY(QString type READ typeString)
     Q_PROPERTY(bool transferable READ isTransferable WRITE setTransferable)
-    Q_PROPERTY(QString skillName READ skillName WRITE setSkillName)
+    //Q_PROPERTY(QString skillName READ skillName WRITE setSkillName)
 
     friend class Package;
 
@@ -105,6 +105,7 @@ public:
     QString typeString() const;
 
     void addSubcard(Card *card);
+    void setSubcards(const QList<Card *> &cards) { m_subcards = cards; }
     QList<Card *> subcards() const { return m_subcards; }
 
     Card *realCard();
@@ -112,8 +113,8 @@ public:
     QList<Card *> realCards();
     QList<const Card *> realCards() const;
 
-    void setSkillName(const QString &name) { m_skillName = name; }
-    QString skillName() const { return m_skillName; }
+    void setSkill(const Skill *skill) { m_skill = skill; }
+    const Skill *skill() const { return m_skill; }
 
     void addFlag(const QString &flag) { m_flags.insert(flag); }
     void removeFlag(const QString &flag) { m_flags.remove(flag); }
@@ -156,7 +157,7 @@ protected:
     int m_distanceLimit;
     bool m_targetFixed;
 
-    QString m_skillName;
+    const Skill *m_skill;
     QList<Card *> m_subcards;
     QSet<QString> m_flags;
 };

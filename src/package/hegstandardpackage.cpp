@@ -17,6 +17,7 @@
     Mogara
 *********************************************************************/
 
+#include "engine.h"
 #include "general.h"
 #include "hegstandardpackage.h"
 #include "standard-basiccard.h"
@@ -147,3 +148,5 @@ HegStandardPackage::HegStandardPackage()
     addWeiGenerals();
     addWuGenerals();
 }
+
+ADD_PACKAGE(HegStandard)

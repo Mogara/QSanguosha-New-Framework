@@ -182,7 +182,6 @@ void ServerPlayer::activate(CardUseStruct &use)
             QList<Card *> cards = m_logic->findCards(reply["cards"]);;
             const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
             use.card = viewAsSkill->viewAs(cards, use.from);
-            //@to-do: the virtual card needs to be destroyed.
         }
     } else {
         QList<Card *> cards = m_logic->findCards(reply["cards"]);;

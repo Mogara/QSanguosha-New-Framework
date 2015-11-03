@@ -38,7 +38,7 @@ public:
     Card *viewAs(Card *subcard, const Player *) const override
     {
         Jink *jink = new Jink(subcard->suit(), subcard->number());
-        jink->setSkillName(name());
+        jink->setSkill(this);
         jink->addSubcard(subcard);
         return jink;
     }

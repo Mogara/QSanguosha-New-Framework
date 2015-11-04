@@ -24,6 +24,7 @@
 Skill::Skill(const QString &name)
     : m_name(name)
     , m_type(InvalidType)
+    , m_subtype(InvalidType)
     , m_frequency(NotFrequent)
     , m_lordSkill(false)
     , m_topSkill(nullptr)
@@ -70,6 +71,7 @@ ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name)
 {
     m_type = ViewAsType;
+    m_subtype = ConvertType;
 }
 
 bool ViewAsSkill::isAvailable(const Player *self, const QString &pattern) const
@@ -122,6 +124,7 @@ private:
 ProactiveSkill::ProactiveSkill(const QString &name)
     : ViewAsSkill(name)
 {
+    m_subtype = ProactiveType;
 }
 
 bool ProactiveSkill::isAvailable(const Player *self, const QString &pattern) const
@@ -172,12 +175,8 @@ Card *ProactiveSkill::viewAs(const QList<Card *> &cards, const Player *self) con
     foreach (Card *card, cards)
         constCards << card;
 
-    if (cardFeasible(constCards, self)) {
-        SkillCard *card = new SkillCard(this);
-        card->setSubcards(cards);
-        card->setSkill(this);
-        return card;
-    }
+    if (cardFeasible(constCards, self))
+        new SkillCard(this);
 
     return nullptr;
 }

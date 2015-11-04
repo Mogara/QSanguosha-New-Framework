@@ -49,6 +49,7 @@ public:
 
     QString name() const { return m_name; }
     Type type() const { return m_type; }
+    int subtype() const { return m_subtype; }
     Frequency frequency() const { return m_frequency; }
     QList<const Skill *> subskills() const { return m_subskills; }
     bool isLordSkill() const { return m_lordSkill; }
@@ -59,9 +60,12 @@ protected:
 
     QString m_name;
     Type m_type;
+    int m_subtype;
     Frequency m_frequency;
-    QList<const Skill *> m_subskills;
     bool m_lordSkill;
+
+private:
+    QList<const Skill *> m_subskills;
     const Skill *m_topSkill;
 };
 
@@ -88,6 +92,11 @@ static bool CheckAvailability(const Player *self)
 class ViewAsSkill : public Skill
 {
 public:
+    enum Subtype{
+        ConvertType,
+        ProactiveType
+    };
+
     ViewAsSkill(const QString &name);
 
     //An empty pattern means it's the playing phase

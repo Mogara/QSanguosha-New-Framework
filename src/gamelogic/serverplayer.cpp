@@ -159,41 +159,62 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
     clearSkippedPhase();
 }
 
-void ServerPlayer::activate(CardUseStruct &use)
+bool ServerPlayer::activate()
 {
     int timeout = 15 * 1000;
     m_agent->request(S_COMMAND_USE_CARD, QVariant(), timeout);
     QVariant replyData = m_agent->waitForReply(timeout);
     if (replyData.isNull())
-        return;
+        return true;
     const QVariantMap reply = replyData.toMap();
     if (reply.isEmpty())
-        return;
+        return true;
 
-    use.from = this;
+    QList<ServerPlayer *> targets;
+    QVariantList tos = reply["to"].toList();
+    foreach (const QVariant &to, tos) {
+        uint toId = to.toUInt();
+        ServerPlayer *target = m_logic->findPlayer(toId);
+        if (target)
+            targets << target;
+    }
+
+    QList<Card *> cards = m_logic->findCards(reply["cards"]);
 
     const Skill *skill = nullptr;
     QString skillName = reply["skill"].toString();
     if (!skillName.isEmpty())
         skill = getSkill(reply["skill"].toString());
 
+    Card *card = nullptr;
     if (skill) {
         if (skill->type() == Skill::ViewAsType) {
-            QList<Card *> cards = m_logic->findCards(reply["cards"]);;
-            const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
-            use.card = viewAsSkill->viewAs(cards, use.from);
+            if (skill->subtype() == ViewAsSkill::ProactiveType) {
+                const ProactiveSkill *proactiveSkill = static_cast<const ProactiveSkill *>(skill);
+                proactiveSkill->effect(m_logic, this, targets, cards);
+                return false;
+            } else if (skill->subtype() == ViewAsSkill::ConvertType) {
+                const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
+                card = viewAsSkill->viewAs(cards, this);
+            }
         }
     } else {
-        QList<Card *> cards = m_logic->findCards(reply["cards"]);;
-        use.card = cards.length() > 0 ? cards.first() : nullptr;
+        card = cards.length() > 0 ? cards.first() : nullptr;
     }
 
-    QVariantList tos = reply["to"].toList();
-    foreach (const QVariant &to, tos) {
-        uint toId = to.toUInt();
-        ServerPlayer *target = m_logic->findPlayer(toId);
-        if (target)
-            use.to << target;
+    if (card != nullptr) {
+        if (card->canRecast() && targets.isEmpty()) {
+            recastCard(card);
+        } else {
+            CardUseStruct use;
+            use.from = this;
+            use.to = targets;
+            use.card = card;
+            m_logic->useCard(use);
+        }
+        return false;
+    } else {
+        return true;
     }
 }
 

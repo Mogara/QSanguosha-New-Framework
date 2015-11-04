@@ -54,7 +54,7 @@ public:
 
     void play();
     void play(const QList<Phase> &phases);
-    void activate(CardUseStruct &use);
+    bool activate();
 
     void skipPhase(Phase phase) { m_skippedPhase.insert(phase); }
     bool isPhaseSkipped(Phase phase) { return m_skippedPhase.contains(phase); }

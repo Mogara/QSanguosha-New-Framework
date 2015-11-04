@@ -107,7 +107,7 @@ public:
             return EventList();
 
         CardUseStruct *use = data.value<CardUseStruct *>();
-        if (use->card && use->card->type() == Card::TrickType && use->card->subtype() != TrickCard::DelayedType)
+        if (use->card && use->card->type() == Card::TrickType)
             return Event(this, player);
         return EventList();
     }

@@ -17,6 +17,7 @@
     Mogara
 *********************************************************************/
 
+#include "card.h"
 #include "skill.h"
 #include "serverplayer.h"
 
@@ -91,5 +92,92 @@ Card *OneCardViewAsSkill::viewAs(const QList<Card *> &cards, const Player *self)
 {
     if (cards.length() == 1)
         return viewAs(cards.first(), self);
+    return nullptr;
+}
+
+//For the client only. Do not use it on the server side
+class SkillCard : public Card
+{
+public:
+    SkillCard(const ProactiveSkill *skill)
+        : m_skill(skill)
+    {
+        m_targetFixed = false;
+    }
+
+    bool targetFeasible(const QList<const Player *> &targets, const Player *self) const override
+    {
+        return m_skill->playerFeasible(targets, self);
+    }
+
+    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override
+    {
+        return m_skill->playerFilter(targets, toSelect, self);
+    }
+
+private:
+    const ProactiveSkill *m_skill;
+};
+
+ProactiveSkill::ProactiveSkill(const QString &name)
+    : ViewAsSkill(name)
+{
+}
+
+bool ProactiveSkill::isAvailable(const Player *self, const QString &pattern) const
+{
+    C_UNUSED(self);
+    return pattern.isEmpty();
+}
+
+bool ProactiveSkill::cardFeasible(const QList<const Card *> &cards, const Player *self) const
+{
+    C_UNUSED(self);
+    return cards.length() > 1;
+}
+
+bool ProactiveSkill::cardFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const
+{
+    C_UNUSED(selected);
+    C_UNUSED(card);
+    C_UNUSED(self);
+    C_UNUSED(pattern);
+    return false;
+}
+
+bool ProactiveSkill::playerFeasible(const QList<const Player *> &targets, const Player *self) const
+{
+    C_UNUSED(targets);
+    C_UNUSED(self);
+    return true;
+}
+
+bool ProactiveSkill::playerFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+{
+    C_UNUSED(targets);
+    C_UNUSED(toSelect);
+    C_UNUSED(self);
+    return false;
+}
+
+bool ProactiveSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const
+{
+    return cardFilter(selected, card, self, pattern);
+}
+
+Card *ProactiveSkill::viewAs(const QList<Card *> &cards, const Player *self) const
+{
+    QList<const Card *> constCards;
+    constCards.reserve(cards.length());
+    foreach (Card *card, cards)
+        constCards << card;
+
+    if (cardFeasible(constCards, self)) {
+        SkillCard *card = new SkillCard(this);
+        card->setSubcards(cards);
+        card->setSkill(this);
+        return card;
+    }
+
     return nullptr;
 }

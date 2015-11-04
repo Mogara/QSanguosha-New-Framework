@@ -131,10 +131,18 @@ void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
             CardUseStruct use;
             current->activate(use);
             if (use.card != nullptr) {
-                if (use.card->canRecast() && use.target == nullptr && use.to.isEmpty())
+                if (use.card->type() == Card::InvalidType) {
+                    const Skill *skill = use.card->skill();
+                    if (skill && skill->type() == Skill::ViewAsType) {
+                        const ProactiveSkill *proactiveSkill = static_cast<const ProactiveSkill *>(skill);
+                        proactiveSkill->effect(m_logic, use.from, use.to, use.card->subcards());
+                    }
+                    delete use.card;
+                } else if (use.card->canRecast() && use.target == nullptr && use.to.isEmpty()) {
                     current->recastCard(use.card);
-                else
+                } else {
                     m_logic->useCard(use);
+                }
             } else {
                 break;
             }

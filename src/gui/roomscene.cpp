@@ -153,7 +153,6 @@ void RoomScene::checkTargetFeasibility()
     } else {
         setAcceptEnabled(false);
     }
-
 }
 
 void RoomScene::resetDashboard()
@@ -289,9 +288,27 @@ void RoomScene::onCardSelected(const QVariantList &cardIds)
             else
                 onUsingCard();
         } else {
-            const Card *card = m_selectedCard.first();
-            uint id = card->id();
-            enableCards(QVariantList() << id);
+            if (m_viewAsSkill) {
+                const ClientPlayer *self = m_client->selfPlayer();;
+                QList<Card *> cards = self->handcards()->cards();
+                cards << self->equips()->cards();
+
+                QVariantList enabled;
+                foreach (const Card *card, m_selectedCard)
+                    enabled << card->id();
+
+                foreach (const Card *card, cards) {
+                    if (m_selectedCard.contains(card))
+                        continue;
+                    if (m_viewAsSkill->viewFilter(m_selectedCard, card, self, m_respondingPattern))
+                        enabled << card->id();
+                }
+                enableCards(enabled);
+            } else {
+                const Card *card = m_selectedCard.first();
+                uint id = card->id();
+                enableCards(QVariantList() << id);
+            }
             m_selectedPlayer.clear();
             checkTargetFeasibility();
         }

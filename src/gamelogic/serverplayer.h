@@ -85,6 +85,8 @@ public:
     void addDeputySkill(const Skill *skill);
     void addAcquiredSkill(const Skill *skill);
 
+    QMap<QString, QVariant> tag;
+
 private:
     void addTriggerSkill(const Skill *skill);
 

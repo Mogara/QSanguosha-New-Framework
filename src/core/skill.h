@@ -90,14 +90,14 @@ class ViewAsSkill : public Skill
 public:
     ViewAsSkill(const QString &name);
 
+    //An empty pattern means it's the playing phase
+    virtual bool isAvailable(const Player *self, const QString &pattern) const;
+
     //Check if the card can be selected
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const = 0;
 
     //Returns the generated new card
     virtual Card *viewAs(const QList<Card *> &cards, const Player *self) const = 0;
-
-    //An empty pattern means it requires all kinds of cards
-    virtual bool isAvailable(const Player *self, const QString &pattern) const;
 };
 
 class OneCardViewAsSkill : public ViewAsSkill
@@ -110,6 +110,32 @@ public:
 
     virtual bool viewFilter(const Card *card, const Player *self, const QString &pattern) const = 0;
     virtual Card *viewAs(Card *card, const Player *self) const = 0;
+};
+
+class ProactiveSkill : public ViewAsSkill
+{
+public:
+    ProactiveSkill(const QString &name);
+
+    //An empty pattern means it's the playing phase
+    virtual bool isAvailable(const Player *self, const QString &pattern) const;
+
+    //Check if cards are feasible
+    virtual bool cardFeasible(const QList<const Card *> &cards, const Player *self) const;
+
+    //Check if the card can be selected
+    virtual bool cardFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const;
+
+    //Check if the target players are feasible
+    virtual bool playerFeasible(const QList<const Player *> &targets, const Player *self) const;
+
+    //Check if a player can be selected
+    virtual bool playerFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const;
+
+    virtual void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const = 0;
+
+    bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const final override;
+    Card *viewAs(const QList<Card *> &cards, const Player *self) const final override;
 };
 
 #endif // SKILL_H

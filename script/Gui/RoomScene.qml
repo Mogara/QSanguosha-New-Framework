@@ -249,7 +249,7 @@ RoomScene {
         dashboard.handcardArea.enableCards(cardIds);
         for (var i = 0; i < photos.count; i++) {
             var photo = photos.itemAt(i);
-            if (cardIds.length === 1) {
+            if (cardIds.length > 0) {
                 photo.state = "candidate";
             } else {
                 photo.state = "normal";

@@ -21,6 +21,7 @@ Item {
     property alias footnote: footnoteItem.text
     property alias card: cardItem
     property bool isClicked: false
+    property bool moveAborted: false
 
     signal toggleDiscards()
     signal clicked()
@@ -155,7 +156,10 @@ Item {
             duration: goBackDuration
         }
 
-        onStopped: root.moveFinished();
+        onStopped: {
+            if (!moveAborted)
+                root.moveFinished();
+        }
     }
 
     function setData(data)
@@ -182,7 +186,9 @@ Item {
     function goBack(animated)
     {
         if (animated) {
+            moveAborted = true;
             goBackAnimation.stop();
+            moveAborted = false;
             goBackAnimation.start();
         } else {
             x = homeX;

@@ -91,7 +91,7 @@ Item {
                 card = pendingInput[i];
                 card.homeX = parentPos.x - card.width / 2 + ((i - pendingInput.length / 2) * Device.gu(15));
                 card.homeY = parentPos.y - card.height / 2;
-                card.homeOpacity = 1;
+                card.homeOpacity = 0;
                 card.destroyOnStop();
             }
 

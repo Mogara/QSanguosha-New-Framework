@@ -19,6 +19,7 @@ Rectangle {
 
     InvisibleCardArea {
         id: area
+        anchors.centerIn: parent
     }
 
     Column {

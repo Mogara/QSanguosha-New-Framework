@@ -148,12 +148,22 @@ Item {
             duration: goBackDuration
         }
 
-        PropertyAnimation {
-            target: root
-            property: "opacity"
-            to: homeOpacity
-            easing.type: Easing.OutQuad
-            duration: goBackDuration
+        SequentialAnimation {
+            PropertyAnimation {
+                target: root
+                property: "opacity"
+                to: 1
+                easing.type: Easing.OutQuad
+                duration: goBackDuration * 0.8
+            }
+
+            PropertyAnimation {
+                target: root
+                property: "opacity"
+                to: homeOpacity
+                easing.type: Easing.OutQuad
+                duration: goBackDuration * 0.2
+            }
         }
 
         onStopped: {

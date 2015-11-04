@@ -236,12 +236,6 @@ Item {
         visible: parent.dying
     }
 
-    DelayedTrickArea {
-        id: delayedTrickAreaItem
-        columns: 1
-        x: -Device.gu(15)
-    }
-
     RoleComboBox {
         x: parent.width - width - Device.gu(5)
         y: Device.gu(1)
@@ -253,6 +247,12 @@ Item {
         color: "black"
         opacity: 0.3
         visible: root.state == "candidate" && !root.selectable
+    }
+
+    DelayedTrickArea {
+        id: delayedTrickAreaItem
+        columns: 1
+        x: -Device.gu(15)
     }
 
     Image {

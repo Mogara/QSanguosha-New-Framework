@@ -105,7 +105,7 @@ public:
 class Jizhi : public TriggerSkill
 {
 public:
-    Jizhi() : TriggerSkill("jizhi")
+    Jizhi() : TriggerSkill("heg_jizhi")
     {
         m_events << TargetChosen;
     }
@@ -128,15 +128,34 @@ public:
     }
 };
 
+class Qicai : public CardModSkill
+{
+public:
+    Qicai() : CardModSkill("heg_qicai")
+    {
+        m_frequency = Compulsory;
+    }
+
+    int extraDistanceLimit(const Card *card, const QList<const Player *> &, const Player *, const Player *source) const
+    {
+        if (card->type() == Card::TrickType && source->hasSkill(this))
+            return Card::InfinityNum;
+        return 0;
+    }
+};
+
 void HegStandardPackage::addShuGenerals()
 {
     General *liubei = new General("liubei", "shu", 4);
     liubei->addSkill(new Rende);
     addGeneral(liubei);
 
+    for(int i = 0; i < 20; i++){
     General *huangyueying = new General("huangyueying", "shu", 3, General::Female);
     huangyueying->addSkill(new Jizhi);
+    huangyueying->addSkill(new Qicai);
     addGeneral(huangyueying);
+    }
 
     General *zhugeliang = new General("zhugeliang", "shu", 3);
     addGeneral(zhugeliang);

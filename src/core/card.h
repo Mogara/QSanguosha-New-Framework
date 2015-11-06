@@ -131,9 +131,9 @@ public:
     int distanceLimit() const;
 
     bool isTargetFixed() const { return m_targetFixed; }
-    virtual bool targetFeasible(const QList<const Player *> &targets, const Player *self) const;
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const;
-    virtual bool isAvailable(const Player *self) const;
+    virtual bool targetFeasible(const QList<const Player *> &selected, const Player *source) const;
+    virtual bool targetFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
+    virtual bool isAvailable(const Player *source) const;
 
     virtual void onUse(GameLogic *logic, CardUseStruct &use);
     virtual void use(GameLogic *logic, CardUseStruct &use);
@@ -257,8 +257,8 @@ class DelayedTrick : public TrickCard
 public:
     DelayedTrick(Suit suit, int number);
 
-    bool targetFeasible(const QList<const Player *> &targets, const Player *) const override;
-    bool targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const override;
+    bool targetFeasible(const QList<const Player *> &selected, const Player *) const override;
+    bool targetFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const override;
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void use(GameLogic *logic, CardUseStruct &use) override;
     void onEffect(GameLogic *logic, CardEffectStruct &effect) override;

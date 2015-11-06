@@ -359,6 +359,17 @@ const Skill *Player::getSkill(const QString &name) const
     return nullptr;
 }
 
+QList<const Skill *> Player::getGlobalSkills() const
+{
+    QList<const Skill *> skills = this->skills();
+    const Player *current = this->nextAlive(1, false);
+    while (current != this) {
+        skills << current->skills();
+        current = current->nextAlive(1, false);
+    }
+    return skills;
+}
+
 void Player::addSkill(const Skill *skill, const QString &position)
 {
     if (position == "head")

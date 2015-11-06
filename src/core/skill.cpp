@@ -133,50 +133,84 @@ bool ProactiveSkill::isAvailable(const Player *self, const QString &pattern) con
     return pattern.isEmpty();
 }
 
-bool ProactiveSkill::cardFeasible(const QList<const Card *> &cards, const Player *self) const
+bool ProactiveSkill::cardFeasible(const QList<const Card *> &selected, const Player *source) const
 {
-    C_UNUSED(self);
-    return cards.length() > 1;
+    C_UNUSED(source);
+    return selected.length() > 1;
 }
 
-bool ProactiveSkill::cardFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const
+bool ProactiveSkill::cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const
 {
     C_UNUSED(selected);
     C_UNUSED(card);
-    C_UNUSED(self);
+    C_UNUSED(source);
     C_UNUSED(pattern);
     return false;
 }
 
-bool ProactiveSkill::playerFeasible(const QList<const Player *> &targets, const Player *self) const
+bool ProactiveSkill::playerFeasible(const QList<const Player *> &selected, const Player *source) const
 {
-    C_UNUSED(targets);
-    C_UNUSED(self);
+    C_UNUSED(selected);
+    C_UNUSED(source);
     return true;
 }
 
-bool ProactiveSkill::playerFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+bool ProactiveSkill::playerFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
 {
-    C_UNUSED(targets);
+    C_UNUSED(selected);
     C_UNUSED(toSelect);
-    C_UNUSED(self);
+    C_UNUSED(source);
     return false;
 }
 
-bool ProactiveSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const
+bool ProactiveSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const
 {
-    return cardFilter(selected, card, self, pattern);
+    return cardFilter(selected, card, source, pattern);
 }
 
-Card *ProactiveSkill::viewAs(const QList<Card *> &cards, const Player *self) const
+Card *ProactiveSkill::viewAs(const QList<Card *> &cards, const Player *source) const
 {
     QList<const Card *> constCards;
     constCards.reserve(cards.length());
     foreach (Card *card, cards)
         constCards << card;
 
-    if (cardFeasible(constCards, self))
+    if (cardFeasible(constCards, source))
         new SkillCard(this);
 
     return nullptr;
+}
+
+
+CardModSkill::CardModSkill(const QString &name)
+    : Skill(name)
+{
+    m_type = CardModType;
+}
+
+bool CardModSkill::targetFilter(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
+{
+    C_UNUSED(card);
+    C_UNUSED(selected);
+    C_UNUSED(toSelect);
+    C_UNUSED(source);
+    return true;
+}
+
+int CardModSkill::extraDistanceLimit(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
+{
+    C_UNUSED(card);
+    C_UNUSED(selected);
+    C_UNUSED(toSelect);
+    C_UNUSED(source);
+    return 0;
+}
+
+int CardModSkill::extraMaxTargetNum(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
+{
+    C_UNUSED(card);
+    C_UNUSED(selected);
+    C_UNUSED(toSelect);
+    C_UNUSED(source);
+    return 0;
 }

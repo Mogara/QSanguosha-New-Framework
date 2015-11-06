@@ -197,6 +197,8 @@ public:
     bool hasShownSkill(const Skill *skill) const;
     const Skill *getSkill(const QString &name) const;
 
+    QList<const Skill *> getGlobalSkills() const;
+
     void addSkill(const Skill *skill, const QString &position = "head");
     void removeSkill(const Skill *skill, const QString &position = QString());
     QList<const Skill *> skills() const { return m_headSkills + m_deputySkills; }

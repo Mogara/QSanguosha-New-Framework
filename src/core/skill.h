@@ -41,7 +41,8 @@ public:
     {
         InvalidType,
         TriggerType,
-        ViewAsType
+        ViewAsType,
+        CardModType
     };
 
     Skill(const QString &name);
@@ -130,21 +131,31 @@ public:
     virtual bool isAvailable(const Player *self, const QString &pattern) const;
 
     //Check if cards are feasible
-    virtual bool cardFeasible(const QList<const Card *> &cards, const Player *self) const;
+    virtual bool cardFeasible(const QList<const Card *> &selected, const Player *source) const;
 
     //Check if the card can be selected
-    virtual bool cardFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const;
+    virtual bool cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const;
 
     //Check if the target players are feasible
-    virtual bool playerFeasible(const QList<const Player *> &targets, const Player *self) const;
+    virtual bool playerFeasible(const QList<const Player *> &selected, const Player *source) const;
 
     //Check if a player can be selected
-    virtual bool playerFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const;
+    virtual bool playerFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
 
     virtual void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const = 0;
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const final override;
-    Card *viewAs(const QList<Card *> &cards, const Player *self) const final override;
+    bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const final override;
+    Card *viewAs(const QList<Card *> &cards, const Player *source) const final override;
+};
+
+class CardModSkill : public Skill
+{
+public:
+    CardModSkill(const QString &name);
+
+    virtual bool targetFilter(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
+    virtual int extraDistanceLimit(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
+    virtual int extraMaxTargetNum(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
 };
 
 #endif // SKILL_H

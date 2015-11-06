@@ -21,6 +21,7 @@
 #include "eventtype.h"
 #include "gamelogic.h"
 #include "serverplayer.h"
+#include "skill.h"
 
 Card::Card(Suit suit, int number)
     : m_id(0)
@@ -218,21 +219,38 @@ int Card::distanceLimit() const
     return m_distanceLimit;
 }
 
-bool Card::targetFeasible(const QList<const Player *> &targets, const Player *self) const
+bool Card::targetFeasible(const QList<const Player *> &selected, const Player *source) const
 {
-    C_UNUSED(self);
-    return minTargetNum() <= targets.length() && targets.length() <= maxTargetNum();
+    C_UNUSED(source);
+    return minTargetNum() <= selected.length() && selected.length() <= maxTargetNum();
 }
 
-bool Card::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+bool Card::targetFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
 {
-    return targets.length() < maxTargetNum() && toSelect->isAlive() && self->distanceTo(toSelect) <= distanceLimit();
+    int distanceLimit = this->distanceLimit();
+    int maxTargetNum = this->maxTargetNum();
+    bool isValid = toSelect->isAlive();
+
+    QList<const Skill *> skills = source->getGlobalSkills();
+    foreach (const Skill *skill, skills) {
+        if (skill->type() == Skill::CardModType) {
+            const CardModSkill *modSkill = static_cast<const CardModSkill *>(skill);
+            isValid = modSkill->targetFilter(this, selected, toSelect, source);
+            if (!isValid)
+                return false;
+
+            distanceLimit += modSkill->extraDistanceLimit(this, selected, toSelect, source);
+            maxTargetNum += modSkill->extraMaxTargetNum(this, selected, toSelect, source);
+        }
+    }
+
+    return isValid && selected.length() < maxTargetNum && source->distanceTo(toSelect) <= distanceLimit;
 }
 
-bool Card::isAvailable(const Player *self) const
+bool Card::isAvailable(const Player *source) const
 {
     int limit = useLimit();
-    return limit == InfinityNum || self->cardHistory(objectName()) < limit;
+    return limit == InfinityNum || source->cardHistory(objectName()) < limit;
 }
 
 void Card::onUse(GameLogic *logic, CardUseStruct &use)
@@ -450,21 +468,21 @@ DelayedTrick::DelayedTrick(Card::Suit suit, int number)
     m_subtype = DelayedType;
 }
 
-bool DelayedTrick::targetFeasible(const QList<const Player *> &targets, const Player *) const
+bool DelayedTrick::targetFeasible(const QList<const Player *> &selected, const Player *) const
 {
-    return targets.length() == 1;
+    return selected.length() == 1;
 }
 
-bool DelayedTrick::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
+bool DelayedTrick::targetFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
 {
-    if (!targets.isEmpty() || toSelect == self)
+    if (!selected.isEmpty() || toSelect == source)
         return false;
 
     const CardArea *area = toSelect->delayedTricks();
     if (area->length() <= 0)
         return true;
 
-    return !area->contains(metaObject()->className()) && TrickCard::targetFilter(targets, toSelect, self);
+    return !area->contains(metaObject()->className()) && TrickCard::targetFilter(selected, toSelect, source);
 }
 
 void DelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)

@@ -11,7 +11,7 @@ Item {
         model: skills
 
         SkillButton {
-            columns: (skills.count % 2 == 0 || index < skills.count - 1) ? 2 : 1
+            columns: (skills.length % 2 == 0 || index < skills.length - 1) ? 2 : 1
             x: (index % 2 == 1) ? width + Device.gu(1) : 0
             y: Math.floor(index / 2) * (height + Device.gu(1))
 

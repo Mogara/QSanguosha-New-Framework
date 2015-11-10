@@ -144,7 +144,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
 
                     bool hasCompulsory = false;
                     foreach (const Event &d, events) {
-                        if (d.handler->frequency() == EventHandler::Compulsory || d.handler->frequency() == EventHandler::Wake) {
+                        if (d.handler->isCompulsory()) {
                             hasCompulsory = true;
                             break;
                         }
@@ -765,12 +765,12 @@ CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)
         switch (area.type) {
         case CardArea::Hand: {
             ServerPlayer *owner = findPlayer(area.owner->id());
-            return owner->handcards();
+            return owner->handcardArea();
         }
         case CardArea::Equip:
-            return area.owner->equips();
+            return area.owner->equipArea();
         case CardArea::DelayedTrick:
-            return area.owner->delayedTricks();
+            return area.owner->delayedTrickArea();
         case CardArea::Judge:
             return area.owner->judgeCards();
         default: qWarning("Owner Area Not Found");

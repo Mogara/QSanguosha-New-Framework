@@ -300,13 +300,13 @@ Card *ServerPlayer::askForCard(const QString &pattern, bool optional)
     if (!optional) {
         CardPattern p(pattern);
 
-        QList<Card *> allCards = handcards()->cards();
+        QList<Card *> allCards = handcardArea()->cards();
         foreach (Card *card, allCards) {
             if (p.match(this, card))
                 return card;
         }
 
-        allCards = equips()->cards();
+        allCards = equipArea()->cards();
         foreach (Card *card, allCards) {
             if (p.match(this, card))
                 return card;
@@ -343,7 +343,7 @@ QList<Card *> ServerPlayer::askForCards(const QString &pattern, int minNum, int 
         QList<Card *> cards = m_logic->findCards(replyData["cards"]);
         if (!optional) {
             if (cards.length() < minNum) {
-                QList<Card *> allCards = handcards()->cards() + equips()->cards();
+                QList<Card *> allCards = handcardArea()->cards() + equipArea()->cards();
                 CardPattern p(pattern);
                 foreach (Card *card, allCards) {
                     if (!cards.contains(card) && p.match(this, card)) {
@@ -362,9 +362,9 @@ QList<Card *> ServerPlayer::askForCards(const QString &pattern, int minNum, int 
 
 Card *ServerPlayer::askToChooseCard(ServerPlayer *owner, const QString &areaFlag, bool handcardVisible)
 {
-    const CardArea *handcards = owner->handcards();
-    const CardArea *equips = owner->equips();
-    const CardArea *delayedTricks = owner->delayedTricks();
+    const CardArea *handcards = owner->handcardArea();
+    const CardArea *equips = owner->equipArea();
+    const CardArea *delayedTricks = owner->delayedTrickArea();
 
     QVariantMap data;
 

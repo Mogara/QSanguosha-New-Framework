@@ -183,8 +183,8 @@ void RoomScene::enableCards(const QString &pattern)
 {
     QVariantList cardIds;
     const ClientPlayer *self = m_client->selfPlayer();
-    QList<Card *> cards = self->handcards()->cards();
-    cards << self->equips()->cards();
+    QList<Card *> cards = self->handcardArea()->cards();
+    cards << self->equipArea()->cards();
     if (pattern.isEmpty()) {
         foreach (Card *card, cards) {
             if (card->isAvailable(self))
@@ -290,8 +290,8 @@ void RoomScene::onCardSelected(const QVariantList &cardIds)
         } else {
             if (m_viewAsSkill) {
                 const ClientPlayer *self = m_client->selfPlayer();;
-                QList<Card *> cards = self->handcards()->cards();
-                cards << self->equips()->cards();
+                QList<Card *> cards = self->handcardArea()->cards();
+                cards << self->equipArea()->cards();
 
                 QVariantList enabled;
                 foreach (const Card *card, m_selectedCard)
@@ -400,7 +400,7 @@ void RoomScene::onSkillActivated(const QString &skillName, bool activated)
 
         const ClientPlayer *self = m_client->selfPlayer();
 
-        QList<Card *> cards = self->handcards()->cards() + self->equips()->cards();
+        QList<Card *> cards = self->handcardArea()->cards() + self->equipArea()->cards();
         QVariantList enabled;
         foreach (Card *card, cards) {
             if (skill->viewFilter(m_selectedCard, card, self, m_respondingPattern))

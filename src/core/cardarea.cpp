@@ -28,7 +28,7 @@ CardArea::CardArea(CardArea::Type type, Player *owner, const QString &name)
 }
 
 bool CardArea::add(Card *card, Direction direction) {
-    if (m_cards.contains(card))
+    if (card && m_cards.contains(card))
         return false;
     if (direction == Top)
         m_cards.prepend(card);
@@ -43,7 +43,7 @@ bool CardArea::add(const QList<Card *> &cards, Direction direction)
 {
     int num = length();
     foreach (Card *card, cards) {
-        if (m_cards.contains(card))
+        if (card && m_cards.contains(card))
             continue;
         if (direction == Top)
             m_cards.prepend(card);
@@ -83,7 +83,7 @@ bool CardArea::remove(const QList<Card *> &cards)
 Card *CardArea::findCard(uint id) const
 {
     foreach (Card *card, m_cards) {
-        if (card->id() == id)
+        if (card && card->id() == id)
             return card;
     }
     return nullptr;
@@ -123,7 +123,7 @@ bool CardArea::contains(const Card *card) const
 bool CardArea::contains(uint id) const
 {
     foreach (const Card *card, m_cards)
-        if (card->id() == id)
+        if (card && card->id() == id)
             return true;
     return false;
 }
@@ -131,7 +131,7 @@ bool CardArea::contains(uint id) const
 bool CardArea::contains(const char *className) const
 {
     foreach (const Card *card, m_cards)
-        if (card->inherits(className))
+        if (card && card->inherits(className))
             return true;
     return false;
 }

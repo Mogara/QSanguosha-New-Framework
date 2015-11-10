@@ -384,7 +384,7 @@ void EquipCard::use(GameLogic *logic, CardUseStruct &use)
 
     //Find the existing equip
     Card *equippedCard = nullptr;
-    QList<Card *> equips = target->equips()->cards();
+    QList<Card *> equips = target->equipArea()->cards();
     foreach (Card *card, equips) {
         if (card->subtype() == subtype()) {
             equippedCard = card;
@@ -478,7 +478,7 @@ bool DelayedTrick::targetFilter(const QList<const Player *> &selected, const Pla
     if (!selected.isEmpty() || toSelect == source)
         return false;
 
-    const CardArea *area = toSelect->delayedTricks();
+    const CardArea *area = toSelect->delayedTrickArea();
     if (area->length() <= 0)
         return true;
 
@@ -599,7 +599,7 @@ void MovableDelayedTrick::complete(GameLogic *logic)
 bool MovableDelayedTrick::isAvailable(const Player *player) const
 {
     const char *className = metaObject()->className();
-    QList<Card *> cards = player->delayedTricks()->cards();
+    QList<Card *> cards = player->delayedTrickArea()->cards();
     foreach (const Card *card, cards) {
         if (card->inherits(className))
             return false;

@@ -132,11 +132,11 @@ CardArea *Client::findArea(const CardsMoveStruct::Area &area)
     if (area.owner) {
         switch (area.type) {
         case CardArea::Hand:
-            return area.owner->handcards();
+            return area.owner->handcardArea();
         case CardArea::Equip:
-            return area.owner->equips();
+            return area.owner->equipArea();
         case CardArea::DelayedTrick:
-            return area.owner->delayedTricks();
+            return area.owner->delayedTrickArea();
         case CardArea::Judge:
             return area.owner->judgeCards();
         default:

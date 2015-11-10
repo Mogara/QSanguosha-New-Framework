@@ -46,17 +46,17 @@ Player::Player(QObject *parent)
     , m_extraOutDistance(0)
     , m_extraInDistance(0)
 {
-    m_handcards = new CardArea(CardArea::Hand, this);
-    m_handcards->setSignal([this](){
-        m_handcardNum = m_handcards->length();
+    m_handcardArea = new CardArea(CardArea::Hand, this);
+    m_handcardArea->setSignal([this](){
+        m_handcardNum = m_handcardArea->length();
         emit handcardNumChanged();
     });
-    m_equips = new CardArea(CardArea::Equip, this);
-    m_equips->setSignal([this](){
+    m_equipArea = new CardArea(CardArea::Equip, this);
+    m_equipArea->setSignal([this](){
         emit equipNumChanged();
     });
-    m_delayedTricks = new CardArea(CardArea::DelayedTrick, this);
-    m_delayedTricks->setSignal([this](){
+    m_delayedTrickArea = new CardArea(CardArea::DelayedTrick, this);
+    m_delayedTrickArea->setSignal([this](){
         emit delayedTrickNumChanged();
     });
     m_judgeCards = new CardArea(CardArea::Judge, this);
@@ -66,9 +66,9 @@ Player::Player(QObject *parent)
 
 Player::~Player()
 {
-    delete m_handcards;
-    delete m_equips;
-    delete m_delayedTricks;
+    delete m_handcardArea;
+    delete m_equipArea;
+    delete m_delayedTrickArea;
     delete m_judgeCards;
 }
 
@@ -230,12 +230,12 @@ void Player::setFaceUp(bool faceUp)
 
 int Player::equipNum() const
 {
-    return m_equips->length();
+    return m_equipArea->length();
 }
 
 int Player::delayedTrickNum() const
 {
-    return m_delayedTricks->length();
+    return m_delayedTrickArea->length();
 }
 
 int Player::distanceTo(const Player *other) const

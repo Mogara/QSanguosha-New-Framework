@@ -33,15 +33,6 @@ class Player;
 class EventHandler
 {
 public:
-    enum Frequency
-    {
-        NotFrequent,
-        Frequent,
-        Compulsory,
-        Limited,
-        Wake
-    };
-
     EventHandler();
     virtual ~EventHandler() = 0;
 
@@ -50,7 +41,7 @@ public:
     int priority() const;
     int priority(EventType event) const;
 
-    Frequency frequency() const { return m_frequency; }
+    bool isCompulsory() const { return m_compulsory; }
 
     virtual bool triggerable(ServerPlayer *owner) const = 0;
     virtual QMap<ServerPlayer *, Event> triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data) const;
@@ -62,7 +53,7 @@ protected:
     QList<EventType> m_events;
     int m_defaultPriority;
     QMap<EventType, int> m_priorityMap;
-    Frequency m_frequency;
+    bool m_compulsory;
 };
 
 #endif // EVENTHANDLER_H

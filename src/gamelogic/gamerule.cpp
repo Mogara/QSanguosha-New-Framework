@@ -101,7 +101,7 @@ void GameRule::onPhaseProceeding(ServerPlayer *current, QVariant &) const
     GameLogic::msleep(500);
     switch (current->phase()) {
     case Player::Judge: {
-        QList<Card *> tricks = current->delayedTricks()->cards();
+        QList<Card *> tricks = current->delayedTrickArea()->cards();
         while (tricks.length() > 0 && current->isAlive()) {
             Card *trick = tricks.takeLast();
 

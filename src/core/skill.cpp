@@ -67,6 +67,12 @@ bool TriggerSkill::cost(GameLogic *, EventType, ServerPlayer *, QVariant &data, 
     return invoker->askToInvokeSkill(this, data);
 }
 
+void TriggerSkill::setFrequency(Skill::Frequency frequency)
+{
+    m_frequency = frequency;
+    m_compulsory = (m_frequency == Compulsory || m_frequency == Wake);
+}
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name)
 {

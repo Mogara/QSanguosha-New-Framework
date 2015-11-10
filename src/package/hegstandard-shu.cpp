@@ -26,6 +26,9 @@
 #include "skill.h"
 #include "structs.h"
 
+namespace
+{
+
 class Rende : public ProactiveSkill
 {
     class Reset : public TriggerSkill
@@ -60,7 +63,7 @@ public:
 
     bool cardFilter(const QList<const Card *> &, const Card *card, const Player *self, const QString &) const override
     {
-        const CardArea *handcard = self->handcards();
+        const CardArea *handcard = self->handcardArea();
         return handcard->contains(card);
     }
 
@@ -136,7 +139,7 @@ public:
         m_frequency = Compulsory;
     }
 
-    int extraDistanceLimit(const Card *card, const QList<const Player *> &, const Player *, const Player *source) const
+    int extraDistanceLimit(const Card *card, const QList<const Player *> &, const Player *, const Player *source) const override
     {
         if (card->type() == Card::TrickType && source->hasSkill(this))
             return Card::InfinityNum;
@@ -144,20 +147,49 @@ public:
     }
 };
 
+class Kongcheng : public TriggerSkill
+{
+public:
+    Kongcheng() : TriggerSkill("heg_kongcheng")
+    {
+        m_events << TargetConfirming;
+        setFrequency(Compulsory);
+    }
+
+    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+    {
+        if (TriggerSkill::triggerable(player) && player->handcardArea()->size() <= 0) {
+            CardUseStruct *use = data.value<CardUseStruct *>();
+            if (use->card && (use->card->inherits("Slash") || use->card->inherits("Duel")) && use->to.contains(player)) {
+                return Event(this);
+            }
+        }
+        return EventList();
+    }
+
+    bool effect(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+    {
+        CardUseStruct *use = data.value<CardUseStruct *>();
+        use->to.removeOne(player);
+        return false;
+    }
+};
+
+}
+
 void HegStandardPackage::addShuGenerals()
 {
     General *liubei = new General("liubei", "shu", 4);
     liubei->addSkill(new Rende);
     addGeneral(liubei);
 
-    for(int i = 0; i < 20; i++){
     General *huangyueying = new General("huangyueying", "shu", 3, General::Female);
     huangyueying->addSkill(new Jizhi);
     huangyueying->addSkill(new Qicai);
     addGeneral(huangyueying);
-    }
 
     General *zhugeliang = new General("zhugeliang", "shu", 3);
+    zhugeliang->addSkill(new Kongcheng);
     addGeneral(zhugeliang);
 
     General *guanyu = new General("guanyu", "shu", 5);

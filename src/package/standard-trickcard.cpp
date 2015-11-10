@@ -319,7 +319,7 @@ bool Collateral::isAvailable(const Player *player) const
     bool canUse = false;
     const Player *next = player->nextAlive();
     while (next && next != player) {
-        const CardArea *equips = next->equips();
+        const CardArea *equips = next->equipArea();
         if (equips->contains("Weapon")) {
             canUse = true;
             break;
@@ -343,7 +343,7 @@ bool Collateral::targetFilter(const QList<const Player *> &targets, const Player
         // @to-do: Check prohibit skills like Kongcheng
         return slashSource->distanceTo(toSelect) <= slashSource->attackRange();
     } else {
-        const CardArea *equips = toSelect->equips();
+        const CardArea *equips = toSelect->equipArea();
         return equips->contains("Weapon") && toSelect != self && SingleTargetTrick::targetFilter(targets, toSelect, self);
     }
 }
@@ -369,7 +369,7 @@ bool Collateral::doCollateral(CardEffectStruct &effect) const
 void Collateral::effect(GameLogic *logic, CardEffectStruct &effect)
 {
     Card *weapon = nullptr;
-    foreach (Card *card, effect.to->equips()->cards()) {
+    foreach (Card *card, effect.to->equipArea()->cards()) {
         if (card->subtype() == EquipCard::WeaponType) {
             weapon = card;
             break;

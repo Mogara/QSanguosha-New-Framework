@@ -21,6 +21,7 @@
 
 EventHandler::EventHandler()
     : m_defaultPriority(0)
+    , m_compulsory(false)
 {
 }
 

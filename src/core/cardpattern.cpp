@@ -169,10 +169,10 @@ bool CardPattern::matchOne(const Player *player, const Card *card, const Exp &ex
                 checkPoint = false;
                 foreach (const QString &_p, exp.places) {
                     QString p = _p;
-                    if (p == "equipped" && player->equips()->contains(card)) {
+                    if (p == "equipped" && player->equipArea()->contains(card)) {
                         checkPoint = true;
                     } else if (p == "hand") {
-                        if (player->handcards()->contains(card))
+                        if (player->handcardArea()->contains(card))
                             checkPoint = true;
                     } else {
                         //@to-do: pile cards checking

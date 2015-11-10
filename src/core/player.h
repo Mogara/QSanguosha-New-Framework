@@ -173,18 +173,18 @@ public:
     int extraInDistance() const { return m_extraInDistance; }
     void setExtraInDistance(int extra) { m_extraInDistance = extra; }
 
-    CardArea *handcards() { return m_handcards; }
-    const CardArea *handcards() const { return m_handcards; }
+    CardArea *handcardArea() { return m_handcardArea; }
+    const CardArea *handcardArea() const { return m_handcardArea; }
     int handcardNum() const { return m_handcardNum; }
     bool hasHandcard() const { return handcardNum() > 0; }
 
-    const CardArea *equips() const { return m_equips; }
-    CardArea *equips() { return m_equips; }
+    const CardArea *equipArea() const { return m_equipArea; }
+    CardArea *equipArea() { return m_equipArea; }
     int equipNum() const;
     bool hasEquip() const { return equipNum() > 0; }
 
-    CardArea *delayedTricks() { return m_delayedTricks; }
-    const CardArea *delayedTricks() const { return m_delayedTricks; }
+    CardArea *delayedTrickArea() { return m_delayedTrickArea; }
+    const CardArea *delayedTrickArea() const { return m_delayedTrickArea; }
     int delayedTrickNum() const;
 
     bool isNude() const { return !hasHandcard() && !hasEquip(); }
@@ -269,9 +269,9 @@ protected:
     int m_extraInDistance;
 
     QHash<QString, int> m_cardHistory;
-    CardArea *m_handcards;
-    CardArea *m_equips;
-    CardArea *m_delayedTricks;
+    CardArea *m_handcardArea;
+    CardArea *m_equipArea;
+    CardArea *m_delayedTrickArea;
     CardArea *m_judgeCards;
 
     QList<const Skill *> m_headSkills;

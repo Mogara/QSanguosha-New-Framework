@@ -77,6 +77,9 @@ public:
 
     bool triggerable(ServerPlayer *owner) const override;
     bool cost(GameLogic *, EventType, ServerPlayer *, QVariant &data, ServerPlayer *invoker) const override;
+
+protected:
+    void setFrequency(Frequency frequency);
 };
 
 class Card;
@@ -115,8 +118,8 @@ class OneCardViewAsSkill : public ViewAsSkill
 public:
     OneCardViewAsSkill(const QString &name);
 
-    bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const override;
-    Card *viewAs(const QList<Card *> &cards, const Player *self) const override;
+    bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const final override;
+    Card *viewAs(const QList<Card *> &cards, const Player *self) const final override;
 
     virtual bool viewFilter(const Card *card, const Player *self, const QString &pattern) const = 0;
     virtual Card *viewAs(Card *card, const Player *self) const = 0;

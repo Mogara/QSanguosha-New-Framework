@@ -25,6 +25,9 @@
 #include "standard-basiccard.h"
 #include "structs.h"
 
+namespace
+{
+
 class Wusheng : public OneCardViewAsSkill
 {
 public:
@@ -54,7 +57,25 @@ public:
     }
 };
 
-class Longdan: public OneCardViewAsSkill
+class Kongcheng : public CardModSkill
+{
+public:
+    Kongcheng() : CardModSkill("kongcheng")
+    {
+        m_frequency = Compulsory;
+    }
+
+    bool targetFilter(const Card *card, const QList<const Player *> &, const Player *toSelect, const Player *) const override
+    {
+        if (card->inherits("Slash") || card->inherits("Duel")) {
+            if (toSelect->handcardNum() <= 0 && toSelect->hasSkill(this))
+                return false;
+        }
+        return true;
+    }
+};
+
+class Longdan : public OneCardViewAsSkill
 {
 public:
     Longdan() : OneCardViewAsSkill("longdan")
@@ -119,6 +140,8 @@ public:
     }
 };
 
+}
+
 void StandardPackage::addShuGenerals()
 {
     // SHU 001
@@ -137,6 +160,7 @@ void StandardPackage::addShuGenerals()
 
     // SHU 004
     General *zhugeliang = new General("zhugeliang", "shu", 3);
+    zhugeliang->addSkill(new Kongcheng);
     addGeneral(zhugeliang);
 
     // SHU 005

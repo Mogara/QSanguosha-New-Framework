@@ -28,9 +28,9 @@ Item {
         function imagePath(imageId, requestedSize)
         {
             if (imageId.indexOf('.') === -1)
-                return "image/system/" + imageId + ".png";
+                return QsSrc + "image/system/" + imageId + ".png";
             else
-                return "image/system/" + imageId;
+                return QsSrc + "image/system/" + imageId;
         }
     }
 

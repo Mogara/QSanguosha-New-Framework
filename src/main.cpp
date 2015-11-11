@@ -20,6 +20,7 @@
 #include <QGuiApplication>
 #include <QLocale>
 #include <QTranslator>
+#include <QQmlContext>
 
 #include <cmainwindow.h>
 #include <cexceptionhandler.h>
@@ -50,6 +51,7 @@ int main(int argc, char *argv[])
     app.installTranslator(&translator);
 
     CMainWindow window;
+    window.rootContext()->setContextProperty("QsSrc", QsSrc);
     window.setIcon(QIcon(QsSrc"image/system/mogara/logo.png"));
     window.setSource(QUrl(QsSrc"script/main.qml"));
     window.show();

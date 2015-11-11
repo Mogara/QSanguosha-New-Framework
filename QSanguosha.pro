@@ -192,8 +192,9 @@ embedresource{
         image.qrc \
         qml.qrc
     DEFINES += QsSrc=\\\"qrc:/\\\"
+    DEFINES += EMBED_RESOURCE
 } else {
-    DEFINES += QsSrc=""
+    DEFINES += QsSrc=\\\"\\\"
 }
 
 lupdate_only {

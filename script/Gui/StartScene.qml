@@ -10,15 +10,31 @@ Image {
 
     property bool isFeteDay: isInFeteDays()
 
-    Image {
-        id: logo
-        source: "image://system/mogara/logo" + (isFeteDay ? "-moxuan" : "")
-        anchors.centerIn: parent
-        anchors.horizontalCenterOffset: -parent.width / 4
-        opacity: 0
+    FitInView {
+        minWidth: Device.gu(870)
+        minHeight: Device.gu(700)
 
-        ToolTipArea {
-            text: isFeteDay ? qsTr("At 10:40 a.m., August 19, 2014, Moxuanyanyun, a developer of QSanguosha, passed away peacefully in Dalian Medical College. He was 18 and had struggled with leukemia for more than 4 years. May there is no pain in Heaven.") : ""
+        Image {
+            id: logo
+            source: "image://system/mogara/logo" + (isFeteDay ? "-moxuan" : "")
+            anchors.centerIn: parent
+            anchors.horizontalCenterOffset: -parent.width / 4
+            opacity: 0
+
+            ToolTipArea {
+                text: isFeteDay ? qsTr("At 10:40 a.m., August 19, 2014, Moxuanyanyun, a developer of QSanguosha, passed away peacefully in Dalian Medical College. He was 18 and had struggled with leukemia for more than 4 years. May there is no pain in Heaven.") : ""
+            }
+        }
+
+        GridView {
+            id: grid
+            interactive: false
+            anchors.centerIn: parent
+            anchors.horizontalCenterOffset: parent.width / 4
+            flow: GridView.FlowTopToBottom
+            cellHeight: Device.gu(162); cellWidth: Device.gu(162)
+            height: cellHeight * 4; width: cellWidth * 2
+            delegate: buttonDelegate
         }
     }
 
@@ -29,17 +45,6 @@ Image {
         duration: 1000
         to: 1
         onStopped: grid.model = buttons;
-    }
-
-    GridView {
-        id: grid
-        interactive: false
-        anchors.centerIn: parent
-        anchors.horizontalCenterOffset: parent.width / 4
-        flow: GridView.FlowTopToBottom
-        cellHeight: Device.gu(162); cellWidth: Device.gu(162)
-        height: cellHeight * 4; width: cellWidth * 2
-        delegate: buttonDelegate
     }
 
     Component {

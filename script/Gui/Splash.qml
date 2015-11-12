@@ -1,4 +1,5 @@
 import QtQuick 2.4
+import QtQuick.Layouts 1.1
 import Cardirector.Gui 1.0
 import Cardirector.Device 1.0
 
@@ -15,68 +16,68 @@ Rectangle {
     signal disappearing
     signal disappeared
 
-    //Cardirector Splash
-    /*Splash {
-        onDisappearing: {
-            visible = false;
-            splash.animationRunning = true;
-        }
-    }*/
-
-    //---------------Logo-------------------
-    Image {
-        id: logo
+    Grid {
+        id: main
         anchors.centerIn: parent
-        source: "image://system/mogara/logo"
-    }
+        rows: splash.width >= splash.height ? 1 : 2
+        columns: splash.width >= splash.height ? 2 : 1
+        horizontalItemAlignment: Grid.AlignHCenter
+        verticalItemAlignment: Grid.AlignVCenter
+        spacing: Device.gu(25)
 
-    //--------------Text-------------
-    Text {
-        id: qsan
-        text: qsTr("QSanguosha")
-        color: "#ffffff"
-        font.family: "微软雅黑"
-        font.pointSize: 30
-        anchors.left: logo.right
-        anchors.leftMargin: Device.gu(30)
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -Device.gu(20)
-        opacity: 0
-    }
-
-    Row {
-        height: childrenRect.height
-        width: childrenRect.width
-        anchors.horizontalCenter: qsan.horizontalCenter
-        anchors.top: qsan.bottom
-        anchors.verticalCenterOffset: Device.gu(40)
-        spacing: Device.gu(8)
-
-        Text {
-            id: free
-            text: qsTr("Free")
-            color: "#ffffff"
-            font.family: "微软雅黑"
-            font.pointSize: 15
-            opacity: 0
+        Image {
+            id: logo
+            source: "image://system/mogara/logo"
+            width: Math.min(implicitWidth, Math.round(Math.max(splash.width, splash.height) * 0.2))
+            height: width
         }
 
-        Text {
-            id: open
-            text: qsTr("Open")
-            color: "#ffffff"
-            font.family: "微软雅黑"
-            font.pointSize: 15
-            opacity: 0
-        }
+        Column {
+            spacing: Device.gu(6)
 
-        Text {
-            id: flexible
-            text: qsTr("Flexible")
-            color: "#ffffff"
-            font.family: "微软雅黑"
-            font.pointSize: 15
-            opacity: 0
+            Text {
+                id: qsan
+                text: qsTr("QSanguosha")
+                color: "#ffffff"
+                font.family: "微软雅黑"
+                font.pixelSize: Device.gu(40)
+                opacity: 0
+            }
+
+            RowLayout {
+                width: parent.width
+                spacing: Device.gu(8)
+
+                Text {
+                    id: free
+                    text: qsTr("Free")
+                    color: "#ffffff"
+                    font.family: "微软雅黑"
+                    font.pixelSize: Device.gu(20)
+                    opacity: 0
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                }
+
+                Text {
+                    id: open
+                    text: qsTr("Open")
+                    color: "#ffffff"
+                    font.family: "微软雅黑"
+                    font.pixelSize: Device.gu(20)
+                    opacity: 0
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                }
+
+                Text {
+                    id: flexible
+                    text: qsTr("Flexible")
+                    color: "#ffffff"
+                    font.family: "微软雅黑"
+                    font.pixelSize: Device.gu(20)
+                    opacity: 0
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                }
+            }
         }
     }
 
@@ -88,9 +89,8 @@ Rectangle {
         font.family: "微软雅黑"
         font.pointSize: 15
         horizontalAlignment: Text.AlignHCenter
-        anchors.top: logo.bottom
-        anchors.topMargin: Device.gu(65)
         anchors.horizontalCenter: parent.horizontalCenter
+        y: (main.y + main.height + parent.height - height) / 2
         SequentialAnimation on opacity {
             id: textAni
             running: false
@@ -154,7 +154,7 @@ Rectangle {
         text: qsTr("Powered by Mogara")
         color: "#f39292"
         font.family: "Segoe Script"
-        font.pointSize: 8
+        font.pixelSize: Device.gu(20)
         anchors.bottom: parent.bottom
         anchors.right: parent.right
     }
@@ -186,7 +186,7 @@ Rectangle {
     NumberAnimation {
         id: logoMover
         target: logo
-        property: "anchors.horizontalCenterOffset"
+        property: "x"
         to: -splash.width
         duration: 1000
         easing.type: Easing.InOutQuad

@@ -32,6 +32,7 @@ GameRule::GameRule(GameLogic *logic)
     m_events << GameStart;
     m_events << TurnStart << PhaseProceeding << PhaseEnd;
     m_events << AfterHpReduced << AskForPeach << AskForPeachDone;
+    m_compulsory = true;
 }
 
 bool GameRule::triggerable(ServerPlayer *) const

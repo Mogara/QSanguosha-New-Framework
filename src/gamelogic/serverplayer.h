@@ -72,7 +72,6 @@ public:
     QList<Card *> askForCards(const QString &pattern, int minNum, int maxNum, bool optional = false);
     Card *askToChooseCard(ServerPlayer *owner, const QString &areaFlag = "hej", bool handcardVisible = false);
     Card *askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets);
-    bool askToInvokeSkill(const Skill *skill, const QVariant &data);
 
     void broadcastProperty(const char *name) const;
     void broadcastProperty(const char *name, const QVariant &value, ServerPlayer *except = nullptr) const;

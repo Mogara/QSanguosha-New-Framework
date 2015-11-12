@@ -18,6 +18,7 @@
 *********************************************************************/
 
 #include "card.h"
+#include "general.h"
 #include "skill.h"
 #include "serverplayer.h"
 
@@ -62,9 +63,33 @@ bool TriggerSkill::triggerable(ServerPlayer *owner) const
     return owner != nullptr && owner->isAlive() && owner->hasSkill(this);
 }
 
-bool TriggerSkill::cost(GameLogic *, EventType, ServerPlayer *, QVariant &data, ServerPlayer *invoker) const
+bool TriggerSkill::onCost(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, ServerPlayer *invoker) const
 {
-    return invoker->askToInvokeSkill(this, data);
+    const General *headGeneral = owner->headGeneral();
+    if (headGeneral->hasSkill(this)) {
+        if (!owner->hasShownHeadGeneral()) {
+            owner->setHeadGeneralShown(true);
+            owner->broadcastProperty("headGeneralName");
+        }
+    } else {
+        const General *deputyGeneral = owner->deputyGeneral();
+        if (deputyGeneral && deputyGeneral->hasSkill(this) && !owner->hasShownDeputyGeneral()) {
+            owner->setDeputyGeneralShown(true);
+            owner->broadcastProperty("deputyGeneralName");
+        }
+    }
+
+    return cost(logic, event, owner, data, invoker);
+}
+
+bool TriggerSkill::cost(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, ServerPlayer *invoker) const
+{
+    C_UNUSED(logic);
+    C_UNUSED(event);
+    C_UNUSED(owner);
+    C_UNUSED(data);
+    C_UNUSED(invoker);
+    return true;
 }
 
 void TriggerSkill::setFrequency(Skill::Frequency frequency)

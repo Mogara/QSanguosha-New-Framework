@@ -76,7 +76,9 @@ public:
     TriggerSkill(const QString &name);
 
     bool triggerable(ServerPlayer *owner) const override;
-    bool cost(GameLogic *, EventType, ServerPlayer *, QVariant &data, ServerPlayer *invoker) const override;
+    bool onCost(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, ServerPlayer *invoker) const final override;
+
+    virtual bool cost(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, ServerPlayer *invoker) const;
 
 protected:
     void setFrequency(Frequency frequency);

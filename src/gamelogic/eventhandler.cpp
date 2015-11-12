@@ -62,7 +62,7 @@ EventList EventHandler::triggerable(GameLogic *logic, EventType event, ServerPla
     return events;
 }
 
-bool EventHandler::cost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const
+bool EventHandler::onCost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const
 {
     Q_UNUSED(logic)
     Q_UNUSED(event)

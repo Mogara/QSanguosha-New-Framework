@@ -157,8 +157,10 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
                             m_globalRequestEnabled = true;
                         choice = invoker->askForTriggerOrder("GameRule:TriggerOrder", events, !hasCompulsory);
                         m_globalRequestEnabled = false;
-                    } else {
+                    } else if (hasCompulsory) {
                         choice = events.first();
+                    } else {
+                        choice = invoker->askForTriggerOrder("GameRule:TriggerOrder", events, false);
                     }
 
                     //If the user selects "cancel"
@@ -168,7 +170,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
                     ServerPlayer *eventTarget = choice.to.isEmpty() ? target : choice.to.first();
 
                     //Ask the invoker for cost
-                    bool takeEffect = choice.handler->cost(this, event, eventTarget, data, invoker);
+                    bool takeEffect = choice.handler->onCost(this, event, eventTarget, data, invoker);
 
                     //Take effect
                     if (takeEffect) {

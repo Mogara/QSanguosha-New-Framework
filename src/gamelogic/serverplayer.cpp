@@ -466,14 +466,6 @@ Card *ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlaye
     return card;
 }
 
-bool ServerPlayer::askToInvokeSkill(const Skill *skill, const QVariant &data)
-{
-    Q_UNUSED(skill)
-    Q_UNUSED(data)
-    //@to-do: implement this
-    return true;
-}
-
 void ServerPlayer::broadcastProperty(const char *name) const
 {
     QVariantList data;

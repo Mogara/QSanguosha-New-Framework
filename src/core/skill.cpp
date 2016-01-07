@@ -54,6 +54,7 @@ void Skill::addSubskill(Skill *subskill)
 TriggerSkill::TriggerSkill(const QString &name)
     : Skill(name)
 {
+    EventHandler::m_name = name;
     m_type = TriggerType;
     m_defaultPriority = 1;
 }
@@ -63,30 +64,30 @@ bool TriggerSkill::triggerable(ServerPlayer *owner) const
     return owner != nullptr && owner->isAlive() && owner->hasSkill(this);
 }
 
-bool TriggerSkill::onCost(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, ServerPlayer *invoker) const
+bool TriggerSkill::onCost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const
 {
-    const General *headGeneral = owner->headGeneral();
+    const General *headGeneral = target->headGeneral();
     if (headGeneral->hasSkill(this)) {
-        if (!owner->hasShownHeadGeneral()) {
-            owner->setHeadGeneralShown(true);
-            owner->broadcastProperty("headGeneralName");
+        if (!target->hasShownHeadGeneral()) {
+            target->setHeadGeneralShown(true);
+            target->broadcastProperty("headGeneralName");
         }
     } else {
-        const General *deputyGeneral = owner->deputyGeneral();
-        if (deputyGeneral && deputyGeneral->hasSkill(this) && !owner->hasShownDeputyGeneral()) {
-            owner->setDeputyGeneralShown(true);
-            owner->broadcastProperty("deputyGeneralName");
+        const General *deputyGeneral = target->deputyGeneral();
+        if (deputyGeneral && deputyGeneral->hasSkill(this) && !target->hasShownDeputyGeneral()) {
+            target->setDeputyGeneralShown(true);
+            target->broadcastProperty("deputyGeneralName");
         }
     }
 
-    return cost(logic, event, owner, data, invoker);
+    return cost(logic, event, target, data, invoker);
 }
 
-bool TriggerSkill::cost(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, ServerPlayer *invoker) const
+bool TriggerSkill::cost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const
 {
     C_UNUSED(logic);
     C_UNUSED(event);
-    C_UNUSED(owner);
+    C_UNUSED(target);
     C_UNUSED(data);
     C_UNUSED(invoker);
     return true;

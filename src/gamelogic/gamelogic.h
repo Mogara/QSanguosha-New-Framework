@@ -62,7 +62,6 @@ public:
     void addExtraTurn(ServerPlayer *player) { m_extraTurns << player; }
     QList<ServerPlayer *> extraTurns() const { return m_extraTurns; }
 
-    bool isGlobalRequestEnabled() const { return m_globalRequestEnabled; }
     bool skipGameRule() const { return m_skipGameRule; }
 
     Card *getDrawPileCard();
@@ -111,7 +110,6 @@ private:
     const GameRule *m_gameRule;
     QList<const Package *> m_packages;
     QMap<uint, Card *> m_cards;
-    bool m_globalRequestEnabled;
     bool m_skipGameRule;
     int m_round;
     int m_reshufflingCount;

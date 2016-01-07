@@ -68,6 +68,7 @@ signals:
     void amazingGraceRequested();
     void choosePlayerCardRequested(const QList<Card *> &handcards, const QList<Card *> &equips, const QList<Card *> &delayedTricks);
     void cardShown(const ClientPlayer *from, const QList<const Card *> &cards);
+    void optionRequested(const QStringList &options);
 
 private:
     Client(QObject *parent = 0);
@@ -98,6 +99,7 @@ private:
     static void ChoosePlayerCardRequestCommand(Client *client, const QVariant &data);
     static void ShowCardCommand(Client *client, const QVariant &data);
     static void AddSkillCommand(Client *client, const QVariant &data);
+    static void TriggerOrderCommand(Client *client, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

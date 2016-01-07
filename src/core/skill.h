@@ -75,10 +75,12 @@ class TriggerSkill : public Skill, public EventHandler
 public:
     TriggerSkill(const QString &name);
 
-    bool triggerable(ServerPlayer *owner) const override;
-    bool onCost(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, ServerPlayer *invoker) const final override;
+    QString name() const { return Skill::name(); }
 
-    virtual bool cost(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, ServerPlayer *invoker) const;
+    bool triggerable(ServerPlayer *owner) const override;
+    bool onCost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const final override;
+
+    virtual bool cost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const;
 
 protected:
     void setFrequency(Frequency frequency);

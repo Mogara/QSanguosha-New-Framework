@@ -262,11 +262,32 @@ void ServerPlayer::showPrompt(const QString &message, const ServerPlayer *p1, co
 
 Event ServerPlayer::askForTriggerOrder(const QString &reason, const EventList &options, bool cancelable)
 {
-    //@todo:
-    C_UNUSED(reason);
-    C_UNUSED(options);
-    C_UNUSED(cancelable);
-    return Event();
+    QVariantMap data;
+    data["reason"] = reason;
+    data["cancelable"] = cancelable;
+
+    QVariantList optionData;
+    foreach (const Event &e, options) {
+        QVariantMap eventData;
+        eventData["name"] = e.handler->name();
+        QVariantList targetData;
+        foreach (ServerPlayer *to, e.to)
+            targetData << to->id();
+        eventData["to"] = targetData;
+        optionData << eventData;
+    }
+    data["options"] = optionData;
+
+    m_agent->request(S_COMMAND_TRIGGER_ORDER, data, 15000);
+    QVariant replyData = m_agent->waitForReply(15000);
+    if (replyData.isNull())
+        return cancelable ? Event() : options.first();
+
+    int eventId = replyData.toInt();
+    if (eventId >= 0 && eventId < options.length())
+        return options.at(eventId);
+
+    return cancelable ? Event() : options.first();
 }
 
 Card *ServerPlayer::askForCard(const QString &pattern, bool optional)

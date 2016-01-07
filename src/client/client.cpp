@@ -510,6 +510,27 @@ void Client::AddSkillCommand(Client *client, const QVariant &data)
     }
 }
 
+void Client::TriggerOrderCommand(Client *client, const QVariant &data)
+{
+    const QVariantMap arg = data.toMap();
+    if (arg.isEmpty())
+        return;
+
+    QStringList options;
+    QVariantList optionData = arg["options"].toList();
+    foreach (const QVariant &option, optionData) {
+        const QVariantMap &optionMap = option.toMap();
+        options << optionMap["name"].toString();
+        //@to-do: check optionMap["to"] and display the corresponding avatar
+    }
+
+    if (arg["cancelable"].toBool())
+        options << "cancel";
+
+    //@to-do: customize a new signal for trigger order
+    emit client->optionRequested(options);
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -538,5 +559,6 @@ void Client::Init()
     AddInteraction(S_COMMAND_ASK_FOR_CARD, AskForCardRequestCommand);
     AddInteraction(S_COMMAND_TAKE_AMAZING_GRACE, TakeAmazingGraceRequestCommand);
     AddInteraction(S_COMMAND_CHOOSE_PLAYER_CARD, ChoosePlayerCardRequestCommand);
+    AddInteraction(S_COMMAND_TRIGGER_ORDER, TriggerOrderCommand);
 }
 C_INITIALIZE_CLASS(Client)

@@ -2,5 +2,7 @@
 	"anjiang" : "暗将",
 	"ask_to_discard" : "请弃置 %1 张牌",
 	"ask_for_peach" : "%1 向你求桃，一共需要 %2 张【<font color=\"yellow\"><b>桃</b></font>】",
-	"ask_self_for_peach_or_analeptic" : "你处于濒死状态，请使用 %2 张【<font color=\"yellow\"><b>桃</b></font>】或【酒】自救"
+	"ask_self_for_peach_or_analeptic" : "你处于濒死状态，请使用 %2 张【<font color=\"yellow\"><b>桃</b></font>】或【酒】自救",
+
+	"cancel" : "取消"
 }

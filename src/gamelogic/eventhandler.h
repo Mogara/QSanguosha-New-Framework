@@ -38,6 +38,8 @@ public:
 
     QList<EventType> events() const { return m_events; }
 
+    QString name() const { return m_name; }
+
     int priority() const;
     int priority(EventType event) const;
 
@@ -51,6 +53,7 @@ public:
 
 protected:
     QList<EventType> m_events;
+    QString m_name;
     int m_defaultPriority;
     QMap<EventType, int> m_priorityMap;
     bool m_compulsory;

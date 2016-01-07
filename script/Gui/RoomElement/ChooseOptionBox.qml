@@ -4,12 +4,12 @@ import Cardirector.Device 1.0
 import "../../engine.js" as Engine
 
 GraphicsBox {
-    property var options: ["what if this is a very very very long text", "test2", "test3"]
-    property var result
+    property var options: []
+    property int result
 
     id: root
     title.text: qsTr("Please choose")
-    width: body.width + Device.gu(20)
+    width: Math.max(Device.gu(140), body.width + Device.gu(20))
     height: body.height + title.height + Device.gu(20)
 
     Column {
@@ -22,11 +22,11 @@ GraphicsBox {
             model: options
 
             MetroButton {
-                text: Engine.translate(modelData)
+                text: qsTr(modelData)
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 onClicked: {
-                    result = modelData;
+                    result = index;
                     root.close();
                 }
             }

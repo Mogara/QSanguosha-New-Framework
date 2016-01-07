@@ -45,6 +45,7 @@ public:
     Q_INVOKABLE void onAmazingGraceTaken(uint cid);
     Q_INVOKABLE void onPlayerCardSelected(uint cid);
     Q_INVOKABLE void onSkillActivated(const QString &skillName, bool activated);
+    Q_INVOKABLE void onOptionSelected(int selected);
 
 signals:
     //Signals from C++ to QML
@@ -64,6 +65,7 @@ signals:
     void clearPopupBox();
     void askToChoosePlayerCard(const QVariant &handcards, const QVariant &equips, const QVariant &delayedTricks);
     void showCard(int fromSeat, const QVariant &cards);
+    void showOptions(const QStringList &options);
 
 private:
     enum RespondingState

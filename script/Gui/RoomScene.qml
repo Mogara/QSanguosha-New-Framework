@@ -317,6 +317,14 @@ RoomScene {
         popupBox.source = "";
     }
 
+    onShowOptions: {
+        popupBox.source = "RoomElement/ChooseOptionBox.qml";
+        popupBox.item.options = options;
+        popupBox.item.accepted.connect(function(){
+            roomScene.onOptionSelected(popupBox.item.result);
+        });
+    }
+
     onPlayerNumChanged: arrangePhotos();
 
     function arrangePhotos()

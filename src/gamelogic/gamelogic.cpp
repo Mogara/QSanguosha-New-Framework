@@ -79,8 +79,10 @@ void GameLogic::setGameRule(const GameRule *rule) {
 void GameLogic::addEventHandler(const EventHandler *handler)
 {
     QList<EventType> events = handler->events();
-    foreach(EventType event, events)
-        m_handlers[event] << handler;
+    foreach(EventType event, events) {
+        if (!m_handlers[event].contains(handler))
+            m_handlers[event] << handler;
+    }
 }
 
 void GameLogic::removeEventHandler(const EventHandler *handler)
@@ -152,16 +154,12 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
 
                     //Ask the invoker to determine the trigger order
                     Event choice;
-                    if (events.length() > 1) {
-                        if (!invoker->hasShownBothGenerals())
-                            m_globalRequestEnabled = true;
+                    if (events.length() > 1)
                         choice = invoker->askForTriggerOrder("GameRule:TriggerOrder", events, !hasCompulsory);
-                        m_globalRequestEnabled = false;
-                    } else if (hasCompulsory) {
+                    else if (hasCompulsory)
                         choice = events.first();
-                    } else {
-                        choice = invoker->askForTriggerOrder("GameRule:TriggerOrder", events, false);
-                    }
+                    else
+                        choice = invoker->askForTriggerOrder("GameRule:TriggerOrder", events, true);
 
                     //If the user selects "cancel"
                     if (!choice.isValid())
@@ -687,6 +685,7 @@ void GameLogic::prepareToStart()
     QList<const General *> generals;
     foreach (const Package *package, m_packages) {
         generals << package->generals();
+
         QList<const Card *> cards = package->cards();
         foreach (const Card *card, cards)
             m_cards.insert(card->id(), card->clone());

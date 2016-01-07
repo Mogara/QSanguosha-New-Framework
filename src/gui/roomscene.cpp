@@ -84,6 +84,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::amazingGraceFinished, this, &RoomScene::clearPopupBox);
     connect(m_client, &Client::choosePlayerCardRequested, this, &RoomScene::onChoosePlayerCardRequested);
     connect(m_client, &Client::cardShown, this, &RoomScene::onCardShown);
+    connect(m_client, &Client::optionRequested, this, &RoomScene::showOptions);
 }
 
 void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
@@ -417,6 +418,11 @@ void RoomScene::onSkillActivated(const QString &skillName, bool activated)
         else if (m_respondingState == InactiveState)
             enableCards(QVariantList());
     }
+}
+
+void RoomScene::onOptionSelected(int selected)
+{
+    m_client->replyToServer(S_COMMAND_TRIGGER_ORDER, selected);
 }
 
 void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage)

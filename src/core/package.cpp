@@ -55,6 +55,15 @@ QList<const Card *> Package::cards() const
     return cards;
 }
 
+const General *Package::getGeneral(const QString &name) const
+{
+    foreach (General *general, m_generals) {
+        if (general->name() == name)
+            return general;
+    }
+    return nullptr;
+}
+
 void Package::addCard(Card *card)
 {
     card->m_id = generateCardId();

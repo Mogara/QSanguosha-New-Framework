@@ -34,6 +34,7 @@ public:
 
     QString name() const { return m_name; }
     QList<const General *> generals(bool includeHidden = false) const;
+    const General *getGeneral(const QString &name) const;
     QList<const Card *> cards() const;
 
 protected:

@@ -102,7 +102,6 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
 {
     QList<const EventHandler *> &handlers = m_handlers[event];
 
-    //@todo: Resolve C++98 Incompatibility?
     qStableSort(handlers.begin(), handlers.end(), [event](const EventHandler *a, const EventHandler *b){
         return a->priority(event) > b->priority(event);
     });
@@ -850,21 +849,24 @@ void GameLogic::run()
 
     forever {
         try {
+            ServerPlayer *current = currentPlayer();
             forever {
-                ServerPlayer *current = currentPlayer();
-
-                //@to-do: fix this if Seat 1 died
                 if (current->seat() == 1)
                     m_round++;
+                if (current->isDead()) {
+                    current = current->next();
+                    continue;
+                }
 
+                setCurrentPlayer(current);
                 trigger(TurnStart, current);
-                ServerPlayer *next = current->nextAlive(1, false);
+                current = current->next();
+
                 while (!m_extraTurns.isEmpty()) {
                     ServerPlayer *extra = m_extraTurns.takeFirst();
                     setCurrentPlayer(extra);
                     trigger(TurnStart, extra);
                 }
-                setCurrentPlayer(next);
             }
         } catch (EventType event) {
             if (event == GameFinish) {

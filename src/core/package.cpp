@@ -35,6 +35,11 @@ Package::~Package()
         delete general;
 }
 
+bool Package::isAvailable(const GameMode *) const
+{
+    return true;
+}
+
 QList<const General *> Package::generals(bool includeHidden) const
 {
     QList<const General *> generals;

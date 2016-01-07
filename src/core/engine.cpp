@@ -19,6 +19,7 @@
 
 #include "card.h"
 #include "engine.h"
+#include "gamemode.h"
 #include "package.h"
 #include "general.h"
 #include "skill.h"
@@ -35,6 +36,9 @@ Engine *Engine::instance()
 
 Engine::~Engine()
 {
+    foreach (const GameMode *mode, m_modes)
+        delete mode;
+
     foreach (Package *package, m_packages)
         delete package;
 }

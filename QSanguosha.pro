@@ -11,6 +11,7 @@ SOURCES += src/main.cpp \
     src/core/cardarea.cpp \
     src/core/cardpattern.cpp \
     src/core/engine.cpp \
+    src/core/gamemode.cpp \
     src/core/general.cpp \
     src/core/package.cpp \
     src/core/player.cpp \
@@ -52,6 +53,7 @@ HEADERS += \
     src/core/cardarea.h \
     src/core/cardpattern.h \
     src/core/engine.h \
+    src/core/gamemode.h \
     src/core/general.h \
     src/core/package.h \
     src/core/player.h \

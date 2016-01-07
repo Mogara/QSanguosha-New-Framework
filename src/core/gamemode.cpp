@@ -17,22 +17,18 @@
     Mogara
 *********************************************************************/
 
-#ifndef HEGSTANDARDPACKAGE_H
-#define HEGSTANDARDPACKAGE_H
+#include "gamemode.h"
+#include "engine.h"
 
-#include "package.h"
+#include <QCoreApplication>
 
-class HegStandardPackage : public Package
+static void registerGameMode()
 {
-public:
-    HegStandardPackage();
+    Engine *engine = Engine::instance();
+    engine->addMode(new GameMode("standard", 2, 10));
+    engine->addMode(new GameMode("hegemony", 2, 10));
+    engine->addMode(new GameMode("1v1", 2, 2));
+    engine->addMode(new GameMode("3v3", 6, 6));
+}
 
-    bool isAvailable(const GameMode *mode) const override;
-
-    void addShuGenerals();
-    void addWuGenerals();
-    void addWeiGenerals();
-    void addQunGenerals();
-};
-
-#endif // HEGSTANDARDPACKAGE_H
+Q_COREAPP_STARTUP_FUNCTION(registerGameMode)

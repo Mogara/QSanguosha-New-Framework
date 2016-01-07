@@ -25,12 +25,15 @@
 
 class Card;
 class General;
+struct GameMode;
 
 class Package
 {
 public:
     Package(const QString &name);
     virtual ~Package();
+
+    virtual bool isAvailable(const GameMode *mode) const;
 
     QString name() const { return m_name; }
     QList<const General *> generals(bool includeHidden = false) const;

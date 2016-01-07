@@ -18,6 +18,7 @@
 *********************************************************************/
 
 #include "engine.h"
+#include "gamemode.h"
 #include "general.h"
 #include "hegstandardpackage.h"
 #include "standard-basiccard.h"
@@ -147,6 +148,11 @@ HegStandardPackage::HegStandardPackage()
     addShuGenerals();
     addWeiGenerals();
     addWuGenerals();
+}
+
+bool HegStandardPackage::isAvailable(const GameMode *mode) const
+{
+    return mode->name == "hegemony";
 }
 
 ADD_PACKAGE(HegStandard)

@@ -17,22 +17,23 @@
     Mogara
 *********************************************************************/
 
-#ifndef HEGSTANDARDPACKAGE_H
-#define HEGSTANDARDPACKAGE_H
+#ifndef GAMEMODE_H
+#define GAMEMODE_H
 
-#include "package.h"
+#include <QString>
 
-class HegStandardPackage : public Package
+struct GameMode
 {
-public:
-    HegStandardPackage();
+    const QString name;
+    const int minPlayerNum;
+    const int maxPlayerNum;
 
-    bool isAvailable(const GameMode *mode) const override;
-
-    void addShuGenerals();
-    void addWuGenerals();
-    void addWeiGenerals();
-    void addQunGenerals();
+    GameMode(const QString &name, int minPlayerNum, int maxPlayerNum)
+        : name(name)
+        , minPlayerNum(minPlayerNum)
+        , maxPlayerNum(maxPlayerNum)
+    {
+    }
 };
 
-#endif // HEGSTANDARDPACKAGE_H
+#endif // GAMEMODE_H

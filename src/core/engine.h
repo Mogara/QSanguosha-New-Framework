@@ -28,12 +28,16 @@ class Card;
 class General;
 class Package;
 class Skill;
+struct GameMode;
 
 class Engine
 {
 public:
     static Engine *instance();
     ~Engine();
+
+    void addMode(GameMode *mode) { m_modes << mode; }
+    QList<const GameMode *> modes() const { return m_modes; }
 
     void addPackage(Package *package);
     const Package *package(const QString &name) const;
@@ -50,6 +54,7 @@ public:
 private:
     Engine();
 
+    QList<const GameMode *> m_modes;
     QList<Package *> m_packages;
     QMap<QString, const General *> m_generals;
     QMap<uint, const Card *> m_cards;

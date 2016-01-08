@@ -27,6 +27,8 @@ class Skill;
 
 class General
 {
+    friend class Package;
+
 public:
     enum Gender
     {
@@ -38,6 +40,8 @@ public:
 
     General(const QString &name, const QString &kingdom, int maxHp, Gender gender = Male);
     ~General();
+
+    uint id() const { return m_id; }
 
     void setName(const QString &name) { m_name = name; }
     const QString &name() const { return m_name; }
@@ -77,6 +81,7 @@ public:
     QList<const Skill *> skills() const { return m_skills; }
 
 private:
+    int m_id;
     QString m_name;
     QString m_kingdom;
     int m_maxHp;

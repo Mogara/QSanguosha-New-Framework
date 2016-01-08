@@ -26,6 +26,8 @@ class SystemPackage : public Package
 {
 public:
     SystemPackage();
+
+    static uint HiddenGeneralId();
 };
 
 #endif // SYSTEMPACKAGE_H

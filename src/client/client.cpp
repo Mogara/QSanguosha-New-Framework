@@ -303,9 +303,14 @@ void Client::ChooseGeneralRequestCommand(Client *client, const QVariant &data)
 
     QVariantList candidateData = dataList.at(0).toList();
 
-    QStringList generals;
-    foreach (const QVariant &general, candidateData)
-        generals << general.toString();
+    Engine *engine = Engine::instance();
+    QList<const General *> generals;
+    foreach (const QVariant &generalId, candidateData) {
+        uint id = generalId.toUInt();
+        const General *general = engine->getGeneral(id);
+        if (general)
+            generals << general;
+    }
 
     //@to-do: parse banned pairs
 

@@ -712,7 +712,7 @@ void GameLogic::prepareToStart()
 
         QVariantList candidateData;
         foreach (const General *general, candidates)
-            candidateData << general->name();
+            candidateData << general->id();
 
         QVariantList bannedPairData;
         //@todo: load banned pairs
@@ -736,9 +736,9 @@ void GameLogic::prepareToStart()
         if (agent) {
             QVariantList reply = agent->waitForReply(0).toList();
             foreach (const QVariant &choice, reply) {
-                QString name = choice.toString();
+                uint id = choice.toUInt();
                 foreach (const General *general, candidates) {
-                    if (general->name() == name)
+                    if (general->id() == id)
                         generals << general;
                 }
             }

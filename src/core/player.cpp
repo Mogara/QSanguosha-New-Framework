@@ -189,10 +189,15 @@ QString Player::headGeneralName() const
     return m_headGeneral ? m_headGeneral->name() : "";
 }
 
-void Player::setHeadGeneralName(const QString &name)
+uint Player::headGeneralId() const
+{
+    return m_headGeneral ? m_headGeneral->id() : 0;
+}
+
+void Player::setHeadGeneralId(uint id)
 {
     Engine *engine = Engine::instance();
-    const General *general = engine->getGeneral(name);
+    const General *general = engine->getGeneral(id);
     if (general)
         setHeadGeneral(general);
 }
@@ -208,10 +213,15 @@ QString Player::deputyGeneralName() const
     return m_deputyGeneral ? m_deputyGeneral->name() : "";
 }
 
-void Player::setDeputyGeneralName(const QString &name)
+uint Player::deputyGeneralId() const
+{
+    return m_deputyGeneral ? m_deputyGeneral->id() : 0;
+}
+
+void Player::setDeputyGeneralId(uint id)
 {
     Engine *engine = Engine::instance();
-    const General *general = engine->getGeneral(name);
+    const General *general = engine->getGeneral(id);
     if (general)
         setDeputyGeneral(general);
 }

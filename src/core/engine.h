@@ -44,7 +44,7 @@ public:
     QList<const Package *> packages() const;
 
     QList<const General *> getGenerals(bool includeHidden = false) const;
-    const General *getGeneral(const QString &name) const { return m_generals.value(name); }
+    const General *getGeneral(uint id) const { return m_generals.value(id); }
 
     QList<const Card *> getCards() const { return m_cards.values(); }
     const Card *getCard(uint id) const { return m_cards.value(id); }
@@ -56,7 +56,7 @@ private:
 
     QList<const GameMode *> m_modes;
     QMap<QString, Package *> m_packages;
-    QMap<QString, const General *> m_generals;
+    QMap<uint, const General *> m_generals;
     QMap<uint, const Card *> m_cards;
     QMap<QString, const Skill *> m_skills;
 };

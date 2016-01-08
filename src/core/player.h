@@ -60,9 +60,12 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(int attackRange READ attackRange WRITE setAttackRange NOTIFY attackRangeChanged)
     Q_PROPERTY(bool chained READ isChained WRITE setChained NOTIFY chainedChanged)
     Q_PROPERTY(bool dying READ isDying WRITE setDying NOTIFY dyingChanged)
-    Q_PROPERTY(QString generalName READ generalName WRITE setGeneralName NOTIFY generalChanged)
-    Q_PROPERTY(QString headGeneralName READ headGeneralName WRITE setHeadGeneralName NOTIFY headGeneralChanged)
-    Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName WRITE setDeputyGeneralName NOTIFY deputyGeneralChanged)
+    Q_PROPERTY(uint generalId READ generalId WRITE setGeneralId NOTIFY generalChanged)
+    Q_PROPERTY(QString generalName READ generalName NOTIFY generalChanged)
+    Q_PROPERTY(uint headGeneralId READ headGeneralId WRITE setHeadGeneralId NOTIFY generalChanged)
+    Q_PROPERTY(QString headGeneralName READ headGeneralName NOTIFY headGeneralChanged)
+    Q_PROPERTY(uint deputyGeneralId READ deputyGeneralId WRITE setDeputyGeneralId NOTIFY deputyGeneralChanged)
+    Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName NOTIFY deputyGeneralChanged)
     Q_PROPERTY(int extraOutDistance READ extraOutDistance WRITE setExtraOutDistance)
     Q_PROPERTY(int extraInDistance READ extraInDistance WRITE setExtraInDistance)
 
@@ -136,17 +139,20 @@ public:
     const General *general() const { return headGeneral(); }
     void setGeneral(const General *general) { setHeadGeneral(general); }
     QString generalName() const { return headGeneralName(); }
-    void setGeneralName(const QString &name) { setHeadGeneralName(name); }
+    uint generalId() const { return headGeneralId(); }
+    void setGeneralId(uint id) { setHeadGeneralId(id); }
 
     const General *headGeneral() const { return m_headGeneral; }
     void setHeadGeneral(const General *general);
     QString headGeneralName() const;
-    void setHeadGeneralName(const QString &name);
+    uint headGeneralId() const;
+    void setHeadGeneralId(uint id);
 
     const General *deputyGeneral() const { return m_deputyGeneral; }
     void setDeputyGeneral(const General *general);
     QString deputyGeneralName() const;
-    void setDeputyGeneralName(const QString &name);
+    uint deputyGeneralId() const;
+    void setDeputyGeneralId(uint id);
 
     bool hasShownHeadGeneral() const { return m_headGeneralShown; }
     void setHeadGeneralShown(bool shown) { m_headGeneralShown = shown; }

@@ -70,13 +70,13 @@ bool TriggerSkill::onCost(GameLogic *logic, EventType event, ServerPlayer *targe
     if (headGeneral->hasSkill(this)) {
         if (!target->hasShownHeadGeneral()) {
             target->setHeadGeneralShown(true);
-            target->broadcastProperty("headGeneralName");
+            target->broadcastProperty("headGeneralId");
         }
     } else {
         const General *deputyGeneral = target->deputyGeneral();
         if (deputyGeneral && deputyGeneral->hasSkill(this) && !target->hasShownDeputyGeneral()) {
             target->setDeputyGeneralShown(true);
-            target->broadcastProperty("deputyGeneralName");
+            target->broadcastProperty("deputyGeneralId");
         }
     }
 

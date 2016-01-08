@@ -233,25 +233,20 @@ void RoomScene::onSeatArranged()
     setProperty("playerNum", players.length() + 1);
 }
 
-void RoomScene::onChooseGeneralRequested(const QStringList &candidates)
+void RoomScene::onChooseGeneralRequested(const QList<const General *> &candidates)
 {
-    Engine *engine = Engine::instance();
-
     QVariantList generals;
-    foreach (const QString &candidate, candidates) {
-        const General *general = engine->getGeneral(candidate);
-        if (general == nullptr)
-            continue;
-
+    foreach (const General *general, candidates) {
         QVariantMap generalData;
-        generalData["name"] = candidate;
+        generalData["gid"] = general->id();
+        generalData["name"] = general->name();
         generalData["kingdom"] = general->kingdom();
         generals << generalData;
     }
     chooseGeneral(generals);
 }
 
-void RoomScene::onChooseGeneralFinished(const QString &head, const QString &deputy)
+void RoomScene::onChooseGeneralFinished(uint head, uint deputy)
 {
     QVariantList data;
     data << head;

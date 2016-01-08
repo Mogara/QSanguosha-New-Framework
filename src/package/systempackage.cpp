@@ -21,6 +21,8 @@
 #include "general.h"
 #include "systempackage.h"
 
+static uint hiddenGeneralId;
+
 SystemPackage::SystemPackage()
     : Package("system")
 {
@@ -28,6 +30,12 @@ SystemPackage::SystemPackage()
     anjiang->setHidden(true);
     anjiang->setNeverShown(true);
     addGeneral(anjiang);
+    hiddenGeneralId = anjiang->id();
+}
+
+uint SystemPackage::HiddenGeneralId()
+{
+    return hiddenGeneralId;
 }
 
 ADD_PACKAGE(System)

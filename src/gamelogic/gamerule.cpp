@@ -23,6 +23,7 @@
 #include "general.h"
 #include "serverplayer.h"
 #include "skill.h"
+#include "systempackage.h"
 
 QMap<EventType, GameRule::Callback> GameRule::m_callbacks;
 
@@ -56,11 +57,11 @@ bool GameRule::effect(GameLogic *logic, EventType event, ServerPlayer *current, 
 
 void GameRule::onGameStart(ServerPlayer *current, QVariant &) const
 {
-    current->broadcastProperty("headGeneralName", "anjiang", current);
-    current->broadcastProperty("deputyGeneralName", "anjiang", current);
+    current->broadcastProperty("headGeneralId", SystemPackage::HiddenGeneralId(), current);
+    current->broadcastProperty("deputyGeneralId", SystemPackage::HiddenGeneralId(), current);
 
-    current->unicastPropertyTo("headGeneralName", current);
-    current->unicastPropertyTo("deputyGeneralName", current);
+    current->unicastPropertyTo("headGeneralId", current);
+    current->unicastPropertyTo("deputyGeneralId", current);
 
     const General *headGeneral = current->headGeneral();
     const General *deputyGeneral = current->deputyGeneral();

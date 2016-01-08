@@ -60,6 +60,19 @@ QList<const Card *> Package::cards() const
     return cards;
 }
 
+void Package::addGeneral(General *general)
+{
+    general->m_id = generateId<General>();
+    m_generals << general;
+}
+
+void Package::addGenerals(const QList<General *> &generals)
+{
+    foreach (General *general, generals)
+        general->m_id = generateId<General>();
+    m_generals << generals;
+}
+
 const General *Package::getGeneral(const QString &name) const
 {
     foreach (General *general, m_generals) {
@@ -71,20 +84,20 @@ const General *Package::getGeneral(const QString &name) const
 
 void Package::addCard(Card *card)
 {
-    card->m_id = generateCardId();
+    card->m_id = generateId<Card>();
     m_cards << card;
 }
 
 void Package::addCards(const QList<Card *> &cards)
 {
     foreach (Card *card, cards)
-        card->m_id = generateCardId();
+        card->m_id = generateId<Card>();
     m_cards << cards;
 }
 
-uint Package::generateCardId()
+template<typename T> uint Package::generateId()
 {
-    static uint cardId = 0;
-    cardId++;
-    return cardId;
+    static uint id = 0;
+    id++;
+    return id;
 }

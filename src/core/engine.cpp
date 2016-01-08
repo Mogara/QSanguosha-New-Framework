@@ -49,7 +49,7 @@ void Engine::addPackage(Package *package)
 
     QList<const General *> generals = package->generals(true);
     foreach (const General *general, generals) {
-        m_generals.insert(general->name(), general);
+        m_generals.insert(general->id(), general);
 
         QList<const Skill *> skills = general->skills();
         foreach (const Skill *skill, skills)

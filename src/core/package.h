@@ -41,12 +41,13 @@ public:
     QList<const Card *> cards() const;
 
 protected:
-    void addGeneral(General *general) { m_generals << general; }
-    void addGenerals(const QList<General *> &generals) { m_generals << generals; }
+    void addGeneral(General *general);
+    void addGenerals(const QList<General *> &generals);
 
     void addCard(Card *card);
     void addCards(const QList<Card *> &cards);
-    uint generateCardId();
+
+    template<typename T> uint generateId();
 
     QString m_name;
     QList<General *> m_generals;

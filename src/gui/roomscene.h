@@ -36,7 +36,7 @@ public:
     RoomScene(QQuickItem *parent = 0);
 
     //From QML to C++
-    Q_INVOKABLE void onChooseGeneralFinished(const QString &head, const QString &deputy);
+    Q_INVOKABLE void onChooseGeneralFinished(uint head, uint deputy);
     Q_INVOKABLE void onCardSelected(const QVariantList &cardIds);
     Q_INVOKABLE void onPhotoSelected(const QVariantList &seats);
     Q_INVOKABLE void onAccepted();
@@ -81,7 +81,7 @@ private:
     void enableCards(const QList<const Card *> &cards);
 
     void onSeatArranged();
-    void onChooseGeneralRequested(const QStringList &candidates);
+    void onChooseGeneralRequested(const QList<const General *> &candidates);
     void onCardsMoved(const QList<CardsMoveStruct> &moves);
     void onUsingCard(const QString &pattern = QString(), const QList<const Player *> &assignedTargets = QList<const Player *>());
     void onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);

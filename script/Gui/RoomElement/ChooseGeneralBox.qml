@@ -4,8 +4,8 @@ import Cardirector.Device 1.0
 
 GraphicsBox {
     property alias model: generalList
-    property string headGeneral: ""
-    property string deputyGeneral: ""
+    property int headGeneral: 0
+    property int deputyGeneral: 0
 
     ListModel {
         id: generalList
@@ -91,7 +91,7 @@ GraphicsBox {
                 text: qsTr("Fight")
                 width: Device.gu(120)
                 height: Device.gu(35)
-                enabled: headGeneral != "" && deputyGeneral != ""
+                enabled: headGeneral > 0 && deputyGeneral > 0
 
                 onClicked: close();
             }
@@ -103,21 +103,22 @@ GraphicsBox {
         model: generalList
 
         GeneralCardItem {
+            gid: model.gid
             name: model.name
             kingdom: model.kingdom
             selectable: true
             draggable: true
 
             onClicked: {
-                if (headGeneral == name) {
-                    headGeneral = "";
-                } else if (deputyGeneral == name) {
-                    deputyGeneral = "";
+                if (headGeneral == gid) {
+                    headGeneral = 0;
+                } else if (deputyGeneral == gid) {
+                    deputyGeneral = 0;
                 } else {
-                    if (headGeneral == "") {
-                        headGeneral = name;
-                    } else if (deputyGeneral == "") {
-                        deputyGeneral = name;
+                    if (headGeneral == 0) {
+                        headGeneral = gid;
+                    } else if (deputyGeneral == 0) {
+                        deputyGeneral = gid;
                     }
                 }
             }
@@ -127,23 +128,23 @@ GraphicsBox {
                     return;
 
                 if (y < splitLine.y) {
-                    if (headGeneral == name)
-                        headGeneral = "";
-                    else if (deputyGeneral == name)
-                        deputyGeneral = "";
+                    if (headGeneral == gid)
+                        headGeneral = 0;
+                    else if (deputyGeneral == gid)
+                        deputyGeneral = 0;
                 } else {
-                    if (headGeneral == "") {
-                        headGeneral = name;
-                    } else if (deputyGeneral == "") {
-                        deputyGeneral = name;
+                    if (headGeneral == 0) {
+                        headGeneral = gid;
+                    } else if (deputyGeneral == 0) {
+                        deputyGeneral = gid;
                     } else {
                         var horizontalCenter = x + width / 2;
-                        if (horizontalCenter > deputyGeneralItem.x && headGeneral === name) {
+                        if (horizontalCenter > deputyGeneralItem.x && headGeneral === gid) {
                             headGeneral = deputyGeneral;
-                            deputyGeneral = name;
-                        } else if (horizontalCenter < headGeneralItem.x + headGeneralItem.width && deputyGeneral === name) {
+                            deputyGeneral = gid;
+                        } else if (horizontalCenter < headGeneralItem.x + headGeneralItem.width && deputyGeneral === gid) {
                             deputyGeneral = headGeneral;
-                            headGeneral = name;
+                            headGeneral = gid;
                         }
                     }
                 }
@@ -159,9 +160,9 @@ GraphicsBox {
         for (var i = 0; i < generalList.count; i++)
         {
             item = generalCardList.itemAt(i);
-            if (headGeneral === item.name) {
+            if (headGeneral === item.gid) {
                 pos = root.mapFromItem(resultArea, headGeneralItem.x, headGeneralItem.y);
-            } else if (deputyGeneral === item.name) {
+            } else if (deputyGeneral === item.gid) {
                 pos = root.mapFromItem(resultArea, deputyGeneralItem.x, deputyGeneralItem.y);
             } else {
                 var magnet = generalMagnetList.itemAt(i);

@@ -40,13 +40,13 @@ public:
     QList<const GameMode *> modes() const { return m_modes; }
 
     void addPackage(Package *package);
-    const Package *package(const QString &name) const;
+    const Package *package(const QString &name) const { return m_packages.value(name); }
     QList<const Package *> packages() const;
 
     QList<const General *> getGenerals(bool includeHidden = false) const;
     const General *getGeneral(const QString &name) const { return m_generals.value(name); }
 
-    QList<const Card *> getCards() const;
+    QList<const Card *> getCards() const { return m_cards.values(); }
     const Card *getCard(uint id) const { return m_cards.value(id); }
 
     const Skill *getSkill(const QString &name) const { return m_skills.value(name); }
@@ -55,7 +55,7 @@ private:
     Engine();
 
     QList<const GameMode *> m_modes;
-    QList<Package *> m_packages;
+    QMap<QString, Package *> m_packages;
     QMap<QString, const General *> m_generals;
     QMap<uint, const Card *> m_cards;
     QMap<QString, const Skill *> m_skills;

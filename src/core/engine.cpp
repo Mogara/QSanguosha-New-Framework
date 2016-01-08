@@ -45,7 +45,7 @@ Engine::~Engine()
 
 void Engine::addPackage(Package *package)
 {
-    m_packages << package;
+    m_packages.insert(package->name(), package);
 
     QList<const General *> generals = package->generals(true);
     foreach (const General *general, generals) {
@@ -61,20 +61,10 @@ void Engine::addPackage(Package *package)
         m_cards.insert(card->id(), card);
 }
 
-const Package *Engine::package(const QString &name) const
-{
-    foreach (Package *package, m_packages) {
-        if (package->name() == name)
-            return package;
-    }
-
-    return nullptr;
-}
-
 QList<const Package *> Engine::packages() const
 {
     QList<const Package *> packages;
-    packages.reserve(m_packages.length());
+    packages.reserve(m_packages.size());
     foreach (Package *package, m_packages)
         packages << package;
     return packages;
@@ -86,12 +76,4 @@ QList<const General *> Engine::getGenerals(bool includeHidden) const
     foreach (const Package *package, m_packages)
         generals << package->generals(includeHidden);
     return generals;
-}
-
-QList<const Card *> Engine::getCards() const
-{
-    QList<const Card *> cards;
-    foreach (const Package *package, m_packages)
-        cards << package->cards();
-    return cards;
 }

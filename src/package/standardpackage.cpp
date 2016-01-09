@@ -36,7 +36,7 @@ StandardPackage::StandardPackage()
 
 bool StandardPackage::isAvailable(const GameMode *mode) const
 {
-    return mode->name == "standard";
+    return mode->name() == "standard";
 }
 
 ADD_PACKAGE(Standard)

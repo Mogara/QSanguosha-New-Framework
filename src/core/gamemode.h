@@ -21,19 +21,27 @@
 #define GAMEMODE_H
 
 #include <QString>
+#include <QList>
 
-struct GameMode
+class EventHandler;
+
+class GameMode
 {
-    const QString name;
-    const int minPlayerNum;
-    const int maxPlayerNum;
+public:
+    GameMode();
+    virtual ~GameMode();
 
-    GameMode(const QString &name, int minPlayerNum, int maxPlayerNum)
-        : name(name)
-        , minPlayerNum(minPlayerNum)
-        , maxPlayerNum(maxPlayerNum)
-    {
-    }
+    const QString &name() const { return m_name; }
+    int minPlayerNum() const { return m_minPlayerNum; }
+    int maxPlayerNum() const { return m_maxPlayerNum; }
+
+    const QList<const EventHandler *> &rules() const { return m_rules; }
+
+protected:
+    QString m_name;
+    int m_minPlayerNum;
+    int m_maxPlayerNum;
+    QList<const EventHandler *> m_rules;
 };
 
 #endif // GAMEMODE_H

@@ -28,7 +28,7 @@ class Card;
 class General;
 class Package;
 class Skill;
-struct GameMode;
+class GameMode;
 
 class Engine
 {
@@ -61,13 +61,28 @@ private:
     QMap<uint, const Skill *> m_skills;
 };
 
-#define ADD_PACKAGE(name) struct name##PackageAdder\
+#define ADD_PACKAGE(name) namespace\
 {\
-    name##PackageAdder()\
+struct PackageAdder\
+{\
+    PackageAdder()\
     {\
         Engine::instance()->addPackage(new name##Package);\
     }\
 };\
-static name##PackageAdder __packageAdder__;
+PackageAdder __packageAdder__;\
+}
+
+#define ADD_MODE(name) namespace\
+{\
+struct ModeAdder\
+{\
+    ModeAdder()\
+    {\
+        Engine::instance()->addMode(new name##Mode);\
+    }\
+};\
+ModeAdder __modeAdder__;\
+}
 
 #endif // ENGINE_H

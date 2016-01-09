@@ -152,7 +152,7 @@ HegStandardPackage::HegStandardPackage()
 
 bool HegStandardPackage::isAvailable(const GameMode *mode) const
 {
-    return mode->name == "hegemony";
+    return mode->name() == "hegemony";
 }
 
 ADD_PACKAGE(HegStandard)

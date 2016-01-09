@@ -17,18 +17,12 @@
     Mogara
 *********************************************************************/
 
-#include "gamemode.h"
+#include "standardmode.h"
 #include "engine.h"
-#include "eventhandler.h"
 
-GameMode::GameMode()
-    : m_minPlayerNum(2)
-    , m_maxPlayerNum(10)
+StandardMode::StandardMode()
 {
+    m_name = "standard";
 }
 
-GameMode::~GameMode()
-{
-    foreach (const EventHandler *rule, m_rules)
-        delete rule;
-}
+ADD_MODE(Standard)

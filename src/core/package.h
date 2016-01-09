@@ -25,7 +25,7 @@
 
 class Card;
 class General;
-struct GameMode;
+class GameMode;
 
 class Package
 {

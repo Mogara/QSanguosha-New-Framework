@@ -29,6 +29,8 @@ SOURCES += src/main.cpp \
     src/gui/dialog/startgamedialog.cpp \
     src/gui/lobby.cpp \
     src/gui/roomscene.cpp \
+    src/mode/hegemonymode.cpp \
+    src/mode/standardmode.cpp \
     src/package/hegstandardpackage.cpp \
     src/package/hegstandard-qun.cpp \
     src/package/hegstandard-shu.cpp \
@@ -61,6 +63,8 @@ HEADERS += \
     src/core/skill.h \
     src/core/structs.h \
     src/core/util.h \
+    src/mode/hegemonymode.h \
+    src/mode/standardmode.h \
     src/gamelogic/event.h \
     src/gamelogic/eventhandler.h \
     src/gamelogic/eventtype.h \

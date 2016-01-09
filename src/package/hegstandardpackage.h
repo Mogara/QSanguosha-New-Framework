@@ -29,6 +29,7 @@ public:
 
     bool isAvailable(const GameMode *mode) const override;
 
+private:
     void addShuGenerals();
     void addWuGenerals();
     void addWeiGenerals();

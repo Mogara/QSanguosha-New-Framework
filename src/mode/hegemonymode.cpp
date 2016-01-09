@@ -17,18 +17,12 @@
     Mogara
 *********************************************************************/
 
-#include "gamemode.h"
+#include "hegemonymode.h"
 #include "engine.h"
-#include "eventhandler.h"
 
-GameMode::GameMode()
-    : m_minPlayerNum(2)
-    , m_maxPlayerNum(10)
+HegemonyMode::HegemonyMode()
 {
+    m_name = "hegemony_mode";
 }
 
-GameMode::~GameMode()
-{
-    foreach (const EventHandler *rule, m_rules)
-        delete rule;
-}
+ADD_MODE(Hegemony)

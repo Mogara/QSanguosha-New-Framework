@@ -19,6 +19,7 @@
 
 #include "standardpackage.h"
 #include "engine.h"
+#include "gamemode.h"
 
 StandardPackage::StandardPackage()
     : Package("standard")
@@ -31,6 +32,11 @@ StandardPackage::StandardPackage()
     addBasicCards();
     addEquipCards();
     addTrickCards();
+}
+
+bool StandardPackage::isAvailable(const GameMode *mode) const
+{
+    return mode->name == "standard";
 }
 
 ADD_PACKAGE(Standard)

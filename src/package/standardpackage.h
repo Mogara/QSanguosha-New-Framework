@@ -27,6 +27,8 @@ class StandardPackage : public Package
 public:
     StandardPackage();
 
+    bool isAvailable(const GameMode *mode) const override;
+
 protected:
     void addShuGenerals();
     void addWeiGenerals();

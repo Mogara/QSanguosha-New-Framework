@@ -182,9 +182,9 @@ bool ServerPlayer::activate()
     QList<Card *> cards = m_logic->findCards(reply["cards"]);
 
     const Skill *skill = nullptr;
-    QString skillName = reply["skill"].toString();
-    if (!skillName.isEmpty())
-        skill = getSkill(reply["skill"].toString());
+    uint skillId = reply["skillId"].toUInt();
+    if (skillId)
+        skill = getSkill(skillId);
 
     Card *card = nullptr;
     if (skill) {
@@ -305,9 +305,9 @@ Card *ServerPlayer::askForCard(const QString &pattern, bool optional)
 
         const QVariantMap reply = replyData.toMap();
         QList<Card *> cards = m_logic->findCards(reply["cards"]);
-        QString skillName = reply["skill"].toString();
-        if (!skillName.isEmpty()) {
-            const Skill *skill = getSkill(skillName);
+        uint skillId = reply["skillId"].toUInt();
+        if (skillId) {
+            const Skill *skill = getSkill(skillId);
             if (skill->type() == Skill::ViewAsType) {
                 const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
                 return viewAsSkill->viewAs(cards, this);
@@ -539,7 +539,7 @@ void ServerPlayer::addHeadSkill(const Skill *skill)
 
     QVariantMap data;
     data["playerId"] = id();
-    data["name"] = skill->name();
+    data["skillId"] = skill->id();
     data["position"] = "head";
     m_room->broadcastNotification(S_COMMAND_ADD_SKILL, data);
 }
@@ -551,7 +551,7 @@ void ServerPlayer::addDeputySkill(const Skill *skill)
 
     QVariantMap data;
     data["playerId"] = id();
-    data["name"] = skill->name();
+    data["skillId"] = skill->id();
     data["position"] = "deputy";
     m_room->broadcastNotification(S_COMMAND_ADD_SKILL, data);
 }
@@ -563,7 +563,7 @@ void ServerPlayer::addAcquiredSkill(const Skill *skill)
 
     QVariantMap data;
     data["playerId"] = id();
-    data["name"] = skill->name();
+    data["skillId"] = skill->id();
     data["position"] = "acquired";
     m_room->broadcastNotification(S_COMMAND_ADD_SKILL, data);
 }

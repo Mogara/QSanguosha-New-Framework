@@ -201,6 +201,7 @@ public:
 
     bool hasSkill(const Skill *skill) const;
     bool hasShownSkill(const Skill *skill) const;
+    const Skill *getSkill(uint id) const;
     const Skill *getSkill(const QString &name) const;
 
     QList<const Skill *> getGlobalSkills() const;

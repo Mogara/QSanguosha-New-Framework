@@ -28,6 +28,7 @@ class ClientSkill : public QObject
 {
     Q_OBJECT
 
+    Q_PROPERTY(uint sid READ id NOTIFY idChanged)
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(QString type READ type NOTIFY typeChanged)
     Q_PROPERTY(bool enabled READ isEnabled NOTIFY enabledChanged)
@@ -35,6 +36,7 @@ class ClientSkill : public QObject
 public:
     ClientSkill(const Skill *skill, QObject *parent = 0);
 
+    uint id() const;
     QString name() const;
     QString type() const;
 
@@ -42,6 +44,7 @@ public:
     bool isEnabled() const { return m_enabled; }
 
 signals:
+    void idChanged();
     void nameChanged();
     void typeChanged();
     void enabledChanged();

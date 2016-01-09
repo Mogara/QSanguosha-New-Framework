@@ -27,6 +27,11 @@ ClientSkill::ClientSkill(const Skill *skill, QObject *parent)
 {
 }
 
+uint ClientSkill::id() const
+{
+    return m_skill->id();
+}
+
 QString ClientSkill::name() const
 {
     return m_skill->name();

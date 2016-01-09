@@ -23,13 +23,15 @@
 #include "serverplayer.h"
 
 Skill::Skill(const QString &name)
-    : m_name(name)
+    : m_id(0)
+    , m_name(name)
     , m_type(InvalidType)
     , m_subtype(InvalidType)
     , m_frequency(NotFrequent)
     , m_lordSkill(false)
     , m_topSkill(nullptr)
 {
+    // Id is only assigned to skills directly attached to a general. Subskill id is 0.
 }
 
 Skill::~Skill()

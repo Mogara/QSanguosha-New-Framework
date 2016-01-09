@@ -27,6 +27,8 @@
 
 class Skill
 {
+    friend class General;
+
 public:
     enum Frequency
     {
@@ -48,6 +50,7 @@ public:
     Skill(const QString &name);
     virtual ~Skill();
 
+    uint id() const { return m_id; }
     QString name() const { return m_name; }
     Type type() const { return m_type; }
     int subtype() const { return m_subtype; }
@@ -59,6 +62,7 @@ public:
 protected:
     void addSubskill(Skill *subskill);
 
+    uint m_id;
     QString m_name;
     Type m_type;
     int m_subtype;
@@ -100,7 +104,8 @@ static bool CheckAvailability(const Player *self)
 class ViewAsSkill : public Skill
 {
 public:
-    enum Subtype{
+    enum Subtype
+    {
         ConvertType,
         ProactiveType
     };

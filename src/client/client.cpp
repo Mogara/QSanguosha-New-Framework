@@ -87,7 +87,7 @@ void Client::useCard(const QList<const Card *> &cards, const QList<const Player 
         to << target->id();
     data["to"] = to;
 
-    data["skill"] = skill ? skill->name() : "";
+    data["skillId"] = skill ? skill->id() : 0;
 
     replyToServer(S_COMMAND_USE_CARD, data);
 }
@@ -101,7 +101,7 @@ void Client::respondCard(const QList<const Card *> &cards, const Skill *skill)
         cardData << card->id();
     data["cards"] = cardData;
 
-    data["skill"] = skill ? skill->name() : "";
+    data["skillId"] = skill ? skill->id() : 0;
 
     replyToServer(S_COMMAND_ASK_FOR_CARD, data);
 }
@@ -502,7 +502,7 @@ void Client::AddSkillCommand(Client *client, const QVariant &data)
         return;
 
     Engine *engine = Engine::instance();
-    const Skill *skill = engine->getSkill(arg["name"].toString());
+    const Skill *skill = engine->getSkill(arg["skillId"].toUInt());
     if (skill == nullptr)
         return;
 

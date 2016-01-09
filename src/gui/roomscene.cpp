@@ -280,7 +280,7 @@ void RoomScene::onCardSelected(const QVariantList &cardIds)
     case UsingCardState:{
         if (m_selectedCard.isEmpty()) {
             if (m_viewAsSkill)
-                onSkillActivated(m_viewAsSkill->name(), true);
+                onSkillActivated(m_viewAsSkill->id(), true);
             else
                 onUsingCard();
         } else {
@@ -383,10 +383,10 @@ void RoomScene::onPlayerCardSelected(uint cid)
     m_client->replyToServer(S_COMMAND_CHOOSE_PLAYER_CARD, cid);
 }
 
-void RoomScene::onSkillActivated(const QString &skillName, bool activated)
+void RoomScene::onSkillActivated(uint skillId, bool activated)
 {
     Engine *engine = Engine::instance();
-    const Skill *originalSkill = engine->getSkill(skillName);
+    const Skill *originalSkill = engine->getSkill(skillId);
     if (originalSkill->type() != Skill::ViewAsType)
         return;
 

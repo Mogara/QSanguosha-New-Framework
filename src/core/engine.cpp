@@ -53,7 +53,7 @@ void Engine::addPackage(Package *package)
 
         QList<const Skill *> skills = general->skills();
         foreach (const Skill *skill, skills)
-            m_skills.insert(skill->name(), skill);
+            m_skills.insert(skill->id(), skill);
     }
 
     QList<const Card *> cards = package->cards();

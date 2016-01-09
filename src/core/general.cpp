@@ -49,6 +49,9 @@ bool General::isCompanionWith(const General *general) const
 
 void General::addSkill(Skill *skill)
 {
+    static uint skillId = 1;
+    skill->m_id = skillId;
+    skillId++;
     m_skills << skill;
 }
 

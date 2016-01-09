@@ -349,6 +349,26 @@ bool Player::hasShownSkill(const Skill *skill) const
     return m_acquiredSkills.contains(skill);
 }
 
+const Skill *Player::getSkill(uint id) const
+{
+    foreach(const Skill *skill, m_headSkills) {
+        if (skill->id() == id)
+            return skill;
+    }
+
+    foreach(const Skill *skill, m_deputySkills) {
+        if (skill->id() == id)
+            return skill;
+    }
+
+    foreach(const Skill *skill, m_acquiredSkills) {
+        if (skill->id() == id)
+            return skill;
+    }
+
+    return nullptr;
+}
+
 const Skill *Player::getSkill(const QString &name) const
 {
     foreach(const Skill *skill, m_headSkills) {

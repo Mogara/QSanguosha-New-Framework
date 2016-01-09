@@ -21,7 +21,7 @@ Item {
 
             onPressedChanged: {
                 if (enabled)
-                    roomScene.onSkillActivated(name, pressed);
+                    roomScene.onSkillActivated(modelData.sid, pressed);
             }
         }
     }

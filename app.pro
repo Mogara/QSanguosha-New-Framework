@@ -222,4 +222,5 @@ include(deployment.pri)
 # Cardirector
 DEFINES += MCD_STATIC
 INCLUDEPATH += Cardirector/include
-LIBS += -L$$PWD/Cardirector/lib -lCardirector -lbreakpad -lvorbis -logg
+LIBS += -L$$PWD/Cardirector/lib -lCardirector -lvorbis -logg
+CONFIG(release, debug|release): LIBS += -lbreakpad

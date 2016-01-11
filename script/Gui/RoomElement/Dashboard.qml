@@ -157,8 +157,8 @@ RowLayout {
     }
 
     Item {
-        width: Device.gu(283)
-        height: Device.gu(149)
+        Layout.preferredWidth: Device.gu(deputyGeneralItem.visible ? 283 : 155)
+        Layout.preferredHeight: Device.gu(149)
 
         Image {
             source: "image://root/dashboard/base"
@@ -167,7 +167,8 @@ RowLayout {
         Image {
             source: "image://root/dashboard/hpbase"
             anchors.bottom: parent.bottom
-            anchors.left: deputyGeneralItem.right
+            anchors.right: parent.right
+            anchors.rightMargin: Device.gu(3)
 
             HpBar {
                 id: hpBar
@@ -212,6 +213,7 @@ RowLayout {
             avatar: deputyGeneralName ? deputyGeneralName : "zhugeliang"
             generalName: qsTr(deputyGeneralName)
             generalPosition: "deputy"
+            visible: deputyGeneralName ? true : false
 
             Rectangle {
                 color: Qt.rgba(250, 0, 0, 0.45)

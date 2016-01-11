@@ -70,6 +70,16 @@ QList<const Package *> Engine::packages() const
     return packages;
 }
 
+QList<const Package *> Engine::getPackages(const GameMode *mode) const
+{
+    QList<const Package *> packages;
+    foreach (Package *package, m_packages) {
+        if (package->isAvailable(mode))
+            packages << package;
+    }
+    return packages;
+}
+
 QList<const General *> Engine::getGenerals(bool includeHidden) const
 {
     QList<const General *> generals;

@@ -41,6 +41,8 @@ public:
     ~GameLogic();
 
     void setGameRule(const GameRule *rule);
+
+    QList<const Package *> packages() const { return m_packages; }
     void setPackages(const QList<const Package *> &packages) { m_packages = packages; }
 
     void addEventHandler(const EventHandler *handler);

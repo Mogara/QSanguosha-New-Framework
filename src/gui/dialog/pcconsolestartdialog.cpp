@@ -20,7 +20,7 @@
 #include "client.h"
 #include "engine.h"
 #include "gamelogic.h"
-#include "gamerule.h"
+#include "gamemode.h"
 #include "pcconsolestartdialog.h"
 
 #include <cserver.h>
@@ -51,9 +51,10 @@ void PcConsoleStartDialog::start(const QString &screenName, const QString &avata
     connect(server, &CServer::roomCreated, [](CRoom *room){
         //@to-do: load game logic on owner updating configurations
         GameLogic *logic = new GameLogic(room);
-        logic->setGameRule(new GameRule(logic));
         Engine *engine = Engine::instance();
-        logic->setPackages(engine->packages());
+        const GameMode *mode = engine->modes().at(0);
+        logic->setGameRule(mode->rule());
+        logic->setPackages(engine->getPackages(mode));
         room->setGameLogic(logic);
 
         CServerUser *owner = room->owner();

@@ -78,7 +78,7 @@ void GameLogic::setGameRule(const GameRule *rule) {
 
 void GameLogic::addEventHandler(const EventHandler *handler)
 {
-    QList<EventType> events = handler->events();
+    QSet<EventType> events = handler->events();
     foreach(EventType event, events) {
         if (!m_handlers[event].contains(handler))
             m_handlers[event] << handler;
@@ -87,7 +87,7 @@ void GameLogic::addEventHandler(const EventHandler *handler)
 
 void GameLogic::removeEventHandler(const EventHandler *handler)
 {
-    QList<EventType> events = handler->events();
+    QSet<EventType> events = handler->events();
     foreach (EventType event, events)
         m_handlers[event].removeOne(handler);
 }
@@ -696,67 +696,13 @@ void GameLogic::prepareToStart()
         cardData << card->id();
     room->broadcastNotification(S_COMMAND_PREPARE_CARDS, cardData);
 
-    //Choose 7 random generals for each player
-    //@to-do: config
-    qShuffle(generals);
-    int candidateLimit = 7;
-    int minCandidateNum = candidateLimit * players.length();
-    while (minCandidateNum > generals.length())
-        generals << generals.mid(0, minCandidateNum - generals.length());
-
-    QMap<ServerPlayer *, QList<const General *>> playerCandidates;
-
-    foreach (ServerPlayer *player, players) {
-        QList<const General *> candidates = generals.mid((player->seat() - 1) * candidateLimit, candidateLimit);
-        playerCandidates[player] = candidates;
-
-        QVariantList candidateData;
-        foreach (const General *general, candidates)
-            candidateData << general->id();
-
-        QVariantList bannedPairData;
-        //@todo: load banned pairs
-
-        QVariantList data;
-        data << QVariant(candidateData);
-        data << QVariant(bannedPairData);
-
-        CServerAgent *agent = findAgent(player);
-        agent->prepareRequest(S_COMMAND_CHOOSE_GENERAL, data);
-    }
-
-    //@to-do: timeout should be loaded from config
-    room->broadcastRequest(room->agents(), 15000);
-
-    foreach (ServerPlayer *player, players) {
-        const QList<const General *> &candidates = playerCandidates[player];
-        QList<const General *> generals;
-
-        CServerAgent *agent = findAgent(player);
-        if (agent) {
-            QVariantList reply = agent->waitForReply(0).toList();
-            foreach (const QVariant &choice, reply) {
-                uint id = choice.toUInt();
-                foreach (const General *general, candidates) {
-                    if (general->id() == id)
-                        generals << general;
-                }
-            }
-        }
-
-        //@to-do: handle banned pairs
-        if (generals.length() < 2)
-            generals = candidates.mid(0, 2);
-
-        player->setHeadGeneral(generals.at(0));
-        player->setDeputyGeneral(generals.at(1));
-    }
-
     foreach (Card *card, m_cards) {
         m_drawPile->add(card);
         m_cardPosition[card] = m_drawPile;
     }
     qShuffle(m_drawPile->cards());
+
+    m_gameRule->prepareToStart(this);
 }
 
 CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)

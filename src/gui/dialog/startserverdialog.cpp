@@ -19,6 +19,7 @@
 
 #include "startserverdialog.h"
 #include "engine.h"
+#include "gamemode.h"
 
 #include <cserver.h>
 #include <croom.h>
@@ -82,9 +83,10 @@ void StartServerDialog::onRoomCreated(CRoom *room)
 
     //@to-do: load game logic on owner updating configurations
     GameLogic *logic = new GameLogic(room);
-    logic->setGameRule(new GameRule(logic));
     Engine *engine = Engine::instance();
-    logic->setPackages(engine->packages());
+    const GameMode *mode = engine->modes().first();
+    logic->setGameRule(mode->rule());
+    logic->setPackages(engine->getPackages(mode));
     room->setGameLogic(logic);
 
     CServerUser *owner = room->owner();

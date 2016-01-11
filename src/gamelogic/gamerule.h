@@ -31,26 +31,16 @@ class Skill;
 class GameRule : public EventHandler
 {
 public:
-    GameRule(GameLogic *logic);
+    GameRule();
 
-    bool triggerable(ServerPlayer *) const override;
+    virtual void prepareToStart(GameLogic *logic) const = 0;
+
+    bool triggerable(ServerPlayer *owner) const override;
     bool effect(GameLogic *logic, EventType event, ServerPlayer *current, QVariant &data, ServerPlayer *) const override;
 
 protected:
-    void addPlayerSkill(const Skill *skill);
-
-    typedef void (GameRule::*Callback)(ServerPlayer *, QVariant &) const;
-    void onGameStart(ServerPlayer *current, QVariant &) const;
-    void onTurnStart(ServerPlayer *current, QVariant &) const;
-    void onPhaseProceeding(ServerPlayer *current, QVariant &) const;
-    void onPhaseEnd(ServerPlayer *current, QVariant &) const;
-    void onAfterHpReduced(ServerPlayer *victim, QVariant &data) const;
-    void onAskForPeach(ServerPlayer *current, QVariant &data) const;
-    void onAskForPeachDone(ServerPlayer *victim, QVariant &data) const;
-
-    GameLogic *m_logic;
-    static QMap<EventType, Callback> m_callbacks;
-    C_DECLARE_INITIALIZER(GameRule)
+    typedef void (*Callback)(GameLogic *, ServerPlayer *, QVariant &);
+    QMap<EventType, Callback> m_callbacks;
 };
 
 #endif // GAMERULE_H

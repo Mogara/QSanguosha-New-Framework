@@ -29,6 +29,8 @@ GameMode::GameMode()
 
 GameMode::~GameMode()
 {
-    foreach (const EventHandler *rule, m_rules)
+    delete m_rule;
+
+    foreach (const EventHandler *rule, m_extraRules)
         delete rule;
 }

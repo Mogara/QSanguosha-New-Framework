@@ -24,6 +24,7 @@
 #include <QList>
 
 class EventHandler;
+class GameRule;
 
 class GameMode
 {
@@ -35,13 +36,15 @@ public:
     int minPlayerNum() const { return m_minPlayerNum; }
     int maxPlayerNum() const { return m_maxPlayerNum; }
 
-    const QList<const EventHandler *> &rules() const { return m_rules; }
+    const GameRule *rule() const { return m_rule; }
+    QList<const EventHandler *> extraRules() const { return m_extraRules; }
 
 protected:
     QString m_name;
     int m_minPlayerNum;
     int m_maxPlayerNum;
-    QList<const EventHandler *> m_rules;
+    const GameRule *m_rule;
+    QList<const EventHandler *> m_extraRules;
 };
 
 #endif // GAMEMODE_H

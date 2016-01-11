@@ -198,6 +198,7 @@ Item {
         wrapMode: Text.WrapAnywhere
         lineHeight: 1.5
         horizontalAlignment: Text.AlignHCenter
+        text: qsTr(headGeneral)
 
         glow.color: "black"
         glow.spread: 0.7
@@ -217,6 +218,7 @@ Item {
         wrapMode: Text.WrapAnywhere
         lineHeight: 1.5
         horizontalAlignment: Text.AlignHCenter
+        text: qsTr(deputyGeneral)
 
         glow.color: "black"
         glow.spread: 0.7

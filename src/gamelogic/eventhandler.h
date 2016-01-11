@@ -24,7 +24,7 @@
 #include "event.h"
 
 #include <QVariant>
-#include <QList>
+#include <QSet>
 #include <QMap>
 
 class GameLogic;
@@ -36,7 +36,7 @@ public:
     EventHandler();
     virtual ~EventHandler() = 0;
 
-    QList<EventType> events() const { return m_events; }
+    QSet<EventType> events() const { return m_events; }
 
     QString name() const { return m_name; }
 
@@ -52,7 +52,7 @@ public:
     virtual bool effect(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker = nullptr) const;
 
 protected:
-    QList<EventType> m_events;
+    QSet<EventType> m_events;
     QString m_name;
     int m_defaultPriority;
     QMap<EventType, int> m_priorityMap;

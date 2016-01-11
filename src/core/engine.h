@@ -42,6 +42,7 @@ public:
     void addPackage(Package *package);
     const Package *package(const QString &name) const { return m_packages.value(name); }
     QList<const Package *> packages() const;
+    QList<const Package *> getPackages(const GameMode *mode) const;
 
     QList<const General *> getGenerals(bool includeHidden = false) const;
     const General *getGeneral(uint id) const { return m_generals.value(id); }

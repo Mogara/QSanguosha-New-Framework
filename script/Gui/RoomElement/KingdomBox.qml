@@ -2,30 +2,34 @@ import QtQuick 2.4
 import Cardirector.Device 1.0
 
 Item {
+    property string value: "unknown"
+
     width: Device.gu(22)
     height: Device.gu(22)
+    visible: value != "hidden"
 
     Item {
         anchors.fill: parent
+        visible: value == "unknown"
 
-        SimpleRoleIcon {
+        SimpleKingdomIcon {
             id: wei
             originalColor: "#2779AA"
         }
 
-        SimpleRoleIcon {
+        SimpleKingdomIcon {
             id: qun
             originalColor: "#C3B154"
             x: parent.width / 2
         }
 
-        SimpleRoleIcon {
+        SimpleKingdomIcon {
             id: shu
             originalColor: "#AC3120"
             y: parent.height / 2
         }
 
-        SimpleRoleIcon {
+        SimpleKingdomIcon {
             id: wu
             originalColor: "#55A434"
             x: parent.width / 2
@@ -43,7 +47,7 @@ Item {
 
     Image {
         id: expandingBox
-        source: "image://root/role/expanding"
+        source: "image://root/kingdom/expanding"
         focus: true
         visible: false
 
@@ -53,28 +57,28 @@ Item {
         }
 
         Image {
-            source: "image://root/role/expandingmask/wei"
+            source: "image://root/kingdom/expandingmask/wei"
             x: Device.gu(3)
             y: Device.gu(3)
             visible: !wei.included
         }
 
         Image {
-            source: "image://root/role/expandingmask/qun"
+            source: "image://root/kingdom/expandingmask/qun"
             x: Device.gu(23)
             y: Device.gu(3)
             visible: !qun.included
         }
 
         Image {
-            source: "image://root/role/expandingmask/shu"
+            source: "image://root/kingdom/expandingmask/shu"
             x: Device.gu(3)
             y: Device.gu(23)
             visible: !shu.included
         }
 
         Image {
-            source: "image://root/role/expandingmask/wu"
+            source: "image://root/kingdom/expandingmask/wu"
             x: Device.gu(23)
             y: Device.gu(23)
             visible: !wu.included
@@ -107,5 +111,11 @@ Item {
             y: parent.height / 2
             onClicked: wu.included = !wu.included;
         }
+    }
+
+    Image {
+        source: value ? "image://root/kingdom/" + value : ""
+        visible: value != "unknown" && value != "hidden"
+        anchors.centerIn: parent
     }
 }

@@ -147,6 +147,7 @@ QML_FILES = \
     script/Gui/RoomElement/IndicatorLine.qml \
     script/Gui/RoomElement/InvisibleCardArea.qml \
     script/Gui/RoomElement/IrregularButton.qml \
+    script/Gui/RoomElement/KingdomBox.qml \
     script/Gui/RoomElement/LogBox.qml \
     script/Gui/RoomElement/Magatama.qml \
     script/Gui/RoomElement/Photo.qml \
@@ -154,10 +155,9 @@ QML_FILES = \
     script/Gui/RoomElement/PlayerCardBox.qml \
     script/Gui/RoomElement/ProgressBar.qml \
     script/Gui/RoomElement/Prompt.qml \
-    script/Gui/RoomElement/RoleComboBox.qml \
     script/Gui/RoomElement/SimpleEquipArea.qml \
     script/Gui/RoomElement/SimpleEquipItem.qml \
-    script/Gui/RoomElement/SimpleRoleIcon.qml \
+    script/Gui/RoomElement/SimpleKingdomIcon.qml \
     script/Gui/RoomElement/SkillButton.qml \
     script/Gui/RoomElement/SkillPanel.qml \
     script/Gui/RoomElement/TablePile.qml \

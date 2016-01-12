@@ -10,6 +10,7 @@ RowLayout {
     property alias deputyGeneralKingdom: deputyGeneralItem.kingdom
     property int seatNumber: 0
     property string userRole: "unknown"
+    property string kingdom: "unknown"
     property alias hp: hpBar.value
     property alias maxHp: hpBar.maxValue
     property string phase: "inactive"
@@ -141,7 +142,7 @@ RowLayout {
                 }
 
                 Image {
-                    source: "image://root/role/" + userRole
+                    source: "image://root/kingdom/" + userRole
                     x: Device.gu(70)
                     y: Device.gu(3)
                 }

@@ -70,6 +70,8 @@ RoomScene {
                             dying: modelData.dying
                             alive: modelData.alive
                             drunk: modelData.drunk
+                            userRole: modelData.role
+                            kingdom : modelData.kingdom
 
                             onSelectedChanged: roomScene.onPhotoSelected(roomScene.getSelectedSeats());
                         }

@@ -10,6 +10,7 @@ Item {
     property alias screenName: screenNameItem.text
     property alias faceTurned: faceTurnedCover.visible
     property string userRole: "unknown"
+    property string kingdom: "unknown"
     property alias handcardNum: handcardNumItem.value
     property alias maxHp: hpBar.maxValue
     property alias hp: hpBar.value
@@ -139,7 +140,7 @@ Item {
         id: handcardNumItem
         x: Device.gu(-10)
         y: Device.gu(102)
-        kingdom: parent.userRole
+        kingdom: parent.kingdom
         value: handcardArea.length
     }
 
@@ -238,9 +239,10 @@ Item {
         visible: parent.dying
     }
 
-    RoleComboBox {
-        x: parent.width - width - Device.gu(5)
-        y: Device.gu(1)
+    KingdomBox {
+        x: parent.width - width - Device.gu(4)
+        y: Device.gu(4)
+        value: parent.kingdom
     }
 
     Rectangle {

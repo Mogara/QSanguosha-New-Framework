@@ -124,8 +124,9 @@ public:
         current->setKingdom(general->kingdom());
         current->broadcastProperty("kingdom");
 
-        current->setRole(general->kingdom());
-        current->unicastPropertyTo("role", current);
+        //@to-do: arrange roles
+        //current->setRole(general->kingdom());
+        //current->unicastPropertyTo("role", current);
 
         QList<const Skill *> skills = general->skills();
         foreach (const Skill *skill, skills)

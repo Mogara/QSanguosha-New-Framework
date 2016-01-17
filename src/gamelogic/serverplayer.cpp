@@ -502,7 +502,7 @@ void ServerPlayer::broadcastProperty(const char *name, const QVariant &value, Se
     data << id();
     data << name;
     data << value;
-    m_room->broadcastNotification(S_COMMAND_UPDATE_PLAYER_PROPERTY, data, except->agent());
+    m_room->broadcastNotification(S_COMMAND_UPDATE_PLAYER_PROPERTY, data, except ? except->agent() : nullptr);
 }
 
 void ServerPlayer::unicastPropertyTo(const char *name, ServerPlayer *player)

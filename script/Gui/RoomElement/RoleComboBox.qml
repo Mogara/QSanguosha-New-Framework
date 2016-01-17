@@ -18,10 +18,7 @@ Image {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                console.log("clicked");
-                optionPopupBox.visible = true;
-            }
+            onClicked: optionPopupBox.visible = true;
         }
     }
 

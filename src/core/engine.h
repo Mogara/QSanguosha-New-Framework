@@ -37,6 +37,7 @@ public:
     ~Engine();
 
     void addMode(GameMode *mode) { m_modes << mode; }
+    const GameMode *mode(const QString &name) const;
     QList<const GameMode *> modes() const { return m_modes; }
 
     void addPackage(Package *package);

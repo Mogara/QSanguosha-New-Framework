@@ -52,7 +52,7 @@ void PcConsoleStartDialog::start(const QString &screenName, const QString &avata
         //@to-do: load game logic on owner updating configurations
         GameLogic *logic = new GameLogic(room);
         Engine *engine = Engine::instance();
-        const GameMode *mode = engine->modes().at(0);
+        const GameMode *mode = engine->mode("standard");
         logic->setGameRule(mode->rule());
         logic->setPackages(engine->getPackages(mode));
         room->setGameLogic(logic);

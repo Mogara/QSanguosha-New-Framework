@@ -43,6 +43,16 @@ Engine::~Engine()
         delete package;
 }
 
+const GameMode *Engine::mode(const QString &name) const
+{
+    foreach (const GameMode *mode, m_modes) {
+        if (mode->name() == name)
+            return mode;
+    }
+
+    return nullptr;
+}
+
 void Engine::addPackage(Package *package)
 {
     m_packages.insert(package->name(), package);

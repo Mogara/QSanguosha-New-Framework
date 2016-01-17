@@ -125,10 +125,9 @@ public:
         current->broadcastProperty("maxHp");
         current->broadcastProperty("hp");
 
-        current->setRole(headGeneral->kingdom());
-        current->unicastPropertyTo("role", current);
         current->setKingdom(headGeneral->kingdom());
         current->unicastPropertyTo("kingdom", current);
+        current->broadcastProperty("kingdom", "unknown", current);
 
         QList<const Skill *> skills = headGeneral->skills();
         foreach (const Skill *skill, skills)

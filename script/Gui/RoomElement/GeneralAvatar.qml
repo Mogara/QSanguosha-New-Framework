@@ -23,7 +23,7 @@ Item {
     Image {
         x: Device.gu(2)
         y: Device.gu(2)
-        source: "image://root/dashboard/title/" + (kingdom != "" ? kingdom : "god")
+        source: "image://root/dashboard/title/" + (kingdom != "" && kingdom != "hidden" ? kingdom : "god")
         visible: kingdom != ""
 
         Item {

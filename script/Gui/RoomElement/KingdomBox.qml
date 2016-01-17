@@ -114,7 +114,7 @@ Item {
     }
 
     Image {
-        source: value ? "image://root/kingdom/" + value : ""
+        source: value && value != "hidden" ? "image://root/kingdom/" + value : ""
         visible: value != "unknown" && value != "hidden"
         anchors.centerIn: parent
     }

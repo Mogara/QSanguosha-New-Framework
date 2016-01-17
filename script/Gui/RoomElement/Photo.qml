@@ -239,12 +239,6 @@ Item {
         visible: parent.dying
     }
 
-    KingdomBox {
-        x: parent.width - width - Device.gu(4)
-        y: Device.gu(4)
-        value: parent.kingdom
-    }
-
     Rectangle {
         id: disableMask
         anchors.fill: parent
@@ -285,6 +279,19 @@ Item {
             parent.selected = !parent.selected;
         }
     }
+
+    KingdomBox {
+        x: parent.width - width - Device.gu(4)
+        y: Device.gu(4)
+        value: parent.kingdom
+    }
+
+    RoleComboBox {
+        x: Device.gu(3)
+        y: Device.gu(2)
+        value: parent.userRole
+    }
+
 
     ProgressBar {
         id: progressBarItem

@@ -18,6 +18,7 @@
 *********************************************************************/
 
 #include "gamemode.h"
+#include "gamerule.h"
 #include "engine.h"
 #include "eventhandler.h"
 

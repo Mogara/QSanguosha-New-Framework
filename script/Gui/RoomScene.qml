@@ -271,7 +271,7 @@ RoomScene {
     }
 
     onPlayAudio: {
-        soundEffect.source = "audio/" + path;
+        soundEffect.fileName = "audio/" + path;
         soundEffect.play();
     }
 

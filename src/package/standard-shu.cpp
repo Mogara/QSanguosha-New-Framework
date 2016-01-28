@@ -217,6 +217,22 @@ public:
     }
 };
 
+class Qicai : public CardModSkill
+{
+public:
+    Qicai() : CardModSkill("qicai")
+    {
+        m_frequency = Compulsory;
+    }
+
+    int extraDistanceLimit(const Card *card, const QList<const Player *> &, const Player *, const Player *source) const override
+    {
+        if (card->type() == Card::TrickType && source->hasSkill(this))
+            return Card::InfinityNum;
+        return 0;
+    }
+};
+
 }
 
 void StandardPackage::addShuGenerals()
@@ -253,5 +269,6 @@ void StandardPackage::addShuGenerals()
     // SHU 007
     General *huangyueying = new General("huangyueying", "shu", 3, General::Female);
     huangyueying->addSkill(new Jizhi);
+    huangyueying->addSkill(new Qicai);
     addGeneral(huangyueying);
 }

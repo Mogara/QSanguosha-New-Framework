@@ -39,12 +39,12 @@ int EventHandler::priority(EventType event) const
     return m_priorityMap.contains(event) ? m_priorityMap.value(event) : m_defaultPriority;
 }
 
-QMap<ServerPlayer *, Event> EventHandler::triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data) const
+EventMap EventHandler::triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data) const
 {
-    QMap<ServerPlayer *, Event> result;
+    EventMap result;
     EventList events = triggerable(logic, event, owner, data, owner);
     foreach (const Event &d, events)
-        result.insertMulti(owner, d);
+        result.insert(owner, d);
     return result;
 }
 

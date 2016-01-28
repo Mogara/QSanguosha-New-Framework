@@ -24,6 +24,7 @@ class EventHandler;
 class ServerPlayer;
 
 #include <QList>
+#include <QMultiMap>
 
 struct Event
 {
@@ -43,6 +44,14 @@ class EventList : public QList<Event>
 public:
     EventList() {}
     EventList(const Event &e);
+};
+
+class EventMap : public QMultiMap<ServerPlayer *, Event>
+{
+public:
+    EventMap() {}
+    EventMap(const Event &e);
+    EventMap(const EventList &events);
 };
 
 #endif // EVENT_H

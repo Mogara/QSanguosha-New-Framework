@@ -116,7 +116,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
         do {
             const EventHandler *handler = handlers.at(triggerableIndex);
             if (triggerableEvents.isEmpty() || handler->priority(event) == currentPriority) {
-                QMap<ServerPlayer *, Event> events = handler->triggerable(this, event, target, data);
+                EventMap events = handler->triggerable(this, event, target, data);
                 QList<ServerPlayer *> players = this->players();
                 foreach (ServerPlayer *p, players) {
                     if (!events.contains(p))

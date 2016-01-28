@@ -41,3 +41,14 @@ EventList::EventList(const Event &e)
 {
     append(e);
 }
+
+EventMap::EventMap(const Event &e)
+{
+    insert(e.owner, e);
+}
+
+EventMap::EventMap(const EventList &events)
+{
+    foreach(const Event &e, events)
+        insert(e.owner, e);
+}

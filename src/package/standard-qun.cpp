@@ -106,15 +106,15 @@ public:
         m_compulsory = true;
     }
 
-    QMap<ServerPlayer *, Event> triggerable(GameLogic *, EventType event, ServerPlayer *, QVariant &data) const override
+    EventMap triggerable(GameLogic *, EventType event, ServerPlayer *, QVariant &data) const override
     {
-        QMap<ServerPlayer *, Event> events;
+        EventMap events;
         if (event == SlashEffect) {
             SlashEffectStruct *effect = data.value<SlashEffectStruct *>();
             if (effect->from && effect->from->hasSkill(this)) {
                 Event e(this, effect->from);
                 e.to << effect->to;
-                events.insertMulti(effect->from, e);
+                events.insert(effect->from, e);
             }
         } else if (event == CardResponded) {
             CardResponseStruct *response = data.value<CardResponseStruct *>();
@@ -125,7 +125,7 @@ public:
                     } else {
                         Event e(this, response->to);
                         e.to << response->from;
-                        events.insertMulti(response->to, e);
+                        events.insert(response->to, e);
                     }
                 }
             }

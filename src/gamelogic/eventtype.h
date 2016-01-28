@@ -89,6 +89,9 @@ enum EventType
     FinishRetrial,
     FinishJudge,
 
+    SkillAdded,
+    SkillRemoved,
+
     EnterDying,
     QuitDying,
     AskForPeach,

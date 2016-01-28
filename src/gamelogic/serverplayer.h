@@ -80,14 +80,18 @@ public:
     void addCardHistory(const QString &name, int times = 1);
     void clearCardHistory();
 
-    void addHeadSkill(const Skill *skill);
-    void addDeputySkill(const Skill *skill);
-    void addAcquiredSkill(const Skill *skill);
+    void addSkill(const Skill *skill, SkillArea area = HeadSkillArea);
+    void removeSkill(const Skill *skill, SkillArea area = UnknownSkillArea);
+
+    //These two functions don't trigger SkillAdded/SkillRemoved events
+    void attachSkill(const Skill *skill, SkillArea area = HeadSkillArea);
+    void detachSkill(const Skill *skill, SkillArea area = UnknownSkillArea);
 
     QMap<QString, QVariant> tag;
 
 private:
     void addTriggerSkill(const Skill *skill);
+    void removeTriggerSkill(const Skill *skill);
 
     GameLogic *m_logic;
     CRoom *m_room;

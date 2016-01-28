@@ -532,40 +532,52 @@ void ServerPlayer::clearCardHistory()
     m_agent->notify(S_COMMAND_ADD_CARD_HISTORY);
 }
 
-void ServerPlayer::addHeadSkill(const Skill *skill)
+void ServerPlayer::addSkill(const Skill *skill, Player::SkillArea area)
 {
-    Player::addHeadSkill(skill);
+    attachSkill(skill, area);
+
+    SkillStruct add;
+    add.owner = this;
+    add.skill = skill;
+    add.area = area;
+    QVariant data = QVariant::fromValue(&add);
+    m_logic->trigger(SkillAdded, this, data);
+}
+
+void ServerPlayer::removeSkill(const Skill *skill, Player::SkillArea area)
+{
+    detachSkill(skill, area);
+
+    SkillStruct remove;
+    remove.owner = this;
+    remove.skill = skill;
+    remove.area = area;
+    QVariant data = QVariant::fromValue(&remove);
+    m_logic->trigger(SkillRemoved, this, data);
+}
+
+void ServerPlayer::attachSkill(const Skill *skill, SkillArea area)
+{
+    Player::addSkill(skill, area);
     addTriggerSkill(skill);
 
     QVariantMap data;
     data["playerId"] = id();
     data["skillId"] = skill->id();
-    data["position"] = "head";
+    data["skillArea"] = area;
     m_room->broadcastNotification(S_COMMAND_ADD_SKILL, data);
 }
 
-void ServerPlayer::addDeputySkill(const Skill *skill)
+void ServerPlayer::detachSkill(const Skill *skill, SkillArea area)
 {
-    Player::addDeputySkill(skill);
-    addTriggerSkill(skill);
+    Player::removeSkill(skill, area);
+    removeTriggerSkill(skill);
 
     QVariantMap data;
     data["playerId"] = id();
     data["skillId"] = skill->id();
-    data["position"] = "deputy";
-    m_room->broadcastNotification(S_COMMAND_ADD_SKILL, data);
-}
-
-void ServerPlayer::addAcquiredSkill(const Skill *skill)
-{
-    Player::addAcquiredSkill(skill);
-    addTriggerSkill(skill);
-
-    QVariantMap data;
-    data["playerId"] = id();
-    data["skillId"] = skill->id();
-    data["position"] = "acquired";
-    m_room->broadcastNotification(S_COMMAND_ADD_SKILL, data);
+    data["skillArea"] = area;
+    m_room->broadcastNotification(S_COMMAND_REMOVE_SKILL, data);
 }
 
 void ServerPlayer::addTriggerSkill(const Skill *skill)
@@ -577,5 +589,25 @@ void ServerPlayer::addTriggerSkill(const Skill *skill)
     foreach (const Skill *subskill, subskills) {
         if (subskill->type() == Skill::TriggerType)
             m_logic->addEventHandler(static_cast<const TriggerSkill *>(subskill));
+    }
+}
+
+void ServerPlayer::removeTriggerSkill(const Skill *skill)
+{
+    const Player *current = this->nextAlive(1, false);
+    while (current != this) {
+        QList<const Skill *> skills = current->skills();
+        if (skills.contains(skill))
+            return;
+        current = current->nextAlive(1, false);
+    }
+
+    if (skill->type() == Skill::TriggerType)
+        m_logic->removeEventHandler(static_cast<const TriggerSkill *>(skill));
+
+    QList<const Skill *> subskills = skill->subskills();
+    foreach (const Skill *subskill, subskills) {
+        if (subskill->type() == Skill::TriggerType)
+            m_logic->removeEventHandler(static_cast<const TriggerSkill *>(subskill));
     }
 }

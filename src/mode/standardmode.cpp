@@ -131,7 +131,7 @@ public:
 
         QList<const Skill *> skills = general->skills();
         foreach (const Skill *skill, skills)
-            current->addHeadSkill(skill);
+            current->addSkill(skill);
 
         current->drawCards(4);
     }

@@ -402,19 +402,19 @@ QList<const Skill *> Player::getGlobalSkills() const
     return skills;
 }
 
-void Player::addSkill(const Skill *skill, const QString &position)
+void Player::addSkill(const Skill *skill, SkillArea type)
 {
-    if (position == "head")
+    if (type == HeadSkillArea)
         addHeadSkill(skill);
-    else if (position == "deputy")
+    else if (type == DeputySkillArea)
         addDeputySkill(skill);
     else
         addAcquiredSkill(skill);
 }
 
-void Player::removeSkill(const Skill *skill, const QString &position)
+void Player::removeSkill(const Skill *skill, SkillArea type)
 {
-    if (position.isEmpty()) {
+    if (type == UnknownSkillArea) {
         if (m_acquiredSkills.removeOne(skill))
             return;
         if (m_headSkills.removeOne(skill))
@@ -423,9 +423,9 @@ void Player::removeSkill(const Skill *skill, const QString &position)
         return;
     }
 
-    if (position == "head")
+    if (type == HeadSkillArea)
         m_headSkills.removeOne(skill);
-    else if (position == "deputy")
+    else if (type == DeputySkillArea)
         m_deputySkills.removeOne(skill);
     else
         m_acquiredSkills.removeOne(skill);

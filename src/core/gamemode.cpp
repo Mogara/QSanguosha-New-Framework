@@ -25,6 +25,7 @@
 GameMode::GameMode()
     : m_minPlayerNum(2)
     , m_maxPlayerNum(10)
+    , m_rule(nullptr)
 {
 }
 

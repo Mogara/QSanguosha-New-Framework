@@ -30,6 +30,7 @@
 
 class Card;
 class ServerPlayer;
+class Skill;
 
 struct CardsMoveStruct
 {
@@ -183,5 +184,16 @@ struct DeathStruct
 };
 
 Q_DECLARE_METATYPE(DeathStruct *)
+
+struct SkillStruct
+{
+    ServerPlayer *owner;
+    const Skill *skill;
+    Player::SkillArea area;
+
+    SkillStruct();
+};
+
+Q_DECLARE_METATYPE(SkillStruct *)
 
 #endif // STRUCTS_H

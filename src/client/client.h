@@ -99,6 +99,7 @@ private:
     static void ChoosePlayerCardRequestCommand(Client *client, const QVariant &data);
     static void ShowCardCommand(Client *client, const QVariant &data);
     static void AddSkillCommand(Client *client, const QVariant &data);
+    static void RemoveSkillCommand(Client *client, const QVariant &data);
     static void TriggerOrderCommand(Client *client, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;

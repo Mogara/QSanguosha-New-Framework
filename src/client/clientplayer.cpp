@@ -23,13 +23,13 @@ QString ClientPlayer::fullGeneralName() const
     }
 }
 
-void ClientPlayer::addSkill(const Skill *skill, const QString &position)
+void ClientPlayer::addSkill(const Skill *skill, SkillArea type)
 {
-    if (position == "head") {
+    if (type == HeadSkillArea) {
         addHeadSkill(skill);
         m_headSkills.insert(skill, new ClientSkill(skill, this));
         emit headSkillChanged();
-    } else if (position == "deputy") {
+    } else if (type == DeputySkillArea) {
         addDeputySkill(skill);
         m_deputySkills.insert(skill, new ClientSkill(skill, this));
         emit deputySkillChanged();

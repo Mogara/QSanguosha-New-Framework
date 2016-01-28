@@ -43,7 +43,7 @@ public:
     QString fullGeneralName() const;
     CClientUser *user() const { return m_user; }
 
-    void addSkill(const Skill *skill, const QString &position);
+    void addSkill(const Skill *skill, SkillArea type);
     ClientSkill *getSkill(const Skill *skill) const;
 
     QVariant headSkillModel() const;

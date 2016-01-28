@@ -506,8 +506,32 @@ void Client::AddSkillCommand(Client *client, const QVariant &data)
     if (skill == nullptr)
         return;
 
-    QString position = arg["position"].toString();
-    player->addSkill(skill, position);
+    Player::SkillArea type = static_cast<Player::SkillArea>(arg["skillArea"].toInt());
+    player->addSkill(skill, type);
+
+    bool log = arg["log"].toBool();
+    if (log) {
+        //@to-do: add log message
+    }
+}
+
+void Client::RemoveSkillCommand(Client *client, const QVariant &data)
+{
+    const QVariantMap arg = data.toMap();
+    if (arg.isEmpty())
+        return;
+
+    ClientPlayer *player = client->findPlayer(arg["playerId"].toUInt());
+    if (player == nullptr)
+        return;
+
+    Engine *engine = Engine::instance();
+    const Skill *skill = engine->getSkill(arg["skillId"].toUInt());
+    if (skill == nullptr)
+        return;
+
+    Player::SkillArea type = static_cast<Player::SkillArea>(arg["skillArea"].toInt());
+    player->removeSkill(skill, type);
 
     bool log = arg["log"].toBool();
     if (log) {
@@ -558,6 +582,7 @@ void Client::Init()
     AddCallback(S_COMMAND_CLEAR_AMAZING_GRACE, ClearAmazingGraceCommand);
     AddCallback(S_COMMAND_SHOW_CARD, ShowCardCommand);
     AddCallback(S_COMMAND_ADD_SKILL, AddSkillCommand);
+    AddCallback(S_COMMAND_REMOVE_SKILL, RemoveSkillCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);

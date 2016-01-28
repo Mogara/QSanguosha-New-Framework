@@ -131,10 +131,10 @@ public:
 
         QList<const Skill *> skills = headGeneral->skills();
         foreach (const Skill *skill, skills)
-            current->addHeadSkill(skill);
+            current->addSkill(skill, Player::HeadSkillArea);
         skills = deputyGeneral->skills();
         foreach (const Skill *skill, skills)
-            current->addDeputySkill(skill);
+            current->addSkill(skill, Player::DeputySkillArea);
 
         current->drawCards(4);
     }

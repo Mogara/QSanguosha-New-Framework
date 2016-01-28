@@ -75,6 +75,15 @@ public:
         InvalidPhase, RoundStart, Start, Judge, Draw, Play, Discard, Finish, Inactive
     };
 
+
+    enum SkillArea
+    {
+        UnknownSkillArea,
+        HeadSkillArea,
+        DeputySkillArea,
+        AcquiredSkillArea
+    };
+
     Player(QObject *parent = 0);
     ~Player();
 
@@ -206,21 +215,22 @@ public:
 
     QList<const Skill *> getGlobalSkills() const;
 
-    void addSkill(const Skill *skill, const QString &position = "head");
-    void removeSkill(const Skill *skill, const QString &position = QString());
+    void addSkill(const Skill *skill, SkillArea = HeadSkillArea);
+    void removeSkill(const Skill *skill, SkillArea = UnknownSkillArea);
     QList<const Skill *> skills() const { return m_headSkills + m_deputySkills; }
+    QList<const Skill *> headSkills() const { return m_headSkills; }
+    QList<const Skill *> deputySkills() const { return m_deputySkills; }
+    QList<const Skill *> acquiredSkills() const { return m_acquiredSkills; }
 
+protected:
     void addHeadSkill(const Skill *skill) { m_headSkills << skill; }
     void removeHeadSkill(const Skill *skill) { m_headSkills.removeOne(skill); }
-    QList<const Skill *> headSkills() const { return m_headSkills; }
 
     void addDeputySkill(const Skill *skill) { m_deputySkills << skill; }
     void removeDeputySkill(const Skill *skill) { m_deputySkills.removeOne(skill); }
-    QList<const Skill *> deputySkills() const { return m_deputySkills; }
 
     void addAcquiredSkill(const Skill *skill) { m_acquiredSkills << skill; }
     void removeAcquiredSkill(const Skill *skill) { m_acquiredSkills.removeOne(skill); }
-    QList<const Skill *> acquiredSkills() const { return m_acquiredSkills; }
 
 signals:
     void screenNameChanged();

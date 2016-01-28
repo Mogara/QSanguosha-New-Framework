@@ -18,7 +18,6 @@
 *********************************************************************/
 
 #include "card.h"
-#include "player.h"
 #include "serverplayer.h"
 #include "structs.h"
 
@@ -141,5 +140,12 @@ void JudgeStruct::updateResult()
 DeathStruct::DeathStruct()
     : who(nullptr)
     , damage(nullptr)
+{
+}
+
+SkillStruct::SkillStruct()
+    : owner(nullptr)
+    , skill(nullptr)
+    , area(Player::UnknownSkillArea)
 {
 }

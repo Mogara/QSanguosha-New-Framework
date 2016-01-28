@@ -210,7 +210,7 @@ Card *ProactiveSkill::viewAs(const QList<Card *> &cards, const Player *source) c
         constCards << card;
 
     if (cardFeasible(constCards, source))
-        new SkillCard(this);
+        return new SkillCard(this);
 
     return nullptr;
 }

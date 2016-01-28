@@ -19,6 +19,7 @@
 
 #include "card.h"
 #include "standardpackage.h"
+#include "gamelogic.h"
 #include "general.h"
 #include "serverplayer.h"
 #include "skill.h"
@@ -27,6 +28,82 @@
 
 namespace
 {
+
+class Rende : public ProactiveSkill
+{
+    class Reset : public TriggerSkill
+    {
+    public:
+        Reset() : TriggerSkill("#rende_reset")
+        {
+            m_events << PhaseChanging;
+        }
+
+        EventList triggerable(GameLogic *, EventType, ServerPlayer *owner, QVariant &data, ServerPlayer *) const override
+        {
+            if (owner->tag.contains("rende_count")) {
+                PhaseChangeStruct *change = data.value<PhaseChangeStruct *>();
+                if (change->to == Player::Inactive)
+                    owner->tag.remove("rende_count");
+            }
+            return EventList();
+        }
+    };
+
+public:
+    Rende() : ProactiveSkill("rende")
+    {
+        addSubskill(new Reset);
+    }
+
+    bool isAvailable(const Player *player, const QString &pattern) const override
+    {
+        return player->handcardNum() > 0 && pattern.isEmpty();
+    }
+
+    bool cardFilter(const QList<const Card *> &, const Card *card, const Player *self, const QString &) const override
+    {
+        const CardArea *handcard = self->handcardArea();
+        return handcard->contains(card);
+    }
+
+    bool cardFeasible(const QList<const Card *> &cards, const Player *) const override
+    {
+        return cards.length() > 0;
+    }
+
+    bool playerFilter(const QList<const Player *> &targets, const Player *, const Player *) const override
+    {
+        return targets.isEmpty();
+    }
+
+    bool playerFeasible(const QList<const Player *> &targets, const Player *) const override
+    {
+        return targets.length() == 1;
+    }
+
+    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const override
+    {
+        if (to.isEmpty() || cards.isEmpty())
+            return;
+
+        CardsMoveStruct move;
+        move.cards = cards;
+        move.to.owner = to.first();
+        move.to.type = CardArea::Hand;
+        logic->moveCards(move);
+
+        int oldValue = from->tag["rende_count"].toInt();
+        int newValue = oldValue + cards.length();
+        from->tag["rende_count"] = newValue;
+        if (oldValue < 2 && newValue >= 2 && from->isWounded()) {
+            RecoverStruct recover;
+            recover.from = from;
+            recover.to = from;
+            logic->recover(recover);
+        }
+    }
+};
 
 class Wusheng : public OneCardViewAsSkill
 {
@@ -147,6 +224,7 @@ void StandardPackage::addShuGenerals()
     // SHU 001
     General *liubei = new General("liubei", "shu", 4);
     liubei->setLord(true);
+    liubei->addSkill(new Rende);
     addGeneral(liubei);
 
     // SHU 002

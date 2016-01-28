@@ -97,6 +97,7 @@ public:
 
     virtual void validate(ServerPlayer *target) const = 0;
     virtual void invalidate(ServerPlayer *target) const = 0;
+    virtual bool isValid(ServerPlayer *target) const;
 
     bool effect(GameLogic *, EventType event, ServerPlayer *target, QVariant &, ServerPlayer *) const final override;
 };

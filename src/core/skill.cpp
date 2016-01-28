@@ -108,12 +108,24 @@ StatusSkill::StatusSkill(const QString &name)
     setFrequency(Compulsory);
 }
 
+bool StatusSkill::isValid(ServerPlayer *target) const
+{
+    Q_UNUSED(target)
+    return true;
+}
+
 bool StatusSkill::effect(GameLogic *, EventType event, ServerPlayer *target, QVariant &, ServerPlayer *) const
 {
-    if (event == SkillAdded)
+    if (event == SkillAdded) {
         validate(target);
-    else if (event == SkillRemoved)
+    } else if (event == SkillRemoved) {
         invalidate(target);
+    } else {
+        if (isValid(target))
+            validate(target);
+        else
+            invalidate(target);
+    }
     return false;
 }
 

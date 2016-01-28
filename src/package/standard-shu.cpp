@@ -191,6 +191,28 @@ public:
     }
 };
 
+class Mashu : public StatusSkill
+{
+public:
+    Mashu() : StatusSkill("mashu")
+    {
+    }
+
+    void validate(ServerPlayer *target) const override
+    {
+        int distance = target->extraOutDistance();
+        target->setExtraOutDistance(distance - 1);
+        target->broadcastProperty("extraOutDistance");
+    }
+
+    void invalidate(ServerPlayer *target) const override
+    {
+        int distance = target->extraOutDistance();
+        target->setExtraOutDistance(distance + 1);
+        target->broadcastProperty("extraOutDistance");
+    }
+};
+
 class Jizhi : public TriggerSkill
 {
 public:
@@ -264,6 +286,7 @@ void StandardPackage::addShuGenerals()
 
     // SHU 006
     General *machao = new General("machao", "shu", 4);
+    machao->addSkill(new Mashu);
     addGeneral(machao);
 
     // SHU 007

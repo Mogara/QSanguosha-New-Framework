@@ -47,8 +47,6 @@ protected:
     void addCard(Card *card);
     void addCards(const QList<Card *> &cards);
 
-    template<typename T> uint generateId();
-
     QString m_name;
     QList<General *> m_generals;
     QList<Card *> m_cards;

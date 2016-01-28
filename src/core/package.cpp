@@ -21,6 +21,17 @@
 #include "card.h"
 #include "general.h"
 
+namespace{
+
+template<typename T> uint GenerateId()
+{
+    static uint id = 0;
+    id++;
+    return id;
+}
+
+}
+
 Package::Package(const QString &name)
     : m_name(name)
 {
@@ -62,14 +73,14 @@ QList<const Card *> Package::cards() const
 
 void Package::addGeneral(General *general)
 {
-    general->m_id = generateId<General>();
+    general->m_id = GenerateId<General>();
     m_generals << general;
 }
 
 void Package::addGenerals(const QList<General *> &generals)
 {
     foreach (General *general, generals)
-        general->m_id = generateId<General>();
+        general->m_id = GenerateId<General>();
     m_generals << generals;
 }
 
@@ -84,20 +95,13 @@ const General *Package::getGeneral(const QString &name) const
 
 void Package::addCard(Card *card)
 {
-    card->m_id = generateId<Card>();
+    card->m_id = GenerateId<Card>();
     m_cards << card;
 }
 
 void Package::addCards(const QList<Card *> &cards)
 {
     foreach (Card *card, cards)
-        card->m_id = generateId<Card>();
+        card->m_id = GenerateId<Card>();
     m_cards << cards;
-}
-
-template<typename T> uint Package::generateId()
-{
-    static uint id = 0;
-    id++;
-    return id;
 }

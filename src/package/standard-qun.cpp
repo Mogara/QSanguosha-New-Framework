@@ -102,8 +102,7 @@ public:
     Wushuang() : TriggerSkill("wushuang")
     {
         m_events << SlashEffect << CardResponded;
-        m_frequency = Compulsory;
-        m_compulsory = true;
+        setFrequency(Compulsory);
     }
 
     EventMap triggerable(GameLogic *, EventType event, ServerPlayer *, QVariant &data) const override

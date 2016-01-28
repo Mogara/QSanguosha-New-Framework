@@ -466,7 +466,7 @@ bool GameLogic::takeCardEffect(CardEffectStruct &effect)
     return !canceled;
 }
 
-void GameLogic::respondCard(CardResponseStruct &response)
+bool GameLogic::respondCard(CardResponseStruct &response)
 {
     CardsMoveStruct move;
     move.cards << response.card;
@@ -475,9 +475,9 @@ void GameLogic::respondCard(CardResponseStruct &response)
     moveCards(move);
 
     QVariant data = QVariant::fromValue(&response);
-    trigger(CardResponded, response.from, data);
+    bool broken = trigger(CardResponded, response.from, data);
 
-    if (m_table->contains(response.card)) {
+    if (response.card && m_table->contains(response.card)) {
         CardsMoveStruct move;
         move.cards << response.card;
         move.to.type = CardArea::DiscardPile;
@@ -489,6 +489,8 @@ void GameLogic::respondCard(CardResponseStruct &response)
         delete response.card;
         response.card = nullptr;
     }
+
+    return !broken;
 }
 
 void GameLogic::judge(JudgeStruct &judge)

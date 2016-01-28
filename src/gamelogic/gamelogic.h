@@ -82,7 +82,8 @@ public:
     bool useCard(CardUseStruct &use);
     bool takeCardEffect(CardEffectStruct &effect);
 
-    void respondCard(CardResponseStruct &response);
+    //It returns false iff the corresponding CardResponded event is broken.
+    bool respondCard(CardResponseStruct &response);
 
     void judge(JudgeStruct &judge);
 

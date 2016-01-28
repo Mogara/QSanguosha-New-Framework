@@ -224,7 +224,8 @@ void Duel::effect(GameLogic *logic, CardEffectStruct &effect)
         response.target = this;
         response.from = first;
         response.to = second;
-        logic->respondCard(response);
+        if (!logic->respondCard(response))
+            break;
         qSwap(first, second);
     }
 

@@ -101,6 +101,22 @@ void TriggerSkill::setFrequency(Skill::Frequency frequency)
     m_compulsory = (m_frequency == Compulsory || m_frequency == Wake);
 }
 
+StatusSkill::StatusSkill(const QString &name)
+    : TriggerSkill(name)
+{
+    m_events << SkillAdded << SkillRemoved;
+    setFrequency(Compulsory);
+}
+
+bool StatusSkill::effect(GameLogic *, EventType event, ServerPlayer *target, QVariant &, ServerPlayer *) const
+{
+    if (event == SkillAdded)
+        validate(target);
+    else if (event == SkillRemoved)
+        invalidate(target);
+    return false;
+}
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name)
 {

@@ -90,6 +90,17 @@ protected:
     void setFrequency(Frequency frequency);
 };
 
+class StatusSkill : public TriggerSkill
+{
+public:
+    StatusSkill(const QString &name);
+
+    virtual void validate(ServerPlayer *target) const = 0;
+    virtual void invalidate(ServerPlayer *target) const = 0;
+
+    bool effect(GameLogic *, EventType event, ServerPlayer *target, QVariant &, ServerPlayer *) const final override;
+};
+
 class Card;
 
 template<typename T>

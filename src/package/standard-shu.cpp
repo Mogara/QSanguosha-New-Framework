@@ -213,6 +213,89 @@ public:
     }
 };
 
+class Tieqi : public TriggerSkill
+{
+    class Effect : public TriggerSkill
+    {
+    public:
+        Effect() : TriggerSkill("tieqi_effect")
+        {
+            m_events << SlashProceed;
+            setFrequency(Compulsory);
+        }
+
+        EventList triggerable(GameLogic *, EventType, ServerPlayer *, QVariant &data, ServerPlayer *) const override
+        {
+            EventList events;
+            SlashEffectStruct *effect = data.value<SlashEffectStruct *>();
+            if (effect->from->tag.contains("tieqi_victims")) {
+                QVariantList victims = effect->from->tag.value("tieqi_victims").toList();
+                int max = victims.length();
+                for (int i = 0; i < max; i++) {
+                    if (victims.at(i).toUInt() == effect->to->id()) {
+                        victims.removeAt(i);
+                        if (victims.isEmpty())
+                            effect->from->tag.remove("tieqi_victims");
+                        else
+                            effect->from->tag["tieqi_victims"] = victims;
+
+                        Event e(this, effect->from);
+                        e.to << effect->to;
+                        events << e;
+                        break;
+                    }
+                }
+            }
+            return events;
+        }
+
+        bool effect(GameLogic *, EventType, ServerPlayer *, QVariant &, ServerPlayer *) const override
+        {
+            return true;
+        }
+    };
+
+public:
+    Tieqi() : TriggerSkill("tieqi")
+    {
+        m_events << TargetChosen;
+        setFrequency(Frequent);
+
+        addSubskill(new Effect);
+    }
+
+    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+    {
+        EventList events;
+
+        CardUseStruct *use = data.value<CardUseStruct *>();
+        if (TriggerSkill::triggerable(player) && use->card && use->card->inherits("Slash")) {
+            foreach(ServerPlayer *to, use->to) {
+                Event e(this, player);
+                e.to << to;
+                events << e;
+            }
+        }
+
+        return events;
+    }
+
+    bool effect(GameLogic *logic, EventType, ServerPlayer *target, QVariant &, ServerPlayer *invoker) const override
+    {
+        JudgeStruct judge(".|red");
+        judge.who = invoker;
+        logic->judge(judge);
+
+        if (judge.matched) {
+            QVariantList victims = invoker->tag.value("tieqi_victims").toList();
+            victims << target->id();
+            invoker->tag["tieqi_victims"] = victims;
+        }
+
+        return false;
+    }
+};
+
 class Jizhi : public TriggerSkill
 {
 public:
@@ -286,6 +369,7 @@ void StandardPackage::addShuGenerals()
 
     // SHU 006
     General *machao = new General("machao", "shu", 4);
+    machao->addSkill(new Tieqi);
     machao->addSkill(new Mashu);
     addGeneral(machao);
 

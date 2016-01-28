@@ -72,7 +72,7 @@ void Slash::effect(GameLogic *logic, CardEffectStruct &cardEffect)
             return;
 
         if (logic->trigger(SlashProceed, effect.from, data))
-            return;
+            break;
 
         while (effect.jink.length() < effect.jinkNum) {
             QVariantList args;

@@ -243,7 +243,7 @@ class Tieqi : public TriggerSkill
         {
             EventList events;
             SlashEffectStruct *effect = data.value<SlashEffectStruct *>();
-            if (effect->from->tag.contains("tieqi_victims")) {
+            if (effect->from && effect->from->hasSkill(topSkill()) && effect->from->tag.contains("tieqi_victims")) {
                 QVariantList victims = effect->from->tag.value("tieqi_victims").toList();
                 int max = victims.length();
                 for (int i = 0; i < max; i++) {

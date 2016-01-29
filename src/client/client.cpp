@@ -560,6 +560,43 @@ void Client::TriggerOrderCommand(Client *client, const QVariant &data)
     emit client->optionRequested(options);
 }
 
+void Client::ArrangeCardCommand(Client *client, const QVariant &data)
+{
+    const QVariantMap args = data.toMap();
+
+    const QVariantList capacityData = args.value("capacities").toList();
+    QList<int> capacities;
+    foreach (const QVariant &capacity, capacityData)
+        capacities << capacity.toInt();
+
+    QVariantList areaNameData = args.value("areaNames").toList();
+    QStringList areaNames;
+    foreach (const QVariant &name, areaNameData)
+        areaNames << name.toString();
+
+    QList<Card *> cards = client->findCards(args.value("cards"));
+
+    emit client->arrangeCardRequested(cards, capacities, areaNames);
+}
+
+void Client::ArrangeCardStartCommand(Client *client, const QVariant &data)
+{
+    C_UNUSED(client);
+    C_UNUSED(data);
+}
+
+void Client::ArrangeCardMoveCommand(Client *client, const QVariant &data)
+{
+    C_UNUSED(client);
+    C_UNUSED(data);
+}
+
+void Client::ArrangeCardEndCommand(Client *client, const QVariant &data)
+{
+    C_UNUSED(client);
+    C_UNUSED(data);
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -583,6 +620,9 @@ void Client::Init()
     AddCallback(S_COMMAND_SHOW_CARD, ShowCardCommand);
     AddCallback(S_COMMAND_ADD_SKILL, AddSkillCommand);
     AddCallback(S_COMMAND_REMOVE_SKILL, RemoveSkillCommand);
+    AddCallback(S_COMMAND_ARRANGE_CARD_START, ArrangeCardStartCommand);
+    AddCallback(S_COMMAND_ARRANGE_CARD_MOVE, ArrangeCardMoveCommand);
+    AddCallback(S_COMMAND_ARRANGE_CARD_END, ArrangeCardEndCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);
@@ -590,5 +630,6 @@ void Client::Init()
     AddInteraction(S_COMMAND_TAKE_AMAZING_GRACE, TakeAmazingGraceRequestCommand);
     AddInteraction(S_COMMAND_CHOOSE_PLAYER_CARD, ChoosePlayerCardRequestCommand);
     AddInteraction(S_COMMAND_TRIGGER_ORDER, TriggerOrderCommand);
+    AddInteraction(S_COMMAND_ARRANGE_CARD, ArrangeCardCommand);
 }
 C_INITIALIZE_CLASS(Client)

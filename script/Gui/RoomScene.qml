@@ -315,9 +315,7 @@ RoomScene {
         }
     }
 
-    onClearPopupBox: {
-        popupBox.source = "";
-    }
+    onClearPopupBox: popupBox.item.close();
 
     onShowOptions: {
         popupBox.source = "RoomElement/ChooseOptionBox.qml";
@@ -325,6 +323,24 @@ RoomScene {
         popupBox.item.accepted.connect(function(){
             roomScene.onOptionSelected(popupBox.item.result);
         });
+    }
+
+    onShowArrangeCardBox: {
+        popupBox.source = "RoomElement/ArrangeCardBox.qml";
+        popupBox.item.cards = cards;
+        popupBox.item.areaCapacities = capacities;
+        popupBox.item.areaNames = names;
+        popupBox.item.accepted.connect(function(){
+            var result = popupBox.item.result;
+            var cardIds = new Array(result.length);
+            for (var i = 0; i < result.length; i++) {
+                cardIds[i] = [];
+                for (var j = 0; j < result[i].length; j++)
+                    cardIds[i].push(result[i][j].cid);
+            }
+            roomScene.onArrangeCardDone(cardIds);
+        });
+        dashboard.acceptButton.enabled = true;
     }
 
     onPlayerNumChanged: arrangePhotos();
@@ -487,8 +503,8 @@ RoomScene {
     {
         if (promptBox.visible) {
             promptBox.visible = false;
-        } else {
-            popupBox.source = "";
+        } else if (popupBox.item) {
+            popupBox.item.close();
         }
     }
 }

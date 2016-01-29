@@ -46,6 +46,7 @@ public:
     Q_INVOKABLE void onPlayerCardSelected(uint cid);
     Q_INVOKABLE void onSkillActivated(uint skillId, bool activated);
     Q_INVOKABLE void onOptionSelected(int selected);
+    Q_INVOKABLE void onArrangeCardDone(const QVariantList &results);
 
 signals:
     //Signals from C++ to QML
@@ -66,6 +67,7 @@ signals:
     void askToChoosePlayerCard(const QVariant &handcards, const QVariant &equips, const QVariant &delayedTricks);
     void showCard(int fromSeat, const QVariant &cards);
     void showOptions(const QStringList &options);
+    void showArrangeCardBox(const QVariant &cards, const QVariant &capacities, const QVariant &names);
 
 private:
     enum RespondingState
@@ -92,6 +94,7 @@ private:
     void onAmazingGraceStarted();
     void onChoosePlayerCardRequested(const QList<Card *> &handcards, const QList<Card *> &equips, const QList<Card *> &delayedTricks);
     void onCardShown(const ClientPlayer *from, const QList<const Card *> &cards);
+    void onArrangeCardRequested(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames);
 
     QVariantMap convertToMap(const Card *card) const;
 

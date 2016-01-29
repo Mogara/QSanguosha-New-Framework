@@ -487,6 +487,35 @@ Card *ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlaye
     return card;
 }
 
+QList<QList<Card *>> ServerPlayer::askToArrangeCard(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames)
+{
+    QVariantMap data;
+
+    QVariantList capacityData;
+    foreach (int capacity, capacities)
+        capacityData << capacity;
+    data["capacities"] = capacityData;
+
+    QVariantList cardData;
+    foreach (const Card *card, cards)
+        cardData << card->id();
+    data["cards"] = cardData;
+
+    data["areaNames"] = areaNames;
+
+    m_agent->request(S_COMMAND_ARRANGE_CARD, data);
+
+    QList<QList<Card *>> result;
+    const QVariantList reply = m_agent->waitForReply().toList();
+    int maxi = qMin(capacities.length(), reply.length());
+    for (int i = 0; i < maxi; i++) {
+        const QVariant cardData = reply.at(i);
+        result << Card::Find(cards, cardData).mid(0, capacities.at(i));
+    }
+
+    return result;
+}
+
 void ServerPlayer::broadcastProperty(const char *name) const
 {
     QVariantList data;

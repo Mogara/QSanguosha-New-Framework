@@ -85,6 +85,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::choosePlayerCardRequested, this, &RoomScene::onChoosePlayerCardRequested);
     connect(m_client, &Client::cardShown, this, &RoomScene::onCardShown);
     connect(m_client, &Client::optionRequested, this, &RoomScene::showOptions);
+    connect(m_client, &Client::arrangeCardRequested, this, &RoomScene::onArrangeCardRequested);
 }
 
 void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
@@ -420,6 +421,20 @@ void RoomScene::onOptionSelected(int selected)
     m_client->replyToServer(S_COMMAND_TRIGGER_ORDER, selected);
 }
 
+void RoomScene::onArrangeCardDone(const QVariantList &results)
+{
+    QVariantList data;
+    foreach (const QVariant &result, results) {
+        QVariantList row;
+        const QVariantList resultList = result.toList();
+        foreach (const QVariant &cid, resultList)
+            row << cid.toUInt();
+        data << QVariant(row);
+    }
+
+    m_client->replyToServer(S_COMMAND_ARRANGE_CARD, data);
+}
+
 void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage)
 {
     if (damage <= 0)
@@ -508,6 +523,19 @@ void RoomScene::onCardShown(const ClientPlayer *from, const QList<const Card *> 
     foreach (const Card *card, cards)
         data << convertToMap(card);
     showCard(from->seat(), data);
+}
+
+void RoomScene::onArrangeCardRequested(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames)
+{
+    QVariantList cardData;
+    foreach (const Card *card, cards)
+        cardData << convertToMap(card);
+
+    QVariantList capacityData;
+    foreach (int capacity, capacities)
+        capacityData << capacity;
+
+    showArrangeCardBox(cardData, capacityData, areaNames);
 }
 
 QVariantMap RoomScene::convertToMap(const Card *card) const

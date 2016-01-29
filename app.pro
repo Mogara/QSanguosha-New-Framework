@@ -126,6 +126,7 @@ QML_FILES = \
     script/Gui/Dialog/StartGameDialog.qml \
     script/Gui/Dialog/StartServerDialog.qml \
     script/Gui/RoomScene.qml \
+    script/Gui/RoomElement/ArrangeCardBox.qml \
     script/Gui/RoomElement/CardArea.qml \
     script/Gui/RoomElement/CardItem.qml \
     script/Gui/RoomElement/ChatBox.qml \
@@ -140,7 +141,6 @@ QML_FILES = \
     script/Gui/RoomElement/GeneralCardItem.qml \
     script/Gui/RoomElement/GlowText.qml \
     script/Gui/RoomElement/GraphicsBox.qml \
-    script/Gui/RoomElement/GuanxingBox.qml \
     script/Gui/RoomElement/HandcardArea.qml \
     script/Gui/RoomElement/HandcardNumber.qml \
     script/Gui/RoomElement/HpBar.qml \

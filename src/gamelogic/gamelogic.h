@@ -71,10 +71,10 @@ public:
     void reshuffleDrawPile();
     int reshufflingCount() const { return m_reshufflingCount; }
 
-    const CardArea *drawPile() const { return m_drawPile; }
-    const CardArea *discardPile() const { return m_discardPile; }
-    const CardArea *table() const { return m_table; }
-    const CardArea *wugu() const { return m_wugu; }
+    CardArea *drawPile() const { return m_drawPile; }
+    CardArea *discardPile() const { return m_discardPile; }
+    CardArea *table() const { return m_table; }
+    CardArea *wugu() const { return m_wugu; }
 
     void moveCards(const CardsMoveStruct &move);
     void moveCards(QList<CardsMoveStruct> &moves);

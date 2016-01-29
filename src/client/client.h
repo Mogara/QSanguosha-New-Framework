@@ -69,6 +69,7 @@ signals:
     void choosePlayerCardRequested(const QList<Card *> &handcards, const QList<Card *> &equips, const QList<Card *> &delayedTricks);
     void cardShown(const ClientPlayer *from, const QList<const Card *> &cards);
     void optionRequested(const QStringList &options);
+    void arrangeCardRequested(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames);
 
 private:
     Client(QObject *parent = 0);
@@ -101,6 +102,10 @@ private:
     static void AddSkillCommand(Client *client, const QVariant &data);
     static void RemoveSkillCommand(Client *client, const QVariant &data);
     static void TriggerOrderCommand(Client *client, const QVariant &data);
+    static void ArrangeCardCommand(Client *client, const QVariant &data);
+    static void ArrangeCardStartCommand(Client *client, const QVariant &data);
+    static void ArrangeCardMoveCommand(Client *client, const QVariant &data);
+    static void ArrangeCardEndCommand(Client *client, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

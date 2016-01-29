@@ -42,13 +42,19 @@ bool CardArea::add(Card *card, Direction direction) {
 bool CardArea::add(const QList<Card *> &cards, Direction direction)
 {
     int num = length();
-    foreach (Card *card, cards) {
-        if (card && m_cards.contains(card))
-            continue;
-        if (direction == Top)
-            m_cards.prepend(card);
-        else
+    if (direction == Top) {
+        for (int i = 0; i < cards.length(); i++) {
+            Card *card = cards.at(i);
+            if (card && m_cards.contains(card))
+                continue;
+            m_cards.insert(i, card);
+        }
+    } else {
+        foreach (Card *card, cards) {
+            if (card && m_cards.contains(card))
+                continue;
             m_cards.append(card);
+        }
     }
 
     if (m_changeSignal && num != length())

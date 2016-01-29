@@ -39,9 +39,9 @@ public:
 
     enum Direction
     {
-        UndefinedDirection,
-        Top,
-        Bottom
+        UndefinedDirection = 0,
+        Top = 0x1,
+        Bottom = 0x2
     };
 
     typedef std::function<void()> ChangeSignal;

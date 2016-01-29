@@ -316,6 +316,28 @@ void Card::complete(GameLogic *logic)
     }
 }
 
+Card *Card::Find(const QList<Card *> &cards, uint id)
+{
+    foreach (Card *card, cards) {
+        if (card->id() == id)
+            return card;
+    }
+    return nullptr;
+}
+
+QList<Card *> Card::Find(const QList<Card *> &cards, const QVariant &data)
+{
+    QList<Card *> result;
+    QVariantList targets = data.toList();
+    foreach(const QVariant &target, targets) {
+        foreach (Card *card, cards) {
+            if (card->id() == target.toUInt())
+                result << card;
+        }
+    }
+    return result;
+}
+
 BasicCard::BasicCard(Card::Suit suit, int number)
     : Card(suit, number)
 {

@@ -142,6 +142,9 @@ public:
     virtual void effect(GameLogic *logic, CardEffectStruct &effect);
     virtual void complete(GameLogic *logic);
 
+    static Card *Find(const QList<Card *> &cards, uint id);
+    static QList<Card *> Find(const QList<Card *> &cards, const QVariant &data);
+
 protected:
     uint m_id;
     Suit m_suit;

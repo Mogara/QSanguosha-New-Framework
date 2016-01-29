@@ -149,6 +149,39 @@ public:
     }
 };
 
+class Guanxing : public TriggerSkill
+{
+public:
+    Guanxing() : TriggerSkill("guanxing")
+    {
+        m_events << PhaseStart;
+    }
+
+    bool triggerable(ServerPlayer *owner) const override
+    {
+        return TriggerSkill::triggerable(owner) && owner->phase() == Player::Start;
+    }
+
+    bool effect(GameLogic *logic, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+    {
+        int n = qMin(logic->playerNum(), 5);
+        QList<Card *> cards = logic->getDrawPileCards(n);
+
+        QList<int> capacities;
+        capacities << 5 << 5;
+        QStringList areaNames;
+        areaNames << "cards_on_the_top_of_draw_pile" << "cards_on_the_bottom_of_draw_pile";
+        QList<QList<Card *>> result = target->askToArrangeCard(cards, capacities, areaNames);
+
+        CardArea *drawPile = logic->drawPile();
+        drawPile->remove(cards);
+        drawPile->add(result.at(0), CardArea::Top);
+        drawPile->add(result.at(1), CardArea::Bottom);
+
+        return false;
+    }
+};
+
 class Kongcheng : public CardModSkill
 {
 public:
@@ -394,4 +427,7 @@ void StandardPackage::addShuGenerals()
     huangyueying->addSkill(new Jizhi);
     huangyueying->addSkill(new Qicai);
     addGeneral(huangyueying);
+
+    foreach (General *general, m_generals)
+        general->addSkill(new Guanxing);
 }

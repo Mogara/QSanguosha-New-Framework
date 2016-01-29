@@ -276,3 +276,10 @@ int CardModSkill::extraMaxTargetNum(const Card *card, const QList<const Player *
     C_UNUSED(source);
     return 0;
 }
+
+int CardModSkill::extraUseNum(const Card *card, const Player *player) const
+{
+    C_UNUSED(card);
+    C_UNUSED(player);
+    return 0;
+}

@@ -204,6 +204,19 @@ int Card::useLimit() const
     return m_useLimit;
 }
 
+int Card::useLimit(const Player *source) const
+{
+    int limit = useLimit();
+    QList<const Skill *> skills = source->getGlobalSkills();
+    foreach (const Skill *skill, skills) {
+        if (skill->type() == Skill::CardModType) {
+            const CardModSkill *modSkill = static_cast<const CardModSkill *>(skill);
+            limit += modSkill->extraUseNum(this, source);
+        }
+    }
+    return limit;
+}
+
 int Card::maxTargetNum() const
 {
     return m_maxTargetNum;
@@ -249,8 +262,8 @@ bool Card::targetFilter(const QList<const Player *> &selected, const Player *toS
 
 bool Card::isAvailable(const Player *source) const
 {
-    int limit = useLimit();
-    return limit == InfinityNum || source->cardHistory(objectName()) < limit;
+    int limit = useLimit(source);
+    return source->cardHistory(objectName()) < limit;
 }
 
 void Card::onUse(GameLogic *logic, CardUseStruct &use)

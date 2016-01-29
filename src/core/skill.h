@@ -180,6 +180,7 @@ public:
     virtual bool targetFilter(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
     virtual int extraDistanceLimit(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
     virtual int extraMaxTargetNum(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
+    virtual int extraUseNum(const Card *card, const Player *player) const;
 };
 
 #endif // SKILL_H

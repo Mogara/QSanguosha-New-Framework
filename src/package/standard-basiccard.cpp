@@ -116,7 +116,7 @@ bool Slash::isAvailable(const Player *player) const
     int times = player->cardHistory("slash");
     times += player->cardHistory("thunder_slash");
     times += player->cardHistory("fire_slash");
-    return times < useLimit() && BasicCard::isAvailable(player);
+    return times < useLimit(player) && BasicCard::isAvailable(player);
 }
 
 Jink::Jink(Card::Suit suit, int number)

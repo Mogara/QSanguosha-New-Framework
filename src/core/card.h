@@ -126,6 +126,7 @@ public:
 
     bool canRecast() const { return m_canRecast; }
     int useLimit() const;
+    int useLimit(const Player *source) const;
     int maxTargetNum() const;
     int minTargetNum() const;
     int distanceLimit() const;

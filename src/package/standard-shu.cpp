@@ -134,6 +134,21 @@ public:
     }
 };
 
+class Paoxiao : public CardModSkill
+{
+public:
+    Paoxiao() : CardModSkill("paoxiao")
+    {
+    }
+
+    int extraUseNum(const Card *card, const Player *player) const override
+    {
+        if (player->hasSkill(this) && player->phase() == Player::Play && card->inherits("Slash"))
+            return Card::InfinityNum;
+        return 0;
+    }
+};
+
 class Kongcheng : public CardModSkill
 {
 public:
@@ -355,6 +370,7 @@ void StandardPackage::addShuGenerals()
 
     // SHU 003
     General *zhangfei = new General("zhangfei", "shu", 4);
+    zhangfei->addSkill(new Paoxiao);
     addGeneral(zhangfei);
 
     // SHU 004

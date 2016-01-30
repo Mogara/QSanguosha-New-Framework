@@ -91,6 +91,7 @@ public:
     QList<Card *> findCards(const QVariant &data);
 
     void damage(DamageStruct &damage);
+    void loseHp(ServerPlayer *victim, int lose);
     void recover(RecoverStruct &recover);
 
     void killPlayer(ServerPlayer *victim, DamageStruct *damage = nullptr);

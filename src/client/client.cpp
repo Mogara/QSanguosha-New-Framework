@@ -422,6 +422,21 @@ void Client::DamageCommand(Client *client, const QVariant &data)
     emit client->damageDone(victim, nature, damage);
 }
 
+void Client::LoseHpCommand(Client *client, const QVariant &data)
+{
+    const QVariantMap arg = data.toMap();
+    if (!arg.contains("victimId") || !arg.contains("loseHp"))
+        return;
+
+    uint id = arg["victimId"].toUInt();
+    const ClientPlayer *victim = client->findPlayer(id);
+    if (victim == nullptr)
+        return;
+
+    int loseHp = arg["loseHp"].toInt();
+    emit client->loseHpDone(victim, loseHp);
+}
+
 void Client::RecoverCommand(Client *client, const QVariant &data)
 {
     QVariantMap arg = data.toMap();
@@ -656,6 +671,7 @@ void Client::Init()
     AddCallback(S_COMMAND_MOVE_CARDS, MoveCardsCommand);
     AddCallback(S_COMMAND_ADD_CARD_HISTORY, AddCardHistoryCommand);
     AddCallback(S_COMMAND_DAMAGE, DamageCommand);
+    AddCallback(S_COMMAND_LOSE_HP, LoseHpCommand);
     AddCallback(S_COMMAND_RECOVER, RecoverCommand);
     AddCallback(S_COMMAND_USE_CARD, UseCardCommand);
     AddCallback(S_COMMAND_SHOW_AMAZING_GRACE, ShowAmazingGraceCommand);

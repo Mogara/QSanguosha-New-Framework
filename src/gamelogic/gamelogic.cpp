@@ -599,6 +599,31 @@ void GameLogic::damage(DamageStruct &damage)
     }
 }
 
+void GameLogic::loseHp(ServerPlayer *victim, int lose)
+{
+    if (lose <= 0 || victim->isDead())
+        return;
+
+    QVariant data = lose;
+    if (trigger(HpLost, victim, data))
+        return;
+
+    lose = data.toInt();
+    if (lose <= 0)
+        return;
+
+    victim->setHp(victim->hp() - lose);
+    victim->broadcastProperty("hp");
+
+    QVariantMap arg;
+    arg["victimId"] = victim->id();
+    arg["loseHp"] = lose;
+    room()->broadcastNotification(S_COMMAND_LOSE_HP, arg);
+
+    trigger(AfterHpReduced, victim, data);
+    trigger(HpLost, victim, data);
+}
+
 void GameLogic::recover(RecoverStruct &recover)
 {
     if (recover.to == nullptr || recover.to->lostHp() == 0 || recover.to->isDead())

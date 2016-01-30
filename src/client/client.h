@@ -58,6 +58,7 @@ signals:
     void chooseGeneralRequested(const QList<const General *> &candidates /* @to-do: add banned pair */);
     void cardsMoved(const QList<CardsMoveStruct> &moves);
     void damageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
+    void loseHpDone(const ClientPlayer *victim, int lose);
     void recoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
     void usingCard(const QString &pattern, const QList<const Player *> &assignedTarget);
     void cardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &to);
@@ -95,6 +96,7 @@ private:
     static void UseCardCommand(Client *client, const QVariant &data);
     static void AddCardHistoryCommand(Client *client, const QVariant &data);
     static void DamageCommand(Client *client, const QVariant &data);
+    static void LoseHpCommand(Client *client, const QVariant &data);
     static void RecoverCommand(Client *client, const QVariant &data);
     static void AskForCardRequestCommand(Client *client, const QVariant &data);
     static void ShowAmazingGraceCommand(Client *client, const QVariant &);

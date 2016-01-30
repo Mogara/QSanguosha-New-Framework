@@ -331,6 +331,7 @@ void Player::setDying(bool dying)
 
 bool Player::hasSkill(const Skill *skill) const
 {
+    skill = skill->topSkill();
     if (m_headSkills.contains(skill))
         return true;
     if (m_deputySkills.contains(skill))

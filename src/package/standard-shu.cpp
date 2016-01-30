@@ -408,6 +408,7 @@ void StandardPackage::addShuGenerals()
 
     // SHU 004
     General *zhugeliang = new General("zhugeliang", "shu", 3);
+    zhugeliang->addSkill(new Guanxing);
     zhugeliang->addSkill(new Kongcheng);
     addGeneral(zhugeliang);
 
@@ -427,7 +428,4 @@ void StandardPackage::addShuGenerals()
     huangyueying->addSkill(new Jizhi);
     huangyueying->addSkill(new Qicai);
     addGeneral(huangyueying);
-
-    foreach (General *general, m_generals)
-        general->addSkill(new Guanxing);
 }

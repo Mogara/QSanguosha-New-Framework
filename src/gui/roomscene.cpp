@@ -109,7 +109,7 @@ void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
     moveCards(paths);
 }
 
-void RoomScene::checkTargetFeasibility()
+bool RoomScene::checkTargetFeasibility()
 {
     const Card *card = nullptr;
     const ClientPlayer *self = m_client->selfPlayer();
@@ -152,8 +152,10 @@ void RoomScene::checkTargetFeasibility()
 
         if (card->isVirtual())
             delete card;
+        return acceptable;
     } else {
         setAcceptEnabled(false);
+        return false;
     }
 }
 
@@ -404,6 +406,11 @@ void RoomScene::onSkillActivated(uint skillId, bool activated)
                 enabled << card->id();
         }
         enableCards(enabled);
+
+        if (checkTargetFeasibility()) {
+            onAccepted();
+            onSkillActivated(skillId, false);
+        }
     } else {
         m_viewAsSkill = nullptr;
 

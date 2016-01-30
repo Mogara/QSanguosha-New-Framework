@@ -18,13 +18,65 @@
 *********************************************************************/
 
 #include "standardpackage.h"
+#include "gamelogic.h"
 #include "general.h"
+#include "serverplayer.h"
 #include "skill.h"
+#include "structs.h"
+
+namespace {
+
+class Zhiheng : public ProactiveSkill
+{
+public:
+    Zhiheng() : ProactiveSkill("zhiheng")
+    {
+    }
+
+    bool isAvailable(const Player *self, const QString &pattern) const override
+    {
+        return ProactiveSkill::isAvailable(self, pattern) && self->skillHistory(this) <= 0;
+    }
+
+    bool cardFilter(const QList<const Card *> &, const Card *, const Player *, const QString &) const override
+    {
+        return true;
+    }
+
+    bool cardFeasible(const QList<const Card *> &selected, const Player *) const override
+    {
+        return selected.length() > 0;
+    }
+
+    bool playerFilter(const QList<const Player *> &, const Player *, const Player *) const override
+    {
+        return false;
+    }
+
+    bool playerFeasible(const QList<const Player *> &selected, const Player *) const override
+    {
+        return selected.isEmpty();
+    }
+
+    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &, const QList<Card *> &cards) const override
+    {
+        CardsMoveStruct move;
+        move.cards = cards;
+        move.to.type = CardArea::DiscardPile;
+        move.isOpen = true;
+        logic->moveCards(move);
+
+        from->drawCards(cards.length());
+    }
+};
+
+}
 
 void StandardPackage::addWuGenerals()
 {
     General *sunquan = new General("sunquan", "wu", 4);
     sunquan->setLord(true);
+    sunquan->addSkill(new Zhiheng);
     addGeneral(sunquan);
 
     General *ganning = new General("ganning", "wu", 4);

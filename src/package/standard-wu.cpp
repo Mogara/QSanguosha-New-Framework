@@ -17,11 +17,13 @@
     Mogara
 *********************************************************************/
 
-#include "standardpackage.h"
+#include "card.h"
 #include "gamelogic.h"
 #include "general.h"
 #include "serverplayer.h"
 #include "skill.h"
+#include "standardpackage.h"
+#include "standard-trickcard.h"
 #include "structs.h"
 
 namespace {
@@ -70,33 +72,63 @@ public:
     }
 };
 
+class Qixi : public OneCardViewAsSkill
+{
+public:
+    Qixi() : OneCardViewAsSkill("qixi")
+    {
+    }
+
+    bool viewFilter(const Card *card, const Player *, const QString &) const override
+    {
+        return card->color() == Card::Black;
+    }
+
+    Card *viewAs(Card *card, const Player *) const override
+    {
+        Dismantlement *dismantlement = new Dismantlement(card->suit(), card->number());
+        dismantlement->addSubcard(card);
+        dismantlement->setSkill(this);
+        return dismantlement;
+    }
+};
+
 }
 
 void StandardPackage::addWuGenerals()
 {
+    //WU 001
     General *sunquan = new General("sunquan", "wu", 4);
     sunquan->setLord(true);
     sunquan->addSkill(new Zhiheng);
     addGeneral(sunquan);
 
+    //WU 002
     General *ganning = new General("ganning", "wu", 4);
+    ganning->addSkill(new Qixi);
     addGeneral(ganning);
 
+    //WU 003
     General *lvmeng = new General("lvmeng", "wu", 4);
     addGeneral(lvmeng);
 
+    //WU 004
     General *huanggai = new General("huanggai", "wu", 4);
     addGeneral(huanggai);
 
+    //WU 005
     General *zhouyu = new General("zhouyu", "wu", 3);
     addGeneral(zhouyu);
 
+    //WU 006
     General *daqiao = new General("daqiao", "wu", 3, General::Female);
     addGeneral(daqiao);
 
+    //WU 007
     General *luxun = new General("luxun", "wu", 3);
     addGeneral(luxun);
 
+    //WU 008
     General *sunshangxiang = new General("sunshangxiang", "wu", 3, General::Female);
     addGeneral(sunshangxiang);
 }

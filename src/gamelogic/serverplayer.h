@@ -78,6 +78,12 @@ public:
     void broadcastProperty(const char *name, const QVariant &value, ServerPlayer *except = nullptr) const;
     void unicastPropertyTo(const char *name, ServerPlayer *player);
 
+    void addSkillHistory(const Skill *skill);
+    void addSkillHistory(const Skill *skill, const QList<Card *> &cards);
+    void addSkillHistory(const Skill *skill, const QList<ServerPlayer *> &targets);
+    void addSkillHistory(const Skill *skill, const QList<Card *> &cards, const QList<ServerPlayer *> &targets);
+    void clearSkillHistory();
+
     void addCardHistory(const QString &name, int times = 1);
     void clearCardHistory();
 

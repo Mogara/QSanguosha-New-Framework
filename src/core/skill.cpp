@@ -82,7 +82,17 @@ bool TriggerSkill::onCost(GameLogic *logic, EventType event, ServerPlayer *targe
         }
     }
 
-    return cost(logic, event, target, data, invoker);
+    bool takeEffect = cost(logic, event, target, data, invoker);
+    if (takeEffect) {
+        if (invoker == target) {
+            invoker->addSkillHistory(this);
+        } else {
+            QList<ServerPlayer *> targets;
+            targets << target;
+            invoker->addSkillHistory(this, targets);
+        }
+    }
+    return takeEffect;
 }
 
 bool TriggerSkill::cost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const

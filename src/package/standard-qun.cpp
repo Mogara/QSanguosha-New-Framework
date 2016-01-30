@@ -35,6 +35,11 @@ public:
     {
     }
 
+    bool isAvailable(const Player *self, const QString &pattern) const override
+    {
+        return ProactiveSkill::isAvailable(self, pattern) && self->skillHistory(this) <= 0;
+    }
+
     bool cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &) const override
     {
         const CardArea *hand = source->handcardArea();
@@ -164,6 +169,11 @@ class Lijian: public ProactiveSkill
 public:
     Lijian() : ProactiveSkill("lijian")
     {
+    }
+
+    bool isAvailable(const Player *self, const QString &pattern) const override
+    {
+        return ProactiveSkill::isAvailable(self, pattern) && self->skillHistory(this) <= 0;
     }
 
     bool cardFilter(const QList<const Card *> &selected, const Card *, const Player *, const QString &) const override

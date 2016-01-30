@@ -70,6 +70,7 @@ signals:
     void cardShown(const ClientPlayer *from, const QList<const Card *> &cards);
     void optionRequested(const QStringList &options);
     void arrangeCardRequested(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames);
+    void skillInvoked(const ClientPlayer *invoker, const Skill *skill, const QList<Card *> &cards, const QList<const ClientPlayer *> &targets);
 
 private:
     Client(QObject *parent = 0);
@@ -78,6 +79,8 @@ private:
     ClientPlayer *findPlayer(uint id) { return m_players.value(id); }
     CardArea *findArea(const CardsMoveStruct::Area &area);
     QList<Card *> findCards(const QVariant &data);
+    QList<const ClientPlayer *> findPlayers(const QVariant &data);
+
     static inline QString tr(const QString &text) { return tr(text.toLatin1().constData()); }
 
     C_DECLARE_INITIALIZER(Client)
@@ -106,6 +109,8 @@ private:
     static void ArrangeCardStartCommand(Client *client, const QVariant &data);
     static void ArrangeCardMoveCommand(Client *client, const QVariant &data);
     static void ArrangeCardEndCommand(Client *client, const QVariant &data);
+    static void InvokeSkillCommand(Client *client, const QVariant &data);
+    static void ClearSkillHistoryCommand(Client *client, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

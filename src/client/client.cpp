@@ -174,6 +174,18 @@ QList<Card *> Client::findCards(const QVariant &data)
     return result;
 }
 
+QList<const ClientPlayer *> Client::findPlayers(const QVariant &data)
+{
+    QList<const ClientPlayer *> players;
+    const QVariantList playerList = data.toList();
+    foreach (const QVariant &id, playerList) {
+        const ClientPlayer *player = findPlayer(id.toUInt());
+        if (player)
+            players << player;
+    }
+    return players;
+}
+
 void Client::ShowPromptCommand(Client *client, const QVariant &data)
 {
     const QVariantList args = data.toList();
@@ -375,13 +387,7 @@ void Client::UseCardCommand(Client *client, const QVariant &data)
 {
     const QVariantMap args = data.toMap();
     const ClientPlayer *from = client->findPlayer(args["from"].toUInt());
-    QList<const ClientPlayer *> targets;
-    const QVariantList tos = args["to"].toList();
-    foreach (const QVariant &to, tos) {
-        const ClientPlayer *target = client->findPlayer(to.toUInt());
-        if (target)
-            targets << target;
-    }
+    QList<const ClientPlayer *> targets = client->findPlayers(args["to"]);
 
     //@to-do: set card footnote
     emit client->cardUsed(from, targets);
@@ -597,6 +603,43 @@ void Client::ArrangeCardEndCommand(Client *client, const QVariant &data)
     C_UNUSED(data);
 }
 
+void Client::InvokeSkillCommand(Client *client, const QVariant &data)
+{
+    const QVariantMap args = data.toMap();
+    if (!args.contains("invokerId") || !args.contains("skillId"))
+        return;
+
+    uint invokerId = args.value("invokerId").toUInt();
+    ClientPlayer *invoker = client->findPlayer(invokerId);
+    if (invoker == nullptr)
+        return;
+
+    uint skillId = args.value("skillId").toUInt();
+    const Skill *skill = Engine::instance()->getSkill(skillId);
+    if (skill == nullptr)
+        return;
+
+    invoker->addSkillHistory(skill);
+
+    QList<Card *> cards;
+    if (args.contains("cards"))
+        cards = client->findCards(args.value("cards"));
+
+    QList<const ClientPlayer *> targets;
+    if (args.contains("targets"))
+        targets = client->findPlayers(args.value("targets"));
+
+    emit client->skillInvoked(invoker, skill, cards, targets);
+}
+
+void Client::ClearSkillHistoryCommand(Client *client, const QVariant &data)
+{
+    uint id = data.toUInt();
+    ClientPlayer *player = client->findPlayer(id);
+    if (player)
+        player->clearSkillHistory();
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -623,6 +666,8 @@ void Client::Init()
     AddCallback(S_COMMAND_ARRANGE_CARD_START, ArrangeCardStartCommand);
     AddCallback(S_COMMAND_ARRANGE_CARD_MOVE, ArrangeCardMoveCommand);
     AddCallback(S_COMMAND_ARRANGE_CARD_END, ArrangeCardEndCommand);
+    AddCallback(S_COMMAND_INVOKE_SKILL, InvokeSkillCommand);
+    AddCallback(S_COMMAND_CLEAR_SKILL_HISTORY, ClearSkillHistoryCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);

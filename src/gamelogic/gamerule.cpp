@@ -99,6 +99,7 @@ void onPhaseEnd(GameLogic *, ServerPlayer *current, QVariant &)
     switch (current->phase()) {
     case Player::Play: {
         current->clearCardHistory();
+        current->clearSkillHistory();
     }
     default:;
     }
@@ -106,6 +107,7 @@ void onPhaseEnd(GameLogic *, ServerPlayer *current, QVariant &)
         current->setDrunk(false);
         current->broadcastProperty("drunk");
     }
+
 }
 
 void onAfterHpReduced(GameLogic *logic, ServerPlayer *victim, QVariant &data)

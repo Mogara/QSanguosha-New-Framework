@@ -222,6 +222,11 @@ public:
     QList<const Skill *> deputySkills() const { return m_deputySkills; }
     QList<const Skill *> acquiredSkills() const { return m_acquiredSkills; }
 
+    QMap<const Skill *, int> skillHistory() const { return m_skillHistory; }
+    void clearSkillHistory() { m_skillHistory.clear(); }
+    void addSkillHistory(const Skill *skill) { m_skillHistory[skill]++; }
+    int skillHistory(const Skill *skill) const { return m_skillHistory.value(skill); }
+
 protected:
     void addHeadSkill(const Skill *skill) { m_headSkills << skill; }
     void removeHeadSkill(const Skill *skill) { m_headSkills.removeOne(skill); }
@@ -294,6 +299,8 @@ protected:
     QList<const Skill *> m_headSkills;
     QList<const Skill *> m_deputySkills;
     QList<const Skill *> m_acquiredSkills;
+
+    QMap<const Skill *, int> m_skillHistory;
 };
 
 #endif // PLAYER_H

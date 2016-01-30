@@ -192,10 +192,12 @@ bool ServerPlayer::activate()
             if (skill->subtype() == ViewAsSkill::ProactiveType) {
                 const ProactiveSkill *proactiveSkill = static_cast<const ProactiveSkill *>(skill);
                 proactiveSkill->effect(m_logic, this, targets, cards);
+                addSkillHistory(skill, cards, targets);
                 return false;
             } else if (skill->subtype() == ViewAsSkill::ConvertType) {
                 const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
                 card = viewAsSkill->viewAs(cards, this);
+                addSkillHistory(skill, cards);
             }
         }
     } else {
@@ -543,6 +545,76 @@ void ServerPlayer::unicastPropertyTo(const char *name, ServerPlayer *player)
     CServerAgent *agent = player->agent();
     if (agent)
         agent->notify(S_COMMAND_UPDATE_PLAYER_PROPERTY, data);
+}
+
+void ServerPlayer::addSkillHistory(const Skill *skill)
+{
+    Player::addSkillHistory(skill);
+
+    QVariantMap data;
+    data["invokerId"] = this->id();
+    data["skillId"] = skill->id();
+
+    m_agent->notify(S_COMMAND_INVOKE_SKILL, data);
+}
+
+void ServerPlayer::addSkillHistory(const Skill *skill, const QList<Card *> &cards)
+{
+    Player::addSkillHistory(skill);
+
+    QVariantMap data;
+    data["invokerId"] = this->id();
+    data["skillId"] = skill->id();
+
+    QVariantList cardData;
+    foreach (const Card *card, cards)
+        cardData << card->id();
+    data["cards"] = cardData;
+
+    m_agent->notify(S_COMMAND_INVOKE_SKILL, data);
+}
+
+void ServerPlayer::addSkillHistory(const Skill *skill, const QList<ServerPlayer *> &targets)
+{
+    Player::addSkillHistory(skill);
+
+    QVariantMap data;
+    data["invokerId"] = this->id();
+    data["skillId"] = skill->id();
+
+    QVariantList targetData;
+    foreach (const ServerPlayer *target, targets)
+        targetData << target->id();
+    data["targets"] = targetData;
+
+    m_room->broadcastNotification(S_COMMAND_INVOKE_SKILL, data);
+}
+
+void ServerPlayer::addSkillHistory(const Skill *skill, const QList<Card *> &cards, const QList<ServerPlayer *> &targets)
+{
+    Player::addSkillHistory(skill);
+
+    QVariantMap data;
+    data["invokerId"] = this->id();
+    data["skillId"] = skill->id();
+
+    QVariantList cardData;
+    foreach (const Card *card, cards)
+        cardData << card->id();
+    data["cards"] = cardData;
+
+    QVariantList targetData;
+    foreach (const ServerPlayer *target, targets)
+        targetData << target->id();
+    data["targets"] = targetData;
+
+    m_room->broadcastNotification(S_COMMAND_INVOKE_SKILL, data);
+}
+
+void ServerPlayer::clearSkillHistory()
+{
+    Player::clearSkillHistory();
+    m_room->broadcastNotification(S_COMMAND_CLEAR_SKILL_HISTORY, id());
 }
 
 void ServerPlayer::addCardHistory(const QString &name, int times)

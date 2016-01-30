@@ -146,6 +146,30 @@ public:
     }
 };
 
+class Kurou : public ProactiveSkill
+{
+public:
+    Kurou() : ProactiveSkill("kurou")
+    {
+    }
+
+    bool isAvailable(const Player *self, const QString &pattern) const
+    {
+        return ProactiveSkill::isAvailable(self, pattern) && self->hp() > 0;
+    }
+
+    bool cardFeasible(const QList<const Card *> &selected, const Player *) const override
+    {
+        return selected.isEmpty();
+    }
+
+    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &, const QList<Card *> &) const override
+    {
+        logic->loseHp(from, 1);
+        from->drawCards(2);
+    }
+};
+
 }
 
 void StandardPackage::addWuGenerals()
@@ -168,6 +192,7 @@ void StandardPackage::addWuGenerals()
 
     //WU 004
     General *huanggai = new General("huanggai", "wu", 4);
+    huanggai->addSkill(new Kurou);
     addGeneral(huanggai);
 
     //WU 005

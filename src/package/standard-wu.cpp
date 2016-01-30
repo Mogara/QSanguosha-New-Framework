@@ -170,6 +170,23 @@ public:
     }
 };
 
+class Yingzi : public TriggerSkill
+{
+public:
+    Yingzi() : TriggerSkill("yingzi")
+    {
+        m_events << DrawNCards;
+    }
+
+    bool effect(GameLogic *, EventType, ServerPlayer *, QVariant &data, ServerPlayer *) const override
+    {
+        int drawNum = data.toInt();
+        drawNum++;
+        data = drawNum;
+        return false;
+    }
+};
+
 }
 
 void StandardPackage::addWuGenerals()
@@ -197,6 +214,7 @@ void StandardPackage::addWuGenerals()
 
     //WU 005
     General *zhouyu = new General("zhouyu", "wu", 3);
+    zhouyu->addSkill(new Yingzi);
     addGeneral(zhouyu);
 
     //WU 006

@@ -93,6 +93,59 @@ public:
     }
 };
 
+class Keji : public TriggerSkill
+{
+    class Record : public TriggerSkill
+    {
+    public:
+        Record() : TriggerSkill("keji_record")
+        {
+            m_events << PreCardUsed << CardResponded;
+            setFrequency(Compulsory);
+        }
+
+        EventList triggerable(GameLogic *, EventType event, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+        {
+            if (player->phase() == Player::Play && TriggerSkill::triggerable(player)) {
+                const Card *card = nullptr;
+                if (event == PreCardUsed)
+                    card = data.value<CardUseStruct *>()->card;
+                else
+                    card = data.value<CardResponseStruct *>()->card;
+                if (card->inherits("Slash"))
+                    player->tag["KejiSlashInPlayPhase"] = true;
+            }
+            return EventList();
+        }
+    };
+
+public:
+    Keji() : TriggerSkill("keji")
+    {
+        m_events << PhaseStart;
+        addSubskill(new Record);
+    }
+
+    bool triggerable(ServerPlayer *owner) const override
+    {
+        if (owner->phase() != Player::Discard)
+            return false;
+
+        bool slashInPlayPhase = owner->tag.value("KejiSlashInPlayPhase").toBool();
+        if (slashInPlayPhase) {
+            owner->tag.remove("KejiSlashInPlayPhase");
+            return false;
+        }
+
+        return TriggerSkill::triggerable(owner);
+    }
+
+    bool effect(GameLogic *, EventType, ServerPlayer *, QVariant &, ServerPlayer *) const override
+    {
+        return true;
+    }
+};
+
 }
 
 void StandardPackage::addWuGenerals()
@@ -110,6 +163,7 @@ void StandardPackage::addWuGenerals()
 
     //WU 003
     General *lvmeng = new General("lvmeng", "wu", 4);
+    lvmeng->addSkill(new Keji);
     addGeneral(lvmeng);
 
     //WU 004

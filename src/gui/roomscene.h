@@ -52,6 +52,7 @@ signals:
     //Signals from C++ to QML
     void moveCards(const QVariant &moves);
     void enableCards(const QVariant &cardIds);
+    void setPhotoReady(bool ready);
     void enablePhotos(const QVariant &seats);
     void chooseGeneral(const QVariant &generals);
     void startEmotion(const QString &emotion, int seat);

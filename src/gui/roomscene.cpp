@@ -128,7 +128,9 @@ bool RoomScene::checkTargetFeasibility()
     }
 
     if (card) {
-        bool acceptable = card->isTargetFixed() || card->targetFeasible(m_selectedPlayer, self) || (m_selectedPlayer.isEmpty() && card->canRecast());
+        setPhotoReady(true);
+
+        bool acceptable = card->isTargetFixed() || card->targetFeasible(m_selectedPlayer, self);
         if (acceptable && !m_assignedTargets.isEmpty()) {
             foreach (const Player *target, m_assignedTargets) {
                 if (!m_selectedPlayer.contains(target)) {
@@ -137,6 +139,9 @@ bool RoomScene::checkTargetFeasibility()
                 }
             }
         }
+
+        if (m_selectedPlayer.isEmpty() && card->canRecast())
+            acceptable = true;
         setAcceptEnabled(acceptable);
 
         QVariantList seats;
@@ -154,6 +159,7 @@ bool RoomScene::checkTargetFeasibility()
             delete card;
         return acceptable;
     } else {
+        setPhotoReady(false);
         setAcceptEnabled(false);
         return false;
     }
@@ -165,6 +171,7 @@ void RoomScene::resetDashboard()
 
     m_selectedCard.clear();
     enableCards(QVariantList());
+    setPhotoReady(false);
     m_selectedPlayer.clear();
     enablePhotos(QVariantList());
 

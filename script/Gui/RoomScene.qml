@@ -247,13 +247,18 @@ RoomScene {
         animation.start();
     }
 
-    onEnableCards: {
-        dashboard.handcardArea.enableCards(cardIds);
-        for (var i = 0; i < photos.count; i++) {
-            var photo = photos.itemAt(i);
-            if (cardIds.length > 0) {
+    onEnableCards: dashboard.handcardArea.enableCards(cardIds);
+
+    onSetPhotoReady: {
+        var i, photo;
+        if (ready) {
+            for (i = 0; i < photos.count; i++) {
+                photo = photos.itemAt(i);
                 photo.state = "candidate";
-            } else {
+            }
+        } else {
+            for (i = 0; i < photos.count; i++) {
+                photo = photos.itemAt(i);
                 photo.state = "normal";
                 photo.selectable = photo.selected = false;
             }

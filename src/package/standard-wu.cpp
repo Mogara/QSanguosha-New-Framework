@@ -187,6 +187,61 @@ public:
     }
 };
 
+class Fanjian : public ProactiveSkill
+{
+public:
+    Fanjian() : ProactiveSkill("fanjian")
+    {
+    }
+
+    bool isAvailable(const Player *self, const QString &pattern) const override
+    {
+        return ProactiveSkill::isAvailable(self, pattern) && self->skillHistory(this) <= 0;
+    }
+
+    bool cardFeasible(const QList<const Card *> &selected, const Player *) const override
+    {
+        return selected.isEmpty();
+    }
+
+    bool playerFeasible(const QList<const Player *> &selected, const Player *) const override
+    {
+        return selected.length() == 1;
+    }
+
+    bool playerFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const override
+    {
+        return selected.isEmpty() && toSelect != source;
+    }
+
+    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &) const override
+    {
+        ServerPlayer *victim = to.first();
+
+        QStringList options;
+        options << "spade" << "heart" << "club" << "diamond";
+        QString suit = victim->askForOption(options);
+        //@to-do: add a log that shows the result
+
+        Card *card = victim->askToChooseCard(from, "h");
+        victim->showCard(card);
+        if (card) {
+            CardsMoveStruct move;
+            move.cards << card;
+            move.to.owner = victim;
+            move.to.type = CardArea::Hand;
+            logic->moveCards(move);
+
+            if (card->suitString() != suit) {
+                DamageStruct damage;
+                damage.from = from;
+                damage.to = victim;
+                logic->damage(damage);
+            }
+        }
+    }
+};
+
 }
 
 void StandardPackage::addWuGenerals()
@@ -215,6 +270,7 @@ void StandardPackage::addWuGenerals()
     //WU 005
     General *zhouyu = new General("zhouyu", "wu", 3);
     zhouyu->addSkill(new Yingzi);
+    zhouyu->addSkill(new Fanjian);
     addGeneral(zhouyu);
 
     //WU 006

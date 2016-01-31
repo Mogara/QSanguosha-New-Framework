@@ -518,6 +518,22 @@ QList<QList<Card *>> ServerPlayer::askToArrangeCard(const QList<Card *> &cards, 
     return result;
 }
 
+QString ServerPlayer::askForOption(const QStringList &options)
+{
+    if (options.length() <= 0)
+        return QString();
+
+    if (options.length() == 1)
+        return options.first();
+
+    m_agent->request(S_COMMAND_ASK_FOR_OPTION, options);
+    int reply = m_agent->waitForReply().toInt();
+    if (0 <= reply && reply < options.length())
+        return options.at(reply);
+    else
+        return options.first();
+}
+
 void ServerPlayer::broadcastProperty(const char *name) const
 {
     QVariantList data;

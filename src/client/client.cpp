@@ -655,6 +655,12 @@ void Client::ClearSkillHistoryCommand(Client *client, const QVariant &data)
         player->clearSkillHistory();
 }
 
+void Client::AskForOptionCommand(Client *client, const QVariant &data)
+{
+    QStringList options = data.toStringList();
+    emit client->optionRequested(options);
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -692,5 +698,6 @@ void Client::Init()
     AddInteraction(S_COMMAND_CHOOSE_PLAYER_CARD, ChoosePlayerCardRequestCommand);
     AddInteraction(S_COMMAND_TRIGGER_ORDER, TriggerOrderCommand);
     AddInteraction(S_COMMAND_ARRANGE_CARD, ArrangeCardCommand);
+    AddInteraction(S_COMMAND_ASK_FOR_OPTION, AskForOptionCommand);
 }
 C_INITIALIZE_CLASS(Client)

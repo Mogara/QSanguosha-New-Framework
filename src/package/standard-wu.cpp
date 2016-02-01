@@ -242,6 +242,27 @@ public:
     }
 };
 
+class Guose : public OneCardViewAsSkill
+{
+public:
+    Guose() : OneCardViewAsSkill("guose")
+    {
+    }
+
+    bool viewFilter(const Card *card, const Player *, const QString &pattern) const override
+    {
+        return card->suit() == Card::Diamond && pattern.isEmpty();
+    }
+
+    Card *viewAs(Card *card, const Player *) const override
+    {
+        Card *indulgence = new Indulgence(card->suit(), card->number());
+        indulgence->addSubcard(card);
+        indulgence->setSkill(this);
+        return indulgence;
+    }
+};
+
 }
 
 void StandardPackage::addWuGenerals()
@@ -275,6 +296,7 @@ void StandardPackage::addWuGenerals()
 
     //WU 006
     General *daqiao = new General("daqiao", "wu", 3, General::Female);
+    daqiao->addSkill(new Guose);
     addGeneral(daqiao);
 
     //WU 007

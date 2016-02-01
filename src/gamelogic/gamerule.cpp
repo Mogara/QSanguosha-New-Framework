@@ -44,13 +44,15 @@ void onPhaseProceeding(GameLogic *logic, ServerPlayer *current, QVariant &)
         while (tricks.length() > 0 && current->isAlive()) {
             Card *trick = tricks.takeLast();
 
-            CardUseStruct use;
-            use.card = trick;
-            use.to << current;
-            CardEffectStruct effect(use);
-            effect.to = current;
-            logic->takeCardEffect(effect);
-            trick->complete(logic);
+            if (trick->type() == Card::TrickType && trick->subtype() == TrickCard::DelayedType) {
+                CardUseStruct use;
+                use.card = trick;
+                use.to << current;
+                CardEffectStruct effect(use);
+                effect.to = current;
+                logic->takeCardEffect(effect);
+                trick->complete(logic);
+            }
         }
         break;
     }

@@ -24,12 +24,19 @@ CardArea::CardArea(CardArea::Type type, Player *owner, const QString &name)
     : m_type(type)
     , m_owner(owner)
     , m_name(name)
+    , m_keepVirtualCard(false)
 {
 }
 
 bool CardArea::add(Card *card, Direction direction) {
-    if (card && m_cards.contains(card))
-        return false;
+    if (card) {
+        if (m_cards.contains(card))
+            return false;
+        if (!keepVirtualCard() && card->isVirtual()) {
+            delete card;
+            return false;
+        }
+    }
     if (direction == Top)
         m_cards.prepend(card);
     else
@@ -45,14 +52,26 @@ bool CardArea::add(const QList<Card *> &cards, Direction direction)
     if (direction == Top) {
         for (int i = 0; i < cards.length(); i++) {
             Card *card = cards.at(i);
-            if (card && m_cards.contains(card))
-                continue;
+            if (card) {
+                if (m_cards.contains(card))
+                    continue;
+                if (!keepVirtualCard() && card->isVirtual()) {
+                    delete card;
+                    continue;
+                }
+            }
             m_cards.insert(i, card);
         }
     } else {
         foreach (Card *card, cards) {
-            if (card && m_cards.contains(card))
-                continue;
+            if (card) {
+                if (m_cards.contains(card))
+                    continue;
+                if (!keepVirtualCard() && card->isVirtual()) {
+                    delete card;
+                    continue;
+                }
+            }
             m_cards.append(card);
         }
     }

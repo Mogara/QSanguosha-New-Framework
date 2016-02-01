@@ -33,6 +33,8 @@ ServerPlayer::ServerPlayer(GameLogic *logic, CServerAgent *agent)
     , m_room(logic->room())
     , m_agent(agent)
 {
+    m_equipArea->setKeepVirtualCard(true);
+    m_delayedTrickArea->setKeepVirtualCard(true);
 }
 
 ServerPlayer::~ServerPlayer()

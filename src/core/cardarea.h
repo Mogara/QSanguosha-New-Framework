@@ -53,6 +53,9 @@ public:
 
     void setSignal(ChangeSignal signal) { m_changeSignal = signal; }
 
+    bool keepVirtualCard() const { return m_keepVirtualCard; }
+    void setKeepVirtualCard(bool keep) { m_keepVirtualCard = keep; }
+
     bool add(Card *card, Direction direction = UndefinedDirection);
     bool add(const QList<Card *> &cards, Direction direction = UndefinedDirection);
     bool remove(Card *card);
@@ -90,6 +93,7 @@ private:
     QString m_name;
     QList<Card *> m_cards;
     ChangeSignal m_changeSignal;
+    bool m_keepVirtualCard;
 };
 
 #endif // CARDAREA_H

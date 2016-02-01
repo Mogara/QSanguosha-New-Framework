@@ -47,6 +47,7 @@ GameLogic::GameLogic(CRoom *parent)
     m_drawPile = new CardArea(CardArea::DrawPile);
     m_discardPile = new CardArea(CardArea::DiscardPile);
     m_table = new CardArea(CardArea::Table);
+    m_table->setKeepVirtualCard(true);
     m_wugu = new CardArea(CardArea::Wugu);
 }
 
@@ -335,9 +336,12 @@ void GameLogic::moveCards(QList<CardsMoveStruct> &moves)
     filterCardsMove(moves);
     for (int i = 0 ; i < moves.length(); i++) {
         const CardsMoveStruct &move = moves.at(i);
-        CardArea *from = findArea(move.from);
         CardArea *to = findArea(move.to);
-        if (from == nullptr || to == nullptr)
+        if (to == nullptr)
+            continue;
+
+        CardArea *from = findArea(move.from);
+        if (from == nullptr)
             continue;
 
         foreach (Card *card, move.cards) {
@@ -435,11 +439,6 @@ bool GameLogic::useCard(CardUseStruct &use)
         throw e;
     }
 
-    if (use.card && use.card->isVirtual()) {
-        delete use.card;
-        use.card = nullptr;
-    }
-
     return true;
 }
 
@@ -485,11 +484,6 @@ bool GameLogic::respondCard(CardResponseStruct &response)
         move.to.type = CardArea::DiscardPile;
         move.isOpen = true;
         moveCards(move);
-    }
-
-    if (response.card && response.card->isVirtual()) {
-        delete response.card;
-        response.card = nullptr;
     }
 
     return !broken;
@@ -760,6 +754,8 @@ CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)
             return m_table;
         case CardArea::Wugu:
             return m_wugu;
+        case CardArea::Unknown:
+            return nullptr;
         default: qWarning("Global Area Not Found");
         }
     }
@@ -772,11 +768,22 @@ void GameLogic::filterCardsMove(QList<CardsMoveStruct> &moves)
     for (int i = 0, maxi = moves.length(); i < maxi; i++) {
         CardsMoveStruct &move = moves[i];
 
+        CardArea *destination = findArea(move.to);
         foreach (Card *card, move.cards) {
             if (card->isVirtual()) {
                 QList<Card *> realCards = card->realCards();
                 move.cards.removeOne(card);
                 move.cards << realCards;
+
+                if (m_cardPosition.contains(card)) {
+                    CardArea *source = m_cardPosition.value(card);
+                    if (source)
+                        source->remove(card);
+                    m_cardPosition.remove(card);
+                }
+
+                if (destination->add(card))
+                    m_cardPosition[card] = destination;
             }
         }
 

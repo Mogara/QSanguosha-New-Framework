@@ -21,6 +21,8 @@
 #define CARDAREA_H
 
 #include <QList>
+#include <QVariant>
+
 #include <functional>
 
 class Player;
@@ -79,6 +81,9 @@ public:
 
     bool contains(const Card *card) const;
     bool contains(uint id) const;
+
+    void addVirtualCard(const QString &name) { m_virtualCards << name; }
+    void removeVirtualCard(const QString &name) { m_virtualCards.removeOne(name); }
     bool contains(const char *className) const;
 
     QList<Card *> &cards() { return m_cards; }
@@ -87,6 +92,8 @@ public:
     int length() const { return m_cards.length(); }
     int size() const { return m_cards.size(); }
 
+    QVariant toVariant() const;
+
 private:
     Type m_type;
     Player *m_owner;
@@ -94,6 +101,7 @@ private:
     QList<Card *> m_cards;
     ChangeSignal m_changeSignal;
     bool m_keepVirtualCard;
+    QStringList m_virtualCards;
 };
 
 #endif // CARDAREA_H

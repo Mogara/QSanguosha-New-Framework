@@ -158,5 +158,14 @@ bool CardArea::contains(const char *className) const
     foreach (const Card *card, m_cards)
         if (card && card->inherits(className))
             return true;
-    return false;
+    return m_virtualCards.contains(className);
+}
+
+QVariant CardArea::toVariant() const
+{
+    QVariantMap data;
+    data["ownerId"] = m_owner ? m_owner->id() : 0;
+    data["type"] = type();
+    data["name"] = name();
+    return data;
 }

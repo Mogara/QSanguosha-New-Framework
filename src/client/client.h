@@ -114,6 +114,7 @@ private:
     static void InvokeSkillCommand(Client *client, const QVariant &data);
     static void ClearSkillHistoryCommand(Client *client, const QVariant &data);
     static void AskForOptionCommand(Client *client, const QVariant &data);
+    static void SetVirtualCardCommand(Client *client, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

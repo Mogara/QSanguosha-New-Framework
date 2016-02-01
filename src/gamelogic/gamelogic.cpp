@@ -777,13 +777,27 @@ void GameLogic::filterCardsMove(QList<CardsMoveStruct> &moves)
 
                 if (m_cardPosition.contains(card)) {
                     CardArea *source = m_cardPosition.value(card);
-                    if (source)
+                    if (source) {
                         source->remove(card);
+
+                        QVariantMap data;
+                        data["cardName"] = card->metaObject()->className();
+                        data["area"] = source->toVariant();
+                        data["exists"] = false;
+                        room()->broadcastNotification(S_COMMAND_SET_VIRTUAL_CARD, data);
+                    }
                     m_cardPosition.remove(card);
                 }
 
-                if (destination->add(card))
+                if (destination->add(card)) {
                     m_cardPosition[card] = destination;
+
+                    QVariantMap data;
+                    data["cardName"] = card->metaObject()->className();
+                    data["area"] = destination->toVariant();
+                    data["exists"] = true;
+                    room()->broadcastNotification(S_COMMAND_SET_VIRTUAL_CARD, data);
+                }
             }
         }
 

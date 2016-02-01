@@ -661,6 +661,28 @@ void Client::AskForOptionCommand(Client *client, const QVariant &data)
     emit client->optionRequested(options);
 }
 
+void Client::SetVirtualCardCommand(Client *client, const QVariant &data)
+{
+    const QVariantMap arg = data.toMap();
+    if (!arg.contains("cardName") || !arg.contains("area"))
+        return;
+
+    QVariantMap areaData = arg["area"].toMap();
+    CardsMoveStruct::Area to;
+    to.type = static_cast<CardArea::Type>(areaData["type"].toInt());
+    to.name = areaData["name"].toString();
+    to.owner = client->findPlayer(areaData["ownerId"].toInt());
+    CardArea *area = client->findArea(to);
+    if (area) {
+        QString cardName = arg["cardName"].toString();
+        bool exists = arg["exists"].toBool();
+        if (exists)
+            area->addVirtualCard(cardName);
+        else
+            area->removeVirtualCard(cardName);
+    }
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -690,6 +712,7 @@ void Client::Init()
     AddCallback(S_COMMAND_ARRANGE_CARD_END, ArrangeCardEndCommand);
     AddCallback(S_COMMAND_INVOKE_SKILL, InvokeSkillCommand);
     AddCallback(S_COMMAND_CLEAR_SKILL_HISTORY, ClearSkillHistoryCommand);
+    AddCallback(S_COMMAND_SET_VIRTUAL_CARD, SetVirtualCardCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);

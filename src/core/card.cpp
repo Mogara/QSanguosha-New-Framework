@@ -37,6 +37,7 @@ Card::Card(Suit suit, int number)
     , m_minTargetNum(1)
     , m_distanceLimit(InfinityNum)
     , m_targetFixed(false)
+    , m_skill(nullptr)
 {
 }
 

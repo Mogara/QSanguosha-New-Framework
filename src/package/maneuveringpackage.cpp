@@ -151,6 +151,7 @@ void FireAttack::effect(GameLogic *logic, CardEffectStruct &effect)
             CardsMoveStruct move;
             move.cards << discarded;
             move.to.type = CardArea::DiscardPile;
+            move.isOpen = true;
             logic->moveCards(move);
 
             DamageStruct damage;

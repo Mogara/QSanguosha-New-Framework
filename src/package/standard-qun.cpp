@@ -66,6 +66,7 @@ public:
         CardsMoveStruct move;
         move.cards = cards;
         move.to.type = CardArea::DiscardPile;
+        move.isOpen = true;
         logic->moveCards(move);
 
         RecoverStruct recover;
@@ -205,6 +206,7 @@ public:
         CardsMoveStruct move;
         move.cards = cards;
         move.to.type = CardArea::DiscardPile;
+        move.isOpen = true;
         logic->moveCards(move);
 
         Duel *duel = new Duel(Card::NoSuit, 0);

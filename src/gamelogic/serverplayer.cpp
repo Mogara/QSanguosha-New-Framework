@@ -453,7 +453,7 @@ Card *ServerPlayer::askToChooseCard(ServerPlayer *owner, const QString &areaFlag
     return nullptr;
 }
 
-Card *ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets)
+bool ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets)
 {
     QVariantMap data;
     data["pattern"] = pattern;
@@ -466,29 +466,53 @@ Card *ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlaye
     m_agent->request(S_COMMAND_USE_CARD, data, 15000);
     const QVariantMap reply = m_agent->waitForReply(15000).toMap();
     if (reply.isEmpty())
-        return nullptr;
+        return false;
 
-    uint cardId = reply["cardId"].toUInt();
-    Card *card = m_logic->findCard(cardId);
+    QList<ServerPlayer *> targets;
+    QVariantList tos = reply["to"].toList();
+    foreach (const QVariant &to, tos) {
+        uint toId = to.toUInt();
+        ServerPlayer *target = m_logic->findPlayer(toId);
+        if (target)
+            targets << target;
+    }
+
+    QList<Card *> cards = m_logic->findCards(reply["cards"]);
+
+    const Skill *skill = nullptr;
+    uint skillId = reply["skillId"].toUInt();
+    if (skillId)
+        skill = getSkill(skillId);
+
+    Card *card = nullptr;
+    if (skill) {
+        if (skill->type() == Skill::ViewAsType) {
+            if (skill->subtype() == ViewAsSkill::ProactiveType) {
+                const ProactiveSkill *proactiveSkill = static_cast<const ProactiveSkill *>(skill);
+                proactiveSkill->effect(m_logic, this, targets, cards);
+                return true;
+            } else if (skill->subtype() == ViewAsSkill::ConvertType) {
+                const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
+                card = viewAsSkill->viewAs(cards, this);
+            }
+        }
+    } else {
+        card = cards.length() > 0 ? cards.first() : nullptr;
+    }
+
     if (card == nullptr)
-        return nullptr;
+        return false;
 
     CardUseStruct use;
     use.from = this;
     use.card = card;
-
-    QVariantList targets = reply["to"].toList();
-    foreach (const QVariant &target, targets) {
-        ServerPlayer *player = m_logic->findPlayer(target.toUInt());
-        if (player)
-            use.to << player;
-    }
+    use.to = targets;
     foreach (ServerPlayer *target, assignedTargets) {
         if (!use.to.contains(target))
-            return nullptr;
+            return false;
     }
-    m_logic->useCard(use);
-    return card;
+
+    return m_logic->useCard(use);
 }
 
 QList<QList<Card *>> ServerPlayer::askToArrangeCard(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames)

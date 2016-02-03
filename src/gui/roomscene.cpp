@@ -268,7 +268,7 @@ void RoomScene::onUsingCard(const QString &pattern, const QList<const Player *> 
 {
     m_respondingState = UsingCardState;
     m_assignedTargets = assignedTargets;
-    m_respondingPattern.clear();
+    m_respondingPattern = pattern;
 
     enableCards(pattern);
 
@@ -292,7 +292,7 @@ void RoomScene::onCardSelected(const QVariantList &cardIds)
             if (m_viewAsSkill)
                 onSkillActivated(m_viewAsSkill->id(), true);
             else
-                onUsingCard();
+                onUsingCard(m_respondingPattern);
         } else {
             if (m_viewAsSkill) {
                 const ClientPlayer *self = m_client->selfPlayer();;
@@ -422,7 +422,7 @@ void RoomScene::onSkillActivated(uint skillId, bool activated)
         m_viewAsSkill = nullptr;
 
         if (m_respondingState == UsingCardState)
-            onUsingCard();
+            onUsingCard(m_respondingPattern);
         else if (m_respondingState == RespondingCardState)
             enableCards(m_respondingPattern);
         else if (m_respondingState == InactiveState)

@@ -368,7 +368,7 @@ void Client::MoveCardsCommand(Client *client, const QVariant &data)
 void Client::UseCardRequestCommand(Client *client, const QVariant &data)
 {
     const QVariantMap arg = data.toMap();
-    if (arg.size() != 3) {
+    if (arg.size() != 2) {
         emit client->usingCard(QString(), QList<const Player *>());
     } else {
         QString pattern = arg["pattern"].toString();

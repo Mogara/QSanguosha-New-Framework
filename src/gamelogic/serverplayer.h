@@ -95,7 +95,8 @@ public:
     void attachSkill(const Skill *skill, SkillArea area = HeadSkillArea);
     void detachSkill(const Skill *skill, SkillArea area = UnknownSkillArea);
 
-    QMap<QString, QVariant> tag;
+    void broadcastTag(const QString &key);
+    void unicastTagTo(const QString &key, ServerPlayer *to);
 
 private:
     void addTriggerSkill(const Skill *skill);

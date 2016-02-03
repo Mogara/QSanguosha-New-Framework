@@ -723,6 +723,26 @@ void ServerPlayer::detachSkill(const Skill *skill, SkillArea area)
     m_room->broadcastNotification(S_COMMAND_REMOVE_SKILL, data);
 }
 
+void ServerPlayer::broadcastTag(const QString &key)
+{
+    QVariantMap data;
+    data["playerId"] = id();
+    data["key"] = key;
+    data["value"] = tag.value(key);
+    m_room->broadcastNotification(S_COMMAND_SET_PLAYER_TAG, data);
+}
+
+void ServerPlayer::unicastTagTo(const QString &key, ServerPlayer *to)
+{
+    QVariantMap data;
+    data["playerId"] = id();
+    data["key"] = key;
+    data["value"] = tag.value(key);
+    CServerAgent *agent = to->agent();
+    if (agent)
+        agent->notify(S_COMMAND_SET_PLAYER_TAG, data);
+}
+
 void ServerPlayer::addTriggerSkill(const Skill *skill)
 {
     if (skill->type() == Skill::TriggerType)

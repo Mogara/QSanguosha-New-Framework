@@ -683,6 +683,23 @@ void Client::SetVirtualCardCommand(Client *client, const QVariant &data)
     }
 }
 
+void Client::SetPlayerTagCommand(Client *client, const QVariant &data)
+{
+    QVariantMap arg = data.toMap();
+
+    ClientPlayer *player = client->findPlayer(arg.value("playerId").toUInt());
+    if (player == nullptr)
+        return;
+
+    QString key = arg.value("key").toString();
+    if (arg.contains("value")) {
+        QVariant value = arg.value("value");
+        player->tag[key] = value;
+    } else {
+        player->tag.remove(key);
+    }
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -713,6 +730,7 @@ void Client::Init()
     AddCallback(S_COMMAND_INVOKE_SKILL, InvokeSkillCommand);
     AddCallback(S_COMMAND_CLEAR_SKILL_HISTORY, ClearSkillHistoryCommand);
     AddCallback(S_COMMAND_SET_VIRTUAL_CARD, SetVirtualCardCommand);
+    AddCallback(S_COMMAND_SET_PLAYER_TAG, SetPlayerTagCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);

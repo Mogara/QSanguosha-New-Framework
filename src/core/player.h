@@ -227,6 +227,8 @@ public:
     void addSkillHistory(const Skill *skill) { m_skillHistory[skill]++; }
     int skillHistory(const Skill *skill) const { return m_skillHistory.value(skill); }
 
+    QMap<QString, QVariant> tag;
+
 protected:
     void addHeadSkill(const Skill *skill) { m_headSkills << skill; }
     void removeHeadSkill(const Skill *skill) { m_headSkills.removeOne(skill); }

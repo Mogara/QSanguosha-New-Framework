@@ -530,11 +530,11 @@ bool DelayedTrick::targetFilter(const QList<const Player *> &selected, const Pla
     if (!selected.isEmpty() || toSelect == source)
         return false;
 
-    const CardArea *area = toSelect->delayedTrickArea();
-    if (area->length() <= 0)
-        return true;
+    if (!TrickCard::targetFilter(selected, toSelect, source))
+        return false;
 
-    return !area->contains(metaObject()->className()) && TrickCard::targetFilter(selected, toSelect, source);
+    const CardArea *area = toSelect->delayedTrickArea();
+    return area->length() <= 0 || !area->contains(metaObject()->className());
 }
 
 void DelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)

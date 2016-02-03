@@ -372,6 +372,21 @@ public:
     }
 };
 
+class Qianxun : public CardModSkill
+{
+public:
+    Qianxun() : CardModSkill("qianxun")
+    {
+    }
+
+    bool targetFilter(const Card *card, const QList<const Player *> &, const Player *toSelect, const Player *) const override
+    {
+        if (card->inherits("Indulgence") || card->inherits("Snatch"))
+            return !toSelect->hasSkill(this);
+        return true;
+    }
+};
+
 }
 
 void StandardPackage::addWuGenerals()
@@ -411,6 +426,7 @@ void StandardPackage::addWuGenerals()
 
     //WU 007
     General *luxun = new General("luxun", "wu", 3);
+    luxun->addSkill(new Qianxun);
     addGeneral(luxun);
 
     //WU 008

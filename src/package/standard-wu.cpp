@@ -420,6 +420,39 @@ public:
     }
 };
 
+class Xiaoji : public TriggerSkill
+{
+public:
+    Xiaoji() : TriggerSkill("xiaoji")
+    {
+        m_events << AfterCardsMove;
+    }
+
+    EventList triggerable(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+    {
+        EventList events;
+
+        if (target->hasSkill(this)) {
+            QList<CardsMoveStruct> *moves = data.value<QList<CardsMoveStruct> *>();
+            foreach (const CardsMoveStruct &move, *moves) {
+                if (move.from.owner == target && move.from.type == CardArea::Equip) {
+                    Event e(this, target);
+                    for (int i = 0; i < move.cards.length(); i++)
+                        events << e;
+                }
+            }
+        }
+
+        return events;
+    }
+
+    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+    {
+        target->drawCards(2);
+        return false;
+    }
+};
+
 }
 
 void StandardPackage::addWuGenerals()
@@ -465,5 +498,6 @@ void StandardPackage::addWuGenerals()
 
     //WU 008
     General *sunshangxiang = new General("sunshangxiang", "wu", 3, General::Female);
+    sunshangxiang->addSkill(new Xiaoji);
     addGeneral(sunshangxiang);
 }

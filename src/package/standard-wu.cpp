@@ -395,7 +395,7 @@ public:
         m_events << AfterCardsMove;
     }
 
-    EventList triggerable(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+    EventList triggerable(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
     {
         EventList events;
 

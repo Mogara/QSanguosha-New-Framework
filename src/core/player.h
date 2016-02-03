@@ -137,6 +137,7 @@ public:
 
     int attackRange() const { return m_attackRange; }
     void setAttackRange(int range);
+    bool inAttackRangeOf(const Player *attacker) const;
 
     bool isChained() const { return m_chained; }
     void setChained(bool chained);

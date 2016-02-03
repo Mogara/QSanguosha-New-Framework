@@ -42,7 +42,7 @@ Slash::Slash(Card::Suit suit, int number)
 
 bool Slash::targetFilter(const QList<const Player *> &targets, const Player *toSelect, const Player *self) const
 {
-    return self->distanceTo(toSelect) <= self->attackRange() && BasicCard::targetFilter(targets, toSelect, self);
+    return toSelect->inAttackRangeOf(self) && BasicCard::targetFilter(targets, toSelect, self);
 }
 
 void Slash::effect(GameLogic *logic, CardEffectStruct &cardEffect)

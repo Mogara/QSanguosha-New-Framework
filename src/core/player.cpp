@@ -316,6 +316,11 @@ void Player::setAttackRange(int range)
     emit attackRangeChanged();
 }
 
+bool Player::inAttackRangeOf(const Player *attacker) const
+{
+    return attacker->distanceTo(this) <= attacker->attackRange();
+}
+
 void Player::setChained(bool chained)
 {
     m_chained = chained;

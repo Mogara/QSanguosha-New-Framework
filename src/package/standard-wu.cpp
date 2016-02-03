@@ -263,6 +263,115 @@ public:
     }
 };
 
+class Liuli : public ProactiveSkill
+{
+    class Timing : public TriggerSkill
+    {
+    public:
+        Timing() : TriggerSkill("liuli")
+        {
+            m_events << TargetConfirming;
+        }
+
+        EventList triggerable(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+        {
+            EventList events;
+            if (!TriggerSkill::triggerable(target))
+                return events;
+
+            CardUseStruct *use = data.value<CardUseStruct *>();
+            if (use->card->inherits("Slash") && use->to.contains(target)) {
+                QList<ServerPlayer *> players = logic->otherPlayers(target);
+                players.removeOne(use->from);
+
+                foreach (ServerPlayer *p, players) {
+                    if (p->inAttackRangeOf(target)) {
+                        Event e(this, target);
+                        events << e;
+                        break;
+                    }
+                }
+            }
+
+            return events;
+        }
+
+        bool cost(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+        {
+            CardUseStruct *use = data.value<CardUseStruct *>();
+            use->from->tag["liuli_slash_source"] = true;
+            use->from->unicastTagTo("liuli_slash_source", target);
+            target->showPrompt("invoke_liuli", use->from);
+            return target->askToUseCard("@liuli");
+        }
+
+        bool effect(GameLogic *logic, EventType, ServerPlayer *daqiao, QVariant &data, ServerPlayer *) const override
+        {
+            CardUseStruct *use = data.value<CardUseStruct *>();
+
+            QList<ServerPlayer *> players = logic->otherPlayers(daqiao);
+            foreach (ServerPlayer *target, players) {
+                if (target->tag.contains("liuli_target")) {
+                    target->tag.remove("liuli_target");
+                    use->to.removeOne(daqiao);
+                    use->to.append(target);
+                    logic->sortByActionOrder(use->to);
+                    logic->trigger(TargetConfirming, target, data);
+                    return false;
+                }
+            }
+
+            return false;
+        }
+    };
+
+public:
+    Liuli() : ProactiveSkill("liuli")
+    {
+        addSubskill(new Timing);
+    }
+
+    bool isAvailable(const Player *, const QString &pattern) const override
+    {
+        return pattern == "@liuli";
+    }
+
+    bool cardFeasible(const QList<const Card *> &selected, const Player *) const override
+    {
+        return selected.length() == 1;
+    }
+
+    bool cardFilter(const QList<const Card *> &selected, const Card *, const Player *, const QString &pattern) const override
+    {
+        return selected.isEmpty() && pattern == "@liuli";
+    }
+
+    bool playerFeasible(const QList<const Player *> &selected, const Player *) const override
+    {
+        return selected.length() == 1;
+    }
+
+    bool playerFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const override
+    {
+        if (!selected.isEmpty())
+            return false;
+
+        return !toSelect->tag.contains("liuli_slash_source") && toSelect->inAttackRangeOf(source);
+    }
+
+    void effect(GameLogic *logic, ServerPlayer *, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const
+    {
+        CardsMoveStruct move;
+        move.cards = cards;
+        move.to.type = CardArea::DiscardPile;
+        move.isOpen = true;
+        logic->moveCards(move);
+
+        foreach (ServerPlayer *target, to)
+            target->tag["liuli_target"] = true;
+    }
+};
+
 }
 
 void StandardPackage::addWuGenerals()
@@ -297,6 +406,7 @@ void StandardPackage::addWuGenerals()
     //WU 006
     General *daqiao = new General("daqiao", "wu", 3, General::Female);
     daqiao->addSkill(new Guose);
+    daqiao->addSkill(new Liuli);
     addGeneral(daqiao);
 
     //WU 007

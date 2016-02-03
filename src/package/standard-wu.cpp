@@ -387,6 +387,39 @@ public:
     }
 };
 
+class Lianying : public TriggerSkill
+{
+public:
+    Lianying() : TriggerSkill("lianying")
+    {
+        m_events << AfterCardsMove;
+    }
+
+    EventList triggerable(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+    {
+        EventList events;
+
+        if (target->hasSkill(this)) {
+            QList<CardsMoveStruct> *moves = data.value<QList<CardsMoveStruct> *>();
+            foreach (const CardsMoveStruct &move, *moves) {
+                if (move.from.owner == target && move.from.type == CardArea::Hand && target->handcardNum() == 0) {
+                    Event e(this, target);
+                    events << e;
+                    break;
+                }
+            }
+        }
+
+        return events;
+    }
+
+    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+    {
+        target->drawCards(1);
+        return false;
+    }
+};
+
 }
 
 void StandardPackage::addWuGenerals()
@@ -427,6 +460,7 @@ void StandardPackage::addWuGenerals()
     //WU 007
     General *luxun = new General("luxun", "wu", 3);
     luxun->addSkill(new Qianxun);
+    luxun->addSkill(new Lianying);
     addGeneral(luxun);
 
     //WU 008

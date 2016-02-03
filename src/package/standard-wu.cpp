@@ -453,6 +453,65 @@ public:
     }
 };
 
+class Jieyin : public ProactiveSkill
+{
+public:
+    Jieyin() : ProactiveSkill("jieyin")
+    {
+    }
+
+    bool isAvailable(const Player *self, const QString &pattern) const override
+    {
+        return self->skillHistory(this) <= 0 && ProactiveSkill::isAvailable(self, pattern);
+    }
+
+    bool cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &) const override
+    {
+        if (selected.length() > 2)
+            return false;
+
+        const CardArea *handArea = source->handcardArea();
+        return handArea->contains(card);
+    }
+
+    bool cardFeasible(const QList<const Card *> &selected, const Player *) const override
+    {
+        return selected.length() == 2;
+    }
+
+    bool playerFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *) const override
+    {
+        if (!selected.isEmpty())
+            return false;
+
+        const General *general = toSelect->general();
+        if (general == nullptr || general->gender() != General::Male)
+            return false;
+
+        return toSelect->isWounded();
+    }
+
+    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const override
+    {
+        CardsMoveStruct discard;
+        discard.cards = cards;
+        discard.to.type = CardArea::DiscardPile;
+        discard.isOpen = true;
+        logic->moveCards(discard);
+
+        QList<ServerPlayer *> targets;
+        targets << from << to;
+        logic->sortByActionOrder(targets);
+
+        foreach (ServerPlayer *target, targets) {
+            RecoverStruct recover;
+            recover.from = from;
+            recover.to = target;
+            logic->recover(recover);
+        }
+    }
+};
+
 }
 
 void StandardPackage::addWuGenerals()
@@ -499,5 +558,6 @@ void StandardPackage::addWuGenerals()
     //WU 008
     General *sunshangxiang = new General("sunshangxiang", "wu", 3, General::Female);
     sunshangxiang->addSkill(new Xiaoji);
+    sunshangxiang->addSkill(new Jieyin);
     addGeneral(sunshangxiang);
 }

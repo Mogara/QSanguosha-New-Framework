@@ -615,7 +615,7 @@ void GameLogic::loseHp(ServerPlayer *victim, int lose)
     room()->broadcastNotification(S_COMMAND_LOSE_HP, arg);
 
     trigger(AfterHpReduced, victim, data);
-    trigger(HpLost, victim, data);
+    trigger(AfterHpLost, victim, data);
 }
 
 void GameLogic::recover(RecoverStruct &recover)

@@ -155,6 +155,7 @@ void FireAttack::effect(GameLogic *logic, CardEffectStruct &effect)
             logic->moveCards(move);
 
             DamageStruct damage;
+            damage.card = this;
             damage.from = effect.from;
             damage.to = effect.to;
             damage.nature = DamageStruct::Fire;

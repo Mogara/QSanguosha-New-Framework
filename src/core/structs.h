@@ -121,7 +121,7 @@ struct DamageStruct
 
     ServerPlayer *from;
     ServerPlayer *to;
-    const Card *card;
+    Card *card;
     int damage;
     Nature nature;
     bool chain;

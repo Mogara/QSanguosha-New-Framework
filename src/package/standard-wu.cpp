@@ -399,7 +399,7 @@ public:
     {
         EventList events;
 
-        if (target->hasSkill(this)) {
+        if (TriggerSkill::triggerable(target)) {
             QList<CardsMoveStruct> *moves = data.value<QList<CardsMoveStruct> *>();
             foreach (const CardsMoveStruct &move, *moves) {
                 if (move.from.owner == target && move.from.type == CardArea::Hand && target->handcardNum() == 0) {
@@ -432,7 +432,7 @@ public:
     {
         EventList events;
 
-        if (target->hasSkill(this)) {
+        if (TriggerSkill::triggerable(target)) {
             QList<CardsMoveStruct> *moves = data.value<QList<CardsMoveStruct> *>();
             foreach (const CardsMoveStruct &move, *moves) {
                 if (move.from.owner == target && move.from.type == CardArea::Equip) {

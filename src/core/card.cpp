@@ -472,8 +472,16 @@ GlobalEffect::GlobalEffect(Card::Suit suit, int number)
 
 void GlobalEffect::onUse(GameLogic *logic, CardUseStruct &use)
 {
-    if (use.to.isEmpty())
-        use.to = logic->allPlayers();
+    if (use.to.isEmpty()) {
+        QList<const Player *> selected;
+        QList<ServerPlayer *> targets = logic->allPlayers();
+        foreach (ServerPlayer *toSelect, targets) {
+            if (targetFilter(selected, toSelect, use.from)) {
+                selected << toSelect;
+                use.to << toSelect;
+            }
+        }
+    }
     TrickCard::onUse(logic, use);
 }
 
@@ -487,8 +495,16 @@ AreaOfEffect::AreaOfEffect(Card::Suit suit, int number)
 
 void AreaOfEffect::onUse(GameLogic *logic, CardUseStruct &use)
 {
-    if (use.to.isEmpty())
-        use.to = logic->otherPlayers(use.from);
+    if (use.to.isEmpty()) {
+        QList<const Player *> selected;
+        QList<ServerPlayer *> targets = logic->otherPlayers(use.from);
+        foreach (ServerPlayer *toSelect, targets) {
+            if (targetFilter(selected, toSelect, use.from)) {
+                selected << toSelect;
+                use.to << toSelect;
+            }
+        }
+    }
     TrickCard::onUse(logic, use);
 }
 

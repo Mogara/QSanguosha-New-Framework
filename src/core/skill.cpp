@@ -237,8 +237,9 @@ bool ProactiveSkill::isAvailable(const Player *self, const QString &pattern) con
 
 bool ProactiveSkill::cardFeasible(const QList<const Card *> &selected, const Player *source) const
 {
+    C_UNUSED(selected);
     C_UNUSED(source);
-    return selected.length() > 1;
+    return true;
 }
 
 bool ProactiveSkill::cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const

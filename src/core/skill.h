@@ -21,6 +21,7 @@
 #define SKILL_H
 
 #include "eventhandler.h"
+#include "structs.h"
 
 #include <QString>
 #include <QList>
@@ -99,6 +100,18 @@ public:
     virtual void invalidate(ServerPlayer *target) const = 0;
     virtual bool isValid(ServerPlayer *target) const;
 
+    bool effect(GameLogic *, EventType event, ServerPlayer *target, QVariant &, ServerPlayer *) const final override;
+};
+
+class MasochismSkill : public TriggerSkill
+{
+public:
+    MasochismSkill(const QString &name);
+
+    virtual int triggerable(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const = 0;
+    EventList triggerable(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const final override;
+
+    virtual bool effect(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const = 0;
     bool effect(GameLogic *, EventType event, ServerPlayer *target, QVariant &, ServerPlayer *) const final override;
 };
 

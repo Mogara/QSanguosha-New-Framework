@@ -139,6 +139,36 @@ bool StatusSkill::effect(GameLogic *, EventType event, ServerPlayer *target, QVa
     return false;
 }
 
+MasochismSkill::MasochismSkill(const QString &name)
+    : TriggerSkill(name)
+{
+    m_events << AfterDamaged;
+}
+
+EventList MasochismSkill::triggerable(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const
+{
+    if (!TriggerSkill::triggerable(target))
+        return EventList();
+
+    DamageStruct *damage = data.value<DamageStruct *>();
+    int times = triggerable(logic, target, *damage);
+    if (times <= 0)
+        return EventList();
+    else if (times == 1)
+        return Event(this, target);
+
+    EventList events;
+    for (int i = 0; i < times; i++)
+        events << Event(this, target);
+    return events;
+}
+
+bool MasochismSkill::effect(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const
+{
+    DamageStruct *damage = data.value<DamageStruct *>();
+    return effect(logic, target, *damage);
+}
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name)
 {

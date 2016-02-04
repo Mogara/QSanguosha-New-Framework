@@ -356,6 +356,36 @@ public:
     }
 };
 
+class Tiandu : public TriggerSkill
+{
+public:
+    Tiandu() : TriggerSkill("tiandu")
+    {
+        m_events << FinishJudge;
+    }
+
+    EventList triggerable(GameLogic *logic, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+    {
+        if (TriggerSkill::triggerable(player)) {
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            if (judge->card && player->judgeCards()->contains(judge->card))
+                return Event(this, player);
+        }
+        return EventList();
+    }
+
+    bool effect(GameLogic *logic, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+    {
+        JudgeStruct *judge = data.value<JudgeStruct *>();
+        CardsMoveStruct obtain;
+        obtain.cards << judge->card;
+        obtain.to.owner = player;
+        obtain.to.type = CardArea::Hand;
+        logic->moveCards(obtain);
+        return false;
+    }
+};
+
 } //namespace
 
 void StandardPackage::addWeiGenerals()
@@ -389,6 +419,7 @@ void StandardPackage::addWeiGenerals()
 
     // WEI 006
     General *guojia = new General("guojia", "wei", 3);
+    guojia->addSkill(new Tiandu);
     addGeneral(guojia);
 
     // WEI 007

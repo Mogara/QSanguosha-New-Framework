@@ -18,10 +18,41 @@
 *********************************************************************/
 
 #include "card.h"
+#include "serverplayer.h"
 #include "standardpackage.h"
+#include "gamelogic.h"
 #include "general.h"
 #include "skill.h"
 #include "standard-basiccard.h"
+
+namespace {
+
+class Jianxiong : public MasochismSkill
+{
+public:
+    Jianxiong() : MasochismSkill("jianxiong")
+    {
+    }
+
+    int triggerable(GameLogic *, ServerPlayer *, DamageStruct &damage) const override
+    {
+        if (damage.card)
+            return 1;
+
+        return 0;
+    }
+
+    bool effect(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const override
+    {
+        CardsMoveStruct obtain;
+        obtain.cards << damage.card;
+        obtain.to.owner = target;
+        obtain.to.type = CardArea::Hand;
+        obtain.isOpen = true;
+        logic->moveCards(obtain);
+        return false;
+    }
+};
 
 class Qingguo : public OneCardViewAsSkill
 {
@@ -49,11 +80,14 @@ public:
     }
 };
 
+} //namespace
+
 void StandardPackage::addWeiGenerals()
 {
     // WEI 001
     General *caocao = new General("caocao", "wei", 4);
     caocao->setLord(true);
+    caocao->addSkill(new Jianxiong);
     addGeneral(caocao);
 
     // WEI 002

@@ -175,6 +175,45 @@ public:
     }
 };
 
+class Ganglie : public MasochismSkill
+{
+public:
+    Ganglie() : MasochismSkill("ganglie")
+    {
+    }
+
+    int triggerable(GameLogic *, ServerPlayer *, DamageStruct &) const override
+    {
+        return 1;
+    }
+
+    bool effect(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const override
+    {
+        JudgeStruct judge(".|^heart");
+        judge.who = target;
+        logic->judge(judge);
+
+        if (judge.matched && damage.from) {
+            damage.from->showPrompt("ganglie_discard_cards", target);
+            QList<Card *> cards = damage.from->askForCards(".|.|.|hand", 2, true);
+            if (cards.length() == 2) {
+                CardsMoveStruct discard;
+                discard.cards = cards;
+                discard.to.type = CardArea::DiscardPile;
+                discard.isOpen = true;
+                logic->moveCards(discard);
+            } else {
+                DamageStruct revenge;
+                revenge.from = target;
+                revenge.to = damage.from;
+                logic->damage(revenge);
+            }
+        }
+
+        return false;
+    }
+};
+
 } //namespace
 
 void StandardPackage::addWeiGenerals()
@@ -193,6 +232,7 @@ void StandardPackage::addWeiGenerals()
 
     // WEI 003
     General *xiahoudun = new General("xiahoudun", "wei", 4);
+    xiahoudun->addSkill(new Ganglie);
     addGeneral(xiahoudun);
 
     // WEI 004

@@ -61,7 +61,7 @@ public:
     void clearSkippedPhase() { m_skippedPhase.clear(); }
 
     void showPrompt(const QString &message, int number);
-    void showPrompt(const QString &message, const Card *card = nullptr);
+    void showPrompt(const QString &message, const Card *card);
     void showPrompt(const QString &message, const ServerPlayer *p1, const Card *card = nullptr);
     void showPrompt(const QString &message, const ServerPlayer *p1, const ServerPlayer *p2, const Card *card = nullptr);
     void showPrompt(const QString &message, const QVariantList &args = QVariantList());

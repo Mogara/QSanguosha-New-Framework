@@ -294,6 +294,68 @@ public:
     }
 };
 
+class Luoyi : public TriggerSkill
+{
+    class Effect : public TriggerSkill
+    {
+    public:
+        Effect() : TriggerSkill("luoyi")
+        {
+            m_events << Damaging;
+            setFrequency(Compulsory);
+        }
+
+        EventList triggerable(GameLogic *, EventType, ServerPlayer *owner, QVariant &data, ServerPlayer *) const override
+        {
+            if (!TriggerSkill::triggerable(owner) || !owner->tag.contains("luoyi_effect"))
+                return EventList();
+
+            DamageStruct *damage = data.value<DamageStruct *>();
+            if (damage->card && (damage->card->inherits("Slash") || damage->card->inherits("Duel")) && damage->to != owner)
+                damage->damage++;
+
+            return EventList();
+        }
+    };
+
+    class Reset : public TriggerSkill
+    {
+    public:
+        Reset() : TriggerSkill("luoyi")
+        {
+            m_events << PhaseEnd;
+            setFrequency(Compulsory);
+        }
+
+        bool triggerable(ServerPlayer *owner) const override
+        {
+            if (TriggerSkill::triggerable(owner) && owner->phase() == Player::Play && owner->tag.contains("luoyi_effect"))
+                owner->tag.remove("luoyi_effect");
+            return false;
+        }
+    };
+
+public:
+    Luoyi() : TriggerSkill("luoyi")
+    {
+        m_events << DrawNCards;
+
+        addSubskill(new Effect);
+        addSubskill(new Reset);
+    }
+
+    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+    {
+        int drawNum = data.toInt();
+        drawNum--;
+        data = drawNum;
+
+        target->tag["luoyi_effect"] = true;
+
+        return false;
+    }
+};
+
 } //namespace
 
 void StandardPackage::addWeiGenerals()
@@ -322,6 +384,7 @@ void StandardPackage::addWeiGenerals()
 
     // WEI 005
     General *xuchu = new General("xuchu", "wei", 4);
+    xuchu->addSkill(new Luoyi);
     addGeneral(xuchu);
 
     // WEI 006

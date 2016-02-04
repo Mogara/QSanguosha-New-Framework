@@ -10,6 +10,10 @@ Item {
         id: area
     }
 
+    InvisibleCardArea {
+        id: invisibleArea
+    }
+
     Timer {
         id: vanishTimer
         interval: 5000
@@ -40,9 +44,27 @@ Item {
 
     function remove(outputs)
     {
+        var i, j;
+
         var result = area.remove(outputs);
-        for (var i = 0; i < result.length; i++) {
-            for (var j = 0; j < discardedCards.length; j++) {
+        var vanished = [];
+        if (result.length < outputs.length) {
+            for (i = 0; i < outputs.length; i++) {
+                var exists = false;
+                for (j = 0; j < result.length; j++) {
+                   if (result[j].cid === outputs[i].cid) {
+                       exists = true;
+                       break;
+                   }
+                }
+                if (!exists)
+                    vanished.push(outputs[i]);
+            }
+        }
+        result = result.concat(invisibleArea.remove(vanished));
+
+        for (i = 0; i < result.length; i++) {
+            for (j = 0; j < discardedCards.length; j++) {
                 if (result[i].cid === discardedCards[j].cid) {
                     discardedCards.splice(j, 1);
                     break;

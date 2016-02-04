@@ -54,6 +54,36 @@ public:
     }
 };
 
+class Fankui : public MasochismSkill
+{
+public:
+    Fankui() : MasochismSkill("fankui")
+    {
+    }
+
+    int triggerable(GameLogic *, ServerPlayer *, DamageStruct &damage) const override
+    {
+        if (damage.from && damage.from->handcardNum() + damage.from->equipNum() > 0)
+            return 1;
+
+        return 0;
+    }
+
+    bool effect(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const override
+    {
+        Card *card = target->askToChooseCard(damage.from, "he");
+        if (card) {
+            CardsMoveStruct obtain;
+            obtain.cards << card;
+            obtain.to.owner = target;
+            obtain.to.type = CardArea::Hand;
+            logic->moveCards(obtain);
+        }
+
+        return false;
+    }
+};
+
 class Qingguo : public OneCardViewAsSkill
 {
 public:
@@ -92,6 +122,7 @@ void StandardPackage::addWeiGenerals()
 
     // WEI 002
     General *simayi = new General("simayi", "wei", 3);
+    simayi->addSkill(new Fankui);
     addGeneral(simayi);
 
     // WEI 003

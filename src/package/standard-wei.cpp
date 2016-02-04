@@ -214,6 +214,86 @@ public:
     }
 };
 
+class Tuxi : public ProactiveSkill
+{
+    class Timing : public TriggerSkill
+    {
+    public:
+        Timing() : TriggerSkill("tuxi")
+        {
+            m_events << PhaseStart;
+        }
+
+        bool triggerable(ServerPlayer *owner) const override
+        {
+            return TriggerSkill::triggerable(owner) && owner->phase() == Player::Draw;
+        }
+
+        bool cost(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+        {
+            target->showPrompt("tuxi_select_players");
+            return target->askToUseCard("@tuxi");
+        }
+
+        bool effect(GameLogic *logic, EventType, ServerPlayer *from, QVariant &, ServerPlayer *) const override
+        {
+            if (!from->tag.contains("tuxi_victims"))
+                return false;
+
+            QList<ServerPlayer *> victims;
+            QVariantList data = from->tag.value("tuxi_victims").toList();
+            foreach (const QVariant &playerId, data) {
+                ServerPlayer *victim = logic->findPlayer(playerId.toUInt());
+                if (victim)
+                    victims << victim;
+            }
+            logic->sortByActionOrder(victims);
+
+            foreach (ServerPlayer *victim, victims) {
+                Card *card = from->askToChooseCard(victim, "h");
+
+                CardsMoveStruct obtain;
+                obtain.cards << card;
+                obtain.to.owner = from;
+                obtain.to.type = CardArea::Hand;
+                logic->moveCards(obtain);
+            }
+
+            return true;
+        }
+    };
+
+public:
+    Tuxi() : ProactiveSkill("tuxi")
+    {
+        addSubskill(new Timing);
+    }
+
+    bool isAvailable(const Player *, const QString &pattern) const override
+    {
+        return pattern == "@tuxi";
+    }
+
+    bool playerFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const override
+    {
+        return selected.length() < 2 && toSelect != source && toSelect->handcardNum() > 0;
+    }
+
+    bool playerFeasible(const QList<const Player *> &selected, const Player *) const override
+    {
+        int num = selected.length();
+        return 1 <= num && num <= 2;
+    }
+
+    void effect(GameLogic *, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &) const override
+    {
+        QVariantList victims;
+        foreach (ServerPlayer *victim, to)
+            victims << victim->id();
+        from->tag["tuxi_victims"] = victims;
+    }
+};
+
 } //namespace
 
 void StandardPackage::addWeiGenerals()
@@ -237,6 +317,7 @@ void StandardPackage::addWeiGenerals()
 
     // WEI 004
     General *zhangliao = new General("zhangliao", "wei", 4);
+    zhangliao->addSkill(new Tuxi);
     addGeneral(zhangliao);
 
     // WEI 005

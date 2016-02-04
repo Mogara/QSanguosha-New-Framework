@@ -84,6 +84,71 @@ public:
     }
 };
 
+class Guicai : public ProactiveSkill
+{
+    class Timing : public TriggerSkill
+    {
+    public:
+        Timing() : TriggerSkill("guicai")
+        {
+            m_events << AskForRetrial;
+            setFrequency(Compulsory);
+        }
+
+        bool cost(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+        {
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            target->showPrompt("guicai_ask_for_retrial", judge->who);
+            return target->askToUseCard("@guicai");
+        }
+
+        bool effect(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+        {
+            uint cardId = target->tag["guicai_card"].toUInt();
+            target->tag.remove("guicai_card");
+            Card *card = logic->findCard(cardId);
+            if (card) {
+                JudgeStruct *judge = data.value<JudgeStruct *>();
+                judge->card = card;
+                judge->updateResult();
+            }
+            return false;
+        }
+    };
+
+public:
+    Guicai() : ProactiveSkill("guicai")
+    {
+        addSubskill(new Timing);
+    }
+
+    bool isAvailable(const Player *self, const QString &pattern) const override
+    {
+        return self->handcardNum() > 0 && pattern == "@guicai";
+    }
+
+    bool cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &) const override
+    {
+        return selected.isEmpty() && source->handcardArea()->contains(card);
+    }
+
+    bool cardFeasible(const QList<const Card *> &selected, const Player *) const override
+    {
+        return selected.length() == 1;
+    }
+
+    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &, const QList<Card *> &cards) const override
+    {
+        Card *card = cards.first();
+        CardResponseStruct response;
+        response.card = card;
+        response.from = from;
+        logic->respondCard(response);
+
+        from->tag["guicai_card"] = cards.first()->id();
+    }
+};
+
 class Qingguo : public OneCardViewAsSkill
 {
 public:
@@ -123,6 +188,7 @@ void StandardPackage::addWeiGenerals()
     // WEI 002
     General *simayi = new General("simayi", "wei", 3);
     simayi->addSkill(new Fankui);
+    simayi->addSkill(new Guicai);
     addGeneral(simayi);
 
     // WEI 003

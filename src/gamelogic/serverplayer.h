@@ -66,7 +66,7 @@ public:
     void showPrompt(const QString &message, const ServerPlayer *p1, const ServerPlayer *p2, const Card *card = nullptr);
     void showPrompt(const QString &message, const QVariantList &args = QVariantList());
 
-    Event askForTriggerOrder(const QString &reason, const EventList &options, bool cancelable);
+    Event askForTriggerOrder(const EventList &options, bool cancelable);
     Card *askForCard(const QString &pattern, bool optional = true);
     QList<Card *> askForCards(const QString &pattern, int num, bool optional = false);
     QList<Card *> askForCards(const QString &pattern, int minNum, int maxNum, bool optional = false);

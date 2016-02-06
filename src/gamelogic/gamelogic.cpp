@@ -157,11 +157,11 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
                     //Ask the invoker to determine the trigger order
                     Event choice;
                     if (events.length() > 1)
-                        choice = invoker->askForTriggerOrder("GameRule:TriggerOrder", events, !hasCompulsory);
+                        choice = invoker->askForTriggerOrder(events, !hasCompulsory);
                     else if (hasCompulsory)
                         choice = events.first();
                     else
-                        choice = invoker->askForTriggerOrder("GameRule:TriggerOrder", events, true);
+                        choice = invoker->askForTriggerOrder(events, true);
 
                     //If the user selects "cancel"
                     if (!choice.isValid())

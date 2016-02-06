@@ -264,10 +264,9 @@ void ServerPlayer::showPrompt(const QString &message, const ServerPlayer *p1, co
     showPrompt(message, args);
 }
 
-Event ServerPlayer::askForTriggerOrder(const QString &reason, const EventList &options, bool cancelable)
+Event ServerPlayer::askForTriggerOrder(const EventList &options, bool cancelable)
 {
     QVariantMap data;
-    data["reason"] = reason;
     data["cancelable"] = cancelable;
 
     QVariantList optionData;

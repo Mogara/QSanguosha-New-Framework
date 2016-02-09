@@ -98,6 +98,8 @@ public:
     void broadcastTag(const QString &key);
     void unicastTagTo(const QString &key, ServerPlayer *to);
 
+    QList<const General *> askForGeneral(const QList<const General *> &candidates, int num);
+
 private:
     void addTriggerSkill(const Skill *skill);
     void removeTriggerSkill(const Skill *skill);

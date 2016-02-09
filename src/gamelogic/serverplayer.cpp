@@ -20,6 +20,7 @@
 #include "card.h"
 #include "cardpattern.h"
 #include "gamelogic.h"
+#include "general.h"
 #include "protocol.h"
 #include "serverplayer.h"
 #include "skill.h"
@@ -740,6 +741,36 @@ void ServerPlayer::unicastTagTo(const QString &key, ServerPlayer *to)
     CServerAgent *agent = to->agent();
     if (agent)
         agent->notify(S_COMMAND_SET_PLAYER_TAG, data);
+}
+
+QList<const General *> ServerPlayer::askForGeneral(const QList<const General *> &candidates, int num)
+{
+    QVariantMap data;
+    data["num"] = num;
+
+    QVariantList candidateData;
+    foreach (const General *candidate, candidates)
+        candidateData << candidate->id();
+    data["candidates"] = candidateData;
+
+    m_agent->request(S_COMMAND_CHOOSE_GENERAL, data, 15000);
+    QVariantList reply = m_agent->waitForReply(15000).toList();
+
+    GeneralList result;
+    foreach (const QVariant &idData, reply) {
+        uint id = idData.toUInt();
+        foreach (const General *candidate, candidates) {
+            if (candidate->id() == id) {
+                result << candidate;
+                break;
+            }
+        }
+    }
+
+    if (result.length() < num)
+        result = candidates.mid(0, num);
+
+    return result;
 }
 
 void ServerPlayer::addTriggerSkill(const Skill *skill)

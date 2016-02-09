@@ -309,11 +309,11 @@ void Client::UpdatePlayerPropertyCommand(Client *client, const QVariant &data)
 
 void Client::ChooseGeneralRequestCommand(Client *client, const QVariant &data)
 {
-    QVariantList dataList = data.toList();
-    if (dataList.length() < 2)
+    const QVariantMap arg = data.toMap();
+    if (arg.isEmpty())
         return;
 
-    QVariantList candidateData = dataList.at(0).toList();
+    QVariantList candidateData = arg["candidates"].toList();
 
     Engine *engine = Engine::instance();
     QList<const General *> generals;
@@ -326,7 +326,10 @@ void Client::ChooseGeneralRequestCommand(Client *client, const QVariant &data)
 
     //@to-do: parse banned pairs
 
-    emit client->chooseGeneralRequested(generals);
+    if (generals.length() > 0)
+        emit client->chooseGeneralRequested(generals);
+    else
+        qWarning("Client received an empty general list.");
 }
 
 void Client::MoveCardsCommand(Client *client, const QVariant &data)

@@ -98,4 +98,6 @@ private:
     QList<const Skill *> m_skills;
 };
 
+typedef QList<const General *> GeneralList;
+
 #endif // GENERAL_H

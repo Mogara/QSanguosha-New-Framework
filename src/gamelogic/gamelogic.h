@@ -96,6 +96,8 @@ public:
 
     void killPlayer(ServerPlayer *victim, DamageStruct *damage = nullptr);
 
+    QMap<uint, QList<const General *> > broadcastRequestForGenerals(const QList<ServerPlayer *> &players, int num, int limit);
+
 protected:
     CAbstractPlayer *createPlayer(CServerUser *user);
     CAbstractPlayer *createPlayer(CServerRobot *robot);

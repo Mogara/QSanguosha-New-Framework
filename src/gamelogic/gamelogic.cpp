@@ -657,6 +657,76 @@ void GameLogic::killPlayer(ServerPlayer *victim, DamageStruct *damage)
     trigger(BuryVictim, victim, data);
 }
 
+QMap<uint, QList<const General *>> GameLogic::broadcastRequestForGenerals(const QList<ServerPlayer *> &players, int num, int limit)
+{
+    GeneralList generals;
+    QList<const Package *> packages = this->packages();
+    foreach(const Package *package, packages)
+        generals << package->generals();
+    qShuffle(generals);
+
+    int minCandidateNum = limit * players.length();
+    while (minCandidateNum > generals.length())
+        generals << generals.mid(0, minCandidateNum - generals.length());
+
+    QMap<ServerPlayer *, GeneralList> playerCandidates;
+
+    foreach (ServerPlayer *player, players) {
+        GeneralList candidates = generals.mid((player->seat() - 1) * limit, limit);
+        playerCandidates[player] = candidates;
+
+        QVariantList candidateData;
+        foreach (const General *general, candidates)
+            candidateData << general->id();
+
+        QVariantList bannedPairData;
+        //@todo: load banned pairs
+
+        QVariantMap data;
+        data["num"] = num;
+        data["candidates"] = candidateData;
+        data["banned"] = bannedPairData;
+
+        CServerAgent *agent = findAgent(player);
+        agent->prepareRequest(S_COMMAND_CHOOSE_GENERAL, data);
+    }
+
+    //@to-do: timeout should be loaded from config
+    CRoom *room = this->room();
+    QList<CServerAgent *> agents;
+    foreach (ServerPlayer *player, players)
+        agents << player->agent();
+    room->broadcastRequest(agents, 15000);
+
+    QMap<uint, GeneralList> result;
+    foreach (ServerPlayer *player, players) {
+        const GeneralList &candidates = playerCandidates[player];
+
+        GeneralList generals;
+        CServerAgent *agent = findAgent(player);
+        if (agent) {
+            QVariantList reply = agent->waitForReply(0).toList();
+            foreach (const QVariant &choice, reply) {
+                uint id = choice.toUInt();
+                foreach (const General *general, candidates) {
+                    if (general->id() == id) {
+                        generals << general;
+                        break;
+                    }
+                }
+            }
+        }
+
+        //@to-do: handle banned pairs
+        if (generals.length() < num)
+            generals = candidates.mid(0, num);
+
+        result[player->id()] = generals;
+    }
+
+    return result;
+}
+
 CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
 {
     return new ServerPlayer(this, user);
@@ -698,7 +768,7 @@ void GameLogic::prepareToStart()
     room->broadcastNotification(S_COMMAND_ARRANGE_SEAT, playerList);
 
     //Import packages
-    QList<const General *> generals;
+    GeneralList generals;
     foreach (const Package *package, m_packages) {
         generals << package->generals();
 

@@ -43,69 +43,15 @@ public:
 
     void prepareToStart(GameLogic *logic) const override
     {
-        //Choose 7 random generals for each player
-        //@to-do: config
-        QList<const General *> generals;
-        QList<const Package *> packages = logic->packages();
-        foreach(const Package *package, packages)
-            generals << package->generals();
-        qShuffle(generals);
 
-        QList<ServerPlayer *> players = logic->players();
-        int candidateLimit = 5;
-        int minCandidateNum = candidateLimit * players.length();
-        while (minCandidateNum > generals.length())
-            generals << generals.mid(0, minCandidateNum - generals.length());
 
-        QMap<ServerPlayer *, QList<const General *>> playerCandidates;
-
-        foreach (ServerPlayer *player, players) {
-            QList<const General *> candidates = generals.mid((player->seat() - 1) * candidateLimit, candidateLimit);
-            playerCandidates[player] = candidates;
-
-            QVariantList candidateData;
-            foreach (const General *general, candidates)
-                candidateData << general->id();
-
-            QVariantList bannedPairData;
-            //@todo: load banned pairs
-
-            QVariantList data;
-            data << QVariant(candidateData);
-            data << QVariant(bannedPairData);
-
-            CServerAgent *agent = logic->findAgent(player);
-            agent->prepareRequest(S_COMMAND_CHOOSE_GENERAL, data);
-        }
-
-        //@to-do: timeout should be loaded from config
-        CRoom *room = logic->room();
-        room->broadcastRequest(room->agents(), 15000);
-
-        foreach (ServerPlayer *player, players) {
-            const QList<const General *> &candidates = playerCandidates[player];
-
-            const General *result = nullptr;
-
-            CServerAgent *agent = logic->findAgent(player);
-            if (agent) {
-                QVariantList reply = agent->waitForReply(0).toList();
-                if (reply.length() > 0) {
-                    const QVariant &choice = reply.first();
-                    uint id = choice.toUInt();
-                    foreach (const General *general, candidates) {
-                        if (general->id() == id) {
-                            result = general;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (result == nullptr)
-                result = candidates.first();
-
-            player->setGeneral(result);
+        QMap<uint, GeneralList> replies = logic->broadcastRequestForGenerals(logic->players(), 1, 5);
+        QMapIterator<uint, GeneralList> iter(replies);
+        while (iter.hasNext()) {
+            iter.next();
+            ServerPlayer *player = logic->findPlayer(iter.key());
+            const GeneralList &generals = iter.value();
+            player->setGeneral(generals.first());
         }
     }
 
@@ -123,11 +69,6 @@ public:
 
         current->setKingdom(general->kingdom());
         current->broadcastProperty("kingdom");
-
-        //@to-do: arrange roles
-        //current->setRole(general->kingdom());
-        //current->unicastPropertyTo("role", current);
-        current->broadcastProperty("role", "unknown");
 
         QList<const Skill *> skills = general->skills();
         foreach (const Skill *skill, skills)

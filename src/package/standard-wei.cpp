@@ -364,7 +364,7 @@ public:
         m_events << FinishJudge;
     }
 
-    EventList triggerable(GameLogic *logic, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
     {
         if (TriggerSkill::triggerable(player)) {
             JudgeStruct *judge = data.value<JudgeStruct *>();

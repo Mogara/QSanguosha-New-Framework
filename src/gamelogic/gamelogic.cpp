@@ -644,8 +644,6 @@ void GameLogic::recover(RecoverStruct &recover)
 
 void GameLogic::killPlayer(ServerPlayer *victim, DamageStruct *damage)
 {
-    QList<ServerPlayer *> allPlayers = this->allPlayers();
-
     victim->setAlive(false);
     victim->broadcastProperty("alive");
     victim->broadcastProperty("role");
@@ -655,11 +653,7 @@ void GameLogic::killPlayer(ServerPlayer *victim, DamageStruct *damage)
     death.damage = damage;
     QVariant data = QVariant::fromValue(&death);
 
-    foreach (ServerPlayer *player, allPlayers) {
-        if (player->isAlive() || player == victim)
-            trigger(Died, player, data);
-    }
-
+    trigger(Died, victim, data);
     trigger(BuryVictim, victim, data);
 }
 

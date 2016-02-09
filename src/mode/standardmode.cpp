@@ -43,15 +43,62 @@ public:
 
     void prepareToStart(GameLogic *logic) const override
     {
+        QList<ServerPlayer *> players = logic->players();
+        qShuffle(players);
+        int playerNum = players.length();
+        ServerPlayer *lord = players.first();
+        players.removeFirst();
 
+        lord->setRole("lord");
+        lord->broadcastProperty("role");
 
-        QMap<uint, GeneralList> replies = logic->broadcastRequestForGenerals(logic->players(), 1, 5);
-        QMapIterator<uint, GeneralList> iter(replies);
-        while (iter.hasNext()) {
+        int renegadeNum = 1;
+        int rebelNum = playerNum / 2;
+        int loyalistNum = playerNum - 1 - renegadeNum - rebelNum;
+
+        QMap<QString, int> roleMap;
+        roleMap["renagade"] = renegadeNum;
+        roleMap["rebel"] = rebelNum;
+        roleMap["loyalist"] = loyalistNum;
+
+        int playerIndex = 0;
+        for (QMapIterator<QString, int> iter(roleMap); iter.hasNext(); ) {
+            iter.next();
+            int num = iter.value();
+            for (int i = 0; i < num; i++) {
+                ServerPlayer *player = players.at(playerIndex);
+                playerIndex++;
+                player->setRole(iter.key());
+            }
+        }
+        foreach (ServerPlayer *player, players) {
+            player->unicastPropertyTo("role", player);
+            player->broadcastProperty("role", "unknown");
+        }
+
+        GeneralList generals;
+        QList<const Package *> packages = logic->packages();
+        foreach (const Package *package, packages)
+            generals << package->generals();
+        qShuffle(generals);
+
+        GeneralList lordCandidates;
+        foreach (const General *general, generals) {
+            if (general->isLord())
+                lordCandidates << general;
+        }
+        lordCandidates << generals.mid(0, 2);
+        GeneralList reply = lord->askForGeneral(lordCandidates, 1);
+        lord->setGeneral(reply.first());
+        lord->broadcastProperty("generalId");
+
+        QMap<uint, GeneralList> replies = logic->broadcastRequestForGenerals(players, 1, 5);
+        for (QMapIterator<uint, GeneralList> iter(replies); iter.hasNext(); ) {
             iter.next();
             ServerPlayer *player = logic->findPlayer(iter.key());
             const GeneralList &generals = iter.value();
             player->setGeneral(generals.first());
+            player->broadcastProperty("generalId");
         }
     }
 

@@ -69,6 +69,7 @@ signals:
     void showCard(int fromSeat, const QVariant &cards);
     void showOptions(const QStringList &options);
     void showArrangeCardBox(const QVariant &cards, const QVariant &capacities, const QVariant &names);
+    void showGameOverBox(const QVariant &winners);
 
 private:
     enum RespondingState
@@ -96,6 +97,7 @@ private:
     void onChoosePlayerCardRequested(const QList<Card *> &handcards, const QList<Card *> &equips, const QList<Card *> &delayedTricks);
     void onCardShown(const ClientPlayer *from, const QList<const Card *> &cards);
     void onArrangeCardRequested(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames);
+    void onGameOver(const QList<const ClientPlayer *> &winners);
 
     QVariantMap convertToMap(const Card *card) const;
 

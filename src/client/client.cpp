@@ -705,6 +705,18 @@ void Client::SetPlayerTagCommand(Client *client, const QVariant &data)
     }
 }
 
+void Client::GameOverCommand(Client *client, const QVariant &data)
+{
+    QVariantList ids = data.toList();
+    QList<const ClientPlayer *> winners;
+    foreach (const QVariant &id, ids) {
+        ClientPlayer *winner = client->findPlayer(id.toUInt());
+        if (winner)
+            winners << winner;
+    }
+    emit client->gameOver(winners);
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -736,6 +748,7 @@ void Client::Init()
     AddCallback(S_COMMAND_CLEAR_SKILL_HISTORY, ClearSkillHistoryCommand);
     AddCallback(S_COMMAND_SET_VIRTUAL_CARD, SetVirtualCardCommand);
     AddCallback(S_COMMAND_SET_PLAYER_TAG, SetPlayerTagCommand);
+    AddCallback(S_COMMAND_GAME_OVER, GameOverCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
     AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);

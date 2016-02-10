@@ -95,6 +95,7 @@ public:
     void recover(RecoverStruct &recover);
 
     void killPlayer(ServerPlayer *victim, DamageStruct *damage = nullptr);
+    void gameOver(const QList<ServerPlayer *> &winners);
 
     QMap<uint, QList<const General *> > broadcastRequestForGenerals(const QList<ServerPlayer *> &players, int num, int limit);
 

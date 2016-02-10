@@ -30,6 +30,8 @@
 #include "skill.h"
 #include "util.h"
 
+#include <cclientuser.h>
+
 static QString AreaTypeToString(CardArea::Type type)
 {
     switch (type) {
@@ -86,6 +88,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::cardShown, this, &RoomScene::onCardShown);
     connect(m_client, &Client::optionRequested, this, &RoomScene::showOptions);
     connect(m_client, &Client::arrangeCardRequested, this, &RoomScene::onArrangeCardRequested);
+    connect(m_client, &Client::gameOver, this, &RoomScene::onGameOver);
 }
 
 void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
@@ -550,6 +553,21 @@ void RoomScene::onArrangeCardRequested(const QList<Card *> &cards, const QList<i
         capacityData << capacity;
 
     showArrangeCardBox(cardData, capacityData, areaNames);
+}
+
+void RoomScene::onGameOver(const QList<const ClientPlayer *> &winners)
+{
+    QVariantList winnerList;
+    foreach (const ClientPlayer *winner, winners) {
+        QVariantMap info;
+        info["role"] = winner->role();
+        info["general"] = winner->fullGeneralName();
+        const CClientUser *user = winner->user();
+        info["userAvatar"] = user->avatar();
+        info["userName"] = user->screenName();
+        winnerList << info;
+    }
+    showGameOverBox(winnerList);
 }
 
 QVariantMap RoomScene::convertToMap(const Card *card) const

@@ -72,6 +72,7 @@ signals:
     void optionRequested(const QStringList &options);
     void arrangeCardRequested(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames);
     void skillInvoked(const ClientPlayer *invoker, const Skill *skill, const QList<Card *> &cards, const QList<const ClientPlayer *> &targets);
+    void gameOver(const QList<const ClientPlayer *> &winners);
 
 private:
     Client(QObject *parent = 0);
@@ -116,6 +117,7 @@ private:
     static void AskForOptionCommand(Client *client, const QVariant &data);
     static void SetVirtualCardCommand(Client *client, const QVariant &data);
     static void SetPlayerTagCommand(Client *client, const QVariant &data);
+    static void GameOverCommand(Client *client, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

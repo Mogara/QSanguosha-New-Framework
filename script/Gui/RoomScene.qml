@@ -349,6 +349,12 @@ RoomScene {
         dashboard.acceptButton.enabled = true;
     }
 
+    onShowGameOverBox: {
+        popupBox.source = "RoomElement/GameOverBox.qml";
+        for (var i = 0; i < winners.length; i++)
+            popupBox.item.add(winners[i]);
+    }
+
     onPlayerNumChanged: arrangePhotos();
 
     function arrangePhotos()

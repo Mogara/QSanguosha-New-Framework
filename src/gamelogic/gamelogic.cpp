@@ -653,8 +653,20 @@ void GameLogic::killPlayer(ServerPlayer *victim, DamageStruct *damage)
     death.damage = damage;
     QVariant data = QVariant::fromValue(&death);
 
+    trigger(BeforeGameOverJudge, victim, data);
+    trigger(GameOverJudge, victim, data);
+
     trigger(Died, victim, data);
     trigger(BuryVictim, victim, data);
+}
+
+void GameLogic::gameOver(const QList<ServerPlayer *> &winners)
+{
+    QVariantList data;
+    foreach (ServerPlayer *winner, winners)
+        data << winner->id();
+    room()->broadcastNotification(S_COMMAND_GAME_OVER, data);
+    throw GameFinish;
 }
 
 QMap<uint, QList<const General *>> GameLogic::broadcastRequestForGenerals(const QList<ServerPlayer *> &players, int num, int limit)

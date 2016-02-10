@@ -96,9 +96,10 @@ enum EventType
     QuitDying,
     AskForPeach,
     AskForPeachDone,
+    BeforeGameOverJudge,
+    GameOverJudge,
     Died,
     BuryVictim,
-    GameOverJudge,
 
     EventTypeCount
 };

@@ -137,6 +137,7 @@ QML_FILES = \
     script/Gui/RoomElement/DelayedTrickArea.qml \
     script/Gui/RoomElement/EquipArea.qml \
     script/Gui/RoomElement/EquipItem.qml \
+    script/Gui/RoomElement/GameOverBox.qml \
     script/Gui/RoomElement/GeneralAvatar.qml \
     script/Gui/RoomElement/GeneralCardItem.qml \
     script/Gui/RoomElement/GlowText.qml \

@@ -36,9 +36,10 @@ public:
     StandardRule() : GameRule()
     {
         m_name = "hegemony_rule";
-        m_events << GameStart;
+        m_events << GameStart << GameOverJudge;
 
-        m_callbacks[GameStart] = &onGameStart;
+        m_callbacks[GameStart] = onGameStart;
+        m_callbacks[GameOverJudge] = onGameOverJudge;
     }
 
     void prepareToStart(GameLogic *logic) const override
@@ -102,6 +103,7 @@ public:
         }
     }
 
+private:
     static void onGameStart(GameLogic *, ServerPlayer *current, QVariant &)
     {
         current->broadcastProperty("generalId");
@@ -122,6 +124,55 @@ public:
             current->addSkill(skill);
 
         current->drawCards(4);
+    }
+
+    static QList<ServerPlayer *> getPlayersByRole(GameLogic *logic, const QString &role)
+    {
+        QList<ServerPlayer *> result;
+        QList<ServerPlayer *> allPlayers = logic->allPlayers(true);
+        foreach (ServerPlayer *player, allPlayers) {
+            if (player->role() == role)
+                result << player;
+        }
+        return result;
+    }
+
+    static void onGameOverJudge(GameLogic *logic, ServerPlayer *victim, QVariant &)
+    {
+        QList<ServerPlayer *> winners;
+        QList<ServerPlayer *> alivePlayers = logic->allPlayers();
+        if (victim->role() == "lord") {
+            if (alivePlayers.length() == 1 && alivePlayers.first()->role() == "renagade") {
+                winners = alivePlayers;
+            } else {
+                winners = getPlayersByRole(logic, "rebel");
+            }
+        } else {
+            victim->broadcastProperty("role");
+
+            bool lordWin = true;
+            foreach (ServerPlayer *player, alivePlayers) {
+                if (player->role() == "rebel" || player->role() == "renagade") {
+                    lordWin = false;
+                    break;
+                }
+            }
+            if (lordWin) {
+                winners << getPlayersByRole(logic, "lord");
+                winners << getPlayersByRole(logic, "loyalist");
+            }
+        }
+
+        if (winners.length() > 0) {
+            foreach (ServerPlayer *player, alivePlayers)
+                player->broadcastProperty("role");
+
+            ServerPlayer *current = logic->currentPlayer();
+            current->setPhase(Player::Inactive);
+            current->broadcastProperty("phase");
+
+            logic->gameOver(winners);
+        }
     }
 };
 

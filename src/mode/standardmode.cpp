@@ -36,9 +36,10 @@ public:
     StandardRule() : GameRule()
     {
         m_name = "hegemony_rule";
-        m_events << GameStart << GameOverJudge;
+        m_events << GameStart << BuryVictim << GameOverJudge;
 
         m_callbacks[GameStart] = onGameStart;
+        m_callbacks[BuryVictim] = onBuryVictim;
         m_callbacks[GameOverJudge] = onGameOverJudge;
     }
 
@@ -135,6 +136,28 @@ private:
                 result << player;
         }
         return result;
+    }
+
+    static void onBuryVictim(GameLogic *logic, ServerPlayer *victim, QVariant &data)
+    {
+        DeathStruct *death = data.value<DeathStruct *>();
+        if (death->damage == nullptr)
+            return;
+
+        ServerPlayer *killer = death->damage->from;
+        if (killer->isDead())
+            return;
+
+        if (victim->role() == "rebel") {
+            killer->drawCards(3);
+        } else if (victim->role() == "loyalist" && killer->role() == "lord") {
+            CardsMoveStruct discard;
+            discard.cards << killer->handcardArea()->cards();
+            discard.cards << killer->equipArea()->cards();
+            discard.to.type = CardArea::DiscardPile;
+            discard.isOpen = true;
+            logic->moveCards(discard);
+        }
     }
 
     static void onGameOverJudge(GameLogic *logic, ServerPlayer *victim, QVariant &)

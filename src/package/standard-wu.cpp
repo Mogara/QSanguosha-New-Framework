@@ -491,6 +491,11 @@ public:
         return toSelect->isWounded();
     }
 
+    bool playerFeasible(const QList<const Player *> &selected, const Player *) const override
+    {
+        return selected.length() == 1;
+    }
+
     void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const override
     {
         CardsMoveStruct discard;

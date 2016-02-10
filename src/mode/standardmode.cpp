@@ -52,7 +52,7 @@ public:
         lord->setRole("lord");
         lord->broadcastProperty("role");
 
-        int renegadeNum = 1;
+        int renegadeNum = playerNum > 4 ? 1 : 0;
         int rebelNum = playerNum / 2;
         int loyalistNum = playerNum - 1 - renegadeNum - rebelNum;
 

@@ -214,12 +214,13 @@ RoomScene {
     onChooseGeneral: {
         popupBox.source = "RoomElement/ChooseGeneralBox.qml";
         var box = popupBox.item;
+        box.choiceNum = num;
         box.accepted.connect(function(){
-            roomScene.onChooseGeneralFinished(box.headGeneral, box.deputyGeneral);
+            roomScene.onChooseGeneralFinished(box.choices);
         });
         for (var i = 0; i < generals.length; i++)
             box.model.append(generals[i]);
-        box.arrangeCards();
+        box.updatePosition();
     }
 
     onMoveCards: {

@@ -55,7 +55,7 @@ public:
 signals:
     void promptReceived(const QString &prompt);
     void seatArranged();
-    void chooseGeneralRequested(const QList<const General *> &candidates /* @to-do: add banned pair */);
+    void chooseGeneralRequested(const QList<const General *> &candidates, int num /* @to-do: add banned pair */);
     void cardsMoved(const QList<CardsMoveStruct> &moves);
     void damageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
     void loseHpDone(const ClientPlayer *victim, int lose);

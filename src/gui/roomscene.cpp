@@ -243,7 +243,7 @@ void RoomScene::onSeatArranged()
     setProperty("playerNum", players.length() + 1);
 }
 
-void RoomScene::onChooseGeneralRequested(const QList<const General *> &candidates)
+void RoomScene::onChooseGeneralRequested(const QList<const General *> &candidates, int num)
 {
     QVariantList generals;
     foreach (const General *general, candidates) {
@@ -253,14 +253,14 @@ void RoomScene::onChooseGeneralRequested(const QList<const General *> &candidate
         generalData["kingdom"] = general->kingdom();
         generals << generalData;
     }
-    chooseGeneral(generals);
+    chooseGeneral(generals, num);
 }
 
-void RoomScene::onChooseGeneralFinished(uint head, uint deputy)
+void RoomScene::onChooseGeneralFinished(const QVariantList &choices)
 {
     QVariantList data;
-    data << head;
-    data << deputy;
+    foreach (const QVariant &choice, choices)
+        data << choice.toUInt();
     m_client->replyToServer(S_COMMAND_CHOOSE_GENERAL, data);
 }
 

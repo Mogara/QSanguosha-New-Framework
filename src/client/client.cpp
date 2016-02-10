@@ -323,13 +323,15 @@ void Client::ChooseGeneralRequestCommand(Client *client, const QVariant &data)
         if (general)
             generals << general;
     }
+    if (generals.isEmpty()) {
+        qWarning("Client received an empty general list.");
+        return;
+    }
 
     //@to-do: parse banned pairs
 
-    if (generals.length() > 0)
-        emit client->chooseGeneralRequested(generals);
-    else
-        qWarning("Client received an empty general list.");
+    int num = arg["num"].toInt();
+    emit client->chooseGeneralRequested(generals, num);
 }
 
 void Client::MoveCardsCommand(Client *client, const QVariant &data)

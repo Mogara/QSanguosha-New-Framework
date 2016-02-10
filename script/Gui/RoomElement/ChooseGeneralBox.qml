@@ -1,18 +1,20 @@
 import QtQuick 2.4
 import Cardirector.Gui 1.0
 import Cardirector.Device 1.0
+import "../../utility.js" as Utility
 
 GraphicsBox {
     property alias model: generalList
-    property int headGeneral: 0
-    property int deputyGeneral: 0
+    property int choiceNum: 1
+    property var choices: []
+    property var selectedItem: []
 
     ListModel {
         id: generalList
     }
 
     id: root
-    title.text: qsTr("Please choose 2 generals of the same kingdom")
+    title.text: qsTr("Please choose ") + choiceNum + qsTr(" general(s)")
     width: generalArea.width + body.anchors.leftMargin + body.anchors.rightMargin
     height: body.implicitHeight + body.anchors.topMargin + body.anchors.bottomMargin
 
@@ -55,28 +57,25 @@ GraphicsBox {
         }
 
         Item {
-            id: resultArea
             width: parent.width
-            height: Device.gu(145)
+            height: Device.gu(165)
 
-            Rectangle {
-                id: headGeneralItem
-                color: "#1D1E19"
-                radius: Device.gu(3)
-                width: Device.gu(93)
-                height: Device.gu(130)
-                x: parent.width / 2 - width - Device.gu(5)
-                y: Device.gu(10)
-            }
+            Row {
+                id: resultArea
+                anchors.centerIn: parent
+                spacing: Device.gu(10)
 
-            Rectangle {
-                id: deputyGeneralItem
-                color: "#1D1E19"
-                radius: Device.gu(3)
-                width: Device.gu(93)
-                height: Device.gu(130)
-                x: parent.width / 2 + Device.gu(5)
-                y: Device.gu(10)
+                Repeater {
+                    id: resultList
+                    model: choiceNum
+
+                    Rectangle {
+                        color: "#1D1E19"
+                        radius: Device.gu(3)
+                        width: Device.gu(93)
+                        height: Device.gu(130)
+                    }
+                }
             }
         }
 
@@ -86,12 +85,13 @@ GraphicsBox {
             height: Device.gu(40)
 
             MetroButton {
+                id: fightButton
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 text: qsTr("Fight")
                 width: Device.gu(120)
                 height: Device.gu(35)
-                enabled: headGeneral > 0 && deputyGeneral > 0
+                enabled: false
 
                 onClicked: close();
             }
@@ -110,65 +110,71 @@ GraphicsBox {
             draggable: true
 
             onClicked: {
-                if (headGeneral == gid) {
-                    headGeneral = 0;
-                } else if (deputyGeneral == gid) {
-                    deputyGeneral = 0;
-                } else {
-                    if (headGeneral == 0) {
-                        headGeneral = gid;
-                    } else if (deputyGeneral == 0) {
-                        deputyGeneral = gid;
+                var toSelect = true;
+                for (var i = 0; i < selectedItem.length; i++) {
+                    if (selectedItem[i] === this) {
+                        toSelect = false;
+                        selectedItem.splice(i, 1);
                     }
                 }
+                if (toSelect && selectedItem.length < choiceNum)
+                    selectedItem.push(this);
+                updatePosition();
             }
 
             onReleased: {
-                if (isClicked)
-                    return;
-
-                if (y < splitLine.y) {
-                    if (headGeneral == gid)
-                        headGeneral = 0;
-                    else if (deputyGeneral == gid)
-                        deputyGeneral = 0;
-                } else {
-                    if (headGeneral == 0) {
-                        headGeneral = gid;
-                    } else if (deputyGeneral == 0) {
-                        deputyGeneral = gid;
-                    } else {
-                        var horizontalCenter = x + width / 2;
-                        if (horizontalCenter > deputyGeneralItem.x && headGeneral === gid) {
-                            headGeneral = deputyGeneral;
-                            deputyGeneral = gid;
-                        } else if (horizontalCenter < headGeneralItem.x + headGeneralItem.width && deputyGeneral === gid) {
-                            deputyGeneral = headGeneral;
-                            headGeneral = gid;
-                        }
-                    }
-                }
+                if (!isClicked)
+                    arrangeCards();
             }
         }
     }
 
-    onHeadGeneralChanged: arrangeCards();
-    onDeputyGeneralChanged: arrangeCards();
     function arrangeCards()
     {
-        var item, pos;
-        for (var i = 0; i < generalList.count; i++)
-        {
-            item = generalCardList.itemAt(i);
-            if (headGeneral === item.gid) {
-                pos = root.mapFromItem(resultArea, headGeneralItem.x, headGeneralItem.y);
-            } else if (deputyGeneral === item.gid) {
-                pos = root.mapFromItem(resultArea, deputyGeneralItem.x, deputyGeneralItem.y);
-            } else {
-                var magnet = generalMagnetList.itemAt(i);
-                pos = root.mapFromItem(generalMagnetList.parent, magnet.x, magnet.y);
-            }
+        var item, i;
 
+        selectedItem = [];
+        for (i = 0; i < generalList.count; i++) {
+            item = generalCardList.itemAt(i);
+            if (item.y > splitLine.y)
+                selectedItem.push(item);
+        }
+
+        selectedItem.sort(function(a, b){
+            return a.x - b.x;
+        });
+
+        if (selectedItem.length > choiceNum)
+            selectedItem.splice(choiceNum, selectedItem.length - choiceNum);
+
+        updatePosition();
+    }
+
+    function updatePosition()
+    {
+        choices = [];
+        var item, magnet, pos, i;
+        for (i = 0; i < selectedItem.length && i < resultList.count; i++) {
+            item = selectedItem[i];
+            choices.push(item.gid);
+            magnet = resultList.itemAt(i);
+            pos = root.mapFromItem(resultArea, magnet.x, magnet.y);
+            if (item.homeX !== pos.x || item.homeY !== item.y) {
+                item.homeX = pos.x;
+                item.homeY = pos.y;
+                item.goBack(true);
+            }
+        }
+
+        fightButton.enabled = (choices.length == choiceNum);
+
+        for (i = 0; i < generalCardList.count; i++) {
+            item = generalCardList.itemAt(i);
+            if (selectedItem.contains(item))
+                continue;
+
+            magnet = generalMagnetList.itemAt(i);
+            pos = root.mapFromItem(generalMagnetList.parent, magnet.x, magnet.y);
             if (item.homeX !== pos.x || item.homeY !== item.y) {
                 item.homeX = pos.x;
                 item.homeY = pos.y;

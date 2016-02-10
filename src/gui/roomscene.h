@@ -36,7 +36,7 @@ public:
     RoomScene(QQuickItem *parent = 0);
 
     //From QML to C++
-    Q_INVOKABLE void onChooseGeneralFinished(uint head, uint deputy);
+    Q_INVOKABLE void onChooseGeneralFinished(const QVariantList &choices);
     Q_INVOKABLE void onCardSelected(const QVariantList &cardIds);
     Q_INVOKABLE void onPhotoSelected(const QVariantList &seats);
     Q_INVOKABLE void onAccepted();
@@ -54,7 +54,7 @@ signals:
     void enableCards(const QVariant &cardIds);
     void setPhotoReady(bool ready);
     void enablePhotos(const QVariant &seats);
-    void chooseGeneral(const QVariant &generals);
+    void chooseGeneral(const QVariant &generals, int num);
     void startEmotion(const QString &emotion, int seat);
     void playAudio(const QString &path);
     void showIndicatorLine(int from, const QVariantList &tos);
@@ -84,7 +84,7 @@ private:
     void enableCards(const QList<const Card *> &cards);
 
     void onSeatArranged();
-    void onChooseGeneralRequested(const QList<const General *> &candidates);
+    void onChooseGeneralRequested(const QList<const General *> &candidates, int num);
     void onCardsMoved(const QList<CardsMoveStruct> &moves);
     void onUsingCard(const QString &pattern = QString(), const QList<const Player *> &assignedTargets = QList<const Player *>());
     void onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);

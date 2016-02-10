@@ -7,6 +7,12 @@ ClientPlayer::ClientPlayer(CClientUser *user, QObject *parent)
     : Player(parent)
     , m_user(user)
 {
+    connect(this, &ClientPlayer::headGeneralChanged, [this](){
+        setHeadGeneralShown(headGeneral() != nullptr);
+    });
+    connect(this, &ClientPlayer::deputyGeneralChanged, [this](){
+        setDeputyGeneralShown(deputyGeneral() != nullptr);
+    });
 }
 
 QString ClientPlayer::fullGeneralName() const

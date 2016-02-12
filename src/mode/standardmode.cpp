@@ -35,7 +35,7 @@ class StandardRule : public GameRule
 public:
     StandardRule() : GameRule()
     {
-        m_name = "hegemony_rule";
+        m_name = "standard_rule";
         m_events << GameStart << BuryVictim << GameOverJudge;
 
         m_callbacks[GameStart] = onGameStart;

@@ -25,6 +25,8 @@
 
 #include <functional>
 
+#include <cglobal.h>
+
 class Player;
 class Card;
 
@@ -48,7 +50,7 @@ public:
 
     typedef std::function<void()> ChangeSignal;
 
-    CardArea(Type type, Player *owner = nullptr, const QString &name = QString());
+    explicit CardArea(Type type, Player *owner = nullptr, const QString &name = QString());
     Type type() const { return m_type; }
     Player *owner() const { return m_owner; }
     QString name() const { return m_name; }
@@ -102,6 +104,9 @@ private:
     ChangeSignal m_changeSignal;
     bool m_keepVirtualCard;
     QStringList m_virtualCards;
+
+private:
+    C_DISABLE_COPY(CardArea);
 };
 
 #endif // CARDAREA_H

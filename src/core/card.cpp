@@ -27,7 +27,7 @@ Card::Card(Suit suit, int number)
     : m_id(0)
     , m_suit(suit)
     , m_number(number)
-    , m_color(NoColor)
+    , m_color(UndeterminedColor)
     , m_type(InvalidType)
     , m_subtype(0)
     , m_transferable(false)
@@ -62,12 +62,13 @@ uint Card::effectiveId() const
 
 Card::Suit Card::suit() const
 {
-    if (m_subcards.isEmpty())
+    if (m_suit == UndeterminedSuit) {
+        if (m_subcards.length() == 1)
+            return m_subcards.first()->suit();
+        else
+            return NoSuit;
+    } else
         return m_suit;
-    else if (m_subcards.length() == 1)
-        return m_subcards.first()->suit();
-    else
-        return NoSuit;
 }
 
 void Card::setSuitString(const QString &suit)
@@ -86,13 +87,14 @@ void Card::setSuitString(const QString &suit)
 
 QString Card::suitString() const
 {
-    if (m_suit == Spade)
+    Suit s = suit();
+    if (s == Spade)
         return "spade";
-    else if (m_suit == Heart)
+    else if (s == Heart)
         return "heart";
-    else if (m_suit == Club)
+    else if (s == Club)
         return "club";
-    else if (m_suit == Diamond)
+    else if (s == Diamond)
         return "diamond";
     else
         return "no_suit";
@@ -100,7 +102,7 @@ QString Card::suitString() const
 
 int Card::number() const
 {
-    if (m_number > 0)
+    if (m_number >= 0)
         return m_number;
 
     int number = 0;
@@ -111,9 +113,14 @@ int Card::number() const
 
 Card::Color Card::color() const
 {
-    if (m_suit == NoSuit)
+    if (m_color == UndeterminedColor) {
+        Suit s = suit();
+        if (s != NoSuit)
+            return (s == Spade || s == Club) ? Black : Red;
+        else
+            return NoColor;
+    } else
         return m_color;
-    return (m_suit == Spade || m_suit == Club) ? Black : Red;
 }
 
 void Card::setColorString(const QString &color)
@@ -128,10 +135,10 @@ void Card::setColorString(const QString &color)
 
 QString Card::colorString() const
 {
-    Color color = this->color();
-    if (color == Black)
+    Color c = color();
+    if (c == Black)
         return "black";
-    else if (color == Red)
+    else if (c == Red)
         return "red";
     else
         return "no_color";
@@ -368,7 +375,7 @@ void TrickCard::onEffect(GameLogic *logic, CardEffectStruct &effect)
             } else {
                 player->showPrompt("trick-nullification-4", effect.use.card);
             }
-            Card *card = player->askForCard("Nullification");
+            Card *card = player->askForCard("Nullification"); // @to-do: Takashiro: the ask of Nullification is actually a race request(according to the old framework)
             if (card) {
                 CardUseStruct use;
                 use.from = player;

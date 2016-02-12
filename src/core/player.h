@@ -304,6 +304,9 @@ protected:
     QList<const Skill *> m_acquiredSkills;
 
     QMap<const Skill *, int> m_skillHistory;
+
+private:
+    C_DISABLE_COPY(Player);
 };
 
 #endif // PLAYER_H

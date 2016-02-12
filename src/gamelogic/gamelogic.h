@@ -76,7 +76,7 @@ public:
     CardArea *table() const { return m_table; }
     CardArea *wugu() const { return m_wugu; }
 
-    void moveCards(const CardsMoveStruct &move);
+    void moveCards(CardsMoveStruct &move);
     void moveCards(QList<CardsMoveStruct> &moves);
 
     bool useCard(CardUseStruct &use);

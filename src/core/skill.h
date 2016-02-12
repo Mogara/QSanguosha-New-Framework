@@ -48,7 +48,7 @@ public:
         CardModType
     };
 
-    Skill(const QString &name);
+    explicit Skill(const QString &name);
     virtual ~Skill();
 
     uint id() const { return m_id; }
@@ -73,12 +73,15 @@ protected:
 private:
     QList<const Skill *> m_subskills;
     const Skill *m_topSkill;
+
+private:
+    C_DISABLE_COPY(Skill);
 };
 
 class TriggerSkill : public Skill, public EventHandler
 {
 public:
-    TriggerSkill(const QString &name);
+    explicit TriggerSkill(const QString &name);
 
     QString name() const { return Skill::name(); }
 
@@ -94,7 +97,7 @@ protected:
 class StatusSkill : public TriggerSkill
 {
 public:
-    StatusSkill(const QString &name);
+    explicit StatusSkill(const QString &name);
 
     virtual void validate(ServerPlayer *target) const = 0;
     virtual void invalidate(ServerPlayer *target) const = 0;
@@ -106,7 +109,7 @@ public:
 class MasochismSkill : public TriggerSkill
 {
 public:
-    MasochismSkill(const QString &name);
+    explicit MasochismSkill(const QString &name);
 
     virtual int triggerable(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const = 0;
     EventList triggerable(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const final override;
@@ -120,7 +123,7 @@ class Card;
 template<typename T>
 static bool CheckAvailability(const Player *self)
 {
-    T *card = new T(T::NoSuit, 0);
+    T *card = new T(T::UndeterminedSuit, T::UndeterminedNumber);
     bool result = card->isAvailable(self);
     delete card;
     return result;
@@ -135,7 +138,7 @@ public:
         ProactiveType
     };
 
-    ViewAsSkill(const QString &name);
+    explicit ViewAsSkill(const QString &name);
 
     //An empty pattern means it's the playing phase
     virtual bool isAvailable(const Player *self, const QString &pattern) const;
@@ -150,7 +153,7 @@ public:
 class OneCardViewAsSkill : public ViewAsSkill
 {
 public:
-    OneCardViewAsSkill(const QString &name);
+    explicit OneCardViewAsSkill(const QString &name);
 
     bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const final override;
     Card *viewAs(const QList<Card *> &cards, const Player *self) const final override;
@@ -162,7 +165,7 @@ public:
 class ProactiveSkill : public ViewAsSkill
 {
 public:
-    ProactiveSkill(const QString &name);
+    explicit ProactiveSkill(const QString &name);
 
     //An empty pattern means it's the playing phase
     virtual bool isAvailable(const Player *self, const QString &pattern) const;
@@ -188,7 +191,7 @@ public:
 class CardModSkill : public Skill
 {
 public:
-    CardModSkill(const QString &name);
+    explicit CardModSkill(const QString &name);
 
     virtual bool targetFilter(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
     virtual int extraDistanceLimit(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;

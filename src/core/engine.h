@@ -63,13 +63,19 @@ private:
     QMap<uint, const Skill *> m_skills;
 };
 
+#ifdef Sanguosha
+#error "Sanguosha is defined before to be defined by QSanguosha"
+#else
+#define Sanguosha (*Engine::instance())
+#endif
+
 #define ADD_PACKAGE(name) namespace\
 {\
 struct PackageAdder\
 {\
     PackageAdder()\
     {\
-        Engine::instance()->addPackage(new name##Package);\
+        Sanguosha.addPackage(new name##Package);\
     }\
 };\
 PackageAdder __packageAdder__;\
@@ -81,10 +87,11 @@ struct ModeAdder\
 {\
     ModeAdder()\
     {\
-        Engine::instance()->addMode(new name##Mode);\
+        Sanguosha.addMode(new name##Mode);\
     }\
 };\
 ModeAdder __modeAdder__;\
 }
+
 
 #endif // ENGINE_H

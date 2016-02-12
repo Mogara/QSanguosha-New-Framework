@@ -103,7 +103,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
 {
     QList<const EventHandler *> &handlers = m_handlers[event];
 
-    qStableSort(handlers.begin(), handlers.end(), [event](const EventHandler *a, const EventHandler *b){
+    std::stable_sort(handlers.begin(), handlers.end(), [event](const EventHandler *a, const EventHandler *b){
         return a->priority(event) > b->priority(event);
     });
 
@@ -234,7 +234,7 @@ QList<ServerPlayer *> GameLogic::allPlayers(bool includeDead) const
     if (current == nullptr)
         return players;
 
-    qSort(players.begin(), players.end(), [](const ServerPlayer *a, const ServerPlayer *b){
+    std::sort(players.begin(), players.end(), [](const ServerPlayer *a, const ServerPlayer *b){
         return a->seat() < b->seat();
     });
 
@@ -276,7 +276,7 @@ void GameLogic::sortByActionOrder(QList<ServerPlayer *> &players) const
     foreach (ServerPlayer *player, players)
         actionOrder[player] = allPlayers.indexOf(player);
 
-    qSort(allPlayers.begin(), allPlayers.end(), [&actionOrder](ServerPlayer *a, ServerPlayer *b){
+    std::sort(allPlayers.begin(), allPlayers.end(), [&actionOrder](ServerPlayer *a, ServerPlayer *b){
         return actionOrder.value(a) < actionOrder.value(b);
     });
 }

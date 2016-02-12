@@ -234,7 +234,7 @@ void RoomScene::enableCards(const QList<const Card *> &cards)
 void RoomScene::onSeatArranged()
 {
     QList<const ClientPlayer *> players = m_client->players();
-    qSort(players.begin(), players.end(), [](const ClientPlayer *p1, const ClientPlayer *p2){
+    std::sort(players.begin(), players.end(), [](const ClientPlayer *p1, const ClientPlayer *p2){
         return p1->seat() < p2->seat();
     });
 

@@ -283,7 +283,7 @@ public:
 
     void onUse(GameLogic *logic, CardUseStruct &use) override;
     void effect(GameLogic *logic, CardEffectStruct &effect) override;
-    void complete(GameLogic *logic);
+    void complete(GameLogic *logic) override;
     bool isAvailable(const Player *player) const override;
 };
 

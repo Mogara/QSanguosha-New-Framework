@@ -35,6 +35,7 @@ class Card : public QObject
 
     Q_ENUMS(Suit)
     Q_ENUMS(Color)
+    Q_ENUMS(Type)
 
     Q_PROPERTY(uint id READ id)
     Q_PROPERTY(uint effectiveId READ effectiveId)
@@ -55,7 +56,9 @@ public:
         Spade,
         Heart,
         Club,
-        Diamond
+        Diamond,
+
+        UndeterminedSuit = -1
     };
 
     enum Color
@@ -63,7 +66,9 @@ public:
         NoColor,
 
         Red,
-        Black
+        Black,
+
+        UndeterminedColor = -1
     };
 
     enum Type
@@ -76,10 +81,11 @@ public:
 
     enum Number
     {
-        InfinityNum = 1000
+        InfinityNum = 1000,
+
+        UndeterminedNumber = -1
     };
 
-    Card(Suit suit = NoSuit, int number = 0);
     virtual Card *clone() const;
 
     uint id() const { return m_id; }
@@ -146,6 +152,8 @@ public:
     static QList<Card *> Find(const QList<Card *> &cards, const QVariant &data);
 
 protected:
+    explicit Card(Suit suit = UndeterminedSuit, int number = UndeterminedNumber);
+
     uint m_id;
     Suit m_suit;
     int m_number;
@@ -164,6 +172,9 @@ protected:
     const Skill *m_skill;
     QList<Card *> m_subcards;
     QSet<QString> m_flags;
+
+private:
+    C_DISABLE_COPY(Card);
 };
 
 class BasicCard : public Card

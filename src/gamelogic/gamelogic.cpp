@@ -315,9 +315,12 @@ void GameLogic::reshuffleDrawPile()
     m_drawPile->add(cards, CardArea::Bottom);
 }
 
-void GameLogic::moveCards(const CardsMoveStruct &move)
+void GameLogic::moveCards(CardsMoveStruct &move)
 {
-    moveCards(QList<CardsMoveStruct>() << move);
+    QList<CardsMoveStruct> moves;
+    moves << move;
+    moveCards(moves);
+    move = moves.first();
 }
 
 void GameLogic::moveCards(QList<CardsMoveStruct> &moves)

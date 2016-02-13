@@ -26,3 +26,6 @@ GeneratedFiles
 [Dd]ebug/
 [Rr]elease/
 *.aps
+/QtGraphicalEffects/
+/QtQuick.2/
+/QtQuick/

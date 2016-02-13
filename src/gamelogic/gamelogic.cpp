@@ -562,30 +562,31 @@ void GameLogic::damage(DamageStruct &damage)
 
             if (damage.to && trigger(Damaged, damage.to, data))
                 break;
+
+            if (damage.to)
+                trigger(BeforeHpReduced, damage.to, data);
+
+            if (damage.to) {
+                QVariantList arg;
+                arg << damage.to->id();
+                arg << damage.nature;
+                arg << damage.damage;
+                room()->broadcastNotification(S_COMMAND_DAMAGE, arg);
+
+                int newHp = damage.to->hp() - damage.damage;
+                damage.to->setHp(newHp);
+                damage.to->broadcastProperty("hp");
+
+                trigger(AfterHpReduced, damage.to, data);
+            }
+
+            if (damage.from)
+                trigger(AfterDamaging, damage.from, data);
+
+            if (damage.to)
+                trigger(AfterDamaged, damage.to, data);
+
         } while (false);
-
-        if (damage.to)
-            trigger(BeforeHpReduced, damage.to, data);
-
-        if (damage.to) {
-            QVariantList arg;
-            arg << damage.to->id();
-            arg << damage.nature;
-            arg << damage.damage;
-            room()->broadcastNotification(S_COMMAND_DAMAGE, arg);
-
-            int newHp = damage.to->hp() - damage.damage;
-            damage.to->setHp(newHp);
-            damage.to->broadcastProperty("hp");
-
-            trigger(AfterHpReduced, damage.to, data);
-        }
-
-        if (damage.from)
-            trigger(AfterDamaging, damage.from, data);
-
-        if (damage.to)
-            trigger(AfterDamaged, damage.to, data);
 
         if (damage.to)
             trigger(DamageComplete, damage.to, data);

@@ -1,0 +1,382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{0a4e791c-0e80-4eb8-a7c3-8ed15068c132}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{4baefe69-aedf-4535-943a-6737fe292271}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="client">
+      <UniqueIdentifier>{446139b5-871b-4586-992f-d4ce62dee543}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{91531996-abde-451d-8ec8-ae118207e061}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gamelogic">
+      <UniqueIdentifier>{de8c8a68-c4d5-4286-94fe-80b3c2a8e6cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui">
+      <UniqueIdentifier>{ecca21bc-a13d-4eb0-85ea-9df62b586558}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\dialog">
+      <UniqueIdentifier>{4d4973d6-9ad7-49ab-9be5-f254906ca19b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mode">
+      <UniqueIdentifier>{e77c020b-9b2f-4764-b1c4-6c6ae5d527e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="package">
+      <UniqueIdentifier>{5568fa66-9bac-45bb-a184-a7a48f82b994}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\main.cpp" />
+    <ClCompile Include="..\..\src\client\client.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_client.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_client.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\client\clientplayer.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_clientplayer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_clientplayer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\client\clientskill.cpp">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_clientskill.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_clientskill.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\player.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_player.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_player.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\protocol.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\skill.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\structs.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\util.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\card.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_card.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_card.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\cardarea.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\cardpattern.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\engine.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\gamemode.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\general.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\package.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gamelogic\gamelogic.cpp">
+      <Filter>gamelogic</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_gamelogic.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_gamelogic.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gamelogic\gamerule.cpp">
+      <Filter>gamelogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gamelogic\serverplayer.cpp">
+      <Filter>gamelogic</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_serverplayer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_serverplayer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gamelogic\event.cpp">
+      <Filter>gamelogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gamelogic\eventhandler.cpp">
+      <Filter>gamelogic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\lobby.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_lobby.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_lobby.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\roomscene.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_roomscene.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_roomscene.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\dialog\pcconsolestartdialog.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_pcconsolestartdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_pcconsolestartdialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\dialog\startgamedialog.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_startgamedialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_startgamedialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\dialog\startserverdialog.cpp">
+      <Filter>gui\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_startserverdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_startserverdialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mode\hegemonymode.cpp">
+      <Filter>mode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mode\standardmode.cpp">
+      <Filter>mode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standard-equipcard.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_standard-equipcard.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_standard-equipcard.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standardpackage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standard-qun.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standard-shu.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standard-trickcard.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_standard-trickcard.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_standard-trickcard.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standard-wei.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standard-wu.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\systempackage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\hegstandardpackage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\hegstandard-qun.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\hegstandard-shu.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\hegstandard-wei.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\hegstandard-wu.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\maneuveringpackage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_maneuveringpackage.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_maneuveringpackage.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\standard-basiccard.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_standard-basiccard.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_standard-basiccard.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\src\client\client.h">
+      <Filter>client</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\client\clientplayer.h">
+      <Filter>client</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\client\clientskill.h">
+      <Filter>client</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\core\player.h">
+      <Filter>core</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\core\card.h">
+      <Filter>core</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\gamelogic\gamelogic.h">
+      <Filter>gamelogic</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\gamelogic\serverplayer.h">
+      <Filter>gamelogic</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\gui\lobby.h">
+      <Filter>gui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\gui\roomscene.h">
+      <Filter>gui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\gui\dialog\pcconsolestartdialog.h">
+      <Filter>gui\dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\gui\dialog\startgamedialog.h">
+      <Filter>gui\dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\gui\dialog\startserverdialog.h">
+      <Filter>gui\dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\standard-equipcard.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\standard-trickcard.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\maneuveringpackage.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\standard-basiccard.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\core\protocol.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\skill.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\structs.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\util.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\cardarea.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\cardpattern.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\engine.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\gamemode.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\general.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\package.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gamelogic\gamerule.h">
+      <Filter>gamelogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gamelogic\event.h">
+      <Filter>gamelogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gamelogic\eventhandler.h">
+      <Filter>gamelogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gamelogic\eventtype.h">
+      <Filter>gamelogic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mode\hegemonymode.h">
+      <Filter>mode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\mode\standardmode.h">
+      <Filter>mode</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\package\standardpackage.h">
+      <Filter>package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\package\systempackage.h">
+      <Filter>package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\package\hegstandardpackage.h">
+      <Filter>package</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\src\resource\icons\icon.rc" />
+  </ItemGroup>
+</Project>

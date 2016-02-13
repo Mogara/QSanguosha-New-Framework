@@ -18,3 +18,11 @@ Microsoft.DTfW.DHL.manifest
 /imageformats/
 /*.qrc
 /translations/*.qm
+*.suo
+GeneratedFiles
+*.sdf
+*.opendb
+*.vcxproj.user
+[Dd]ebug/
+[Rr]elease/
+*.aps

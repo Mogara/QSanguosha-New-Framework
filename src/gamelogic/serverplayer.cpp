@@ -28,6 +28,11 @@
 #include <CRoom>
 #include <CServerAgent>
 
+namespace
+{
+    const int m_replyTime = 15000;
+}
+
 ServerPlayer::ServerPlayer(GameLogic *logic, CServerAgent *agent)
     : Player(logic)
     , m_logic(logic)
@@ -164,9 +169,8 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
 
 bool ServerPlayer::activate()
 {
-    int timeout = 15 * 1000;
-    m_agent->request(S_COMMAND_USE_CARD, QVariant(), timeout);
-    QVariant replyData = m_agent->waitForReply(timeout);
+    m_agent->request(S_COMMAND_USE_CARD, QVariant(), m_replyTime);
+    QVariant replyData = m_agent->waitForReply(m_replyTime);
     if (replyData.isNull())
         return true;
     const QVariantMap reply = replyData.toMap();
@@ -282,8 +286,8 @@ Event ServerPlayer::askForTriggerOrder(const EventList &options, bool cancelable
     }
     data["options"] = optionData;
 
-    m_agent->request(S_COMMAND_TRIGGER_ORDER, data, 15000);
-    QVariant replyData = m_agent->waitForReply(15000);
+    m_agent->request(S_COMMAND_TRIGGER_ORDER, data, m_replyTime);
+    QVariant replyData = m_agent->waitForReply(m_replyTime);
     if (replyData.isNull())
         return cancelable ? Event() : options.first();
 
@@ -302,8 +306,8 @@ Card *ServerPlayer::askForCard(const QString &pattern, bool optional)
 
     QVariant replyData;
     forever {
-        m_agent->request(S_COMMAND_ASK_FOR_CARD, data, 15000);
-        replyData = m_agent->waitForReply(15000);
+        m_agent->request(S_COMMAND_ASK_FOR_CARD, data, m_replyTime);
+        replyData = m_agent->waitForReply(m_replyTime);
         if (replyData.isNull())
             break;
 
@@ -357,8 +361,8 @@ QList<Card *> ServerPlayer::askForCards(const QString &pattern, int minNum, int 
     data["maxNum"] = maxNum;
     data["optional"] = optional;
 
-    m_agent->request(S_COMMAND_ASK_FOR_CARD, data, 15000);
-    const QVariantMap replyData = m_agent->waitForReply(15000).toMap();
+    m_agent->request(S_COMMAND_ASK_FOR_CARD, data, m_replyTime);
+    const QVariantMap replyData = m_agent->waitForReply(m_replyTime).toMap();
 
     if (optional) {
         if (replyData.isEmpty())
@@ -421,8 +425,8 @@ Card *ServerPlayer::askToChooseCard(ServerPlayer *owner, const QString &areaFlag
         data["delayedTricks"] = trickData;
     }
 
-    m_agent->request(S_COMMAND_CHOOSE_PLAYER_CARD, data, 15000);
-    uint cardId = m_agent->waitForReply(15000).toUInt();
+    m_agent->request(S_COMMAND_CHOOSE_PLAYER_CARD, data, m_replyTime);
+    uint cardId = m_agent->waitForReply(m_replyTime).toUInt();
     if (cardId > 0) {
         if (areaFlag.contains('h') && handcardVisible) {
             Card *card = handcards->findCard(cardId);
@@ -463,8 +467,8 @@ bool ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer
         targetIds << target->id();
     data["assignedTargets"] = targetIds;
 
-    m_agent->request(S_COMMAND_USE_CARD, data, 15000);
-    const QVariantMap reply = m_agent->waitForReply(15000).toMap();
+    m_agent->request(S_COMMAND_USE_CARD, data, m_replyTime);
+    const QVariantMap reply = m_agent->waitForReply(m_replyTime).toMap();
     if (reply.isEmpty())
         return false;
 
@@ -515,7 +519,7 @@ bool ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer
     return m_logic->useCard(use);
 }
 
-QList<QList<Card *>> ServerPlayer::askToArrangeCard(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames)
+QList<QList<Card *> > ServerPlayer::askToArrangeCard(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames)
 {
     QVariantMap data;
 
@@ -531,9 +535,9 @@ QList<QList<Card *>> ServerPlayer::askToArrangeCard(const QList<Card *> &cards, 
 
     data["areaNames"] = areaNames;
 
-    m_agent->request(S_COMMAND_ARRANGE_CARD, data);
+    m_agent->request(S_COMMAND_ARRANGE_CARD, data, m_replyTime * 3);
 
-    QList<QList<Card *>> result;
+    QList<QList<Card *> > result;
     const QVariantList reply = m_agent->waitForReply().toList();
     int maxi = qMin(capacities.length(), reply.length());
     for (int i = 0; i < maxi; i++) {
@@ -753,8 +757,8 @@ QList<const General *> ServerPlayer::askForGeneral(const QList<const General *> 
         candidateData << candidate->id();
     data["candidates"] = candidateData;
 
-    m_agent->request(S_COMMAND_CHOOSE_GENERAL, data, 15000);
-    QVariantList reply = m_agent->waitForReply(15000).toList();
+    m_agent->request(S_COMMAND_CHOOSE_GENERAL, data, m_replyTime);
+    QVariantList reply = m_agent->waitForReply(m_replyTime).toList();
 
     GeneralList result;
     foreach (const QVariant &idData, reply) {

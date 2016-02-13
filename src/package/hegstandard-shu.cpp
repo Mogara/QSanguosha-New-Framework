@@ -39,15 +39,15 @@ class Rende : public ProactiveSkill
             m_events << PhaseChanging;
         }
 
-        EventList triggerable(GameLogic *, EventType, ServerPlayer *owner, QVariant &data, ServerPlayer *) const override
-        {
-            if (owner->tag.contains("rende_count")) {
-                PhaseChangeStruct *change = data.value<PhaseChangeStruct *>();
-                if (change->to == Player::Inactive)
-                    owner->tag.remove("rende_count");
-            }
-            return EventList();
-        }
+//        EventList triggerable(GameLogic *, EventType, ServerPlayer *owner, QVariant &data, ServerPlayer *) const override
+//        {
+//            if (owner->tag.contains("rende_count")) {
+//                PhaseChangeStruct *change = data.value<PhaseChangeStruct *>();
+//                if (change->to == Player::Inactive)
+//                    owner->tag.remove("rende_count");
+//            }
+//            return EventList();
+//        }
     };
 
 public:
@@ -113,22 +113,22 @@ public:
         m_events << TargetChosen;
     }
 
-    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
-    {
-        if (!TriggerSkill::triggerable(player))
-            return EventList();
+//    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+//    {
+//        if (!TriggerSkill::triggerable(player))
+//            return EventList();
 
-        CardUseStruct *use = data.value<CardUseStruct *>();
-        if (use->card && use->card->type() == Card::TrickType && use->card->subtype() != TrickCard::DelayedType && !use->card->isVirtual())
-            return Event(this, player);
-        return EventList();
-    }
+//        CardUseStruct *use = data.value<CardUseStruct *>();
+//        if (use->card && use->card->type() == Card::TrickType && use->card->subtype() != TrickCard::DelayedType && !use->card->isVirtual())
+//            return Event(this, player);
+//        return EventList();
+//    }
 
-    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
-    {
-        target->drawCards(1);
-        return false;
-    }
+//    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+//    {
+//        target->drawCards(1);
+//        return false;
+//    }
 };
 
 class Qicai : public CardModSkill
@@ -156,23 +156,23 @@ public:
         setFrequency(Compulsory);
     }
 
-    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
-    {
-        if (TriggerSkill::triggerable(player) && player->handcardArea()->size() <= 0) {
-            CardUseStruct *use = data.value<CardUseStruct *>();
-            if (use->card && (use->card->inherits("Slash") || use->card->inherits("Duel")) && use->to.contains(player)) {
-                return Event(this);
-            }
-        }
-        return EventList();
-    }
+//    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+//    {
+//        if (TriggerSkill::triggerable(player) && player->handcardArea()->size() <= 0) {
+//            CardUseStruct *use = data.value<CardUseStruct *>();
+//            if (use->card && (use->card->inherits("Slash") || use->card->inherits("Duel")) && use->to.contains(player)) {
+//                return Event(this);
+//            }
+//        }
+//        return EventList();
+//    }
 
-    bool effect(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
-    {
-        CardUseStruct *use = data.value<CardUseStruct *>();
-        use->to.removeOne(player);
-        return false;
-    }
+//    bool effect(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+//    {
+//        CardUseStruct *use = data.value<CardUseStruct *>();
+//        use->to.removeOne(player);
+//        return false;
+//    }
 };
 
 }

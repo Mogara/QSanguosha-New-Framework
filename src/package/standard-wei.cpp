@@ -175,43 +175,43 @@ public:
     }
 };
 
-class Ganglie : public MasochismSkill
+class Ganglie : public TriggerSkill // MasochismSkill // for compiling
 {
 public:
-    Ganglie() : MasochismSkill("ganglie")
+    Ganglie() : TriggerSkill("ganglie")
     {
     }
 
-    int triggerable(GameLogic *, ServerPlayer *, DamageStruct &) const override
-    {
-        return 1;
-    }
+//    int triggerable(GameLogic *, ServerPlayer *, DamageStruct &) const override
+//    {
+//        return 1;
+//    }
 
-    bool effect(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const override
-    {
-        JudgeStruct judge(".|^heart");
-        judge.who = target;
-        logic->judge(judge);
+//    bool effect(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const override
+//    {
+//        JudgeStruct judge(".|^heart");
+//        judge.who = target;
+//        logic->judge(judge);
 
-        if (judge.matched && damage.from) {
-            damage.from->showPrompt("ganglie_discard_cards", target);
-            QList<Card *> cards = damage.from->askForCards(".|.|.|hand", 2, true);
-            if (cards.length() == 2) {
-                CardsMoveStruct discard;
-                discard.cards = cards;
-                discard.to.type = CardArea::DiscardPile;
-                discard.isOpen = true;
-                logic->moveCards(discard);
-            } else {
-                DamageStruct revenge;
-                revenge.from = target;
-                revenge.to = damage.from;
-                logic->damage(revenge);
-            }
-        }
+//        if (judge.matched && damage.from) {
+//            damage.from->showPrompt("ganglie_discard_cards", target);
+//            QList<Card *> cards = damage.from->askForCards(".|.|.|hand", 2, true);
+//            if (cards.length() == 2) {
+//                CardsMoveStruct discard;
+//                discard.cards = cards;
+//                discard.to.type = CardArea::DiscardPile;
+//                discard.isOpen = true;
+//                logic->moveCards(discard);
+//            } else {
+//                DamageStruct revenge;
+//                revenge.from = target;
+//                revenge.to = damage.from;
+//                logic->damage(revenge);
+//            }
+//        }
 
-        return false;
-    }
+//        return false;
+//    }
 };
 
 class Tuxi : public ProactiveSkill
@@ -224,43 +224,43 @@ class Tuxi : public ProactiveSkill
             m_events << PhaseStart;
         }
 
-        bool triggerable(ServerPlayer *owner) const override
-        {
-            return TriggerSkill::triggerable(owner) && owner->phase() == Player::Draw;
-        }
+//        bool triggerable(ServerPlayer *owner) const override
+//        {
+//            return TriggerSkill::triggerable(owner) && owner->phase() == Player::Draw;
+//        }
 
-        bool cost(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
-        {
-            target->showPrompt("tuxi_select_players");
-            return target->askToUseCard("@tuxi");
-        }
+//        bool cost(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+//        {
+//            target->showPrompt("tuxi_select_players");
+//            return target->askToUseCard("@tuxi");
+//        }
 
-        bool effect(GameLogic *logic, EventType, ServerPlayer *from, QVariant &, ServerPlayer *) const override
-        {
-            if (!from->tag.contains("tuxi_victims"))
-                return false;
+//        bool effect(GameLogic *logic, EventType, ServerPlayer *from, QVariant &, ServerPlayer *) const override
+//        {
+//            if (!from->tag.contains("tuxi_victims"))
+//                return false;
 
-            QList<ServerPlayer *> victims;
-            QVariantList data = from->tag.value("tuxi_victims").toList();
-            foreach (const QVariant &playerId, data) {
-                ServerPlayer *victim = logic->findPlayer(playerId.toUInt());
-                if (victim)
-                    victims << victim;
-            }
-            logic->sortByActionOrder(victims);
+//            QList<ServerPlayer *> victims;
+//            QVariantList data = from->tag.value("tuxi_victims").toList();
+//            foreach (const QVariant &playerId, data) {
+//                ServerPlayer *victim = logic->findPlayer(playerId.toUInt());
+//                if (victim)
+//                    victims << victim;
+//            }
+//            logic->sortByActionOrder(victims);
 
-            foreach (ServerPlayer *victim, victims) {
-                Card *card = from->askToChooseCard(victim, "h");
+//            foreach (ServerPlayer *victim, victims) {
+//                Card *card = from->askToChooseCard(victim, "h");
 
-                CardsMoveStruct obtain;
-                obtain.cards << card;
-                obtain.to.owner = from;
-                obtain.to.type = CardArea::Hand;
-                logic->moveCards(obtain);
-            }
+//                CardsMoveStruct obtain;
+//                obtain.cards << card;
+//                obtain.to.owner = from;
+//                obtain.to.type = CardArea::Hand;
+//                logic->moveCards(obtain);
+//            }
 
-            return true;
-        }
+//            return true;
+//        }
     };
 
 public:
@@ -305,17 +305,17 @@ class Luoyi : public TriggerSkill
             setFrequency(Compulsory);
         }
 
-        EventList triggerable(GameLogic *, EventType, ServerPlayer *owner, QVariant &data, ServerPlayer *) const override
-        {
-            if (!TriggerSkill::triggerable(owner) || !owner->tag.contains("luoyi_effect"))
-                return EventList();
+//        EventList triggerable(GameLogic *, EventType, ServerPlayer *owner, QVariant &data, ServerPlayer *) const override
+//        {
+//            if (!TriggerSkill::triggerable(owner) || !owner->tag.contains("luoyi_effect"))
+//                return EventList();
 
-            DamageStruct *damage = data.value<DamageStruct *>();
-            if (damage->card && (damage->card->inherits("Slash") || damage->card->inherits("Duel")) && damage->to != owner)
-                damage->damage++;
+//            DamageStruct *damage = data.value<DamageStruct *>();
+//            if (damage->card && (damage->card->inherits("Slash") || damage->card->inherits("Duel")) && damage->to != owner)
+//                damage->damage++;
 
-            return EventList();
-        }
+//            return EventList();
+//        }
     };
 
     class Reset : public TriggerSkill
@@ -327,12 +327,12 @@ class Luoyi : public TriggerSkill
             setFrequency(Compulsory);
         }
 
-        bool triggerable(ServerPlayer *owner) const override
-        {
-            if (TriggerSkill::triggerable(owner) && owner->phase() == Player::Play && owner->tag.contains("luoyi_effect"))
-                owner->tag.remove("luoyi_effect");
-            return false;
-        }
+//        bool triggerable(ServerPlayer *owner) const override
+//        {
+//            if (TriggerSkill::triggerable(owner) && owner->phase() == Player::Play && owner->tag.contains("luoyi_effect"))
+//                owner->tag.remove("luoyi_effect");
+//            return false;
+//        }
     };
 
 public:
@@ -344,16 +344,16 @@ public:
         addSubskill(new Reset);
     }
 
-    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
-    {
-        int drawNum = data.toInt();
-        drawNum--;
-        data = drawNum;
+//    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+//    {
+//        int drawNum = data.toInt();
+//        drawNum--;
+//        data = drawNum;
 
-        target->tag["luoyi_effect"] = true;
+//        target->tag["luoyi_effect"] = true;
 
-        return false;
-    }
+//        return false;
+//    }
 };
 
 class Tiandu : public TriggerSkill
@@ -364,26 +364,26 @@ public:
         m_events << FinishJudge;
     }
 
-    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
-    {
-        if (TriggerSkill::triggerable(player)) {
-            JudgeStruct *judge = data.value<JudgeStruct *>();
-            if (judge->card && player->judgeCards()->contains(judge->card))
-                return Event(this, player);
-        }
-        return EventList();
-    }
+//    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+//    {
+//        if (TriggerSkill::triggerable(player)) {
+//            JudgeStruct *judge = data.value<JudgeStruct *>();
+//            if (judge->card && player->judgeCards()->contains(judge->card))
+//                return Event(this, player);
+//        }
+//        return EventList();
+//    }
 
-    bool effect(GameLogic *logic, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
-    {
-        JudgeStruct *judge = data.value<JudgeStruct *>();
-        CardsMoveStruct obtain;
-        obtain.cards << judge->card;
-        obtain.to.owner = player;
-        obtain.to.type = CardArea::Hand;
-        logic->moveCards(obtain);
-        return false;
-    }
+//    bool effect(GameLogic *logic, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+//    {
+//        JudgeStruct *judge = data.value<JudgeStruct *>();
+//        CardsMoveStruct obtain;
+//        obtain.cards << judge->card;
+//        obtain.to.owner = player;
+//        obtain.to.type = CardArea::Hand;
+//        logic->moveCards(obtain);
+//        return false;
+//    }
 };
 
 } //namespace

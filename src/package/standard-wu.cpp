@@ -104,19 +104,19 @@ class Keji : public TriggerSkill
             setFrequency(Compulsory);
         }
 
-        EventList triggerable(GameLogic *, EventType event, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
-        {
-            if (player->phase() == Player::Play && TriggerSkill::triggerable(player)) {
-                const Card *card = nullptr;
-                if (event == PreCardUsed)
-                    card = data.value<CardUseStruct *>()->card;
-                else
-                    card = data.value<CardResponseStruct *>()->card;
-                if (card->inherits("Slash"))
-                    player->tag["KejiSlashInPlayPhase"] = true;
-            }
-            return EventList();
-        }
+//        EventList triggerable(GameLogic *, EventType event, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+//        {
+//            if (player->phase() == Player::Play && TriggerSkill::triggerable(player)) {
+//                const Card *card = nullptr;
+//                if (event == PreCardUsed)
+//                    card = data.value<CardUseStruct *>()->card;
+//                else
+//                    card = data.value<CardResponseStruct *>()->card;
+//                if (card->inherits("Slash"))
+//                    player->tag["KejiSlashInPlayPhase"] = true;
+//            }
+//            return EventList();
+//        }
     };
 
 public:
@@ -126,24 +126,24 @@ public:
         addSubskill(new Record);
     }
 
-    bool triggerable(ServerPlayer *owner) const override
-    {
-        if (owner->phase() != Player::Discard)
-            return false;
+//    bool triggerable(ServerPlayer *owner) const override
+//    {
+//        if (owner->phase() != Player::Discard)
+//            return false;
 
-        bool slashInPlayPhase = owner->tag.value("KejiSlashInPlayPhase").toBool();
-        if (slashInPlayPhase) {
-            owner->tag.remove("KejiSlashInPlayPhase");
-            return false;
-        }
+//        bool slashInPlayPhase = owner->tag.value("KejiSlashInPlayPhase").toBool();
+//        if (slashInPlayPhase) {
+//            owner->tag.remove("KejiSlashInPlayPhase");
+//            return false;
+//        }
 
-        return TriggerSkill::triggerable(owner);
-    }
+//        return TriggerSkill::triggerable(owner);
+//    }
 
-    bool effect(GameLogic *, EventType, ServerPlayer *, QVariant &, ServerPlayer *) const override
-    {
-        return true;
-    }
+//    bool effect(GameLogic *, EventType, ServerPlayer *, QVariant &, ServerPlayer *) const override
+//    {
+//        return true;
+//    }
 };
 
 class Kurou : public ProactiveSkill
@@ -178,13 +178,13 @@ public:
         m_events << DrawNCards;
     }
 
-    bool effect(GameLogic *, EventType, ServerPlayer *, QVariant &data, ServerPlayer *) const override
-    {
-        int drawNum = data.toInt();
-        drawNum++;
-        data = drawNum;
-        return false;
-    }
+//    bool effect(GameLogic *, EventType, ServerPlayer *, QVariant &data, ServerPlayer *) const override
+//    {
+//        int drawNum = data.toInt();
+//        drawNum++;
+//        data = drawNum;
+//        return false;
+//    }
 };
 
 class Fanjian : public ProactiveSkill
@@ -273,56 +273,56 @@ class Liuli : public ProactiveSkill
             m_events << TargetConfirming;
         }
 
-        EventList triggerable(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
-        {
-            EventList events;
-            if (!TriggerSkill::triggerable(target))
-                return events;
+//        EventList triggerable(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+//        {
+//            EventList events;
+//            if (!TriggerSkill::triggerable(target))
+//                return events;
 
-            CardUseStruct *use = data.value<CardUseStruct *>();
-            if (use->card->inherits("Slash") && use->to.contains(target)) {
-                QList<ServerPlayer *> players = logic->otherPlayers(target);
-                players.removeOne(use->from);
+//            CardUseStruct *use = data.value<CardUseStruct *>();
+//            if (use->card->inherits("Slash") && use->to.contains(target)) {
+//                QList<ServerPlayer *> players = logic->otherPlayers(target);
+//                players.removeOne(use->from);
 
-                foreach (ServerPlayer *p, players) {
-                    if (p->inAttackRangeOf(target)) {
-                        Event e(this, target);
-                        events << e;
-                        break;
-                    }
-                }
-            }
+//                foreach (ServerPlayer *p, players) {
+//                    if (p->inAttackRangeOf(target)) {
+//                        Event e(this, target);
+//                        events << e;
+//                        break;
+//                    }
+//                }
+//            }
 
-            return events;
-        }
+//            return events;
+//        }
 
-        bool cost(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
-        {
-            CardUseStruct *use = data.value<CardUseStruct *>();
-            use->from->tag["liuli_slash_source"] = true;
-            use->from->unicastTagTo("liuli_slash_source", target);
-            target->showPrompt("invoke_liuli", use->from);
-            return target->askToUseCard("@liuli");
-        }
+//        bool cost(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+//        {
+//            CardUseStruct *use = data.value<CardUseStruct *>();
+//            use->from->tag["liuli_slash_source"] = true;
+//            use->from->unicastTagTo("liuli_slash_source", target);
+//            target->showPrompt("invoke_liuli", use->from);
+//            return target->askToUseCard("@liuli");
+//        }
 
-        bool effect(GameLogic *logic, EventType, ServerPlayer *daqiao, QVariant &data, ServerPlayer *) const override
-        {
-            CardUseStruct *use = data.value<CardUseStruct *>();
+//        bool effect(GameLogic *logic, EventType, ServerPlayer *daqiao, QVariant &data, ServerPlayer *) const override
+//        {
+//            CardUseStruct *use = data.value<CardUseStruct *>();
 
-            QList<ServerPlayer *> players = logic->otherPlayers(daqiao);
-            foreach (ServerPlayer *target, players) {
-                if (target->tag.contains("liuli_target")) {
-                    target->tag.remove("liuli_target");
-                    use->to.removeOne(daqiao);
-                    use->to.append(target);
-                    logic->sortByActionOrder(use->to);
-                    logic->trigger(TargetConfirming, target, data);
-                    return false;
-                }
-            }
+//            QList<ServerPlayer *> players = logic->otherPlayers(daqiao);
+//            foreach (ServerPlayer *target, players) {
+//                if (target->tag.contains("liuli_target")) {
+//                    target->tag.remove("liuli_target");
+//                    use->to.removeOne(daqiao);
+//                    use->to.append(target);
+//                    logic->sortByActionOrder(use->to);
+//                    logic->trigger(TargetConfirming, target, data);
+//                    return false;
+//                }
+//            }
 
-            return false;
-        }
+//            return false;
+//        }
     };
 
 public:
@@ -395,29 +395,29 @@ public:
         m_events << AfterCardsMove;
     }
 
-    EventList triggerable(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
-    {
-        EventList events;
+//    EventList triggerable(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+//    {
+//        EventList events;
 
-        if (TriggerSkill::triggerable(target)) {
-            QList<CardsMoveStruct> *moves = data.value<QList<CardsMoveStruct> *>();
-            foreach (const CardsMoveStruct &move, *moves) {
-                if (move.from.owner == target && move.from.type == CardArea::Hand && target->handcardNum() == 0) {
-                    Event e(this, target);
-                    events << e;
-                    break;
-                }
-            }
-        }
+//        if (TriggerSkill::triggerable(target)) {
+//            QList<CardsMoveStruct> *moves = data.value<QList<CardsMoveStruct> *>();
+//            foreach (const CardsMoveStruct &move, *moves) {
+//                if (move.from.owner == target && move.from.type == CardArea::Hand && target->handcardNum() == 0) {
+//                    Event e(this, target);
+//                    events << e;
+//                    break;
+//                }
+//            }
+//        }
 
-        return events;
-    }
+//        return events;
+//    }
 
-    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
-    {
-        target->drawCards(1);
-        return false;
-    }
+//    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+//    {
+//        target->drawCards(1);
+//        return false;
+//    }
 };
 
 class Xiaoji : public TriggerSkill
@@ -428,29 +428,29 @@ public:
         m_events << AfterCardsMove;
     }
 
-    EventList triggerable(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
-    {
-        EventList events;
+//    EventList triggerable(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
+//    {
+//        EventList events;
 
-        if (TriggerSkill::triggerable(target)) {
-            QList<CardsMoveStruct> *moves = data.value<QList<CardsMoveStruct> *>();
-            foreach (const CardsMoveStruct &move, *moves) {
-                if (move.from.owner == target && move.from.type == CardArea::Equip) {
-                    Event e(this, target);
-                    for (int i = 0; i < move.cards.length(); i++)
-                        events << e;
-                }
-            }
-        }
+//        if (TriggerSkill::triggerable(target)) {
+//            QList<CardsMoveStruct> *moves = data.value<QList<CardsMoveStruct> *>();
+//            foreach (const CardsMoveStruct &move, *moves) {
+//                if (move.from.owner == target && move.from.type == CardArea::Equip) {
+//                    Event e(this, target);
+//                    for (int i = 0; i < move.cards.length(); i++)
+//                        events << e;
+//                }
+//            }
+//        }
 
-        return events;
-    }
+//        return events;
+//    }
 
-    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
-    {
-        target->drawCards(2);
-        return false;
-    }
+//    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+//    {
+//        target->drawCards(2);
+//        return false;
+//    }
 };
 
 class Jieyin : public ProactiveSkill

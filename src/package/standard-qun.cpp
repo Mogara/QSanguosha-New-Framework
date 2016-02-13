@@ -111,58 +111,58 @@ public:
         setFrequency(Compulsory);
     }
 
-    EventMap triggerable(GameLogic *, EventType event, ServerPlayer *, QVariant &data) const override
-    {
-        EventMap events;
-        if (event == SlashEffect) {
-            SlashEffectStruct *effect = data.value<SlashEffectStruct *>();
-            if (effect->from && effect->from->hasSkill(this)) {
-                Event e(this, effect->from);
-                e.to << effect->to;
-                events.insert(effect->from, e);
-            }
-        } else if (event == CardResponded) {
-            CardResponseStruct *response = data.value<CardResponseStruct *>();
-            if (response->target && response->target->inherits("Duel")) {
-                if (response->to && response->to->hasSkill(this)) {
-                    if (response->from->tag["wushuang_slash"].toBool()) {
-                        response->from->tag.remove("wushuang_slash");
-                    } else {
-                        Event e(this, response->to);
-                        e.to << response->from;
-                        events.insert(response->to, e);
-                    }
-                }
-            }
-        }
+//    EventMap triggerable(GameLogic *, EventType event, ServerPlayer *, QVariant &data) const override
+//    {
+//        EventMap events;
+//        if (event == SlashEffect) {
+//            SlashEffectStruct *effect = data.value<SlashEffectStruct *>();
+//            if (effect->from && effect->from->hasSkill(this)) {
+//                Event e(this, effect->from);
+//                e.to << effect->to;
+//                events.insert(effect->from, e);
+//            }
+//        } else if (event == CardResponded) {
+//            CardResponseStruct *response = data.value<CardResponseStruct *>();
+//            if (response->target && response->target->inherits("Duel")) {
+//                if (response->to && response->to->hasSkill(this)) {
+//                    if (response->from->tag["wushuang_slash"].toBool()) {
+//                        response->from->tag.remove("wushuang_slash");
+//                    } else {
+//                        Event e(this, response->to);
+//                        e.to << response->from;
+//                        events.insert(response->to, e);
+//                    }
+//                }
+//            }
+//        }
 
-        return events;
-    }
+//        return events;
+//    }
 
-    bool effect(GameLogic *logic, EventType event, ServerPlayer *, QVariant &data, ServerPlayer *) const override
-    {
-        if (event == SlashEffect) {
-            SlashEffectStruct *effect = data.value<SlashEffectStruct *>();
-            effect->jinkNum = 2;
-        } else if (event == CardResponded) {
-            CardResponseStruct *response = data.value<CardResponseStruct *>();
+//    bool effect(GameLogic *logic, EventType event, ServerPlayer *, QVariant &data, ServerPlayer *) const override
+//    {
+//        if (event == SlashEffect) {
+//            SlashEffectStruct *effect = data.value<SlashEffectStruct *>();
+//            effect->jinkNum = 2;
+//        } else if (event == CardResponded) {
+//            CardResponseStruct *response = data.value<CardResponseStruct *>();
 
-            response->from->showPrompt("duel-slash", response->to);
-            Card *slash = response->from->askForCard("Slash");
-            if (slash == nullptr)
-                return true;
+//            response->from->showPrompt("duel-slash", response->to);
+//            Card *slash = response->from->askForCard("Slash");
+//            if (slash == nullptr)
+//                return true;
 
-            response->from->tag["wushuang_slash"] = true;
-            CardResponseStruct extra;
-            extra.card = slash;
-            extra.from = response->from;
-            extra.target = response->target;
-            extra.to = response->to;
-            return logic->respondCard(extra);
-        }
+//            response->from->tag["wushuang_slash"] = true;
+//            CardResponseStruct extra;
+//            extra.card = slash;
+//            extra.from = response->from;
+//            extra.target = response->target;
+//            extra.to = response->to;
+//            return logic->respondCard(extra);
+//        }
 
-        return false;
-    }
+//        return false;
+//    }
 };
 
 class Lijian: public ProactiveSkill
@@ -228,16 +228,16 @@ public:
         m_events << PhaseStart;
     }
 
-    bool triggerable(ServerPlayer *owner) const override
-    {
-        return TriggerSkill::triggerable(owner) && owner->phase() == Player::Finish;
-    }
-
-    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
-    {
-        target->drawCards(1);
-        return false;
-    }
+//     bool triggerable(ServerPlayer *owner) const override
+//     {
+//         return TriggerSkill::triggerable(owner) && owner->phase() == Player::Finish;
+//     }
+// 
+//     bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+//     {
+//         target->drawCards(1);
+//         return false;
+//     }
 };
 
 }

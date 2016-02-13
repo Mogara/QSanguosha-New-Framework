@@ -39,15 +39,15 @@ class Rende : public ProactiveSkill
             m_events << PhaseChanging;
         }
 
-        EventList triggerable(GameLogic *, EventType, ServerPlayer *owner, QVariant &data, ServerPlayer *) const override
-        {
-            if (owner->tag.contains("rende_count")) {
-                PhaseChangeStruct *change = data.value<PhaseChangeStruct *>();
-                if (change->to == Player::Inactive)
-                    owner->tag.remove("rende_count");
-            }
-            return EventList();
-        }
+//        EventList triggerable(GameLogic *, EventType, ServerPlayer *owner, QVariant &data, ServerPlayer *) const override
+//        {
+//            if (owner->tag.contains("rende_count")) {
+//                PhaseChangeStruct *change = data.value<PhaseChangeStruct *>();
+//                if (change->to == Player::Inactive)
+//                    owner->tag.remove("rende_count");
+//            }
+//            return EventList();
+//        }
     };
 
 public:
@@ -157,29 +157,29 @@ public:
         m_events << PhaseStart;
     }
 
-    bool triggerable(ServerPlayer *owner) const override
-    {
-        return TriggerSkill::triggerable(owner) && owner->phase() == Player::Start;
-    }
+//    bool triggerable(ServerPlayer *owner) const override
+//    {
+//        return TriggerSkill::triggerable(owner) && owner->phase() == Player::Start;
+//    }
 
-    bool effect(GameLogic *logic, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
-    {
-        int n = qMin(logic->playerNum(), 5);
-        QList<Card *> cards = logic->getDrawPileCards(n);
+//    bool effect(GameLogic *logic, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+//    {
+//        int n = qMin(logic->playerNum(), 5);
+//        QList<Card *> cards = logic->getDrawPileCards(n);
 
-        QList<int> capacities;
-        capacities << 5 << 5;
-        QStringList areaNames;
-        areaNames << "cards_on_the_top_of_draw_pile" << "cards_on_the_bottom_of_draw_pile";
-        QList<QList<Card *>> result = target->askToArrangeCard(cards, capacities, areaNames);
+//        QList<int> capacities;
+//        capacities << 5 << 5;
+//        QStringList areaNames;
+//        areaNames << "cards_on_the_top_of_draw_pile" << "cards_on_the_bottom_of_draw_pile";
+//        QList<QList<Card *>> result = target->askToArrangeCard(cards, capacities, areaNames);
 
-        CardArea *drawPile = logic->drawPile();
-        drawPile->remove(cards);
-        drawPile->add(result.at(0), CardArea::Top);
-        drawPile->add(result.at(1), CardArea::Bottom);
+//        CardArea *drawPile = logic->drawPile();
+//        drawPile->remove(cards);
+//        drawPile->add(result.at(0), CardArea::Top);
+//        drawPile->add(result.at(1), CardArea::Bottom);
 
-        return false;
-    }
+//        return false;
+//    }
 };
 
 class Kongcheng : public CardModSkill
@@ -272,35 +272,35 @@ class Tieqi : public TriggerSkill
             setFrequency(Compulsory);
         }
 
-        EventList triggerable(GameLogic *, EventType, ServerPlayer *, QVariant &data, ServerPlayer *) const override
-        {
-            EventList events;
-            SlashEffectStruct *effect = data.value<SlashEffectStruct *>();
-            if (effect->from && effect->from->hasSkill(topSkill()) && effect->from->tag.contains("tieqi_victims")) {
-                QVariantList victims = effect->from->tag.value("tieqi_victims").toList();
-                int max = victims.length();
-                for (int i = 0; i < max; i++) {
-                    if (victims.at(i).toUInt() == effect->to->id()) {
-                        victims.removeAt(i);
-                        if (victims.isEmpty())
-                            effect->from->tag.remove("tieqi_victims");
-                        else
-                            effect->from->tag["tieqi_victims"] = victims;
+//        EventList triggerable(GameLogic *, EventType, ServerPlayer *, QVariant &data, ServerPlayer *) const override
+//        {
+//            EventList events;
+//            SlashEffectStruct *effect = data.value<SlashEffectStruct *>();
+//            if (effect->from && effect->from->hasSkill(topSkill()) && effect->from->tag.contains("tieqi_victims")) {
+//                QVariantList victims = effect->from->tag.value("tieqi_victims").toList();
+//                int max = victims.length();
+//                for (int i = 0; i < max; i++) {
+//                    if (victims.at(i).toUInt() == effect->to->id()) {
+//                        victims.removeAt(i);
+//                        if (victims.isEmpty())
+//                            effect->from->tag.remove("tieqi_victims");
+//                        else
+//                            effect->from->tag["tieqi_victims"] = victims;
 
-                        Event e(this, effect->from);
-                        e.to << effect->to;
-                        events << e;
-                        break;
-                    }
-                }
-            }
-            return events;
-        }
+//                        Event e(this, effect->from);
+//                        e.to << effect->to;
+//                        events << e;
+//                        break;
+//                    }
+//                }
+//            }
+//            return events;
+//        }
 
-        bool effect(GameLogic *, EventType, ServerPlayer *, QVariant &, ServerPlayer *) const override
-        {
-            return true;
-        }
+//        bool effect(GameLogic *, EventType, ServerPlayer *, QVariant &, ServerPlayer *) const override
+//        {
+//            return true;
+//        }
     };
 
 public:
@@ -312,36 +312,36 @@ public:
         addSubskill(new Effect);
     }
 
-    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
-    {
-        EventList events;
+//    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+//    {
+//        EventList events;
 
-        CardUseStruct *use = data.value<CardUseStruct *>();
-        if (TriggerSkill::triggerable(player) && use->card && use->card->inherits("Slash")) {
-            foreach(ServerPlayer *to, use->to) {
-                Event e(this, player);
-                e.to << to;
-                events << e;
-            }
-        }
+//        CardUseStruct *use = data.value<CardUseStruct *>();
+//        if (TriggerSkill::triggerable(player) && use->card && use->card->inherits("Slash")) {
+//            foreach(ServerPlayer *to, use->to) {
+//                Event e(this, player);
+//                e.to << to;
+//                events << e;
+//            }
+//        }
 
-        return events;
-    }
+//        return events;
+//    }
 
-    bool effect(GameLogic *logic, EventType, ServerPlayer *target, QVariant &, ServerPlayer *invoker) const override
-    {
-        JudgeStruct judge(".|red");
-        judge.who = invoker;
-        logic->judge(judge);
+//    bool effect(GameLogic *logic, EventType, ServerPlayer *target, QVariant &, ServerPlayer *invoker) const override
+//    {
+//        JudgeStruct judge(".|red");
+//        judge.who = invoker;
+//        logic->judge(judge);
 
-        if (judge.matched) {
-            QVariantList victims = invoker->tag.value("tieqi_victims").toList();
-            victims << target->id();
-            invoker->tag["tieqi_victims"] = victims;
-        }
+//        if (judge.matched) {
+//            QVariantList victims = invoker->tag.value("tieqi_victims").toList();
+//            victims << target->id();
+//            invoker->tag["tieqi_victims"] = victims;
+//        }
 
-        return false;
-    }
+//        return false;
+//    }
 };
 
 class Jizhi : public TriggerSkill
@@ -352,22 +352,22 @@ public:
         m_events << TargetChosen;
     }
 
-    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
-    {
-        if (!TriggerSkill::triggerable(player))
-            return EventList();
+//    EventList triggerable(GameLogic *, EventType, ServerPlayer *player, QVariant &data, ServerPlayer *) const override
+//    {
+//        if (!TriggerSkill::triggerable(player))
+//            return EventList();
 
-        CardUseStruct *use = data.value<CardUseStruct *>();
-        if (use->card && use->card->type() == Card::TrickType)
-            return Event(this, player);
-        return EventList();
-    }
+//        CardUseStruct *use = data.value<CardUseStruct *>();
+//        if (use->card && use->card->type() == Card::TrickType)
+//            return Event(this, player);
+//        return EventList();
+//    }
 
-    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
-    {
-        target->drawCards(1);
-        return false;
-    }
+//    bool effect(GameLogic *, EventType, ServerPlayer *target, QVariant &, ServerPlayer *) const override
+//    {
+//        target->drawCards(1);
+//        return false;
+//    }
 };
 
 class Qicai : public CardModSkill

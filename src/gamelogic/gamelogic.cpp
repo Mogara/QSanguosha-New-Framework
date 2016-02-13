@@ -541,7 +541,7 @@ QList<Card *> GameLogic::findCards(const QVariant &data)
 
 void GameLogic::damage(DamageStruct &damage)
 {
-    if (damage.to == NULL || damage.to->isDead())
+    if (damage.to == nullptr || damage.to->isDead())
         return;
 
     QVariant data = QVariant::fromValue(&damage);

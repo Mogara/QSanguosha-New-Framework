@@ -20,10 +20,10 @@
 #ifndef LOBBY_H
 #define LOBBY_H
 
-#include <cglobal.h>
+#include <CardirectorGlobal>
 #include <QQuickItem>
 
-#include <cclientuser.h>
+#include <CClientUser>
 
 class Client;
 class CClientUser;

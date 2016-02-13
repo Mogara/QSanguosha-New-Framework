@@ -25,8 +25,8 @@
 #include "serverplayer.h"
 #include "skill.h"
 
-#include <croom.h>
-#include <cserveragent.h>
+#include <CRoom>
+#include <CServerAgent>
 
 ServerPlayer::ServerPlayer(GameLogic *logic, CServerAgent *agent)
     : Player(logic)

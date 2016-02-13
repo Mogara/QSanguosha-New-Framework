@@ -23,9 +23,9 @@
 #include "gamemode.h"
 #include "pcconsolestartdialog.h"
 
-#include <cserver.h>
-#include <croom.h>
-#include <cserveruser.h>
+#include <CServer>
+#include <CRoom>
+#include <CServerUser>
 
 #include <QCoreApplication>
 

@@ -21,7 +21,7 @@
 #define GAMERULE_H
 
 #include <QMap>
-#include <cglobal.h>
+#include <CardirectorGlobal>
 
 #include "eventhandler.h"
 

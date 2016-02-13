@@ -25,7 +25,7 @@
 
 #include <functional>
 
-#include <cglobal.h>
+#include <CardirectorGlobal>
 
 class Player;
 class Card;

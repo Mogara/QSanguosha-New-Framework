@@ -20,7 +20,7 @@
 #ifndef PCCONSOLESTARTDIALOG_H
 #define PCCONSOLESTARTDIALOG_H
 
-#include <cglobal.h>
+#include <CardirectorGlobal>
 #include <QQuickItem>
 
 class Client;

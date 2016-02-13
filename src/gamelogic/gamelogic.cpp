@@ -28,10 +28,10 @@
 #include "serverplayer.h"
 #include "util.h"
 
-#include <croom.h>
-#include <cserver.h>
-#include <cserveruser.h>
-#include <cserverrobot.h>
+#include <CRoom>
+#include <CServer>
+#include <CServerRobot>
+#include <CServerUser>
 
 #include <QDateTime>
 #include <QThread>

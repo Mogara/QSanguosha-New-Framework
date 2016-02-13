@@ -26,7 +26,7 @@ class EventHandler;
 class General;
 class Skill;
 
-#include <cabstractplayer.h>
+#include <CAbstractPlayer>
 
 #include <QList>
 #include <QSet>

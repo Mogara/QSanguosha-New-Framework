@@ -24,7 +24,7 @@
 #include "protocol.h"
 #include "skill.h"
 
-#include <cclientuser.h>
+#include <CClientUser>
 
 #include <QtQml>
 

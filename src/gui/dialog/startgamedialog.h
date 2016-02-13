@@ -20,7 +20,7 @@
 #ifndef STARTGAMEDIALOG_H
 #define STARTGAMEDIALOG_H
 
-#include <cglobal.h>
+#include <CardirectorGlobal>
 #include <QQuickItem>
 
 class Client;

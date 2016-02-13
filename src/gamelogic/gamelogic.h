@@ -24,7 +24,7 @@
 #include "eventtype.h"
 #include "structs.h"
 
-#include <cabstractgamelogic.h>
+#include <CAbstractGameLogic>
 
 class Card;
 class CardArea;

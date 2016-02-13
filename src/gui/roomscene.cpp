@@ -30,7 +30,7 @@
 #include "skill.h"
 #include "util.h"
 
-#include <cclientuser.h>
+#include <CClientUser>
 
 static QString AreaTypeToString(CardArea::Type type)
 {

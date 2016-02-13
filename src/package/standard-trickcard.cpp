@@ -17,8 +17,8 @@
     Mogara
 *********************************************************************/
 
-#include <croom.h>
-#include <cserveragent.h>
+#include <CRoom>
+#include <CServerAgent>
 
 #include "gamelogic.h"
 #include "protocol.h"

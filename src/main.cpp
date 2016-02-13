@@ -22,10 +22,10 @@
 #include <QTranslator>
 #include <QQmlContext>
 
-#include <cmainwindow.h>
-#include <cexceptionhandler.h>
-#include <cnetwork.h>
-#include <ctranslator.h>
+#include <CMainWindow>
+#include <CExceptionHandler>
+#include <CNetwork>
+#include <CTranslator>
 
 int main(int argc, char *argv[])
 {

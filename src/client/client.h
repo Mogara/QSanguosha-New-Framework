@@ -20,7 +20,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include <cclient.h>
+#include <CClient>
 
 #include <QMap>
 

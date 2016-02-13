@@ -21,11 +21,11 @@
 #include "engine.h"
 #include "gamemode.h"
 
-#include <cserver.h>
-#include <croom.h>
-#include <cserveruser.h>
-#include <gamelogic.h>
-#include <gamerule.h>
+#include <CServer>
+#include <CRoom>
+#include <CServerUser>
+#include "gamelogic.h"
+#include "gamerule.h"
 
 StartServerDialog::StartServerDialog(QQuickItem *parent)
     : QQuickItem(parent)

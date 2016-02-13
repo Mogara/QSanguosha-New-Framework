@@ -20,7 +20,7 @@
 #ifndef STARTSERVERDIALOG_H
 #define STARTSERVERDIALOG_H
 
-#include <cglobal.h>
+#include <CardirectorGlobal>
 #include <QQuickItem>
 
 class CServer;

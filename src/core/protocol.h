@@ -20,7 +20,7 @@
 #ifndef PROTOCOL_H
 #define PROTOCOL_H
 
-#include <cprotocol.h>
+#include <CProtocol>
 
 enum SanguoshaCommand
 {

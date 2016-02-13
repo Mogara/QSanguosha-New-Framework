@@ -18,9 +18,9 @@
 *********************************************************************/
 
 #include "lobby.h"
-#include "client/client.h"
+#include "client.h"
 
-#include <cclientuser.h>
+#include <CClientUser>
 
 Lobby::Lobby(QQuickItem *parent)
     : QQuickItem(parent)

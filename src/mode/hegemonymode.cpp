@@ -27,8 +27,8 @@
 #include "systempackage.h"
 #include "util.h"
 
-#include <croom.h>
-#include <cserveragent.h>
+#include <CRoom>
+#include <CServerAgent>
 
 class HegemonyRule : public GameRule
 {

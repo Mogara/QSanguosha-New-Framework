@@ -35,6 +35,7 @@
 
 #include <QDateTime>
 #include <QThread>
+#include "skill.h"
 
 GameLogic::GameLogic(CRoom *parent)
     : CAbstractGameLogic(parent)
@@ -93,6 +94,185 @@ void GameLogic::removeEventHandler(const EventHandler *handler)
         m_handlers[event].removeOne(handler);
 }
 
+
+void GameLogic::getEventHandlersAndSort(EventType event, EventPtrList &detailsList, const EventPtrList &triggered, const QVariant &data, ServerPlayer *player /*= nullptr*/)
+{
+    // used to get all the event handlers which can be triggered now, and sort them.
+    // everytime this function is called, it will get all the event handlers and judge the triggerable one by one
+    QList<const EventHandler *> skillList = m_handlers[event];
+    QList<QSharedPointer<Event> > details; // We create a new list everytime this function is called
+    foreach (const EventHandler *eh, skillList) {
+        // judge every Event Handler
+        EventList triggerable = eh->triggerable(this, event, data, player);
+
+        QMutableListIterator<Event> it_triggerable(triggerable);
+        while (it_triggerable.hasNext()) {
+            const Event &t = it_triggerable.next();
+            if (!t.isValid())
+                it_triggerable.remove();  // remove the invalid item from the list
+        }
+
+        if (triggerable.isEmpty()) // i.e. there is no valid item returned from the skill's triggerable
+            continue;
+
+        EventPtrList r; // we create a list for every skill
+        foreach (const Event &t, triggerable) {
+            // we copy construct a new Event in the heap area (because the return value from triggerable is in the stack). use a shared pointer to point to it, and add it to the new list.
+            // because the shared pointer will destroy the item it point to when all the instances of the pointer is destroyed, so there is no memory leak.
+            EventPtr ptr(new Event(t));
+            r << ptr;
+        }
+        if (r.length() == 1) {
+            // if the skill has only one instance of the invokedetail, we copy the tag to the old instance(overwrite the old ones), and use the old instance, delete the new one
+            foreach (const EventPtr &detail, (detailsList + triggered).toSet()) {
+                if (detail->sameSkill(*r.first())) {
+                    foreach (const QString &key, r.first()->tag.keys())
+                        detail->tag[key] = r.first()->tag.value(key);
+                    r.clear();
+                    r << detail;
+                    break;
+                }
+            }
+        } else {
+            bool isPreferredTargetSkill = false;
+            EventPtrList s;
+            // judge whether this skill in this event is a preferred-target skill, make a invoke list as s
+            foreach (const EventPtr &detail, (detailsList + triggered).toSet()) {
+                if (detail->eh == r.first()->eh) {
+                    s << detail;
+                    if (detail->preferredTarget != nullptr)
+                        isPreferredTargetSkill = true;
+                }
+            }
+            if (!isPreferredTargetSkill) {
+                std::sort(s.begin(), s.end(), [](const EventPtr &a1, const EventPtr &a2) { return a1->triggered && !a2->triggered; });
+                // because these are of one single skill, so we can pick the invoke list using a trick like this
+                s.append(r);
+                r = s.mid(0, r.length());
+            } else {
+                // do a stable sort to r and s since we should judge the trigger order
+                static std::function<bool(const EventPtr &, const EventPtr &)> preferredTargetLess =
+                    [](const EventPtr &a1, const EventPtr &a2) {
+                        return a1->preferredTargetLess(*a2);
+                    };
+
+                std::stable_sort(r.begin(), r.end(), preferredTargetLess);
+                std::stable_sort(s.begin(), s.end(), preferredTargetLess);
+
+                {
+                    QListIterator<EventPtr> r_it(r);
+                    QMutableListIterator<EventPtr> s_it(s);
+                    while (r_it.hasNext() && s_it.hasNext()) {
+                        QSharedPointer<Event> r_now = r_it.next();
+                        QSharedPointer<Event> s_now = s_it.next();
+
+                        if (r_now->preferredTarget == s_now->preferredTarget)
+                            continue;
+
+                        // e.g. let r =  a b c d e f   h     k
+                        //      let s =  a b   d e f g h i j
+                        // it pos:      *
+
+                        // the position of Qt's Java style iterator is between 2 items, we can use next() to get the next item and use previous() to get the previous item, and move the iterator according to the direction.
+
+                        if (ServerPlayer::sortByActionOrder(r_now->preferredTarget, s_now->preferredTarget)) {
+                            // 1.the case that ServerPlayer::compareByActionOrder(r_now, s_now) == true, i.e. seat(r_now) < seat(s_now)
+                            // because the r is triggerable list, s is the invoke list, so we should move s_it to the front of the just passed item add the r_now into s
+
+                            // the list is now like this: r = a b c d e f   h
+                            //                            s = a b   d e f g h i j
+                            // it pos:                             r s
+
+                            s_it.previous();
+                            s_it.insert(r_now);
+
+                            // so the list becomes like:  r = a b c d e f   h
+                            //                            s = a b c d e f g h i j
+                            // it pos:                             *
+                        } else {
+                            // 2. the case that ServerPlayer::compareByActionOrder(r_now, s_now) == true, i.e. seat(r_now) > seat(s_now)
+                            // because the r is triggerable list, s is the invoke list, so we should remove the s_now and move r_it to the position just before the deleted item
+
+                            // the list is now like this: r = a b c d e f   h
+                            //                            s = a b c d e f g h i j
+                            // it pos:                                     s r
+
+                            s_it.remove();
+                            r_it.previous();
+                            // so the list becomes like:  r = a b c d e f   h
+                            //                            s = a b c d e f   h i j
+                            // it pos:                                   r s
+                        }
+                    }
+
+                    // the whole loop will be over when one of r_it or s_it has no next item, but there are situations that another one has more items. Let's deal with this situation.
+                    // let's take some other examples.
+
+                    // e.g. let r = a b c d e
+                    //      let s = a b c
+                    // it pos:           *
+
+                    // now s_it has no next item, but r_it has some next items.
+                    // since r is the trigger list, we should add the more items to s.
+
+                    while (r_it.hasNext())
+                        s_it.insert(r_it.next());
+
+                    // another example.
+
+                    // e.g. let r = a b c
+                    //          s = a b c d e
+                    // it pos:           *
+
+                    // now s_it has more items.
+                    // since r is the triggerable list, we should remove the more items from s.
+                    while (s_it.hasNext())
+                        s_it.remove();
+                }
+
+                // let the r become the invoke list.
+                r = s;
+
+                // we should mark the ones who passed the trigger order as triggered.
+                QListIterator<EventPtr> r_it(r);
+                r_it.toBack();
+                bool over_trigger = true;
+                while (r_it.hasPrevious()) {
+                    const EventPtr &p = r_it.previous();
+                    if (p->triggered)
+                        over_trigger = true;
+                    else if (over_trigger)
+                        p->triggered = true;
+                }
+
+            }
+
+        }
+
+        details << r;
+    }
+
+    // do a stable sort to details use the operator < of Event in which judge the priority, the seat of invoker, and whether it is a skill of an equip.
+    std::stable_sort(details.begin(), details.end(), [](const EventPtr &a1, const EventPtr &a2) { return *a1 < *a2; });
+
+    // mark the skills which missed the trigger timing as it has triggered
+    EventPtr over_trigger;
+    QListIterator<EventPtr> it(details);
+    it.toBack();
+    while (it.hasPrevious()) {
+        // search the last skill which triggered times isn't 0 from back to front. if found, save it to over_trigger. 
+        // if over_trigger is valid, then mark the skills which missed the trigger timing as it has triggered.
+        const EventPtr &detail = it.previous();
+        if (over_trigger.isNull() || !over_trigger->isValid()) {
+            if (detail->triggered)
+                over_trigger = detail;
+        } else if (*detail < *over_trigger)
+            detail->triggered = true;
+    }
+
+    detailsList = details;
+}
+
 bool GameLogic::trigger(EventType event, ServerPlayer *target)
 {
     QVariant data;
@@ -101,111 +281,91 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target)
 
 bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
 {
-    QList<const EventHandler *> &handlers = m_handlers[event];
+//     EventTriplet triplet(triggerEvent, room);
+//     event_stack.push_back(triplet);
 
-    std::stable_sort(handlers.begin(), handlers.end(), [event](const EventHandler *a, const EventHandler *b){
-        return a->priority(event) > b->priority(event);
-    });
+    QList<const EventHandler *> skillList = m_handlers[event]; // find all the skills, do the record first. it do the things only for record. it should not and must not interfere the procedure of other skills.
+//     foreach(const EventHandler *skill, skillList)
+//         skill->record(triggerEvent, room, data);
 
-    bool broken = false;
-    int triggerableIndex = 0;
-    while (triggerableIndex < handlers.length()) {
-        int currentPriority = 0;
-        QMap<ServerPlayer *, EventList> triggerableEvents;
+    EventPtrList details;
+    EventPtrList triggered;
+    bool interrupt = false;
+    try {
+        forever {
+            getEventHandlersAndSort(event, details, triggered, data, target);
 
-        //Construct triggerableEvents
-        do {
-            const EventHandler *handler = handlers.at(triggerableIndex);
-            if (triggerableEvents.isEmpty() || handler->priority(event) == currentPriority) {
-                EventMap events = handler->triggerable(this, event, target, data);
-                if (events.size() > 0) {
-                    QList<ServerPlayer *> players = this->players();
-                    foreach (ServerPlayer *p, players) {
-                        if (!events.contains(p))
-                            continue;
-
-                        QList<Event> ds = events.values(p);
-                        triggerableEvents[p] << ds;
-                        currentPriority = ds.last().handler->priority(event);
-                    }
-                }
-            } else if (handler->priority(event) != currentPriority) {
-                break;
-            }
-            triggerableIndex++;
-        } while (triggerableIndex < handlers.length());
-
-        if (!triggerableEvents.isEmpty()) {
-            QList<ServerPlayer *> allPlayers = this->allPlayers(true);
-            foreach (ServerPlayer *invoker, allPlayers) {
-                if (!triggerableEvents.contains(invoker))
+            EventPtrList sameTiming;
+            // search for the first skills which can trigger
+            foreach (const EventPtr &ptr, details) {
+                if (ptr->triggered)
                     continue;
+                if (sameTiming.isEmpty())
+                    sameTiming << ptr;
+                else if (ptr->sameTimingWith(*sameTiming.first()))
+                    sameTiming << ptr;
+            }
 
-                forever {
-                    EventList &events = triggerableEvents[invoker];
-                    if (events.isEmpty())
+            // if not found, it means that all the skills is triggered done, we can exit the loop now.
+            if (sameTiming.isEmpty())
+                break;
+
+            EventPtr invoke = sameTiming.first();
+
+            // treat the invoker is NULL, if the triggered skill is some kind of gamerule
+            if (/*sameTiming.length() >= 2 && */invoke->invoker != nullptr && (invoke->eh->priority() >= -5 && invoke->eh->priority() <= 5)) { // if the priority is bigger than 5 or smaller than -5, that means it could be some kind of record skill, notify-client skill or fakemove skill, then no need to select the trigger order at this time
+                // select the triggerorder of same timing
+                // if there is a compulsory skill or compulsory effect, it shouldn't be able to cancel
+                bool has_compulsory = false;
+                foreach (const EventPtr &detail, sameTiming) {
+                    if (detail->isCompulsory) { // judge the compulsory effect/skill in the detail struct
+                        has_compulsory = true;
                         break;
-
-                    bool hasCompulsory = false;
-                    foreach (const Event &d, events) {
-                        if (d.handler->isCompulsory()) {
-                            hasCompulsory = true;
-                            break;
-                        }
-                    }
-
-                    //Ask the invoker to determine the trigger order
-                    Event choice;
-                    if (events.length() > 1)
-                        choice = invoker->askForTriggerOrder(events, !hasCompulsory);
-                    else if (hasCompulsory)
-                        choice = events.first();
-                    else
-                        choice = invoker->askForTriggerOrder(events, true);
-
-                    //If the user selects "cancel"
-                    if (!choice.isValid())
-                        break;
-
-                    ServerPlayer *eventTarget = choice.to.isEmpty() ? target : choice.to.first();
-
-                    //Ask the invoker for cost
-                    bool takeEffect = choice.handler->onCost(this, event, eventTarget, data, invoker);
-
-                    //Take effect
-                    if (takeEffect) {
-                        broken = choice.handler->effect(this, event, eventTarget, data, invoker);
-                        if (broken)
-                            break;
-                    }
-
-                    //Remove targets that are in front of the triggered target
-                    for (int i = 0; i < events.length(); i++) {
-                        Event &d = events[i];
-                        if (d.handler != choice.handler)
-                            continue;
-
-                        foreach (ServerPlayer *to, choice.to) {
-                            int index = d.to.indexOf(to);
-                            if (index == d.to.length() - 1) {
-                                events.removeAt(i);
-                                i--;
-                            } else {
-                                d.to = d.to.mid(index + 1);
-                            }
-                        }
-
-                        if (choice.to.isEmpty()) {
-                            events.removeAt(i);
-                            i--;
-                        }
                     }
                 }
+                // since the invoker of the sametiming list is the same, we can use sameTiming.first()->invoker to judge the invoker of this time
+                EventPtr detailSelected = sameTiming.first()->invoker->askForTriggerOrder(sameTiming, !has_compulsory);
+                if (detailSelected.isNull() || !detailSelected->isValid()) {
+                    // if cancel is pushed when it is cancelable, we set all the sametiming as triggered, and add all the skills to triggeredList, continue the next loop
+                    foreach (const EventPtr &ptr, sameTiming) {
+                        ptr->triggered = true;
+                        triggered << ptr;
+                    }
+                    continue;
+                } else
+                    invoke = detailSelected;
             }
-        }
-    }
 
-    return broken;
+            // if not cancelled, then we add the selected skill to triggeredList, and add the triggered times of the skill. then we process with the skill's cost and effect.
+
+            invoke->triggered = true;
+            triggered << invoke;
+
+            // if cost returned false, we don't process with the skill's left trigger times(use the trick of set it as triggered)
+            // if effect returned true, exit the whole loop.
+
+            if (invoke->eh->onCost(this, event, invoke, data, target)) {
+                // if we don't insert the target in the cost and there is a preferred target, we set the preferred target as the only target of the skill
+                if (invoke->preferredTarget != nullptr && invoke->targets.isEmpty())
+                    invoke->targets << invoke->preferredTarget;
+                // the show general of hegemony mode can be inserted here
+                if (invoke->eh->effect(this, event, invoke, data, target)) {
+                    interrupt = true;
+                    break;
+                }
+            } else
+                invoke->triggered = true;
+        }
+
+
+//         event_stack.pop_back();
+
+    }
+    catch (EventType triggerEvent) {
+//         event_stack.pop_back();
+        throw;
+    }
+    return interrupt;
 }
 
 QList<ServerPlayer *> GameLogic::players() const
@@ -470,6 +630,20 @@ bool GameLogic::takeCardEffect(CardEffectStruct &effect)
     return !canceled;
 }
 
+bool GameLogic::invokeProactiveSkill(SkillInvokeStruct &invoke)
+{
+    const ProactiveSkill *proactiveSkill = dynamic_cast<const ProactiveSkill *>(invoke.skill);
+    if (proactiveSkill != nullptr) {
+        if (proactiveSkill->cost(this, invoke.player, invoke.targets, invoke.cards)) {
+            proactiveSkill->effect(this, invoke.player, invoke.targets, invoke.cards);
+            return true;
+        }
+    } else
+        qt_noop(); // throw std::bad_cast();
+
+    return false;
+}
+
 bool GameLogic::respondCard(CardResponseStruct &response)
 {
     CardsMoveStruct move;
@@ -478,8 +652,10 @@ bool GameLogic::respondCard(CardResponseStruct &response)
     move.isOpen = true;
     moveCards(move);
 
+    bool broken = false;
+
     QVariant data = QVariant::fromValue(&response);
-    bool broken = trigger(CardResponded, response.from, data);
+    broken = trigger(CardResponded, response.from, data);
 
     if (response.card && m_table->contains(response.card)) {
         CardsMoveStruct move;
@@ -509,11 +685,8 @@ void GameLogic::judge(JudgeStruct &judge)
     move.isOpen = true;
     moveCards(move);
 
-    QList<ServerPlayer *> players = allPlayers();
-    foreach (ServerPlayer *player, players) {
-        if (trigger(AskForRetrial, player, data))
-            break;
-    }
+    trigger(AskForRetrial, nullptr, data);
+
     trigger(FinishRetrial, judge.who, data);
     trigger(FinishJudge, judge.who, data);
 
@@ -525,6 +698,52 @@ void GameLogic::judge(JudgeStruct &judge)
         move.isOpen = true;
         moveCards(move);
     }
+}
+
+void GameLogic::retrialCost(JudgeStruct &judge, Card *card, bool isReplace)
+{
+    CardArea *cardArea = m_cardPosition.value(card, nullptr);
+    Q_ASSERT(cardArea != nullptr);
+
+    bool trigger_responded = cardArea->type() == CardArea::Hand || cardArea->type() == CardArea::Equip;
+
+    CardsMoveStruct move;
+    move.cards << card;
+    move.to.owner = judge.who;
+    move.to.type = CardArea::Judge;
+    move.isOpen = true;
+
+    CardsMoveStruct move2;
+    move.cards << judge.card;
+    if (isReplace && cardArea->owner() != nullptr) {
+        move.to.owner = cardArea->owner();
+        move.to.type = CardArea::Hand;
+    } else {
+        move.to.type = CardArea::DiscardPile;
+    }
+    move.isOpen = true;
+
+    QList<CardsMoveStruct> moves;
+    moves << move << move2;
+    moveCards(moves);
+
+    if (trigger_responded) {
+        CardResponseStruct response;
+        response.card = card;
+        response.from = qobject_cast<ServerPlayer *>(cardArea->owner());
+        response.target = judge.card;
+        response.isRetrial = true;
+        response.to = nullptr;
+
+        QVariant data = QVariant::fromValue(&response);
+        trigger(CardResponded, response.from, data);
+    }
+}
+
+void GameLogic::retrialEffect(JudgeStruct &judge, Card *card)
+{
+    judge.card = card;
+    judge.updateResult();
 }
 
 QList<Card *> GameLogic::findCards(const QVariant &data)
@@ -953,7 +1172,8 @@ void GameLogic::run()
                 ServerPlayer *next = current->nextAlive(1, false);
                 if (current->phase() != Player::Inactive) {
                     QVariant data;
-                    m_gameRule->effect(this, PhaseEnd, current, data, current);
+                    //m_gameRule->effect(this, PhaseEnd, current, data, current);
+                    m_gameRule->effect(this, PhaseEnd, EventPtr(), data, current);
                     //@todo:
                     current->setPhase(Player::Inactive);
                     current->broadcastProperty("phase");
@@ -962,4 +1182,10 @@ void GameLogic::run()
             }
         }
     }
+}
+
+ServerPlayer *GameLogic::getFront(ServerPlayer *a, ServerPlayer *b) const
+{
+    QList<ServerPlayer *> pls = allPlayers();
+    return pls.indexOf(a) < pls.indexOf(b) ? a : b;
 }

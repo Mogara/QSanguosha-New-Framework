@@ -24,6 +24,7 @@
 #include "protocol.h"
 #include "serverplayer.h"
 #include "skill.h"
+#include "event.h"
 
 #include <CRoom>
 #include <CServerAgent>
@@ -197,12 +198,23 @@ bool ServerPlayer::activate()
     if (skill) {
         if (skill->type() == Skill::ViewAsType) {
             if (skill->subtype() == ViewAsSkill::ProactiveType) {
-                const ProactiveSkill *proactiveSkill = static_cast<const ProactiveSkill *>(skill);
-                proactiveSkill->effect(m_logic, this, targets, cards);
+                const ProactiveSkill *proactiveSkill = dynamic_cast<const ProactiveSkill *>(skill);
+                if (proactiveSkill == nullptr)
+                    return false;
+
                 addSkillHistory(skill, cards, targets);
+                SkillInvokeStruct invoke;
+                invoke.player = this;
+                invoke.skill = proactiveSkill;
+                invoke.targets = targets;
+                invoke.cards = cards;
+
+                m_logic->invokeProactiveSkill(invoke);
                 return false;
             } else if (skill->subtype() == ViewAsSkill::ConvertType) {
-                const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
+                const ViewAsSkill *viewAsSkill = dynamic_cast<const ViewAsSkill *>(skill);
+                if (viewAsSkill == nullptr)
+                    return false;
                 card = viewAsSkill->viewAs(cards, this);
                 addSkillHistory(skill, cards);
             }
@@ -269,19 +281,14 @@ void ServerPlayer::showPrompt(const QString &message, const ServerPlayer *p1, co
     showPrompt(message, args);
 }
 
-Event ServerPlayer::askForTriggerOrder(const EventList &options, bool cancelable)
+EventPtr ServerPlayer::askForTriggerOrder(const EventPtrList &options, bool cancelable)
 {
     QVariantMap data;
     data["cancelable"] = cancelable;
 
     QVariantList optionData;
-    foreach (const Event &e, options) {
-        QVariantMap eventData;
-        eventData["name"] = e.handler->name();
-        QVariantList targetData;
-        foreach (ServerPlayer *to, e.to)
-            targetData << to->id();
-        eventData["to"] = targetData;
+    foreach (const EventPtr &e, options) {
+        QVariant eventData = e->toVariant();
         optionData << eventData;
     }
     data["options"] = optionData;
@@ -289,13 +296,13 @@ Event ServerPlayer::askForTriggerOrder(const EventList &options, bool cancelable
     m_agent->request(S_COMMAND_TRIGGER_ORDER, data, m_replyTime);
     QVariant replyData = m_agent->waitForReply(m_replyTime);
     if (replyData.isNull())
-        return cancelable ? Event() : options.first();
+        return cancelable ? EventPtr() : options.first();
 
     int eventId = replyData.toInt();
     if (eventId >= 0 && eventId < options.length())
         return options.at(eventId);
 
-    return cancelable ? Event() : options.first();
+    return cancelable ? EventPtr() : options.first();
 }
 
 Card *ServerPlayer::askForCard(const QString &pattern, bool optional)
@@ -457,7 +464,7 @@ Card *ServerPlayer::askToChooseCard(ServerPlayer *owner, const QString &areaFlag
     return nullptr;
 }
 
-bool ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets)
+CardUseStruct ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets)
 {
     QVariantMap data;
     data["pattern"] = pattern;
@@ -469,8 +476,9 @@ bool ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer
 
     m_agent->request(S_COMMAND_USE_CARD, data, m_replyTime);
     const QVariantMap reply = m_agent->waitForReply(m_replyTime).toMap();
+    CardUseStruct use;
     if (reply.isEmpty())
-        return false;
+        return use;
 
     QList<ServerPlayer *> targets;
     QVariantList tos = reply["to"].toList();
@@ -491,11 +499,7 @@ bool ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer
     Card *card = nullptr;
     if (skill) {
         if (skill->type() == Skill::ViewAsType) {
-            if (skill->subtype() == ViewAsSkill::ProactiveType) {
-                const ProactiveSkill *proactiveSkill = static_cast<const ProactiveSkill *>(skill);
-                proactiveSkill->effect(m_logic, this, targets, cards);
-                return true;
-            } else if (skill->subtype() == ViewAsSkill::ConvertType) {
+            if (skill->subtype() == ViewAsSkill::ConvertType) {
                 const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
                 card = viewAsSkill->viewAs(cards, this);
             }
@@ -505,18 +509,49 @@ bool ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer
     }
 
     if (card == nullptr)
-        return false;
+        return use;
 
-    CardUseStruct use;
     use.from = this;
     use.card = card;
     use.to = targets;
     foreach (ServerPlayer *target, assignedTargets) {
         if (!use.to.contains(target))
-            return false;
+            return CardUseStruct();
     }
 
-    return m_logic->useCard(use);
+    return use;
+}
+
+SkillInvokeStruct ServerPlayer::askToInvokeSkill(const Skill *skill)
+{
+    QVariantMap data;
+    data["skill"] = skill->name();
+
+    m_agent->request(S_COMMAND_USE_CARD, data, m_replyTime);
+    const QVariantMap reply = m_agent->waitForReply(m_replyTime).toMap();
+    SkillInvokeStruct invoke;
+    if (reply.isEmpty())
+        return invoke;
+    
+    QList<ServerPlayer *> targets;
+    QVariantList tos = reply["to"].toList();
+    foreach (const QVariant &to, tos) {
+        uint toId = to.toUInt();
+        ServerPlayer *target = m_logic->findPlayer(toId);
+        if (target)
+            targets << target;
+    }
+
+    QList<Card *> cards = m_logic->findCards(reply["cards"]);
+
+    if (skill->subtype() == ViewAsSkill::ProactiveType) {
+        invoke.skill = skill;
+        invoke.player = this;
+        invoke.targets = targets;
+        invoke.cards = cards;
+    }
+
+    return invoke;
 }
 
 QList<QList<Card *> > ServerPlayer::askToArrangeCard(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames)
@@ -807,4 +842,17 @@ void ServerPlayer::removeTriggerSkill(const Skill *skill)
         if (subskill->type() == Skill::TriggerType)
             m_logic->removeEventHandler(static_cast<const TriggerSkill *>(subskill));
     }
+}
+
+bool ServerPlayer::sortByActionOrder(ServerPlayer *a, ServerPlayer *b)
+{
+    if (a == nullptr)
+        return false;
+
+    if (b == nullptr)
+        return true;
+
+    GameLogic *l = a->m_logic;
+
+    return l->getFront(a, b) == a;
 }

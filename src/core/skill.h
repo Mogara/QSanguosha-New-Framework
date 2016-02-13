@@ -20,6 +20,7 @@
 #ifndef SKILL_H
 #define SKILL_H
 
+#include "event.h"
 #include "eventhandler.h"
 #include "structs.h"
 
@@ -83,12 +84,14 @@ class TriggerSkill : public Skill, public EventHandler
 public:
     explicit TriggerSkill(const QString &name);
 
-    QString name() const { return Skill::name(); }
+    // QString name() const { return Skill::name(); }
+    using Skill::name;
 
-    bool triggerable(ServerPlayer *owner) const override;
-    bool onCost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const final override;
+    bool triggerable(ServerPlayer *owner) const;
+    EventList triggerable(GameLogic *logic, EventType event, const QVariant &data, ServerPlayer *player = nullptr) const override;
+    bool onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player = nullptr) const final override;
 
-    virtual bool cost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const;
+    virtual bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player = nullptr) const;
 
 protected:
     void setFrequency(Frequency frequency);
@@ -103,7 +106,7 @@ public:
     virtual void invalidate(ServerPlayer *target) const = 0;
     virtual bool isValid(ServerPlayer *target) const;
 
-    bool effect(GameLogic *, EventType event, ServerPlayer *target, QVariant &, ServerPlayer *) const final override;
+    bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player) const final override;
 };
 
 class MasochismSkill : public TriggerSkill
@@ -111,11 +114,11 @@ class MasochismSkill : public TriggerSkill
 public:
     explicit MasochismSkill(const QString &name);
 
-    virtual int triggerable(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const = 0;
-    EventList triggerable(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const final override;
+    virtual int triggerable(GameLogic *logic, ServerPlayer *player, const DamageStruct &damage) const = 0;
+    EventList triggerable(GameLogic *logic, EventType event, const QVariant &data, ServerPlayer *player = nullptr) const final override;
 
-    virtual bool effect(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const = 0;
-    bool effect(GameLogic *, EventType event, ServerPlayer *target, QVariant &, ServerPlayer *) const final override;
+    virtual void effect(GameLogic *logic, ServerPlayer *player, EventPtr eventPtr, const DamageStruct &damage) const = 0;
+    bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player) const final override;
 };
 
 class Card;
@@ -182,10 +185,37 @@ public:
     //Check if a player can be selected
     virtual bool playerFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
 
-    virtual void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const = 0;
+    virtual bool cost(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const;
+    virtual void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const;
 
     bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const final override;
     Card *viewAs(const QList<Card *> &cards, const Player *source) const final override;
+};
+
+class RetrialSkill : public ProactiveSkill
+{
+private:
+    class Timing;
+public:
+    explicit RetrialSkill(const QString &name, bool isReplace = false);
+
+    bool cost(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const final override { return false; }
+    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const final override {}
+    
+private:
+    bool m_isReplace;
+};
+
+class ProactiveSkillTiming : public TriggerSkill
+{
+public:
+    explicit ProactiveSkillTiming(const QString &name, const ProactiveSkill *parent);
+
+    bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player /* = nullptr */) const final override;
+    bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player /* = nullptr */) const final override;
+
+private:
+    const ProactiveSkill *m_parent;
 };
 
 class CardModSkill : public Skill

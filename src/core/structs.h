@@ -155,6 +155,8 @@ struct CardResponseStruct
     Card *card;
     Card *target;
 
+    bool isRetrial;
+
     CardResponseStruct();
 };
 
@@ -195,5 +197,17 @@ struct SkillStruct
 };
 
 Q_DECLARE_METATYPE(SkillStruct *)
+
+struct SkillInvokeStruct
+{
+    ServerPlayer *player;
+    const Skill *skill;
+    QList<ServerPlayer *> targets;
+    QList<Card *> cards;
+
+    SkillInvokeStruct();
+};
+
+Q_DECLARE_METATYPE(SkillInvokeStruct *)
 
 #endif // STRUCTS_H

@@ -21,6 +21,8 @@
 #include "general.h"
 #include "skill.h"
 #include "serverplayer.h"
+#include "event.h"
+#include "gamelogic.h"
 
 Skill::Skill(const QString &name)
     : m_id(0)
@@ -66,49 +68,46 @@ bool TriggerSkill::triggerable(ServerPlayer *owner) const
     return owner != nullptr && owner->isAlive() && owner->hasSkill(this);
 }
 
-bool TriggerSkill::onCost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const
+EventList TriggerSkill::triggerable(GameLogic *logic, EventType, const QVariant &, ServerPlayer *player) const
 {
-    const General *headGeneral = target->headGeneral();
-    if (headGeneral->hasSkill(this)) {
-        if (!target->hasShownHeadGeneral()) {
-            target->setHeadGeneralShown(true);
-            target->broadcastProperty("headGeneralId");
-        }
-    } else {
-        const General *deputyGeneral = target->deputyGeneral();
-        if (deputyGeneral && deputyGeneral->hasSkill(this) && !target->hasShownDeputyGeneral()) {
-            target->setDeputyGeneralShown(true);
-            target->broadcastProperty("deputyGeneralId");
-        }
-    }
+    if (triggerable(player))
+        return EventList() << Event(logic, this, player, player, m_frequency == Compulsory || m_frequency == Wake);
 
-    bool takeEffect = cost(logic, event, target, data, invoker);
+    return EventList();
+}
+
+bool TriggerSkill::onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player) const
+{
+    bool takeEffect = cost(logic, event, eventPtr, data, player);
     if (takeEffect) {
-        if (invoker == target) {
-            invoker->addSkillHistory(this);
+        // hegemony mode show general
+        const General *headGeneral = eventPtr->owner->headGeneral();
+        if (headGeneral->hasSkill(this)) {
+            if (!eventPtr->owner->hasShownHeadGeneral()) {
+                eventPtr->owner->setHeadGeneralShown(true);
+                eventPtr->owner->broadcastProperty("headGeneralId");
+            }
         } else {
-            QList<ServerPlayer *> targets;
-            targets << target;
-            invoker->addSkillHistory(this, targets);
+            const General *deputyGeneral = eventPtr->owner->deputyGeneral();
+            if (deputyGeneral && deputyGeneral->hasSkill(this) && !eventPtr->owner->hasShownDeputyGeneral()) {
+                eventPtr->owner->setDeputyGeneralShown(true);
+                eventPtr->owner->broadcastProperty("deputyGeneralId");
+            }
         }
+
+        eventPtr->owner->addSkillHistory(this);
     }
     return takeEffect;
 }
 
-bool TriggerSkill::cost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const
+bool TriggerSkill::cost(GameLogic *, EventType, EventPtr, QVariant &, ServerPlayer *) const
 {
-    C_UNUSED(logic);
-    C_UNUSED(event);
-    C_UNUSED(target);
-    C_UNUSED(data);
-    C_UNUSED(invoker);
     return true;
 }
 
 void TriggerSkill::setFrequency(Skill::Frequency frequency)
 {
     m_frequency = frequency;
-    m_compulsory = (m_frequency == Compulsory || m_frequency == Wake);
 }
 
 StatusSkill::StatusSkill(const QString &name)
@@ -118,23 +117,22 @@ StatusSkill::StatusSkill(const QString &name)
     setFrequency(Compulsory);
 }
 
-bool StatusSkill::isValid(ServerPlayer *target) const
+bool StatusSkill::isValid(ServerPlayer *) const
 {
-    Q_UNUSED(target)
     return true;
 }
 
-bool StatusSkill::effect(GameLogic *, EventType event, ServerPlayer *target, QVariant &, ServerPlayer *) const
+bool StatusSkill::effect(GameLogic *, EventType event, EventPtr eventPtr, QVariant &, ServerPlayer *player) const
 {
     if (event == SkillAdded) {
-        validate(target);
+        validate(player);
     } else if (event == SkillRemoved) {
-        invalidate(target);
+        invalidate(player);
     } else {
-        if (isValid(target))
-            validate(target);
+        if (isValid(player))
+            validate(player);
         else
-            invalidate(target);
+            invalidate(player);
     }
     return false;
 }
@@ -145,28 +143,28 @@ MasochismSkill::MasochismSkill(const QString &name)
     m_events << AfterDamaged;
 }
 
-EventList MasochismSkill::triggerable(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const
+EventList MasochismSkill::triggerable(GameLogic *logic, EventType, const QVariant &data, ServerPlayer *player) const
 {
-    if (!TriggerSkill::triggerable(target))
+    if (!TriggerSkill::triggerable(player))
         return EventList();
 
     DamageStruct *damage = data.value<DamageStruct *>();
-    int times = triggerable(logic, target, *damage);
+    int times = triggerable(logic, player, *damage);
     if (times <= 0)
         return EventList();
-    else if (times == 1)
-        return Event(this, target);
 
-    EventList events;
-    for (int i = 0; i < times; i++)
-        events << Event(this, target);
-    return events;
+    EventList l;
+    for (int i = 0; i < times; ++i)
+        l << Event(logic, this, player, player, m_frequency == Compulsory || m_frequency == Wake);
+
+    return l;
 }
 
-bool MasochismSkill::effect(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const
+bool MasochismSkill::effect(GameLogic *logic, EventType, EventPtr eventPtr, QVariant &data, ServerPlayer *player) const
 {
     DamageStruct *damage = data.value<DamageStruct *>();
-    return effect(logic, target, *damage);
+    effect(logic, player, eventPtr, *damage);
+    return false;
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
@@ -176,9 +174,8 @@ ViewAsSkill::ViewAsSkill(const QString &name)
     m_subtype = ConvertType;
 }
 
-bool ViewAsSkill::isAvailable(const Player *self, const QString &pattern) const
+bool ViewAsSkill::isAvailable(const Player *, const QString &pattern) const
 {
-    Q_UNUSED(self)
     return pattern.isEmpty();
 }
 
@@ -229,41 +226,39 @@ ProactiveSkill::ProactiveSkill(const QString &name)
     m_subtype = ProactiveType;
 }
 
-bool ProactiveSkill::isAvailable(const Player *self, const QString &pattern) const
+bool ProactiveSkill::isAvailable(const Player *, const QString &pattern) const
 {
-    C_UNUSED(self);
     return pattern.isEmpty();
 }
 
-bool ProactiveSkill::cardFeasible(const QList<const Card *> &selected, const Player *source) const
+bool ProactiveSkill::cardFeasible(const QList<const Card *> &, const Player *) const
 {
-    C_UNUSED(selected);
-    C_UNUSED(source);
     return true;
 }
 
-bool ProactiveSkill::cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const
+bool ProactiveSkill::cardFilter(const QList<const Card *> &, const Card *, const Player *, const QString &) const
 {
-    C_UNUSED(selected);
-    C_UNUSED(card);
-    C_UNUSED(source);
-    C_UNUSED(pattern);
     return false;
 }
 
-bool ProactiveSkill::playerFeasible(const QList<const Player *> &selected, const Player *source) const
+bool ProactiveSkill::playerFeasible(const QList<const Player *> &, const Player *) const
 {
-    C_UNUSED(selected);
-    C_UNUSED(source);
     return true;
 }
 
-bool ProactiveSkill::playerFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
+bool ProactiveSkill::playerFilter(const QList<const Player *> &, const Player *, const Player *) const
 {
-    C_UNUSED(selected);
-    C_UNUSED(toSelect);
-    C_UNUSED(source);
     return false;
+}
+
+bool ProactiveSkill::cost(GameLogic *, ServerPlayer *, const QList<ServerPlayer *> &, const QList<Card *> &) const
+{
+    return false;
+}
+
+void ProactiveSkill::effect(GameLogic *, ServerPlayer *, const QList<ServerPlayer *> &, const QList<Card *> &) const
+{
+
 }
 
 bool ProactiveSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const
@@ -284,6 +279,61 @@ Card *ProactiveSkill::viewAs(const QList<Card *> &cards, const Player *source) c
     return nullptr;
 }
 
+class RetrialSkill::Timing : public TriggerSkill
+{
+public:
+    Timing(const QString &skillName, const RetrialSkill *parent)
+        : TriggerSkill(skillName), m_parent(parent)
+    {
+        m_events << AskForRetrial;
+    }
+
+    EventList triggerable(GameLogic *logic, EventType event, const QVariant &data, ServerPlayer * /* = nullptr */) const final override
+    {
+        // player is nullptr in this method so we don't use this player
+        EventList l;
+        foreach (ServerPlayer *p, logic->allPlayers()) {
+            if (p->hasSkill(m_parent) && m_parent->isAvailable(p, "@" + name()))
+                l << Event(logic, this, p, p);
+        }
+        return l;
+    }
+
+    bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer * /* = nullptr */) const final override
+    {
+        JudgeStruct *judge = data.value<JudgeStruct *>();
+        eventPtr->invoker->showPrompt(name() + "_ask_for_retrial", judge->who);
+        SkillInvokeStruct s = eventPtr->invoker->askToInvokeSkill(m_parent);
+        if (s.skill == m_parent && s.cards.length() == 1) {
+            logic->retrialCost(*judge, s.cards.first(), m_parent->m_isReplace);
+            Card *card = s.cards.first();
+            eventPtr->invoker->tag[name() + "_retrialCard"] = QVariant::fromValue(card);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer * /* = nullptr */) const final override
+    {
+        JudgeStruct *judge = data.value<JudgeStruct *>();
+        Card *card = eventPtr->invoker->tag.value(name() + "_retrialCard").value<Card *>();
+        logic->retrialEffect(*judge, card);
+
+        return false;
+    }
+
+private:
+    const RetrialSkill *m_parent;
+};
+
+RetrialSkill::RetrialSkill(const QString &name, bool isReplace /* = false */)
+    : ProactiveSkill(name), m_isReplace(isReplace)
+{
+    Timing *timing = new Timing(name, this);
+    addSubskill(timing);
+}
 
 CardModSkill::CardModSkill(const QString &name)
     : Skill(name)
@@ -291,36 +341,59 @@ CardModSkill::CardModSkill(const QString &name)
     m_type = CardModType;
 }
 
-bool CardModSkill::targetFilter(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
+bool CardModSkill::targetFilter(const Card *, const QList<const Player *> &, const Player *, const Player *) const
 {
-    C_UNUSED(card);
-    C_UNUSED(selected);
-    C_UNUSED(toSelect);
-    C_UNUSED(source);
     return true;
 }
 
-int CardModSkill::extraDistanceLimit(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
+int CardModSkill::extraDistanceLimit(const Card *, const QList<const Player *> &, const Player *, const Player *) const
 {
-    C_UNUSED(card);
-    C_UNUSED(selected);
-    C_UNUSED(toSelect);
-    C_UNUSED(source);
     return 0;
 }
 
-int CardModSkill::extraMaxTargetNum(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
+int CardModSkill::extraMaxTargetNum(const Card *, const QList<const Player *> &, const Player *, const Player *) const
 {
-    C_UNUSED(card);
-    C_UNUSED(selected);
-    C_UNUSED(toSelect);
-    C_UNUSED(source);
     return 0;
 }
 
-int CardModSkill::extraUseNum(const Card *card, const Player *player) const
+int CardModSkill::extraUseNum(const Card *, const Player *) const
 {
-    C_UNUSED(card);
-    C_UNUSED(player);
     return 0;
+}
+
+ProactiveSkillTiming::ProactiveSkillTiming(const QString &name, const ProactiveSkill *parent)
+    : TriggerSkill(name)
+    , m_parent(parent)
+{
+
+}
+
+bool ProactiveSkillTiming::cost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player /* = nullptr */) const
+{
+    SkillInvokeStruct *s = new SkillInvokeStruct(eventPtr->invoker->askToInvokeSkill(m_parent));
+    const ProactiveSkill *proactiveSkill = dynamic_cast<const ProactiveSkill *>(s->skill);
+    if (proactiveSkill != nullptr && proactiveSkill->cost(logic, s->player, s->targets, s->cards)) {
+        eventPtr->tag["invoke"] = QVariant::fromValue(s);
+        return true;
+    }
+
+    return false;
+}
+
+bool ProactiveSkillTiming::effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player /* = nullptr */) const
+{
+    SkillInvokeStruct *s = eventPtr->tag.value("invoke").value<SkillInvokeStruct *>();
+    const ProactiveSkill *proactiveSkill = dynamic_cast<const ProactiveSkill *>(s->skill);
+    try {
+        if (proactiveSkill != nullptr)
+            proactiveSkill->effect(logic, s->player, s->targets, s->cards);
+
+        delete s;
+    }
+    catch (...) {
+        delete s;
+        throw;
+    }
+
+    return false;
 }

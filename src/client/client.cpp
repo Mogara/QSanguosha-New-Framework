@@ -717,6 +717,11 @@ void Client::GameOverCommand(Client *client, const QVariant &data)
     emit client->gameOver(winners);
 }
 
+void Client::InvokeSkillRequestCoomand(Client *client, const QVariant &data)
+{
+    // @to-do: Takashrio: fix this
+}
+
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -758,5 +763,6 @@ void Client::Init()
     AddInteraction(S_COMMAND_TRIGGER_ORDER, TriggerOrderCommand);
     AddInteraction(S_COMMAND_ARRANGE_CARD, ArrangeCardCommand);
     AddInteraction(S_COMMAND_ASK_FOR_OPTION, AskForOptionCommand);
+    AddInteraction(S_COMMAND_INVOKE_SKILL, InvokeSkillRequestCoomand);
 }
 C_INITIALIZE_CLASS(Client)

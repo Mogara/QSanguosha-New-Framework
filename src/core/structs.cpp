@@ -121,6 +121,7 @@ CardResponseStruct::CardResponseStruct()
     , to(nullptr)
     , card(nullptr)
     , target(nullptr)
+    , isRetrial(false)
 {
 }
 
@@ -148,4 +149,11 @@ SkillStruct::SkillStruct()
     , skill(nullptr)
     , area(Player::UnknownSkillArea)
 {
+}
+
+SkillInvokeStruct::SkillInvokeStruct()
+    : player(nullptr)
+    , skill(nullptr)
+{
+
 }

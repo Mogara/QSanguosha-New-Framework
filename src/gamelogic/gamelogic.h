@@ -82,10 +82,14 @@ public:
     bool useCard(CardUseStruct &use);
     bool takeCardEffect(CardEffectStruct &effect);
 
-    //It returns false iff the corresponding CardResponded event is broken.
+    bool invokeProactiveSkill(SkillInvokeStruct &invoke);
+
+    //It returns false if the corresponding CardResponded event is broken.
     bool respondCard(CardResponseStruct &response);
 
     void judge(JudgeStruct &judge);
+    void retrialCost(JudgeStruct &judge, Card *card, bool isReplace = false);
+    void retrialEffect(JudgeStruct &judge, Card *card);
 
     Card *findCard(uint id) const { return m_cards.value(id); }
     QList<Card *> findCards(const QVariant &data);
@@ -99,6 +103,8 @@ public:
 
     QMap<uint, QList<const General *> > broadcastRequestForGenerals(const QList<ServerPlayer *> &players, int num, int limit);
 
+    ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
+
 protected:
     CAbstractPlayer *createPlayer(CServerUser *user);
     CAbstractPlayer *createPlayer(CServerRobot *robot);
@@ -106,6 +112,8 @@ protected:
     void prepareToStart();
     CardArea *findArea(const CardsMoveStruct::Area &area);
     void filterCardsMove(QList<CardsMoveStruct> &moves);
+
+    void getEventHandlersAndSort(EventType event, EventPtrList &detailsList, const EventPtrList &triggered, const QVariant &data, ServerPlayer *player = nullptr);
 
     void run();
 

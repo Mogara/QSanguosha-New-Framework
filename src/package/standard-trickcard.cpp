@@ -363,7 +363,11 @@ bool Collateral::doCollateral(CardEffectStruct &effect) const
     QList<ServerPlayer *> targets;
     targets << m_victim;
     effect.to->showPrompt("collateral-slash", effect.from, m_victim);
-    return effect.to->askToUseCard("Slash", targets);
+    CardUseStruct use = effect.to->askToUseCard("Slash", targets);
+    if (use.card != nullptr)
+        return effect.to->logic()->useCard(use);
+
+    return false;
 }
 
 void Collateral::effect(GameLogic *logic, CardEffectStruct &effect)

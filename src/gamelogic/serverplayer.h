@@ -66,12 +66,13 @@ public:
     void showPrompt(const QString &message, const ServerPlayer *p1, const ServerPlayer *p2, const Card *card = nullptr);
     void showPrompt(const QString &message, const QVariantList &args = QVariantList());
 
-    Event askForTriggerOrder(const EventList &options, bool cancelable);
+    EventPtr askForTriggerOrder(const EventPtrList &options, bool cancelable);
     Card *askForCard(const QString &pattern, bool optional = true);
     QList<Card *> askForCards(const QString &pattern, int num, bool optional = false);
     QList<Card *> askForCards(const QString &pattern, int minNum, int maxNum, bool optional = false);
     Card *askToChooseCard(ServerPlayer *owner, const QString &areaFlag = "hej", bool handcardVisible = false);
-    bool askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets = QList<ServerPlayer *>());
+    CardUseStruct askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets = QList<ServerPlayer *>());
+    SkillInvokeStruct askToInvokeSkill(const Skill *skill);
     QList<QList<Card *>> askToArrangeCard(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames = QStringList());
     QString askForOption(const QStringList &options);
 
@@ -99,6 +100,11 @@ public:
     void unicastTagTo(const QString &key, ServerPlayer *to);
 
     QList<const General *> askForGeneral(const QList<const General *> &candidates, int num);
+
+    static bool sortByActionOrder(ServerPlayer *a, ServerPlayer *b);
+
+    GameLogic *logic() { return m_logic; }
+    const GameLogic *gameLogic() const { return m_logic; }
 
 private:
     void addTriggerSkill(const Skill *skill);

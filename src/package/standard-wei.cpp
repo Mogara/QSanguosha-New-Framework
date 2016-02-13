@@ -34,23 +34,35 @@ public:
     {
     }
 
-    int triggerable(GameLogic *, ServerPlayer *, DamageStruct &damage) const override
+    int triggerable(GameLogic *, ServerPlayer *, const DamageStruct &) const override
     {
-        if (damage.card)
-            return 1;
-
-        return 0;
+        return 1;
     }
 
-    bool effect(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const override
+    bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player /* = nullptr */) const override
     {
-        CardsMoveStruct obtain;
-        obtain.cards << damage.card;
-        obtain.to.owner = target;
-        obtain.to.type = CardArea::Hand;
-        obtain.isOpen = true;
-        logic->moveCards(obtain);
-        return false;
+        QString option = "draw";
+        DamageStruct *damage = data.value<DamageStruct *>();
+        if (damage->card != nullptr)
+            option = player->askForOption(QStringList{"draw", "obtain"});
+
+        eventPtr->tag["jianxiong_option"] = option;
+
+        return true;
+    }
+
+    void effect(GameLogic *logic, ServerPlayer *player, EventPtr eventPtr, const DamageStruct &damage) const override
+    {
+        bool isObtain = eventPtr->tag.value("jianxiong_option", QString()).toString() == "obtain";
+        if (isObtain) {
+            CardsMoveStruct obtain;
+            obtain.cards << damage.card;
+            obtain.to.owner = player;
+            obtain.to.type = CardArea::Hand;
+            obtain.isOpen = true;
+            logic->moveCards(obtain);
+        } else
+            player->drawCards(1);
     }
 };
 
@@ -61,91 +73,48 @@ public:
     {
     }
 
-    int triggerable(GameLogic *, ServerPlayer *, DamageStruct &damage) const override
+    int triggerable(GameLogic *logic, ServerPlayer *player, const DamageStruct &damage) const override
     {
         if (damage.from && damage.from->handcardNum() + damage.from->equipNum() > 0)
-            return 1;
+            return damage.damage;
 
         return 0;
     }
 
-    bool effect(GameLogic *logic, ServerPlayer *target, DamageStruct &damage) const override
+    void effect(GameLogic *logic, ServerPlayer *player, EventPtr eventPtr, const DamageStruct &damage) const override
     {
-        Card *card = target->askToChooseCard(damage.from, "he");
+        Card *card = player->askToChooseCard(player, "he");
         if (card) {
             CardsMoveStruct obtain;
             obtain.cards << card;
-            obtain.to.owner = target;
+            obtain.to.owner = player;
             obtain.to.type = CardArea::Hand;
             logic->moveCards(obtain);
         }
 
-        return false;
     }
 };
 
-class Guicai : public ProactiveSkill
+class Guicai : public RetrialSkill
 {
-    class Timing : public TriggerSkill
-    {
-    public:
-        Timing() : TriggerSkill("guicai")
-        {
-            m_events << AskForRetrial;
-            setFrequency(Compulsory);
-        }
-
-        bool cost(GameLogic *, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
-        {
-            JudgeStruct *judge = data.value<JudgeStruct *>();
-            target->showPrompt("guicai_ask_for_retrial", judge->who);
-            return target->askToUseCard("@guicai");
-        }
-
-        bool effect(GameLogic *logic, EventType, ServerPlayer *target, QVariant &data, ServerPlayer *) const override
-        {
-            uint cardId = target->tag["guicai_card"].toUInt();
-            target->tag.remove("guicai_card");
-            Card *card = logic->findCard(cardId);
-            if (card) {
-                JudgeStruct *judge = data.value<JudgeStruct *>();
-                judge->card = card;
-                judge->updateResult();
-            }
-            return false;
-        }
-    };
-
 public:
-    Guicai() : ProactiveSkill("guicai")
+    Guicai() : RetrialSkill("guicai")
     {
-        addSubskill(new Timing);
     }
 
     bool isAvailable(const Player *self, const QString &pattern) const override
     {
-        return self->handcardNum() > 0 && pattern == "@guicai";
+        return !self->isNude() && pattern == "@guicai";
     }
 
-    bool cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &) const override
+    bool cardFilter(const QList<const Card *> &selected, const Card *, const Player *, const QString &) const override
     {
-        return selected.isEmpty() && source->handcardArea()->contains(card);
+        return selected.isEmpty();
     }
 
     bool cardFeasible(const QList<const Card *> &selected, const Player *) const override
     {
         return selected.length() == 1;
-    }
-
-    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &, const QList<Card *> &cards) const override
-    {
-        Card *card = cards.first();
-        CardResponseStruct response;
-        response.card = card;
-        response.from = from;
-        logic->respondCard(response);
-
-        from->tag["guicai_card"] = cards.first()->id();
     }
 };
 

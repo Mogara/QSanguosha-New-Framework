@@ -33,30 +33,27 @@ class Player;
 class EventHandler
 {
 public:
-    EventHandler();
-    virtual ~EventHandler() = 0;
-
     QSet<EventType> events() const { return m_events; }
 
     QString name() const { return m_name; }
 
     int priority() const;
-    int priority(EventType event) const;
 
-    bool isCompulsory() const { return m_compulsory; }
+    bool isEquipSkill() const { return m_equipSkill; }
+    virtual EventList triggerable(GameLogic *logic, EventType event, const QVariant &data, ServerPlayer *player = nullptr) const;
+    virtual bool onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player = nullptr) const;
+    virtual bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player = nullptr) const;
 
-    virtual bool triggerable(ServerPlayer *owner) const = 0;
-    virtual EventMap triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data) const;
-    virtual EventList triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, ServerPlayer *invoker) const;
-    virtual bool onCost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker = nullptr) const;
-    virtual bool effect(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker = nullptr) const;
 
 protected:
+    EventHandler();
+
     QSet<EventType> m_events;
     QString m_name;
     int m_defaultPriority;
     QMap<EventType, int> m_priorityMap;
-    bool m_compulsory;
+    bool m_equipSkill;
+
 };
 
 #endif // EVENTHANDLER_H

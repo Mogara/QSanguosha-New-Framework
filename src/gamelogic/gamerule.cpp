@@ -191,7 +191,6 @@ GameRule::GameRule()
 {
     m_events << TurnStart << PhaseProceeding << PhaseEnd;
     m_events << AfterHpReduced << AskForPeach << AskForPeachDone;
-    m_compulsory = true;
 
     m_callbacks[TurnStart] = onTurnStart;
     m_callbacks[PhaseProceeding] = onPhaseProceeding;
@@ -201,19 +200,19 @@ GameRule::GameRule()
     m_callbacks[AskForPeachDone] = onAskForPeachDone;
 }
 
-bool GameRule::triggerable(ServerPlayer *owner) const
+EventList GameRule::triggerable(GameLogic *logic, EventType, const QVariant &, ServerPlayer *) const
 {
-    return owner != nullptr;
+    return EventList() << Event(logic, this);
 }
 
-bool GameRule::effect(GameLogic *logic, EventType event, ServerPlayer *current, QVariant &data, ServerPlayer *) const
+bool GameRule::effect(GameLogic *logic, EventType event, EventPtr, QVariant &data, ServerPlayer *player) const
 {
     if (logic->skipGameRule())
         return false;
 
     Callback func = m_callbacks[event];
     if (func)
-        (*func)(logic, current, data);
+        (*func)(logic, player, data);
     else
         throw GameFinish;
 

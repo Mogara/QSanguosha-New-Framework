@@ -35,8 +35,8 @@ public:
 
     virtual void prepareToStart(GameLogic *logic) const = 0;
 
-    bool triggerable(ServerPlayer *owner) const override;
-    bool effect(GameLogic *logic, EventType event, ServerPlayer *current, QVariant &data, ServerPlayer *) const override;
+    EventList triggerable(GameLogic *logic, EventType event, const QVariant &data, ServerPlayer *player) const override;
+    bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player) const override;
 
 protected:
     typedef void (*Callback)(GameLogic *, ServerPlayer *, QVariant &);

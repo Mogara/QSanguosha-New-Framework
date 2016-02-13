@@ -17,15 +17,13 @@
     Mogara
 *********************************************************************/
 
+#include "event.h"
 #include "eventhandler.h"
+#include "serverplayer.h"
 
 EventHandler::EventHandler()
     : m_defaultPriority(0)
-    , m_compulsory(false)
-{
-}
-
-EventHandler::~EventHandler()
+    , m_equipSkill(false)
 {
 }
 
@@ -34,50 +32,17 @@ int EventHandler::priority() const
     return m_defaultPriority;
 }
 
-int EventHandler::priority(EventType event) const
+EventList EventHandler::triggerable(GameLogic *, EventType, const QVariant &, ServerPlayer *) const
 {
-    return m_priorityMap.contains(event) ? m_priorityMap.value(event) : m_defaultPriority;
+    return EventList();
 }
 
-EventMap EventHandler::triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data) const
+bool EventHandler::onCost(GameLogic *, EventType, EventPtr, QVariant &, ServerPlayer *) const
 {
-    EventMap result;
-    EventList events = triggerable(logic, event, owner, data, owner);
-    foreach (const Event &d, events)
-        result.insert(owner, d);
-    return result;
-}
-
-EventList EventHandler::triggerable(GameLogic *logic, EventType event, ServerPlayer *owner, QVariant &data, ServerPlayer *invoker) const
-{
-    Q_UNUSED(logic)
-    Q_UNUSED(event)
-    Q_UNUSED(data)
-    Q_UNUSED(invoker)
-
-    EventList events;
-    if (triggerable(owner))
-        events << Event(this, owner);
-
-    return events;
-}
-
-bool EventHandler::onCost(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const
-{
-    Q_UNUSED(logic)
-    Q_UNUSED(event)
-    Q_UNUSED(target)
-    Q_UNUSED(data)
-    Q_UNUSED(invoker)
     return true;
 }
 
-bool EventHandler::effect(GameLogic *logic, EventType event, ServerPlayer *target, QVariant &data, ServerPlayer *invoker) const
+bool EventHandler::effect(GameLogic *, EventType, EventPtr, QVariant &, ServerPlayer *) const
 {
-    Q_UNUSED(logic)
-    Q_UNUSED(event)
-    Q_UNUSED(target)
-    Q_UNUSED(data)
-    Q_UNUSED(invoker)
     return false;
 }

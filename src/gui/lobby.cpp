@@ -26,7 +26,7 @@ Lobby::Lobby(QQuickItem *parent)
     : QQuickItem(parent)
     , m_client(Client::instance())
 {
-    connect(m_client, &Client::roomPropertyChanged, this, &Lobby::onRoomPropertyUpdated);
+    connect(m_client, &Client::roomConfigChanged, this, &Lobby::onRoomConfigChanged);
     connect(m_client, &Client::roomListUpdated, this, &Lobby::roomListUpdated);
     connect(m_client, &Client::roomEntered, this, &Lobby::onRoomEntered);
     connect(m_client, &Client::userAdded, this, &Lobby::onUserAdded);
@@ -48,6 +48,11 @@ void Lobby::speakToServer(const QString &text)
 void Lobby::updateRoomList()
 {
     m_client->fetchRoomList();
+}
+
+void Lobby::updateConfig(const QString &key, const QVariant &value)
+{
+    m_client->configureRoom(key, value);
 }
 
 void Lobby::onCreateButtonClicked()
@@ -74,12 +79,14 @@ void Lobby::onAddRobotButtonClicked()
     m_client->addRobot();
 }
 
-void Lobby::onRoomPropertyUpdated(const QString &name, const QVariant &value)
+void Lobby::onRoomConfigChanged(const QString &name, const QVariant &value)
 {
     if (name == "ownerId") {
         setProperty("isOwner", value.toUInt() == m_client->self()->id());
-    } else if (name == "name") {
-        setProperty("roomName", value);
+    } else if (name == "id") {
+        setProperty("roomId", value);
+    } else {
+        setConfig(name, value);
     }
 }
 
@@ -88,15 +95,17 @@ void Lobby::onRoomEntered(const QVariant &config)
     QVariantMap info = config.toMap();
     if (!info.isEmpty()) {
         setProperty("roomId", info["id"]);
-        setProperty("roomName", info["name"]);
         setProperty("chatLog", "");
+
+        setConfig("name", info["name"]);
     }
 
     CClientUser *self = m_client->self();
     if (self) {
         setProperty("isOwner", info["ownerId"].toUInt() == self->id());
         setProperty("userAvatar", self->avatar());
-        setProperty("userName", self->screenName());
+
+        setConfig("name", self->screenName());
     }
 
     foreach (const CClientUser *user, m_client->users())

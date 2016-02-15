@@ -18,12 +18,9 @@
 *********************************************************************/
 
 #include "client.h"
-#include "engine.h"
-#include "gamelogic.h"
-#include "gamemode.h"
 #include "pcconsolestartdialog.h"
+#include "server.h"
 
-#include <CServer>
 #include <CRoom>
 #include <CServerUser>
 
@@ -42,24 +39,11 @@ void PcConsoleStartDialog::start(const QString &screenName, const QString &avata
     m_avatar = avatar;
 
     ushort port = 5927;
-    CServer *server = new CServer(qApp);
+    Server *server = new Server(qApp);
     if (!server->listen(QHostAddress::Any, port)) {
         server->deleteLater();
         return;
     }
-
-    connect(server, &CServer::roomCreated, [](CRoom *room){
-        //@to-do: load game logic on owner updating configurations
-        GameLogic *logic = new GameLogic(room);
-        Engine *engine = Engine::instance();
-        const GameMode *mode = engine->mode("standard");
-        logic->setGameRule(mode->rule());
-        logic->setPackages(engine->getPackages(mode));
-        room->setGameLogic(logic);
-
-        CServerUser *owner = room->owner();
-        room->setName(tr("%1's Room").arg(owner->screenName()));
-    });
 
     m_client->connectToHost(QHostAddress::LocalHost, port);
 }

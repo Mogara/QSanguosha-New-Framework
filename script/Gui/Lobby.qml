@@ -1,4 +1,5 @@
 import QtQuick 2.4
+import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.1
 import Cardirector.Gui 1.0
 import Cardirector.Device 1.0
@@ -7,14 +8,24 @@ import Sanguosha 1.0
 Lobby {
     anchors.fill: parent
     property int roomId: 0
-    property alias roomName: roomNameItem.text
     property alias roomLogo: roomLogoItem.source
     property alias chatLog: chatLogItem.text
     property alias userAvatar: userAvatarItem.source
     property alias userName: userNameItem.text
     property bool isOwner: false
 
+    Item {
+        id: config
+        property string name: qsTr("QSanguosha Lobby")
+        property string mode: "standard"
+        property int capacity: 0
+        property int timeout: 0
+    }
+
+    onSetConfig: config[key] = value;
+
     onMessageLogged: chatLogItem.append(message);
+
     onRoomListUpdated: {
         var room, i, item;
         var roomMap = {};
@@ -206,7 +217,7 @@ Lobby {
 
                         Text {
                             id: roomNameItem
-                            text: qsTr("QSanguosha Lobby")
+                            text: config.name
                             anchors.left: roomLogoItem.right
                             anchors.bottom: parent.bottom
                             anchors.leftMargin: Device.gu(10)
@@ -245,7 +256,7 @@ Lobby {
                 ColumnLayout {
                     id: roomInfo
                     Layout.fillWidth: false
-                    Layout.preferredWidth: Device.gu(200)
+                    Layout.preferredWidth: Device.gu(260)
                     spacing: 0
 
                     Rectangle {
@@ -268,6 +279,86 @@ Lobby {
                         color: "#DDDDDB"
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+
+                        GridLayout {
+                            anchors.fill: parent
+                            anchors.margins: Device.gu(15)
+
+                            columns: 2
+
+                            Text {
+                                text: qsTr("Room Name")
+                                font.pixelSize: Device.gu(16)
+                            }
+
+                            TextField {
+                                text: config.name
+                                font.pixelSize: Device.gu(14)
+                                readOnly: !isOwner
+                                onEditingFinished: updateConfig("name", text);
+                            }
+
+                            Text {
+                                text: qsTr("Game Mode")
+                                font.pixelSize: Device.gu(16)
+                            }
+
+                            Row {
+                                ExclusiveGroup { id: gameModeGroup }
+                                RadioButton {
+                                    text: qsTr("Standard")
+                                    checked: config.mode == "standard"
+                                    exclusiveGroup: gameModeGroup
+                                    enabled: isOwner
+                                    onCheckedChanged: {
+                                        if (checked)
+                                            updateConfig("mode", "standard");
+                                    }
+                                }
+                                RadioButton {
+                                    text: qsTr("Hegemony")
+                                    checked: config.mode == "hegemony"
+                                    exclusiveGroup: gameModeGroup
+                                    enabled: isOwner
+                                    onCheckedChanged: {
+                                        if (checked)
+                                            updateConfig("mode", "hegemony");
+                                    }
+                                }
+                            }
+
+                            Text {
+                                text: qsTr("Capacity")
+                                font.pixelSize: Device.gu(16)
+                            }
+
+                            TextField {
+                                text: config.capacity
+                                font.pixelSize: Device.gu(14)
+                                readOnly: !isOwner
+                                validator: IntValidator {
+                                    top: 10
+                                    bottom: 2
+                                }
+                                onEditingFinished: updateConfig("capacity", text);
+                            }
+
+                            Text {
+                                text: qsTr("Timeout")
+                                font.pixelSize: Device.gu(16)
+                            }
+
+                            TextField {
+                                text: config.timeout
+                                font.pixelSize: Device.gu(14)
+                                readOnly: !isOwner
+                                validator: IntValidator {
+                                    top: 30
+                                    bottom: 5
+                                }
+                                onEditingFinished: updateConfig("timeout", text);
+                            }
+                        }
                     }
 
                     Rectangle {

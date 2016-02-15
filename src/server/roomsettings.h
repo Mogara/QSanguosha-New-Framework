@@ -17,36 +17,24 @@
     Mogara
 *********************************************************************/
 
-#ifndef STARTSERVERDIALOG_H
-#define STARTSERVERDIALOG_H
+#ifndef ROOMSETTINGS_H
+#define ROOMSETTINGS_H
 
-#include <CardirectorGlobal>
-#include <QQuickItem>
+#include <croomsettings.h>
 
-class Server;
-class CServerUser;
-class CRoom;
-
-class StartServerDialog : public QQuickItem
+class RoomSettings : public CRoomSettings
 {
-    Q_OBJECT
+    Q_GADGET
+    const QMetaObject *metaObject() const override;
+
+    Q_PROPERTY(QString mode MEMBER mode)
+    Q_PROPERTY(int timeout MEMBER timeout)
 
 public:
-    StartServerDialog(QQuickItem *parent = 0);
+    RoomSettings();
 
-    Q_INVOKABLE void createServer();
-
-signals:
-    void messageLogged(const QString &message);
-
-protected:
-    void onUserAdded(CServerUser *user);
-    void onUserRemoved();
-    void onUserNetworkDelayChanged();
-    void onRoomCreated(CRoom *room);
-    void onRoomAbandoned();
-
-    Server *m_server;
+    QString mode;
+    int timeout;
 };
 
-#endif // STARTSERVERDIALOG_H
+#endif // ROOMSETTINGS_H

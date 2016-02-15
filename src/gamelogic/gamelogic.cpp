@@ -19,12 +19,15 @@
 
 #include "card.h"
 #include "cardarea.h"
+#include "engine.h"
 #include "eventhandler.h"
 #include "gamelogic.h"
+#include "gamemode.h"
 #include "gamerule.h"
 #include "general.h"
 #include "package.h"
 #include "protocol.h"
+#include "roomsettings.h"
 #include "serverplayer.h"
 #include "util.h"
 
@@ -972,9 +975,25 @@ CAbstractPlayer *GameLogic::createPlayer(CServerRobot *robot)
     return new ServerPlayer(this, robot);
 }
 
+void GameLogic::loadMode(const GameMode *mode)
+{
+    setGameRule(mode->rule());
+
+    QList<const EventHandler *> rules = mode->extraRules();
+    foreach (const EventHandler *rule, rules)
+        addEventHandler(rule);
+
+    setPackages(Sanguosha.getPackages(mode));
+}
+
 void GameLogic::prepareToStart()
 {
     CRoom *room = this->room();
+
+    //Load game mode
+    RoomSettings *config = static_cast<RoomSettings *>(room->settings());
+    const GameMode *mode = Sanguosha.mode(config->mode);
+    loadMode(mode);
 
     //Arrange seats for all the players
     QList<ServerPlayer *> players = this->players();

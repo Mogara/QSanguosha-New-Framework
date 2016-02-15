@@ -38,11 +38,14 @@ public:
     Q_INVOKABLE void createRoom();
     Q_INVOKABLE void speakToServer(const QString &text);
     Q_INVOKABLE void updateRoomList();
+    Q_INVOKABLE void updateConfig(const QString &key, const QVariant &value);
 
 signals:
     void gameStarted();
     void messageLogged(const QString &message);
     void roomListUpdated(const QVariant &rooms);
+
+    void setConfig(const QString &key, const QVariant &value);
 
 protected:
     Q_INVOKABLE void onCreateButtonClicked();
@@ -50,7 +53,7 @@ protected:
     Q_INVOKABLE void onReadyButtonClicked();
     Q_INVOKABLE void onAddRobotButtonClicked();
 
-    void onRoomPropertyUpdated(const QString &name, const QVariant &value);
+    void onRoomConfigChanged(const QString &name, const QVariant &value);
 
     void onRoomEntered(const QVariant &config);
     void onUserAdded(const CClientUser *user);

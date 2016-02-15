@@ -17,36 +17,28 @@
     Mogara
 *********************************************************************/
 
-#ifndef STARTSERVERDIALOG_H
-#define STARTSERVERDIALOG_H
+#include "engine.h"
+#include "gamelogic.h"
+#include "gamemode.h"
+#include "roomsettings.h"
+#include "server.h"
 
-#include <CardirectorGlobal>
-#include <QQuickItem>
+#include <CRoom>
+#include <CServerUser>
 
-class Server;
-class CServerUser;
-class CRoom;
-
-class StartServerDialog : public QQuickItem
+Server::Server(QObject *parent)
+    : CServer(parent)
 {
-    Q_OBJECT
+    CRoom *lobby = this->lobby();
+    lobby->setName(tr("QSanguosha Lobby"));
 
-public:
-    StartServerDialog(QQuickItem *parent = 0);
+    connect(this, &CServer::roomCreated, [](CRoom *room){
+        GameLogic *logic = new GameLogic(room);
+        room->setGameLogic(logic);
 
-    Q_INVOKABLE void createServer();
-
-signals:
-    void messageLogged(const QString &message);
-
-protected:
-    void onUserAdded(CServerUser *user);
-    void onUserRemoved();
-    void onUserNetworkDelayChanged();
-    void onRoomCreated(CRoom *room);
-    void onRoomAbandoned();
-
-    Server *m_server;
-};
-
-#endif // STARTSERVERDIALOG_H
+        room->setSettings(new RoomSettings);
+        CServerUser *owner = room->owner();
+        room->setName(tr("%1's Room").arg(owner->screenName()));
+        room->broadcastConfig();
+    });
+}

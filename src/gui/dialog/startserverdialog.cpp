@@ -18,14 +18,10 @@
 *********************************************************************/
 
 #include "startserverdialog.h"
-#include "engine.h"
-#include "gamemode.h"
+#include "server.h"
 
-#include <CServer>
 #include <CRoom>
 #include <CServerUser>
-#include "gamelogic.h"
-#include "gamerule.h"
 
 StartServerDialog::StartServerDialog(QQuickItem *parent)
     : QQuickItem(parent)
@@ -36,16 +32,13 @@ StartServerDialog::StartServerDialog(QQuickItem *parent)
 void StartServerDialog::createServer()
 {
     ushort port = 5927;
-    m_server = new CServer(this);
+    m_server = new Server(this);
     if (!m_server->listen(QHostAddress::Any, port)) {
         emit messageLogged(tr("The server failed to start, probably due to port %1 occupied by another application.").arg(port));
         m_server->deleteLater();
         m_server = nullptr;
         return;
     }
-
-    CRoom *lobby = m_server->lobby();
-    lobby->setName(tr("QSanguosha Lobby"));
 
     emit messageLogged(tr("The server is listening on port %1").arg(port));
 
@@ -80,18 +73,7 @@ void StartServerDialog::onUserRemoved()
 void StartServerDialog::onRoomCreated(CRoom *room)
 {
     connect(room, &CRoom::abandoned, this, &StartServerDialog::onRoomAbandoned);
-
-    //@to-do: load game logic on owner updating configurations
-    GameLogic *logic = new GameLogic(room);
-    Engine *engine = Engine::instance();
-    const GameMode *mode = engine->modes().first();
-    logic->setGameRule(mode->rule());
-    logic->setPackages(engine->getPackages(mode));
-    room->setGameLogic(logic);
-
     CServerUser *owner = room->owner();
-    room->setName(tr("%1's Room").arg(owner->screenName()));
-
     emit messageLogged(tr("%1(%2) created a new room(%3)").arg(owner->screenName()).arg(owner->id()).arg(room->id()));
 }
 

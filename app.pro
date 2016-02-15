@@ -45,7 +45,9 @@ SOURCES += src/main.cpp \
     src/package/standard-wei.cpp \
     src/package/standard-wu.cpp \
     src/package/systempackage.cpp \
-    src/package/maneuveringpackage.cpp
+    src/package/maneuveringpackage.cpp \
+    src/server/roomsettings.cpp \
+    src/server/server.cpp
 
 HEADERS += \
     src/client/client.h \
@@ -82,14 +84,17 @@ HEADERS += \
     src/package/standard-equipcard.h \
     src/package/standard-trickcard.h \
     src/package/systempackage.h \
-    src/package/maneuveringpackage.h
+    src/package/maneuveringpackage.h \
+    src/server/roomsettings.h \
+    src/server/server.h
 
 INCLUDEPATH += src \
     src/client \
     src/core \
     src/gamelogic \
     src/gui \
-    src/package
+    src/package \
+    src/server
 
 defineTest(copy) {
     file = $$1

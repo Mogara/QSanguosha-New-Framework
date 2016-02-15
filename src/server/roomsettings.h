@@ -28,13 +28,11 @@ class RoomSettings : public CRoomSettings
     const QMetaObject *metaObject() const override;
 
     Q_PROPERTY(QString mode MEMBER mode)
-    Q_PROPERTY(int timeout MEMBER timeout)
 
 public:
     RoomSettings();
 
     QString mode;
-    int timeout;
 };
 
 #endif // ROOMSETTINGS_H

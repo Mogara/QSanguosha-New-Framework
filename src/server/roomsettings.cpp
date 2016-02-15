@@ -26,7 +26,6 @@ const QMetaObject *RoomSettings::metaObject() const
 
 RoomSettings::RoomSettings()
     : mode("standard")
-    , timeout(15)
 {
     capacity = 8;
 }

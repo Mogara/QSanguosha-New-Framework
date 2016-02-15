@@ -41,6 +41,9 @@
     <Filter Include="package">
       <UniqueIdentifier>{5568fa66-9bac-45bb-a184-a7a48f82b994}</UniqueIdentifier>
     </Filter>
+    <Filter Include="server">
+      <UniqueIdentifier>{6fdec124-82f3-4391-be58-40c8f10e4d22}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\main.cpp" />
@@ -266,6 +269,18 @@
     <ClCompile Include="GeneratedFiles\Release\moc_standard-basiccard.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\server\roomsettings.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_roomsettings.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_roomsettings.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\server.cpp">
+      <Filter>server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\client\client.h">
@@ -315,6 +330,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\standard-basiccard.h">
       <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\server\roomsettings.h">
+      <Filter>server</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -374,6 +392,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\package\hegstandardpackage.h">
       <Filter>package</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\server\server.h">
+      <Filter>server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -199,8 +199,8 @@ private:
 public:
     explicit RetrialSkill(const QString &name, bool isReplace = false);
 
-    bool cost(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const final override { return false; }
-    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const final override {}
+    bool cost(GameLogic *, ServerPlayer *, const QList<ServerPlayer *> &, const QList<Card *> &) const final override { return false; }
+    void effect(GameLogic *, ServerPlayer *, const QList<ServerPlayer *> &, const QList<Card *> &) const final override {}
     
 private:
     bool m_isReplace;

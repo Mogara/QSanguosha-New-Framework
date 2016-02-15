@@ -288,7 +288,7 @@ public:
         m_events << AskForRetrial;
     }
 
-    EventList triggerable(GameLogic *logic, EventType event, const QVariant &data, ServerPlayer * /* = nullptr */) const final override
+    EventList triggerable(GameLogic *logic, EventType, const QVariant &, ServerPlayer * /* = nullptr */) const final override
     {
         // player is nullptr in this method so we don't use this player
         EventList l;
@@ -299,7 +299,7 @@ public:
         return l;
     }
 
-    bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer * /* = nullptr */) const final override
+    bool cost(GameLogic *logic, EventType, EventPtr eventPtr, QVariant &data, ServerPlayer * /* = nullptr */) const final override
     {
         JudgeStruct *judge = data.value<JudgeStruct *>();
         eventPtr->invoker->showPrompt(name() + "_ask_for_retrial", judge->who);
@@ -315,7 +315,7 @@ public:
         return false;
     }
 
-    bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer * /* = nullptr */) const final override
+    bool effect(GameLogic *logic, EventType, EventPtr eventPtr, QVariant &data, ServerPlayer * /* = nullptr */) const final override
     {
         JudgeStruct *judge = data.value<JudgeStruct *>();
         Card *card = eventPtr->invoker->tag.value(name() + "_retrialCard").value<Card *>();
@@ -368,7 +368,7 @@ ProactiveSkillTiming::ProactiveSkillTiming(const QString &name, const ProactiveS
 
 }
 
-bool ProactiveSkillTiming::cost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player /* = nullptr */) const
+bool ProactiveSkillTiming::cost(GameLogic *logic, EventType, EventPtr eventPtr, QVariant &, ServerPlayer * /* = nullptr */) const
 {
     SkillInvokeStruct *s = new SkillInvokeStruct(eventPtr->invoker->askToInvokeSkill(m_parent));
     const ProactiveSkill *proactiveSkill = dynamic_cast<const ProactiveSkill *>(s->skill);
@@ -380,7 +380,7 @@ bool ProactiveSkillTiming::cost(GameLogic *logic, EventType event, EventPtr even
     return false;
 }
 
-bool ProactiveSkillTiming::effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player /* = nullptr */) const
+bool ProactiveSkillTiming::effect(GameLogic *logic, EventType, EventPtr eventPtr, QVariant &, ServerPlayer * /* = nullptr */) const
 {
     SkillInvokeStruct *s = eventPtr->tag.value("invoke").value<SkillInvokeStruct *>();
     const ProactiveSkill *proactiveSkill = dynamic_cast<const ProactiveSkill *>(s->skill);

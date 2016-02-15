@@ -717,7 +717,7 @@ void Client::GameOverCommand(Client *client, const QVariant &data)
     emit client->gameOver(winners);
 }
 
-void Client::InvokeSkillRequestCoomand(Client *client, const QVariant &data)
+void Client::InvokeSkillRequestCoomand(Client *, const QVariant &)
 {
     // @to-do: Takashrio: fix this
 }

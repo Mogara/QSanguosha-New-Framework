@@ -39,7 +39,7 @@ public:
         return 1;
     }
 
-    bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player /* = nullptr */) const override
+    bool cost(GameLogic *, EventType, EventPtr eventPtr, QVariant &data, ServerPlayer *player /* = nullptr */) const override
     {
         QString option = "draw";
         DamageStruct *damage = data.value<DamageStruct *>();
@@ -73,7 +73,7 @@ public:
     {
     }
 
-    int triggerable(GameLogic *logic, ServerPlayer *player, const DamageStruct &damage) const override
+    int triggerable(GameLogic *, ServerPlayer *, const DamageStruct &damage) const override
     {
         if (damage.from && damage.from->handcardNum() + damage.from->equipNum() > 0)
             return damage.damage;
@@ -81,7 +81,7 @@ public:
         return 0;
     }
 
-    void effect(GameLogic *logic, ServerPlayer *player, EventPtr eventPtr, const DamageStruct &damage) const override
+    void effect(GameLogic *logic, ServerPlayer *player, EventPtr eventPtr, const DamageStruct &) const override
     {
         Card *card = player->askToChooseCard(player, "he");
         if (card) {

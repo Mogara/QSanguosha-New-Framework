@@ -361,7 +361,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
 //         event_stack.pop_back();
 
     }
-    catch (EventType triggerEvent) {
+    catch (EventType) {
 //         event_stack.pop_back();
         throw;
     }

@@ -27,6 +27,12 @@
 #include <CNetwork>
 #include <CTranslator>
 
+#ifdef EMBED_RESOURCE
+#define QsSrc "qrc:/"
+#else
+#define QsSrc ""
+#endif
+
 int main(int argc, char *argv[])
 {
     MCD_INIT_GUI;

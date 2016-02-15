@@ -20,7 +20,7 @@
 #ifndef ROOMSETTINGS_H
 #define ROOMSETTINGS_H
 
-#include <croomsettings.h>
+#include <CRoomSettings>
 
 class RoomSettings : public CRoomSettings
 {

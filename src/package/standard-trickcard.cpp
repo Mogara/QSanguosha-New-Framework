@@ -22,6 +22,7 @@
 
 #include "gamelogic.h"
 #include "protocol.h"
+#include "roomsettings.h"
 #include "serverplayer.h"
 #include "standardpackage.h"
 #include "standard-trickcard.h"
@@ -61,9 +62,11 @@ void AmazingGrace::use(GameLogic *logic, CardUseStruct &use)
 
 void AmazingGrace::effect(GameLogic *logic, CardEffectStruct &effect)
 {
+    int timeout = logic->settings()->timeout * 1000;
+
     CServerAgent *agent = effect.to->agent();
-    agent->request(S_COMMAND_TAKE_AMAZING_GRACE, QVariant(), 15000);
-    uint cardId = agent->waitForReply(15000).toUInt();
+    agent->request(S_COMMAND_TAKE_AMAZING_GRACE, QVariant(), timeout);
+    uint cardId = agent->waitForReply(timeout).toUInt();
 
     Card *takenCard = nullptr;
     const CardArea *wugu = logic->wugu();

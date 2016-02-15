@@ -32,6 +32,7 @@ class GameRule;
 class GameMode;
 class ServerPlayer;
 class Package;
+class RoomSettings;
 
 class GameLogic : public CAbstractGameLogic
 {
@@ -40,6 +41,8 @@ class GameLogic : public CAbstractGameLogic
 public:
     GameLogic(CRoom *parent = 0);
     ~GameLogic();
+
+    const RoomSettings *settings() const;
 
     void setGameRule(const GameRule *rule);
 

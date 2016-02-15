@@ -934,7 +934,7 @@ QMap<uint, QList<const General *>> GameLogic::broadcastRequestForGenerals(const 
     QList<CServerAgent *> agents;
     foreach (ServerPlayer *player, players)
         agents << player->agent();
-    room->broadcastRequest(agents, 15000);
+    room->broadcastRequest(agents, settings()->timeout * 1000);
 
     QMap<uint, GeneralList> result;
     foreach (ServerPlayer *player, players) {
@@ -986,13 +986,17 @@ void GameLogic::loadMode(const GameMode *mode)
     setPackages(Sanguosha.getPackages(mode));
 }
 
+const RoomSettings *GameLogic::settings() const
+{
+    return static_cast<RoomSettings *>(room()->settings());
+}
+
 void GameLogic::prepareToStart()
 {
     CRoom *room = this->room();
 
     //Load game mode
-    RoomSettings *config = static_cast<RoomSettings *>(room->settings());
-    const GameMode *mode = Sanguosha.mode(config->mode);
+    const GameMode *mode = Sanguosha.mode(settings()->mode);
     loadMode(mode);
 
     //Arrange seats for all the players

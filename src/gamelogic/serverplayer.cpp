@@ -22,17 +22,13 @@
 #include "gamelogic.h"
 #include "general.h"
 #include "protocol.h"
+#include "roomsettings.h"
 #include "serverplayer.h"
 #include "skill.h"
 #include "event.h"
 
 #include <CRoom>
 #include <CServerAgent>
-
-namespace
-{
-    const int m_replyTime = 15000;
-}
 
 ServerPlayer::ServerPlayer(GameLogic *logic, CServerAgent *agent)
     : Player(logic)
@@ -170,8 +166,9 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
 
 bool ServerPlayer::activate()
 {
-    m_agent->request(S_COMMAND_USE_CARD, QVariant(), m_replyTime);
-    QVariant replyData = m_agent->waitForReply(m_replyTime);
+    int timeout = m_logic->settings()->timeout * 1000;
+    m_agent->request(S_COMMAND_USE_CARD, QVariant(), timeout);
+    QVariant replyData = m_agent->waitForReply(timeout);
     if (replyData.isNull())
         return true;
     const QVariantMap reply = replyData.toMap();
@@ -293,8 +290,9 @@ EventPtr ServerPlayer::askForTriggerOrder(const EventPtrList &options, bool canc
     }
     data["options"] = optionData;
 
-    m_agent->request(S_COMMAND_TRIGGER_ORDER, data, m_replyTime);
-    QVariant replyData = m_agent->waitForReply(m_replyTime);
+    int timeout = m_logic->settings()->timeout * 1000;
+    m_agent->request(S_COMMAND_TRIGGER_ORDER, data, timeout);
+    QVariant replyData = m_agent->waitForReply(timeout);
     if (replyData.isNull())
         return cancelable ? EventPtr() : options.first();
 
@@ -311,10 +309,11 @@ Card *ServerPlayer::askForCard(const QString &pattern, bool optional)
     data["pattern"] = pattern;
     data["optional"] = optional;
 
+    int timeout = m_logic->settings()->timeout * 1000;
     QVariant replyData;
     forever {
-        m_agent->request(S_COMMAND_ASK_FOR_CARD, data, m_replyTime);
-        replyData = m_agent->waitForReply(m_replyTime);
+        m_agent->request(S_COMMAND_ASK_FOR_CARD, data, timeout);
+        replyData = m_agent->waitForReply(timeout);
         if (replyData.isNull())
             break;
 
@@ -368,8 +367,9 @@ QList<Card *> ServerPlayer::askForCards(const QString &pattern, int minNum, int 
     data["maxNum"] = maxNum;
     data["optional"] = optional;
 
-    m_agent->request(S_COMMAND_ASK_FOR_CARD, data, m_replyTime);
-    const QVariantMap replyData = m_agent->waitForReply(m_replyTime).toMap();
+    int timeout = m_logic->settings()->timeout * 1000;
+    m_agent->request(S_COMMAND_ASK_FOR_CARD, data, timeout);
+    const QVariantMap replyData = m_agent->waitForReply(timeout).toMap();
 
     if (optional) {
         if (replyData.isEmpty())
@@ -432,8 +432,9 @@ Card *ServerPlayer::askToChooseCard(ServerPlayer *owner, const QString &areaFlag
         data["delayedTricks"] = trickData;
     }
 
-    m_agent->request(S_COMMAND_CHOOSE_PLAYER_CARD, data, m_replyTime);
-    uint cardId = m_agent->waitForReply(m_replyTime).toUInt();
+    int timeout = m_logic->settings()->timeout * 1000;
+    m_agent->request(S_COMMAND_CHOOSE_PLAYER_CARD, data, timeout);
+    uint cardId = m_agent->waitForReply(timeout).toUInt();
     if (cardId > 0) {
         if (areaFlag.contains('h') && handcardVisible) {
             Card *card = handcards->findCard(cardId);
@@ -474,8 +475,9 @@ CardUseStruct ServerPlayer::askToUseCard(const QString &pattern, const QList<Ser
         targetIds << target->id();
     data["assignedTargets"] = targetIds;
 
-    m_agent->request(S_COMMAND_USE_CARD, data, m_replyTime);
-    const QVariantMap reply = m_agent->waitForReply(m_replyTime).toMap();
+    int timeout = m_logic->settings()->timeout * 1000;
+    m_agent->request(S_COMMAND_USE_CARD, data, timeout);
+    const QVariantMap reply = m_agent->waitForReply(timeout).toMap();
     CardUseStruct use;
     if (reply.isEmpty())
         return use;
@@ -527,8 +529,9 @@ SkillInvokeStruct ServerPlayer::askToInvokeSkill(const Skill *skill)
     QVariantMap data;
     data["skill"] = skill->name();
 
-    m_agent->request(S_COMMAND_USE_CARD, data, m_replyTime);
-    const QVariantMap reply = m_agent->waitForReply(m_replyTime).toMap();
+    int timeout = m_logic->settings()->timeout * 1000;
+    m_agent->request(S_COMMAND_USE_CARD, data, timeout);
+    const QVariantMap reply = m_agent->waitForReply(timeout).toMap();
     SkillInvokeStruct invoke;
     if (reply.isEmpty())
         return invoke;
@@ -570,7 +573,8 @@ QList<QList<Card *> > ServerPlayer::askToArrangeCard(const QList<Card *> &cards,
 
     data["areaNames"] = areaNames;
 
-    m_agent->request(S_COMMAND_ARRANGE_CARD, data, m_replyTime * 3);
+    int timeout = m_logic->settings()->timeout * 1000;
+    m_agent->request(S_COMMAND_ARRANGE_CARD, data, timeout * 3);
 
     QList<QList<Card *> > result;
     const QVariantList reply = m_agent->waitForReply().toList();
@@ -792,8 +796,9 @@ QList<const General *> ServerPlayer::askForGeneral(const QList<const General *> 
         candidateData << candidate->id();
     data["candidates"] = candidateData;
 
-    m_agent->request(S_COMMAND_CHOOSE_GENERAL, data, m_replyTime);
-    QVariantList reply = m_agent->waitForReply(m_replyTime).toList();
+    int timeout = m_logic->settings()->timeout * 1000;
+    m_agent->request(S_COMMAND_CHOOSE_GENERAL, data, timeout);
+    QVariantList reply = m_agent->waitForReply(timeout).toList();
 
     GeneralList result;
     foreach (const QVariant &idData, reply) {

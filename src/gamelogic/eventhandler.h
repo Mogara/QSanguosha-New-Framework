@@ -36,10 +36,9 @@ public:
     QSet<EventType> events() const { return m_events; }
 
     QString name() const { return m_name; }
-
-    int priority() const;
-
+    int priority() const { return m_priority; }
     bool isEquipSkill() const { return m_equipSkill; }
+
     virtual EventList triggerable(GameLogic *logic, EventType event, const QVariant &data, ServerPlayer *player = nullptr) const;
     virtual bool onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player = nullptr) const;
     virtual bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player = nullptr) const;
@@ -50,8 +49,7 @@ protected:
 
     QSet<EventType> m_events;
     QString m_name;
-    int m_defaultPriority;
-    QMap<EventType, int> m_priorityMap;
+    int m_priority;
     bool m_equipSkill;
 
 };

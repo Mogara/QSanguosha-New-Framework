@@ -22,14 +22,9 @@
 #include "serverplayer.h"
 
 EventHandler::EventHandler()
-    : m_defaultPriority(0)
+    : m_priority(0)
     , m_equipSkill(false)
 {
-}
-
-int EventHandler::priority() const
-{
-    return m_defaultPriority;
 }
 
 EventList EventHandler::triggerable(GameLogic *, EventType, const QVariant &, ServerPlayer *) const

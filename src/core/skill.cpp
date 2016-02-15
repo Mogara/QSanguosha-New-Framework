@@ -60,7 +60,7 @@ TriggerSkill::TriggerSkill(const QString &name)
 {
     EventHandler::m_name = name;
     m_type = TriggerType;
-    m_defaultPriority = 1;
+    m_priority = 1;
 }
 
 bool TriggerSkill::triggerable(ServerPlayer *owner) const

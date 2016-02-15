@@ -34,20 +34,20 @@ class Rende : public ProactiveSkill
     class Reset : public TriggerSkill
     {
     public:
-        Reset() : TriggerSkill("#rende_reset")
+        Reset() : TriggerSkill("rende")
         {
             m_events << PhaseChanging;
         }
 
-//        EventList triggerable(GameLogic *, EventType, ServerPlayer *owner, QVariant &data, ServerPlayer *) const override
-//        {
-//            if (owner->tag.contains("rende_count")) {
-//                PhaseChangeStruct *change = data.value<PhaseChangeStruct *>();
-//                if (change->to == Player::Inactive)
-//                    owner->tag.remove("rende_count");
-//            }
-//            return EventList();
-//        }
+        EventList triggerable(GameLogic *, EventType, const QVariant &data, ServerPlayer *invoker) const override
+        {
+            if (TriggerSkill::triggerable(invoker) && invoker->tag.contains("rende_count")) {
+                PhaseChangeStruct *change = data.value<PhaseChangeStruct *>();
+                if (change->to == Player::Inactive)
+                    invoker->tag.remove("rende_count");
+            }
+            return EventList();
+        }
     };
 
 public:
@@ -82,10 +82,10 @@ public:
         return targets.length() == 1;
     }
 
-    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const override
+    bool cost(GameLogic *logic, ServerPlayer *, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const override
     {
         if (to.isEmpty() || cards.isEmpty())
-            return;
+            return false;
 
         CardsMoveStruct move;
         move.cards = cards;
@@ -93,6 +93,11 @@ public:
         move.to.type = CardArea::Hand;
         logic->moveCards(move);
 
+        return true;
+    }
+
+    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &, const QList<Card *> &cards) const override
+    {
         int oldValue = from->tag["rende_count"].toInt();
         int newValue = oldValue + cards.length();
         from->tag["rende_count"] = newValue;

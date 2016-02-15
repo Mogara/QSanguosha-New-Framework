@@ -43,7 +43,7 @@ public:
     int playerNum() const;
 
     const Card *findCard(uint id) { return m_cards.value(id); }
-    void useCard(const QList<const Card *> &cards, const QList<const Player *> &targets, const Skill *skill);
+    void act(const QList<const Card *> &cards, const QList<const Player *> &targets, const Skill *skill);
     void respondCard(const QList<const Card *> &cards, const Skill *skill);
 
     const CardArea *wugu() const { return m_wugu; }
@@ -93,7 +93,7 @@ private:
     static void UpdatePlayerPropertyCommand(Client *client, const QVariant &data);
     static void ChooseGeneralRequestCommand(Client *client, const QVariant &data);
     static void MoveCardsCommand(Client *client, const QVariant &data);
-    static void UseCardRequestCommand(Client *client, const QVariant &data);
+    static void ActRequestCommand(Client *client, const QVariant &data);
     static void UseCardCommand(Client *client, const QVariant &data);
     static void AddCardHistoryCommand(Client *client, const QVariant &data);
     static void DamageCommand(Client *client, const QVariant &data);
@@ -118,7 +118,6 @@ private:
     static void SetVirtualCardCommand(Client *client, const QVariant &data);
     static void SetPlayerTagCommand(Client *client, const QVariant &data);
     static void GameOverCommand(Client *client, const QVariant &data);
-    static void InvokeSkillRequestCoomand(Client *client, const QVariant &data);
 
     QMap<uint, ClientPlayer *> m_players;
     QMap<CClientUser *, ClientPlayer *> m_user2player;

@@ -167,7 +167,7 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
 bool ServerPlayer::activate()
 {
     int timeout = m_logic->settings()->timeout * 1000;
-    m_agent->request(S_COMMAND_USE_CARD, QVariant(), timeout);
+    m_agent->request(S_COMMAND_ACT, QVariant(), timeout);
     QVariant replyData = m_agent->waitForReply(timeout);
     if (replyData.isNull())
         return true;
@@ -476,7 +476,7 @@ CardUseStruct ServerPlayer::askToUseCard(const QString &pattern, const QList<Ser
     data["assignedTargets"] = targetIds;
 
     int timeout = m_logic->settings()->timeout * 1000;
-    m_agent->request(S_COMMAND_USE_CARD, data, timeout);
+    m_agent->request(S_COMMAND_ACT, data, timeout);
     const QVariantMap reply = m_agent->waitForReply(timeout).toMap();
     CardUseStruct use;
     if (reply.isEmpty())
@@ -527,10 +527,9 @@ CardUseStruct ServerPlayer::askToUseCard(const QString &pattern, const QList<Ser
 SkillInvokeStruct ServerPlayer::askToInvokeSkill(const Skill *skill)
 {
     QVariantMap data;
-    data["skill"] = skill->name();
-
+    data["pattern"] = "@" + skill->name();
     int timeout = m_logic->settings()->timeout * 1000;
-    m_agent->request(S_COMMAND_USE_CARD, data, timeout);
+    m_agent->request(S_COMMAND_ACT, data, timeout);
     const QVariantMap reply = m_agent->waitForReply(timeout).toMap();
     SkillInvokeStruct invoke;
     if (reply.isEmpty())

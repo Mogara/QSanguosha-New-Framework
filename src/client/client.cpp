@@ -73,7 +73,7 @@ int Client::playerNum() const
     return m_players.size();
 }
 
-void Client::useCard(const QList<const Card *> &cards, const QList<const Player *> &targets, const Skill *skill)
+void Client::act(const QList<const Card *> &cards, const QList<const Player *> &targets, const Skill *skill)
 {
     QVariantMap data;
 
@@ -89,7 +89,7 @@ void Client::useCard(const QList<const Card *> &cards, const QList<const Player 
 
     data["skillId"] = skill ? skill->id() : 0;
 
-    replyToServer(S_COMMAND_USE_CARD, data);
+    replyToServer(S_COMMAND_ACT, data);
 }
 
 void Client::respondCard(const QList<const Card *> &cards, const Skill *skill)
@@ -370,7 +370,7 @@ void Client::MoveCardsCommand(Client *client, const QVariant &data)
     emit client->cardsMoved(moves);
 }
 
-void Client::UseCardRequestCommand(Client *client, const QVariant &data)
+void Client::ActRequestCommand(Client *client, const QVariant &data)
 {
     const QVariantMap arg = data.toMap();
     if (arg.size() != 2) {
@@ -717,11 +717,6 @@ void Client::GameOverCommand(Client *client, const QVariant &data)
     emit client->gameOver(winners);
 }
 
-void Client::InvokeSkillRequestCoomand(Client *, const QVariant &)
-{
-    // @to-do: Takashrio: fix this
-}
-
 static QObject *ClientInstanceCallback(QQmlEngine *, QJSEngine *)
 {
     return Client::instance();
@@ -756,13 +751,12 @@ void Client::Init()
     AddCallback(S_COMMAND_GAME_OVER, GameOverCommand);
 
     AddInteraction(S_COMMAND_CHOOSE_GENERAL, ChooseGeneralRequestCommand);
-    AddInteraction(S_COMMAND_USE_CARD, UseCardRequestCommand);
+    AddInteraction(S_COMMAND_ACT, ActRequestCommand);
     AddInteraction(S_COMMAND_ASK_FOR_CARD, AskForCardRequestCommand);
     AddInteraction(S_COMMAND_TAKE_AMAZING_GRACE, TakeAmazingGraceRequestCommand);
     AddInteraction(S_COMMAND_CHOOSE_PLAYER_CARD, ChoosePlayerCardRequestCommand);
     AddInteraction(S_COMMAND_TRIGGER_ORDER, TriggerOrderCommand);
     AddInteraction(S_COMMAND_ARRANGE_CARD, ArrangeCardCommand);
     AddInteraction(S_COMMAND_ASK_FOR_OPTION, AskForOptionCommand);
-    AddInteraction(S_COMMAND_INVOKE_SKILL, InvokeSkillRequestCoomand);
 }
 C_INITIALIZE_CLASS(Client)

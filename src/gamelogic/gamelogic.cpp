@@ -988,7 +988,7 @@ void GameLogic::loadMode(const GameMode *mode)
 
 const RoomSettings *GameLogic::settings() const
 {
-    return static_cast<RoomSettings *>(room()->settings());
+    return room()->settings<RoomSettings>();
 }
 
 void GameLogic::prepareToStart()

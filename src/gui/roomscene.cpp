@@ -357,7 +357,7 @@ void RoomScene::onAccepted()
 {
     switch (m_respondingState) {
     case UsingCardState:{
-        m_client->useCard(m_selectedCard, m_selectedPlayer, m_viewAsSkill);
+        m_client->act(m_selectedCard, m_selectedPlayer, m_viewAsSkill);
         break;
     }
     case RespondingCardState:{
@@ -381,7 +381,7 @@ void RoomScene::onRejected()
 void RoomScene::onFinished()
 {
     if (m_respondingState == UsingCardState)
-        m_client->replyToServer(S_COMMAND_USE_CARD);
+        m_client->replyToServer(S_COMMAND_ACT);
 
     resetDashboard();
 }

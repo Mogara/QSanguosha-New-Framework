@@ -60,7 +60,7 @@ public:
         return selected.isEmpty();
     }
 
-    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &, const QList<Card *> &cards) const override
+    bool cost(GameLogic *logic, ServerPlayer *, const QList<ServerPlayer *> &, const QList<Card *> &cards) const override
     {
         CardsMoveStruct move;
         move.cards = cards;
@@ -68,6 +68,11 @@ public:
         move.isOpen = true;
         logic->moveCards(move);
 
+        return true;
+    }
+
+    void effect(GameLogic *, ServerPlayer *from, const QList<ServerPlayer *> &, const QList<Card *> &cards) const override
+    {
         from->drawCards(cards.length());
     }
 };

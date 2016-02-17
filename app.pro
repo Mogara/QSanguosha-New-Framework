@@ -27,6 +27,7 @@ SOURCES += src/main.cpp \
     src/gui/dialog/pcconsolestartdialog.cpp \
     src/gui/dialog/startserverdialog.cpp \
     src/gui/dialog/startgamedialog.cpp \
+    src/gui/gamelogger.cpp \
     src/gui/lobby.cpp \
     src/gui/roomscene.cpp \
     src/mode/hegemonymode.cpp \
@@ -76,6 +77,7 @@ HEADERS += \
     src/gui/dialog/pcconsolestartdialog.h \
     src/gui/dialog/startserverdialog.h \
     src/gui/dialog/startgamedialog.h \
+    src/gui/gamelogger.h \
     src/gui/lobby.h \
     src/gui/roomscene.h \
     src/package/hegstandardpackage.h \

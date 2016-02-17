@@ -71,7 +71,7 @@ signals:
     void cardShown(const ClientPlayer *from, const QList<const Card *> &cards);
     void optionRequested(const QStringList &options);
     void arrangeCardRequested(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames);
-    void skillInvoked(const ClientPlayer *invoker, const Skill *skill, const QList<Card *> &cards, const QList<const ClientPlayer *> &targets);
+    void skillInvoked(const ClientPlayer *invoker, const Skill *skill, const QList<const Card *> &cards, const QList<const ClientPlayer *> &targets);
     void gameOver(const QList<const ClientPlayer *> &winners);
 
 private:

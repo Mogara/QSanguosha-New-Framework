@@ -647,9 +647,12 @@ void Client::InvokeSkillCommand(Client *client, const QVariant &data)
 
     invoker->addSkillHistory(skill);
 
-    QList<Card *> cards;
-    if (args.contains("cards"))
-        cards = client->findCards(args.value("cards"));
+    QList<const Card *> cards;
+    if (args.contains("cards")) {
+        QList<Card *> result = client->findCards(args.value("cards"));
+        foreach (const Card *card, result)
+            cards << card;
+    }
 
     QList<const ClientPlayer *> targets;
     if (args.contains("targets"))

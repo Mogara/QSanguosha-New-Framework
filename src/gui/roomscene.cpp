@@ -24,6 +24,7 @@
 #include "clientskill.h"
 #include "cardpattern.h"
 #include "engine.h"
+#include "gamelogger.h"
 #include "general.h"
 #include "protocol.h"
 #include "roomscene.h"
@@ -63,18 +64,6 @@ static QVariant AreaToVariant(const CardsMoveStruct::Area area)
     return data;
 }
 
-namespace LogStyle {
-    QString GeneralName("<span style=\"color: green; font-weight:bold;\">%1</span>");
-
-    QString Card(const QVariantMap &data)
-    {
-        return QString("<span style=\"color: yellow; font-weight: bold;\">%1[<img src=\"image://root/card/suit/%2.png\" />%3]</span>")
-                .arg(QObject::tr(data["name"].toString().toLatin1().constData()))
-                .arg(data["suit"].toString())
-                .arg(data["number"].toString());
-    }
-}
-
 RoomScene::RoomScene(QQuickItem *parent)
     : QQuickItem(parent)
     , m_client(Client::instance())
@@ -101,6 +90,9 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::optionRequested, this, &RoomScene::showOptions);
     connect(m_client, &Client::arrangeCardRequested, this, &RoomScene::onArrangeCardRequested);
     connect(m_client, &Client::gameOver, this, &RoomScene::onGameOver);
+
+    GameLogger *logger = new GameLogger(m_client, this);
+    connect(logger, &GameLogger::logAdded, this, &RoomScene::addLog);
 }
 
 void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
@@ -464,7 +456,7 @@ void RoomScene::onArrangeCardDone(const QVariantList &results)
     m_client->replyToServer(S_COMMAND_ARRANGE_CARD, data);
 }
 
-void RoomScene::onDamageDone(const ClientPlayer *from, const ClientPlayer *to, DamageStruct::Nature nature, int damage)
+void RoomScene::onDamageDone(const ClientPlayer *, const ClientPlayer *to, DamageStruct::Nature, int damage)
 {
     if (damage <= 0 || to == nullptr)
         return;
@@ -472,49 +464,20 @@ void RoomScene::onDamageDone(const ClientPlayer *from, const ClientPlayer *to, D
     int seat = to->seat();
     startEmotion("damage", seat);
 
-    QString damageType = tr("damage");
-    if (nature == DamageStruct::Fire) {
-        damageType = tr("fire damage");
-    } else if (nature == DamageStruct::Thunder) {
-        damageType = tr("thunder damage");
-    }
-
     playAudio(QString("system/injure%1.ogg").arg(qMin(damage, 3)));
-
-    QString log = tr("%1 caused %3 points of %4 to %2")
-            .arg(from->fullGeneralName())
-            .arg(to->fullGeneralName())
-            .arg(damage)
-            .arg(damageType);
-    addLog(log);
 }
 
-void RoomScene::onRecoverDone(const ClientPlayer *from, const ClientPlayer *to, int num)
+void RoomScene::onRecoverDone(const ClientPlayer *, const ClientPlayer *, int)
 {
     playAudio("card/common/peach.ogg");
-
-    QString log = tr("%1 recovered %2 %3 hp")
-            .arg(from->fullGeneralName())
-            .arg(to->fullGeneralName())
-            .arg(num);
-    addLog(log);
 }
 
-void RoomScene::onCardUsed(const QVariantMap &card, const ClientPlayer *from, const QList<const ClientPlayer *> &tos)
+void RoomScene::onCardUsed(const QVariantMap &, const ClientPlayer *from, const QList<const ClientPlayer *> &tos)
 {
     QVariantList toSeats;
-    QStringList toStr;
-    foreach (const ClientPlayer *to, tos) {
+    foreach (const ClientPlayer *to, tos)
         toSeats << to->seat();
-        toStr << LogStyle::GeneralName.arg(to->fullGeneralName());
-    }
     showIndicatorLine(from->seat(), toSeats);
-
-    QString log = tr("%1 used %2 upon %3")
-            .arg(LogStyle::GeneralName.arg(from->fullGeneralName()))
-            .arg(LogStyle::Card(card))
-            .arg(toStr.join(", "));
-    addLog(log);
 }
 
 void RoomScene::onCardAsked(const QString &pattern)

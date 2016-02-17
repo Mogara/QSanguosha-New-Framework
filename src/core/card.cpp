@@ -252,7 +252,7 @@ bool Card::targetFilter(const QList<const Player *> &selected, const Player *toS
     int maxTargetNum = this->maxTargetNum();
     bool isValid = toSelect->isAlive();
 
-    QList<const Skill *> skills = source->getGlobalSkills();
+    QList<const Skill *> skills = toSelect->getGlobalSkills();
     foreach (const Skill *skill, skills) {
         if (skill->type() == Skill::CardModType) {
             const CardModSkill *modSkill = static_cast<const CardModSkill *>(skill);
@@ -265,7 +265,7 @@ bool Card::targetFilter(const QList<const Player *> &selected, const Player *toS
         }
     }
 
-    return isValid && selected.length() < maxTargetNum && source->distanceTo(toSelect) <= distanceLimit;
+    return isValid && selected.length() < maxTargetNum && (source == nullptr || source->distanceTo(toSelect) <= distanceLimit);
 }
 
 bool Card::isAvailable(const Player *source) const

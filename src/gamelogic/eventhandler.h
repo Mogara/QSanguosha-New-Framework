@@ -33,6 +33,7 @@ class Player;
 class EventHandler
 {
 public:
+    virtual ~EventHandler();
     QSet<EventType> events() const { return m_events; }
 
     QString name() const { return m_name; }

@@ -27,6 +27,10 @@ EventHandler::EventHandler()
 {
 }
 
+EventHandler::~EventHandler()
+{
+}
+
 EventList EventHandler::triggerable(GameLogic *, EventType, const QVariant &, ServerPlayer *) const
 {
     return EventList();

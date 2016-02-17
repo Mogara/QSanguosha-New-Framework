@@ -1,5 +1,6 @@
 import QtQuick 2.4
 import QtQuick.Layouts 1.1
+import Cardirector.Gui 1.0
 import Cardirector.Device 1.0
 
 Rectangle {
@@ -13,21 +14,12 @@ Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            Flickable {
+            LogEdit {
                 id: chatLogBox
                 anchors.fill: parent
                 anchors.margins: Device.gu(10)
-                contentWidth: logBody.width
-                contentHeight: logBody.height
-                clip: true
-
-                TextEdit {
-                    id: logBody
-                    readOnly: true
-                    width: parent.width
-                    font.pixelSize: Device.gu(14)
-                    color: "white"
-                }
+                font.pixelSize: Device.gu(14)
+                color: "white"
             }
         }
 
@@ -47,8 +39,10 @@ Rectangle {
                 font.pixelSize: Device.gu(14)
 
                 onAccepted: {
-                    logBody.append(text);
-                    text = "";
+                    if (text != "") {
+                        chatLogBox.append(text);
+                        text = "";
+                    }
                 }
             }
         }

@@ -233,16 +233,11 @@ Lobby {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
 
-                        TextEdit {
+                        LogEdit {
                             id: chatLogItem
                             anchors.fill: parent
                             anchors.margins: Device.gu(20)
                             font.pixelSize: Device.gu(20)
-                            clip: true
-                            readOnly: true
-                            selectByKeyboard: true
-                            selectByMouse: true
-                            wrapMode: TextEdit.WordWrap
                         }
                     }
 

@@ -564,11 +564,15 @@ bool GameLogic::useCard(CardUseStruct &use)
 
             QVariantMap args;
             args["from"] = use.from->id();
-            //args["cards"]
             QVariantList tos;
             foreach (ServerPlayer *to, use.to)
                 tos << to->id();
             args["to"] = tos;
+            if (!use.card->isVirtual()) {
+                args["cardId"] = use.card->id();
+            } else {
+                args["card"] = use.card->toVariant();
+            }
             room()->broadcastNotification(S_COMMAND_USE_CARD, args);
 
             if (use.from) {
@@ -789,10 +793,11 @@ void GameLogic::damage(DamageStruct &damage)
                 trigger(BeforeHpReduced, damage.to, data);
 
             if (damage.to) {
-                QVariantList arg;
-                arg << damage.to->id();
-                arg << damage.nature;
-                arg << damage.damage;
+                QVariantMap arg;
+                arg["from"] = damage.from ? damage.from->id() : 0;
+                arg["to"] = damage.to->id();
+                arg["nature"] = damage.nature;
+                arg["damage"] = damage.damage;
                 room()->broadcastNotification(S_COMMAND_DAMAGE, arg);
 
                 int newHp = damage.to->hp() - damage.damage;
@@ -1015,11 +1020,7 @@ void GameLogic::prepareToStart()
     foreach (ServerPlayer *player, players) {
         CServerAgent *agent = findAgent(player);
         QVariantMap info;
-        if (agent->controlledByClient()) {
-            info["userId"] = agent->id();
-        } else {
-            info["robotId"] = agent->id();
-        }
+        info["agentId"] = agent->id();
         info["playerId"] = player->id();
         playerList << info;
     }

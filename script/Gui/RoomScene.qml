@@ -110,8 +110,14 @@ RoomScene {
                 Layout.preferredWidth: Device.gu(275)
 
                 LogBox {
+                    id: logBox
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+
+                    Connections {
+                        target: roomScene
+                        onAddLog: logBox.append(richText);
+                    }
                 }
 
                 ChatBox {

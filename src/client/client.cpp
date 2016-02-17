@@ -26,6 +26,7 @@
 
 #include <CClientUser>
 
+#include <QVariant>
 #include <QtQml>
 
 static Client *ClientInstance = nullptr;
@@ -242,12 +243,9 @@ void Client::ArrangeSeatCommand(Client *client, const QVariant &data)
         const QVariantMap info = rawInfo.toMap();
 
         CClientUser *agent = nullptr;
-        if (info.contains("userId")) {
-            uint userId = info["userId"].toUInt();
-            agent = client->findUser(userId);
-        } else if (info.contains("robotId")) {
-            uint robotId = info["robotId"].toUInt();
-            agent = client->findRobot(robotId);
+        if (info.contains("agentId")) {
+            uint agentId = info["agentId"].toUInt();
+            agent = client->findUser(agentId);
         }
 
         if (agent) {
@@ -392,10 +390,17 @@ void Client::UseCardCommand(Client *client, const QVariant &data)
 {
     const QVariantMap args = data.toMap();
     const ClientPlayer *from = client->findPlayer(args["from"].toUInt());
-    QList<const ClientPlayer *> targets = client->findPlayers(args["to"]);
+    QList<const ClientPlayer *> to = client->findPlayers(args["to"]);
 
-    //@to-do: set card footnote
-    emit client->cardUsed(from, targets);
+    QVariantMap cardData;
+    if (args.contains("cardId")) {
+        const Card *card = client->findCard(args["cardId"].toUInt());
+        cardData = card->toVariant();
+    } else if (args.contains("card")) {
+        cardData = args["card"].toMap();
+    }
+
+    emit client->cardUsed(cardData, from, to);
 }
 
 void Client::AddCardHistoryCommand(Client *client, const QVariant &data)
@@ -417,14 +422,15 @@ void Client::AddCardHistoryCommand(Client *client, const QVariant &data)
 
 void Client::DamageCommand(Client *client, const QVariant &data)
 {
-    QVariantList dataList = data.toList();
-    if (dataList.length() != 3)
+    const QVariantMap arg = data.toMap();
+    ClientPlayer *from = client->findPlayer(arg["from"].toUInt());
+    ClientPlayer *to = client->findPlayer(arg["to"].toUInt());
+    if (to == nullptr)
         return;
 
-    ClientPlayer *victim = client->findPlayer(dataList.at(0).toUInt());
-    DamageStruct::Nature nature = static_cast<DamageStruct::Nature>(dataList.at(1).toInt());
-    int damage = dataList.at(2).toInt();
-    emit client->damageDone(victim, nature, damage);
+    DamageStruct::Nature nature = static_cast<DamageStruct::Nature>(arg["nature"].toInt());
+    int damage = arg["damage"].toInt();
+    emit client->damageDone(from, to, nature, damage);
 }
 
 void Client::LoseHpCommand(Client *client, const QVariant &data)

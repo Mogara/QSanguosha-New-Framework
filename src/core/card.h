@@ -150,6 +150,7 @@ public:
 
     static Card *Find(const QList<Card *> &cards, uint id);
     static QList<Card *> Find(const QList<Card *> &cards, const QVariant &data);
+    QVariantMap toVariant() const;
 
 protected:
     explicit Card(Suit suit = UndeterminedSuit, int number = UndeterminedNumber);
@@ -174,7 +175,7 @@ protected:
     QSet<QString> m_flags;
 
 private:
-    C_DISABLE_COPY(Card);
+    C_DISABLE_COPY(Card)
 };
 
 class BasicCard : public Card

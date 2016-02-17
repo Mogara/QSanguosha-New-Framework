@@ -57,11 +57,11 @@ signals:
     void seatArranged();
     void chooseGeneralRequested(const QList<const General *> &candidates, int num /* @to-do: add banned pair */);
     void cardsMoved(const QList<CardsMoveStruct> &moves);
-    void damageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
+    void damageDone(const ClientPlayer *from, const ClientPlayer *to, DamageStruct::Nature nature, int damage);
     void loseHpDone(const ClientPlayer *victim, int lose);
     void recoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
     void usingCard(const QString &pattern, const QList<const Player *> &assignedTarget);
-    void cardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &to);
+    void cardUsed(const QVariantMap &card, const ClientPlayer *from, const QList<const ClientPlayer *> &to);
     void cardAsked(const QString &pattern);
     void cardsAsked(const QString &pattern, int minNum, int maxNum, bool optional);
     void amazingGraceStarted();

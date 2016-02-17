@@ -70,6 +70,7 @@ signals:
     void showOptions(const QStringList &options);
     void showArrangeCardBox(const QVariant &cards, const QVariant &capacities, const QVariant &names);
     void showGameOverBox(const QVariant &winners);
+    void addLog(const QString &richText);
 
 private:
     enum RespondingState
@@ -83,14 +84,15 @@ private:
     void resetDashboard();
     void enableCards(const QString &pattern);
     void enableCards(const QList<const Card *> &cards);
+    void addCardsMoveLog(const CardsMoveStruct &move);
 
     void onSeatArranged();
     void onChooseGeneralRequested(const QList<const General *> &candidates, int num);
     void onCardsMoved(const QList<CardsMoveStruct> &moves);
     void onUsingCard(const QString &pattern = QString(), const QList<const Player *> &assignedTargets = QList<const Player *>());
-    void onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage);
+    void onDamageDone(const ClientPlayer *from, const ClientPlayer *to, DamageStruct::Nature nature, int damage);
     void onRecoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
-    void onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos);
+    void onCardUsed(const QVariantMap &card, const ClientPlayer *from, const QList<const ClientPlayer *> &tos);
     void onCardAsked(const QString &pattern);
     void onCardsAsked(const QString &pattern, int minNum, int maxNum, bool optional);
     void onAmazingGraceStarted();

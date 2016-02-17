@@ -346,6 +346,16 @@ QList<Card *> Card::Find(const QList<Card *> &cards, const QVariant &data)
     return result;
 }
 
+QVariantMap Card::toVariant() const
+{
+    QVariantMap data;
+    data["name"] = objectName();
+    data["suit"] = suitString();
+    data["number"] = number();
+    data["color"] = color();
+    return data;
+}
+
 BasicCard::BasicCard(Card::Suit suit, int number)
     : Card(suit, number)
 {

@@ -63,6 +63,18 @@ static QVariant AreaToVariant(const CardsMoveStruct::Area area)
     return data;
 }
 
+namespace LogStyle {
+    QString GeneralName("<span style=\"color: green; font-weight:bold;\">%1</span>");
+
+    QString Card(const QVariantMap &data)
+    {
+        return QString("<span style=\"color: yellow; font-weight: bold;\">%1[<img src=\"image://root/card/suit/%2.png\" />%3]</span>")
+                .arg(QObject::tr(data["name"].toString().toLatin1().constData()))
+                .arg(data["suit"].toString())
+                .arg(data["number"].toString());
+    }
+}
+
 RoomScene::RoomScene(QQuickItem *parent)
     : QQuickItem(parent)
     , m_client(Client::instance())
@@ -452,38 +464,57 @@ void RoomScene::onArrangeCardDone(const QVariantList &results)
     m_client->replyToServer(S_COMMAND_ARRANGE_CARD, data);
 }
 
-void RoomScene::onDamageDone(const ClientPlayer *victim, DamageStruct::Nature nature, int damage)
+void RoomScene::onDamageDone(const ClientPlayer *from, const ClientPlayer *to, DamageStruct::Nature nature, int damage)
 {
-    if (damage <= 0)
+    if (damage <= 0 || to == nullptr)
         return;
 
-    int seat = victim->seat();
+    int seat = to->seat();
     startEmotion("damage", seat);
 
-    //@to-do:
+    QString damageType = tr("damage");
     if (nature == DamageStruct::Fire) {
-
+        damageType = tr("fire damage");
     } else if (nature == DamageStruct::Thunder) {
-
+        damageType = tr("thunder damage");
     }
 
     playAudio(QString("system/injure%1.ogg").arg(qMin(damage, 3)));
+
+    QString log = tr("%1 caused %3 points of %4 to %2")
+            .arg(from->fullGeneralName())
+            .arg(to->fullGeneralName())
+            .arg(damage)
+            .arg(damageType);
+    addLog(log);
 }
 
 void RoomScene::onRecoverDone(const ClientPlayer *from, const ClientPlayer *to, int num)
 {
-    C_UNUSED(from);
-    C_UNUSED(to);
-    C_UNUSED(num);
     playAudio("card/common/peach.ogg");
+
+    QString log = tr("%1 recovered %2 %3 hp")
+            .arg(from->fullGeneralName())
+            .arg(to->fullGeneralName())
+            .arg(num);
+    addLog(log);
 }
 
-void RoomScene::onCardUsed(const ClientPlayer *from, const QList<const ClientPlayer *> &tos)
+void RoomScene::onCardUsed(const QVariantMap &card, const ClientPlayer *from, const QList<const ClientPlayer *> &tos)
 {
     QVariantList toSeats;
-    foreach (const ClientPlayer *to, tos)
+    QStringList toStr;
+    foreach (const ClientPlayer *to, tos) {
         toSeats << to->seat();
+        toStr << LogStyle::GeneralName.arg(to->fullGeneralName());
+    }
     showIndicatorLine(from->seat(), toSeats);
+
+    QString log = tr("%1 used %2 upon %3")
+            .arg(LogStyle::GeneralName.arg(from->fullGeneralName()))
+            .arg(LogStyle::Card(card))
+            .arg(toStr.join(", "));
+    addLog(log);
 }
 
 void RoomScene::onCardAsked(const QString &pattern)

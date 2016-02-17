@@ -25,6 +25,7 @@
 
 #include <CRoom>
 #include <CServerUser>
+#include <CServerRobot>
 
 Server::Server(QObject *parent)
     : CServer(parent)
@@ -40,5 +41,9 @@ Server::Server(QObject *parent)
         CServerUser *owner = room->owner();
         room->setName(tr("%1's Room").arg(owner->screenName()));
         room->broadcastConfig();
+    });
+
+    connect(this, &CServer::robotAdded, [](CServerRobot *robot) {
+        robot->initAi("script/Ai/smart-ai.js");
     });
 }

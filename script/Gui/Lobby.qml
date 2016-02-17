@@ -290,7 +290,10 @@ Lobby {
                                 text: config.name
                                 font.pixelSize: Device.gu(14)
                                 readOnly: !isOwner
-                                onEditingFinished: updateConfig("name", text);
+                                onEditingFinished: {
+                                    if (isOwner)
+                                        updateConfig("name", text);
+                                }
                             }
 
                             Text {
@@ -335,7 +338,10 @@ Lobby {
                                     top: 10
                                     bottom: 2
                                 }
-                                onEditingFinished: updateConfig("capacity", text);
+                                onEditingFinished: {
+                                    if (isOwner)
+                                        updateConfig("capacity", text);
+                                }
                             }
 
                             Text {
@@ -351,7 +357,10 @@ Lobby {
                                     top: 30
                                     bottom: 5
                                 }
-                                onEditingFinished: updateConfig("timeout", text);
+                                onEditingFinished: {
+                                    if (isOwner)
+                                        updateConfig("timeout", text);
+                                }
                             }
                         }
                     }

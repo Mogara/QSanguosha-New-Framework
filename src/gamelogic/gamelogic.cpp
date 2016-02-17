@@ -970,14 +970,9 @@ QMap<uint, QList<const General *>> GameLogic::broadcastRequestForGenerals(const 
     return result;
 }
 
-CAbstractPlayer *GameLogic::createPlayer(CServerUser *user)
+CAbstractPlayer *GameLogic::createPlayer(CServerAgent *agent)
 {
-    return new ServerPlayer(this, user);
-}
-
-CAbstractPlayer *GameLogic::createPlayer(CServerRobot *robot)
-{
-    return new ServerPlayer(this, robot);
+    return new ServerPlayer(this, agent);
 }
 
 void GameLogic::loadMode(const GameMode *mode)

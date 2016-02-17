@@ -110,8 +110,7 @@ public:
     ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
 
 protected:
-    CAbstractPlayer *createPlayer(CServerUser *user);
-    CAbstractPlayer *createPlayer(CServerRobot *robot);
+    CAbstractPlayer *createPlayer(CServerAgent *agent) override;
 
     void loadMode(const GameMode *mode);
 

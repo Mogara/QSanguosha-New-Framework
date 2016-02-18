@@ -281,6 +281,15 @@
     <ClCompile Include="..\..\src\server\server.cpp">
       <Filter>server</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\gui\gamelogger.cpp">
+      <Filter>gui</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_gamelogger.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_gamelogger.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\client\client.h">
@@ -333,6 +342,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\server\roomsettings.h">
       <Filter>server</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\gui\gamelogger.h">
+      <Filter>gui</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

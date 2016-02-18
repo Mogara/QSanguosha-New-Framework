@@ -39,7 +39,10 @@ Server::Server(QObject *parent)
 
         room->setSettings(new RoomSettings);
         CServerUser *owner = room->owner();
-        room->setName(tr("%1's Room").arg(owner->screenName()));
+        if (owner->screenName().endsWith("s"))
+            room->setName(tr("%1' Room").arg(owner->screenName()));
+        else
+            room->setName(tr("%1's Room").arg(owner->screenName()));
         room->broadcastConfig();
     });
 

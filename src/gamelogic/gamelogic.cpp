@@ -316,9 +316,12 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QVariant &data)
             EventPtr invoke = sameTiming.first();
 
             // treat the invoker is NULL, if the triggered skill is some kind of gamerule
-            if (/*sameTiming.length() >= 2 && */invoke->invoker != nullptr && (invoke->eh->priority() >= -5 && invoke->eh->priority() <= 5)) { // if the priority is bigger than 5 or smaller than -5, that means it could be some kind of record skill, notify-client skill or fakemove skill, then no need to select the trigger order at this time
+            if (/*sameTiming.length() >= 2 && */invoke->invoker != nullptr && ((invoke->eh->priority() >= -5 && invoke->eh->priority() <= 5) || invoke->eh->priority() == 0)) {
                 // select the triggerorder of same timing
                 // if there is a compulsory skill or compulsory effect, it shouldn't be able to cancel
+                // if the priority is bigger than 5 or smaller than -5, that means it could be some kind of record skill, notify-client skill or fakemove skill,
+                // if the priority is 0, that means it is a gamerule
+                // then no need to select the trigger order at these conditions
                 bool has_compulsory = false;
                 foreach (const EventPtr &detail, sameTiming) {
                     if (detail->isCompulsory) { // judge the compulsory effect/skill in the detail struct

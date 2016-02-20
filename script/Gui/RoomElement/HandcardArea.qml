@@ -5,6 +5,7 @@ import "../../utility.js" as Utility
 Item {
     property alias cards: cardArea.cards
     property alias length: cardArea.length
+    property var selectedCards: []
 
     signal selectedChanged()
 
@@ -13,7 +14,7 @@ Item {
     CardArea {
         anchors.fill: parent
         id: cardArea
-        onLengthChanged: area.adjustCards();
+        onLengthChanged: area.updateCardPosition(true);
     }
 
     function add(inputs)
@@ -53,20 +54,11 @@ Item {
         for (i = 0; i < cards.length; i++) {
             card = cards[i];
             card.selectable = cardIds.contains(card.cid);
-            if (!card.selectable)
+            if (!card.selectable) {
                 card.selected = false;
+                unselectCard(card);
+            }
         }
-    }
-
-    function getSelectedCards()
-    {
-        var result = [];
-        for (var i = 0; i < cards.length; i++) {
-            var card = cards[i];
-            if (card.selected)
-                result.push(card);
-        }
-        return result;
     }
 
     function updateCardPosition(animated)
@@ -89,6 +81,33 @@ Item {
     function adjustCards()
     {
         area.updateCardPosition(true);
+
+        for (var i = 0; i < cards.length; i++) {
+            var card = cards[i];
+            if (card.selected) {
+                if (!selectedCards.contains(card))
+                    selectCard(card);
+            } else {
+                if (selectedCards.contains(card))
+                    unselectCard(card);
+            }
+        }
+
         selectedChanged();
+    }
+
+    function selectCard(card)
+    {
+        selectedCards.push(card);
+    }
+
+    function unselectCard(card)
+    {
+        for (var i = 0; i < selectedCards.length; i++) {
+            if (selectedCards[i] === card) {
+                selectedCards.splice(i, 1);
+                break;
+            }
+        }
     }
 }

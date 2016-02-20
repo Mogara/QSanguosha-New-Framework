@@ -173,7 +173,7 @@ RoomScene {
                 target: dashboard.handcardArea
                 onSelectedChanged: {
                     var ids = [];
-                    var cards = dashboard.handcardArea.getSelectedCards();
+                    var cards = dashboard.handcardArea.selectedCards;
                     for (var i = 0; i < cards.length; i++)
                         ids.push(cards[i].cid);
                     roomScene.onCardSelected(ids);

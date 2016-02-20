@@ -36,9 +36,9 @@ Item {
                 color: "white"
                 font.letterSpacing: text.length < 3 ? 9 : 0
 
-                glow.spread: 0.9
-                glow.radius: Device.gu(0.9)
-                glow.samples: 4
+                glow.spread: 0.7
+                glow.radius: Device.gu(3)
+                glow.samples: 6
                 glow.color: "#222222"
             }
 

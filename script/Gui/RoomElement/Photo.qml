@@ -203,7 +203,7 @@ Item {
 
         glow.color: "black"
         glow.spread: 0.7
-        glow.radius: Device.gu(12)
+        glow.radius: Device.gu(6)
         glow.samples: 24
     }
 
@@ -223,7 +223,7 @@ Item {
 
         glow.color: "black"
         glow.spread: 0.7
-        glow.radius: Device.gu(12)
+        glow.radius: Device.gu(6)
         glow.samples: 24
     }
 
@@ -251,6 +251,7 @@ Item {
         id: delayedTrickAreaItem
         columns: 1
         x: -Device.gu(15)
+        y: Device.gu(18)
     }
 
     Image {

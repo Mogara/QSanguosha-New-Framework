@@ -112,12 +112,20 @@ void GameLogger::onDamageDone(const ClientPlayer *from, const ClientPlayer *to, 
         damageType = tr("thunder damage");
     }
 
-    QString log = tr("%1 caused %3 points of %4 to %2")
-            .arg(LogStyle::From(from))
-            .arg(LogStyle::To(to))
-            .arg(LogStyle::Number(damage))
-            .arg(damageType);
-    emit logAdded(log);
+    if (from) {
+        QString log = tr("%1 caused %3 points of %4 to %2")
+                .arg(LogStyle::From(from))
+                .arg(LogStyle::To(to))
+                .arg(LogStyle::Number(damage))
+                .arg(damageType);
+        emit logAdded(log);
+    } else {
+        QString log = tr("%1 took %2 points of %3")
+                .arg(LogStyle::To(to))
+                .arg(LogStyle::Number(damage))
+                .arg(damageType);
+        emit logAdded(log);
+    }
 }
 
 void GameLogger::onLoseHpDone(const ClientPlayer *victim, int lose)

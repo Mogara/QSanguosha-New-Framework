@@ -142,6 +142,9 @@ public:
     virtual bool targetFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
     virtual bool isAvailable(const Player *source) const;
 
+    bool isValid(const QList<ServerPlayer *> &targets, ServerPlayer *source) const;
+    bool isValid(const QList<const Player *> &targets, const Player *source) const;
+
     virtual void onUse(GameLogic *logic, CardUseStruct &use);
     virtual void use(GameLogic *logic, CardUseStruct &use);
     virtual void onEffect(GameLogic *logic, CardEffectStruct &effect);

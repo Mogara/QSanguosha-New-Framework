@@ -274,6 +274,36 @@ bool Card::isAvailable(const Player *source) const
     return source->cardHistory(objectName()) < limit;
 }
 
+bool Card::isValid(const QList<ServerPlayer *> &targets, ServerPlayer *source) const
+{
+    if (isTargetFixed())
+        return targets.isEmpty();
+
+    QList<const Player *> selected;
+    foreach (const Player *toSelect, targets) {
+        if (targetFilter(selected, toSelect, source))
+            selected << toSelect;
+        else
+            return false;
+    }
+    return targetFeasible(selected, source);
+}
+
+bool Card::isValid(const QList<const Player *> &targets, const Player *source) const
+{
+    if (isTargetFixed())
+        return targets.isEmpty();
+
+    QList<const Player *> selected;
+    foreach (const Player *toSelect, targets) {
+        if (targetFilter(selected, toSelect, source))
+            selected << toSelect;
+        else
+            return false;
+    }
+    return targetFeasible(selected, source);
+}
+
 void Card::onUse(GameLogic *logic, CardUseStruct &use)
 {
     logic->sortByActionOrder(use.to);

@@ -199,6 +199,9 @@ bool ServerPlayer::activate()
                 if (proactiveSkill == nullptr)
                     return false;
 
+                if (!proactiveSkill->isValid(targets, this) || !proactiveSkill->isValid(cards, this, QString()))
+                    return false;
+
                 addSkillHistory(skill, cards, targets);
                 SkillInvokeStruct invoke;
                 invoke.player = this;
@@ -210,8 +213,9 @@ bool ServerPlayer::activate()
                 return false;
             } else if (skill->subtype() == ViewAsSkill::ConvertType) {
                 const ViewAsSkill *viewAsSkill = dynamic_cast<const ViewAsSkill *>(skill);
-                if (viewAsSkill == nullptr)
+                if (viewAsSkill == nullptr || viewAsSkill->isValid(cards, this, QString()))
                     return false;
+
                 card = viewAsSkill->viewAs(cards, this);
                 addSkillHistory(skill, cards);
             }
@@ -223,7 +227,7 @@ bool ServerPlayer::activate()
     if (card != nullptr) {
         if (card->canRecast() && targets.isEmpty()) {
             recastCard(card);
-        } else {
+        } else if (card->isAvailable(this) && card->isValid(targets, this)) {
             CardUseStruct use;
             use.from = this;
             use.to = targets;
@@ -324,12 +328,17 @@ Card *ServerPlayer::askForCard(const QString &pattern, bool optional)
             const Skill *skill = getSkill(skillId);
             if (skill->type() == Skill::ViewAsType) {
                 const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
-                return viewAsSkill->viewAs(cards, this);
+                if (viewAsSkill->isValid(cards, this, pattern))
+                    return viewAsSkill->viewAs(cards, this);
             }
         }
         if (cards.length() != 1)
             break;
-        return cards.first();
+
+        Card *card = cards.first();
+        CardPattern p(pattern);
+        if (p.match(this, card))
+            return card;
     }
 
     if (!optional) {
@@ -374,26 +383,31 @@ QList<Card *> ServerPlayer::askForCards(const QString &pattern, int minNum, int 
     if (optional) {
         if (replyData.isEmpty())
             return QList<Card *>();
-        return m_logic->findCards(replyData["cards"]);
-    } else {
-        QList<Card *> cards = m_logic->findCards(replyData["cards"]);
-        if (!optional) {
-            if (cards.length() < minNum) {
-                QList<Card *> allCards = handcardArea()->cards() + equipArea()->cards();
-                CardPattern p(pattern);
-                foreach (Card *card, allCards) {
-                    if (!cards.contains(card) && p.match(this, card)) {
-                        cards << card;
-                        if (cards.length() >= minNum)
-                            break;
-                    }
-                }
-            } else if (cards.length() > maxNum) {
-                cards = cards.mid(0, maxNum);
-            }
-        }
-        return cards;
     }
+
+    QList<Card *> cards = m_logic->findCards(replyData["cards"]);
+    CardPattern p(pattern);
+    foreach (Card *card, cards) {
+        if (!p.match(this, card))
+            cards.removeOne(card);
+    }
+
+    if (!optional) {
+        if (cards.length() < minNum) {
+            QList<Card *> allCards = handcardArea()->cards() + equipArea()->cards();
+            CardPattern p(pattern);
+            foreach (Card *card, allCards) {
+                if (!cards.contains(card) && p.match(this, card)) {
+                    cards << card;
+                    if (cards.length() >= minNum)
+                        break;
+                }
+            }
+        } else if (cards.length() > maxNum) {
+            cards = cards.mid(0, maxNum);
+        }
+    }
+    return cards;
 }
 
 Card *ServerPlayer::askToChooseCard(ServerPlayer *owner, const QString &areaFlag, bool handcardVisible)
@@ -503,7 +517,8 @@ CardUseStruct ServerPlayer::askToUseCard(const QString &pattern, const QList<Ser
         if (skill->type() == Skill::ViewAsType) {
             if (skill->subtype() == ViewAsSkill::ConvertType) {
                 const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
-                card = viewAsSkill->viewAs(cards, this);
+                if (viewAsSkill->isValid(cards, this, pattern))
+                    card = viewAsSkill->viewAs(cards, this);
             }
         }
     } else {
@@ -513,14 +528,17 @@ CardUseStruct ServerPlayer::askToUseCard(const QString &pattern, const QList<Ser
     if (card == nullptr)
         return use;
 
+    foreach (ServerPlayer *target, assignedTargets) {
+        if (!targets.contains(target))
+            return use;
+    }
+
+    if (!card->isValid(targets, this))
+        return use;
+
     use.from = this;
     use.card = card;
     use.to = targets;
-    foreach (ServerPlayer *target, assignedTargets) {
-        if (!use.to.contains(target))
-            return CardUseStruct();
-    }
-
     return use;
 }
 

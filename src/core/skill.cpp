@@ -179,6 +179,19 @@ bool ViewAsSkill::isAvailable(const Player *, const QString &pattern) const
     return pattern.isEmpty();
 }
 
+bool ViewAsSkill::isValid(const QList<Card *> &cards, const Player *self, const QString &pattern) const
+{
+    QList<const Card *> selected;
+    foreach (const Card *toSelect, cards) {
+        if (viewFilter(selected, toSelect, self, pattern))
+            selected << toSelect;
+        else
+            return false;
+    }
+
+    return true;
+}
+
 OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
     : ViewAsSkill(name)
 {
@@ -241,6 +254,18 @@ bool ProactiveSkill::cardFilter(const QList<const Card *> &, const Card *, const
     return false;
 }
 
+bool ProactiveSkill::isValid(const QList<Card *> &cards, const Player *source, const QString &pattern) const
+{
+    QList<const Card *> selected;
+    foreach (const Card *toSelect, cards) {
+        if (cardFilter(selected, toSelect, source, pattern))
+            selected << toSelect;
+        else
+            return false;
+    }
+    return cardFeasible(selected, source);
+}
+
 bool ProactiveSkill::playerFeasible(const QList<const Player *> &, const Player *) const
 {
     return true;
@@ -249,6 +274,27 @@ bool ProactiveSkill::playerFeasible(const QList<const Player *> &, const Player 
 bool ProactiveSkill::playerFilter(const QList<const Player *> &, const Player *, const Player *) const
 {
     return false;
+}
+
+bool ProactiveSkill::isValid(const QList<ServerPlayer *> &targets, ServerPlayer *source) const
+{
+    QList<const Player *> selected;
+    foreach (ServerPlayer *target, targets)
+        selected << target;
+    return isValid(selected, source);
+}
+
+bool ProactiveSkill::isValid(const QList<const Player *> &targets, const Player *source) const
+{
+    QList<const Player *> selected;
+    foreach (const Player *toSelect, targets) {
+        if (playerFilter(selected, toSelect, source))
+            selected << toSelect;
+        else
+            return false;
+    }
+
+    return playerFeasible(targets, source);
 }
 
 bool ProactiveSkill::cost(GameLogic *, ServerPlayer *, const QList<ServerPlayer *> &, const QList<Card *> &) const

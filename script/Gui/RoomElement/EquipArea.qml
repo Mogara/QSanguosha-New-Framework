@@ -3,9 +3,10 @@ import QtGraphicalEffects 1.0
 import Cardirector.Device 1.0
 
 Rectangle {
-    color: Qt.rgba(0, 0, 0, 0.65)
+    signal cardSelected(int cardId, bool selected)
 
     id: root
+    color: Qt.rgba(0, 0, 0, 0.65)
 
     ListModel {
         id: cards
@@ -92,6 +93,8 @@ Rectangle {
                 name: model.name
                 suit: model.suit
                 number: model.number
+
+                onSelectedChanged: cardSelected(model.cid, selected);
             }
         }
     }
@@ -130,5 +133,17 @@ Rectangle {
     function updateCardPosition(animated)
     {
         area.updateCardPosition(animated);
+    }
+
+    function enableCards(cardIds)
+    {
+        var card, i, item;
+        for (i = 0; i < cards.count; i++) {
+            card = cards.get(i);
+            item = equipItems.itemAt(i);
+            item.selectable = cardIds.contains(card.cid);
+            if (!item.selectable)
+                item.selected = false;
+        }
     }
 }

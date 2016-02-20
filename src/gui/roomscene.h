@@ -37,7 +37,7 @@ public:
 
     //From QML to C++
     Q_INVOKABLE void onChooseGeneralFinished(const QVariantList &choices);
-    Q_INVOKABLE void onCardSelected(const QVariantList &cardIds);
+    Q_INVOKABLE void onCardSelected(uint cardId, bool selected);
     Q_INVOKABLE void onPhotoSelected(const QVariantList &seats);
     Q_INVOKABLE void onAccepted();
     Q_INVOKABLE void onRejected();

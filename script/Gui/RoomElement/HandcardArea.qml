@@ -7,7 +7,7 @@ Item {
     property alias length: cardArea.length
     property var selectedCards: []
 
-    signal selectedChanged()
+    signal cardSelected(int cardId, bool selected)
 
     id: area
 
@@ -92,13 +92,12 @@ Item {
                     unselectCard(card);
             }
         }
-
-        selectedChanged();
     }
 
     function selectCard(card)
     {
         selectedCards.push(card);
+        cardSelected(card.cid, true);
     }
 
     function unselectCard(card)
@@ -106,6 +105,7 @@ Item {
         for (var i = 0; i < selectedCards.length; i++) {
             if (selectedCards[i] === card) {
                 selectedCards.splice(i, 1);
+                cardSelected(card.cid, false);
                 break;
             }
         }

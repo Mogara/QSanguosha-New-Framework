@@ -171,13 +171,12 @@ RoomScene {
 
             Connections {
                 target: dashboard.handcardArea
-                onSelectedChanged: {
-                    var ids = [];
-                    var cards = dashboard.handcardArea.selectedCards;
-                    for (var i = 0; i < cards.length; i++)
-                        ids.push(cards[i].cid);
-                    roomScene.onCardSelected(ids);
-                }
+                onCardSelected: roomScene.onCardSelected(cardId, selected);
+            }
+
+            Connections {
+                target: dashboard.equipArea
+                onCardSelected: roomScene.onCardSelected(cardId, selected);
             }
         }
     }
@@ -254,7 +253,10 @@ RoomScene {
         animation.start();
     }
 
-    onEnableCards: dashboard.handcardArea.enableCards(cardIds);
+    onEnableCards: {
+        dashboard.equipArea.enableCards(cardIds);
+        dashboard.handcardArea.enableCards(cardIds);
+    }
 
     onSetPhotoReady: {
         var i, photo;

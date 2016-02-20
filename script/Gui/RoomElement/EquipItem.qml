@@ -6,6 +6,8 @@ Item {
     property string name: null
     property string suit: null
     property int number: null
+    property bool selectable: false
+    property bool selected: false
 
     id: root
     width: Device.gu(145)
@@ -32,6 +34,36 @@ Item {
         glow.radius: 1
         glow.spread: 1
         glow.samples: 2
+    }
+
+    PixmapAnimation {
+        id: border
+        visible: false
+        source: "equip_border"
+        loop: true
+        width: Device.gu(156)
+        height: Device.gu(32)
+        x: -Math.round((width - root.width) / 2)
+        y: -Math.round((height - root.height) / 2)
+
+        Connections {
+            target: root
+            onSelectedChanged: {
+                if (root.selected)
+                    border.start();
+                else
+                    border.stop();
+            }
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            if (!selectable || selectAnime.running || unselectAnime.running)
+                return;
+            selected = !selected;
+        }
     }
 
     ParallelAnimation {
@@ -78,6 +110,35 @@ Item {
             from: 0
             to: Device.gu(10)
         }
+    }
+
+    NumberAnimation {
+        id: selectAnime
+        target: root
+        property: "x"
+        duration: 200
+        easing.type: Easing.Linear
+        from: 0
+        to: Device.gu(10)
+        onStarted: border.visible = true;
+    }
+
+    NumberAnimation {
+        id: unselectAnime
+        target: root
+        property: "x"
+        duration: 200
+        easing.type: Easing.Linear
+        from: Device.gu(10)
+        to: 0
+        onStopped: border.visible = false;
+    }
+
+    onSelectedChanged: {
+        if (selected)
+            selectAnime.start();
+        else
+            unselectAnime.start();
     }
 
     function show()

@@ -7,6 +7,7 @@ Item {
     property alias interval: timer.interval
     property int loadedFrameCount: 0
     property bool autoStart: false
+    property bool loop: false
 
     signal loaded()
     signal started()
@@ -48,10 +49,14 @@ Item {
         repeat: true
         onTriggered: {
             if (currentFrame >= fileModel.count) {
-                timer.stop();
                 frames.itemAt(fileModel.count - 1).visible = false;
-                root.finished();
-                return;
+                if (loop) {
+                    currentFrame = 0;
+                } else {
+                    timer.stop();
+                    root.finished();
+                    return;
+                }
             }
 
             if (currentFrame > 0)
@@ -71,5 +76,10 @@ Item {
                 timer.start();
             });
         }
+    }
+
+    function stop()
+    {
+        timer.stop();
     }
 }

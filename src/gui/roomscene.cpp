@@ -202,13 +202,14 @@ void RoomScene::enableCards(const QString &pattern)
     QVariantList cardIds;
     const ClientPlayer *self = m_client->selfPlayer();
     QList<Card *> cards = self->handcardArea()->cards();
-    cards << self->equipArea()->cards();
     if (pattern.isEmpty()) {
         foreach (Card *card, cards) {
             if (card->isAvailable(self))
                 cardIds << card->id();
         }
     } else {
+        cards << self->equipArea()->cards();
+
         CardPattern exp(pattern);
         foreach (const Card *card, cards) {
             if (exp.match(self, card))
@@ -284,13 +285,20 @@ void RoomScene::onUsingCard(const QString &pattern, const QList<const Player *> 
     setFinishEnabled(true);
 }
 
-void RoomScene::onCardSelected(const QVariantList &cardIds)
+void RoomScene::onCardSelected(uint cardId, bool selected)
 {
-    m_selectedCard.clear();
-    foreach (const QVariant &cardId, cardIds) {
-        const Card *card = m_client->findCard(cardId.toUInt());
+    if (selected) {
+        const Card *card = m_client->findCard(cardId);
         if (card)
             m_selectedCard << card;
+    } else {
+        for (int i = 0, max = m_selectedCard.length(); i < max; i++) {
+            const Card *card = m_selectedCard.at(i);
+            if (card->id() == cardId) {
+                m_selectedCard.removeAt(i);
+                break;
+            }
+        }
     }
 
     switch (m_respondingState) {

@@ -189,8 +189,6 @@ public:
 class ProactiveSkill : public ViewAsSkill
 {
     Q_OBJECT
-    //Check if selected cards are valid
-    bool isValid(const QList<Card *> &cards, const Player *source, const QString &pattern) const;
 
 
 public:
@@ -199,6 +197,8 @@ public:
     //Check if selected players are valid
     bool isValid(const QList<ServerPlayer *> &targets, ServerPlayer *source) const;
     bool isValid(const QList<const Player *> &targets, const Player *source) const;
+    //Check if selected cards are valid
+    bool isValid(const QList<Card *> &cards, const Player *source, const QString &pattern) const;
 
     bool cardFeasible(const QList<const Card *> &selected, const Player *source) const;
     bool cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const;

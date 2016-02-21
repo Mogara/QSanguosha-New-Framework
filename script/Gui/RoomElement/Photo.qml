@@ -29,7 +29,7 @@ Item {
 
     id: root
     width: Device.gu(157)
-    height: Device.gu(181)
+    height: Device.gu(182)
     states: [
         State {
             name: "normal"
@@ -123,9 +123,17 @@ Item {
         visible: false
     }
 
-    Image {
+    Rectangle {
         anchors.fill: parent
-        source: "image://root/photo/photo-back"
+        color: "transparent"
+        border.color: "black"
+        border.width: Device.gu(2)
+
+        Rectangle {
+            color: Qt.rgba(0, 0, 0, 0.5)
+            width: parent.width
+            height: Device.gu(20)
+        }
     }
 
     SimpleEquipArea {

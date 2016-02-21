@@ -35,11 +35,11 @@ public:
 
     virtual void prepareToStart(GameLogic *logic) const = 0;
 
-    EventList triggerable(GameLogic *logic, EventType event, const QVariant &data, ServerPlayer *player) const override;
-    bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player) const override;
+    EventList triggerable(GameLogic *logic, EventType event, const QObject *data, ServerPlayer *player) const override;
+    bool effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player) const override;
 
 protected:
-    typedef void (*Callback)(GameLogic *, ServerPlayer *, QVariant &);
+    typedef void (*Callback)(GameLogic *, ServerPlayer *, QObject *);
     QMap<EventType, Callback> m_callbacks;
 };
 

@@ -57,6 +57,35 @@ Event::Event(GameLogic *logic, const EventHandler *eh /*= nullptr*/, ServerPlaye
 {
 }
 
+Event::Event(const Event &arg2)
+    : QObject()
+{
+    logic = arg2.logic;
+    eh = arg2.eh;
+    owner = arg2.owner;
+    invoker = arg2.invoker;
+    isCompulsory = arg2.isCompulsory;
+    preferredTarget = arg2.preferredTarget;
+    targets = arg2.targets;
+    triggered = arg2.triggered;
+    tag = arg2.tag;
+}
+
+Event &Event::operator =(const Event &arg2)
+{
+    logic = arg2.logic;
+    eh = arg2.eh;
+    owner = arg2.owner;
+    invoker = arg2.invoker;
+    isCompulsory = arg2.isCompulsory;
+    preferredTarget = arg2.preferredTarget;
+    targets = arg2.targets;
+    triggered = arg2.triggered;
+    tag = arg2.tag;
+
+    return *this;
+}
+
 bool Event::isValid() const // validity check
 {
     return logic != nullptr && eh != nullptr;

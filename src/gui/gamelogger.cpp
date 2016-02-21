@@ -103,12 +103,12 @@ void GameLogger::onSeatArranged()
     }
 }
 
-void GameLogger::onDamageDone(const ClientPlayer *from, const ClientPlayer *to, DamageStruct::Nature nature, int damage)
+void GameLogger::onDamageDone(const ClientPlayer *from, const ClientPlayer *to, DamageValue::Nature nature, int damage)
 {
     QString damageType = tr("damage");
-    if (nature == DamageStruct::Fire) {
+    if (nature == DamageValue::Fire) {
         damageType = tr("fire damage");
-    } else if (nature == DamageStruct::Thunder) {
+    } else if (nature == DamageValue::Thunder) {
         damageType = tr("thunder damage");
     }
 

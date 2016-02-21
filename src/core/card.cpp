@@ -304,12 +304,11 @@ bool Card::isValid(const QList<const Player *> &targets, const Player *source) c
     return targetFeasible(selected, source);
 }
 
-void Card::onUse(GameLogic *logic, CardUseStruct &use)
+void Card::onUse(GameLogic *logic, CardUseValue &use)
 {
     logic->sortByActionOrder(use.to);
 
-    QVariant useData = QVariant::fromValue(&use);
-    logic->trigger(PreCardUsed, use.from, useData);
+    logic->trigger(PreCardUsed, use.from, &use);
 
     CardsMoveStruct move;
     move.to.type = CardArea::Table;
@@ -318,27 +317,27 @@ void Card::onUse(GameLogic *logic, CardUseStruct &use)
     logic->moveCards(move);
 }
 
-void Card::use(GameLogic *logic, CardUseStruct &use)
+void Card::use(GameLogic *logic, CardUseValue &use)
 {
     foreach (ServerPlayer *target, use.to) {
-        CardEffectStruct effect(use);
+        CardEffectValue effect(use);
         effect.to = target;
         logic->takeCardEffect(effect);
     }
 
     if (use.target) {
-        CardEffectStruct effect(use);
+        CardEffectValue effect(use);
         logic->takeCardEffect(effect);
     }
 
     complete(logic);
 }
 
-void Card::onEffect(GameLogic *, CardEffectStruct &)
+void Card::onEffect(GameLogic *, CardEffectValue &)
 {
 }
 
-void Card::effect(GameLogic *, CardEffectStruct &)
+void Card::effect(GameLogic *, CardEffectValue &)
 {
 }
 
@@ -399,7 +398,7 @@ TrickCard::TrickCard(Card::Suit suit, int number)
     m_type = TrickType;
 }
 
-void TrickCard::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void TrickCard::onEffect(GameLogic *logic, CardEffectValue &effect)
 {
     if (isNullifiable(effect)) {
         QList<ServerPlayer *> players = logic->allPlayers();
@@ -417,7 +416,7 @@ void TrickCard::onEffect(GameLogic *logic, CardEffectStruct &effect)
             }
             Card *card = player->askForCard("Nullification"); // @to-do: Takashiro: the ask of Nullification is actually a race request(according to the old framework)
             if (card) {
-                CardUseStruct use;
+                CardUseValue use;
                 use.from = player;
                 use.card = card;
                 use.target = effect.use.card;
@@ -429,7 +428,7 @@ void TrickCard::onEffect(GameLogic *logic, CardEffectStruct &effect)
     }
 }
 
-bool TrickCard::isNullifiable(const CardEffectStruct &) const
+bool TrickCard::isNullifiable(const CardEffectValue &) const
 {
     return true;
 }
@@ -442,17 +441,16 @@ EquipCard::EquipCard(Card::Suit suit, int number)
     m_targetFixed = true;
 }
 
-void EquipCard::onUse(GameLogic *logic, CardUseStruct &use)
+void EquipCard::onUse(GameLogic *logic, CardUseValue &use)
 {
     ServerPlayer *player = use.from;
     if (use.to.isEmpty())
         use.to << player;
 
-    QVariant data = QVariant::fromValue(&use);
-    logic->trigger(PreCardUsed, player, data);
+    logic->trigger(PreCardUsed, player, &use);
 }
 
-void EquipCard::use(GameLogic *logic, CardUseStruct &use)
+void EquipCard::use(GameLogic *logic, CardUseValue &use)
 {
     if (use.to.isEmpty()) {
         CardsMoveStruct move;
@@ -517,7 +515,7 @@ GlobalEffect::GlobalEffect(Card::Suit suit, int number)
     m_maxTargetNum = InfinityNum;
 }
 
-void GlobalEffect::onUse(GameLogic *logic, CardUseStruct &use)
+void GlobalEffect::onUse(GameLogic *logic, CardUseValue &use)
 {
     if (use.to.isEmpty()) {
         QList<const Player *> selected;
@@ -540,7 +538,7 @@ AreaOfEffect::AreaOfEffect(Card::Suit suit, int number)
     m_maxTargetNum = InfinityNum;
 }
 
-void AreaOfEffect::onUse(GameLogic *logic, CardUseStruct &use)
+void AreaOfEffect::onUse(GameLogic *logic, CardUseValue &use)
 {
     if (use.to.isEmpty()) {
         QList<const Player *> selected;
@@ -584,15 +582,14 @@ bool DelayedTrick::targetFilter(const QList<const Player *> &selected, const Pla
     return area->length() <= 0 || !area->contains(metaObject()->className());
 }
 
-void DelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)
+void DelayedTrick::onUse(GameLogic *logic, CardUseValue &use)
 {
     logic->sortByActionOrder(use.to);
 
-    QVariant useData = QVariant::fromValue(&use);
-    logic->trigger(PreCardUsed, use.from, useData);
+    logic->trigger(PreCardUsed, use.from, &use);
 }
 
-void DelayedTrick::use(GameLogic *logic, CardUseStruct &use)
+void DelayedTrick::use(GameLogic *logic, CardUseValue &use)
 {
     CardsMoveStruct move;
     move.cards << use.card;
@@ -606,7 +603,7 @@ void DelayedTrick::use(GameLogic *logic, CardUseStruct &use)
     logic->moveCards(move);
 }
 
-void DelayedTrick::onEffect(GameLogic *logic, CardEffectStruct &effect)
+void DelayedTrick::onEffect(GameLogic *logic, CardEffectValue &effect)
 {
     CardsMoveStruct move;
     move.cards << this;
@@ -617,9 +614,9 @@ void DelayedTrick::onEffect(GameLogic *logic, CardEffectStruct &effect)
     TrickCard::onEffect(logic, effect);
 }
 
-void DelayedTrick::effect(GameLogic *logic, CardEffectStruct &effect)
+void DelayedTrick::effect(GameLogic *logic, CardEffectValue &effect)
 {
-    JudgeStruct judge(m_judgePattern);
+    JudgeValue judge(m_judgePattern);
     judge.who = effect.to;
     logic->judge(judge);
 
@@ -633,16 +630,16 @@ MovableDelayedTrick::MovableDelayedTrick(Card::Suit suit, int number)
     m_targetFixed = true;
 }
 
-void MovableDelayedTrick::onUse(GameLogic *logic, CardUseStruct &use)
+void MovableDelayedTrick::onUse(GameLogic *logic, CardUseValue &use)
 {
     if (use.to.isEmpty())
         use.to << use.from;
     DelayedTrick::onUse(logic, use);
 }
 
-void MovableDelayedTrick::effect(GameLogic *logic, CardEffectStruct &effect)
+void MovableDelayedTrick::effect(GameLogic *logic, CardEffectValue &effect)
 {
-    JudgeStruct judge(m_judgePattern);
+    JudgeValue judge(m_judgePattern);
     judge.who = effect.to;
     logic->judge(judge);
 
@@ -679,17 +676,16 @@ void MovableDelayedTrick::complete(GameLogic *logic)
         move.isOpen = true;
         logic->moveCards(move);
 
-        CardUseStruct use;
+        CardUseValue use;
         use.card = this;
         use.to << target;
 
-        QVariant data = QVariant::fromValue(&use);
         foreach (ServerPlayer *to, use.to)
-            logic->trigger(TargetConfirming, to, data);
+            logic->trigger(TargetConfirming, to, &use);
         if (use.to.isEmpty())
             continue;
         foreach (ServerPlayer *to, use.to)
-            logic->trigger(TargetConfirmed, to, data);
+            logic->trigger(TargetConfirmed, to, &use);
         if (!use.to.isEmpty())
             break;
     }

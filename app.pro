@@ -17,7 +17,7 @@ SOURCES += src/main.cpp \
     src/core/player.cpp \
     src/core/protocol.cpp \
     src/core/skill.cpp \
-    src/core/structs.cpp \
+    src/core/datavalue.cpp \
     src/core/util.cpp \
     src/gamelogic/event.cpp \
     src/gamelogic/eventhandler.cpp \
@@ -32,23 +32,9 @@ SOURCES += src/main.cpp \
     src/gui/roomscene.cpp \
     src/mode/hegemonymode.cpp \
     src/mode/standardmode.cpp \
-    src/package/hegstandardpackage.cpp \
-    src/package/hegstandard-qun.cpp \
-    src/package/hegstandard-shu.cpp \
-    src/package/hegstandard-wei.cpp \
-    src/package/hegstandard-wu.cpp \
-    src/package/standardpackage.cpp \
-    src/package/standard-basiccard.cpp \
-    src/package/standard-equipcard.cpp \
-    src/package/standard-qun.cpp \
-    src/package/standard-shu.cpp \
-    src/package/standard-trickcard.cpp \
-    src/package/standard-wei.cpp \
-    src/package/standard-wu.cpp \
-    src/package/systempackage.cpp \
-    src/package/maneuveringpackage.cpp \
     src/server/roomsettings.cpp \
-    src/server/server.cpp
+    src/server/server.cpp \
+    src/package/systempackage.cpp
 
 HEADERS += \
     src/client/client.h \
@@ -64,7 +50,7 @@ HEADERS += \
     src/core/player.h \
     src/core/protocol.h \
     src/core/skill.h \
-    src/core/structs.h \
+    src/core/datavalue.h \
     src/core/util.h \
     src/mode/hegemonymode.h \
     src/mode/standardmode.h \
@@ -80,15 +66,9 @@ HEADERS += \
     src/gui/gamelogger.h \
     src/gui/lobby.h \
     src/gui/roomscene.h \
-    src/package/hegstandardpackage.h \
-    src/package/standardpackage.h \
-    src/package/standard-basiccard.h \
-    src/package/standard-equipcard.h \
-    src/package/standard-trickcard.h \
-    src/package/systempackage.h \
-    src/package/maneuveringpackage.h \
     src/server/roomsettings.h \
-    src/server/server.h
+    src/server/server.h \
+    src/package/systempackage.h
 
 INCLUDEPATH += src \
     src/client \

@@ -32,6 +32,8 @@ class Card;
 
 class CardArea
 {
+    Q_GADGET
+
 public:
     enum Type
     {
@@ -40,6 +42,7 @@ public:
         DrawPile, DiscardPile,
         Special, Table, Wugu
     };
+    Q_ENUM(Type)
 
     enum Direction
     {
@@ -47,13 +50,14 @@ public:
         Top = 0x1,
         Bottom = 0x2
     };
+    Q_ENUM(Direction)
 
     typedef std::function<void()> ChangeSignal;
 
     explicit CardArea(Type type, Player *owner = nullptr, const QString &name = QString());
-    Type type() const { return m_type; }
-    Player *owner() const { return m_owner; }
-    QString name() const { return m_name; }
+    Q_INVOKABLE Type type() const { return m_type; }
+    Q_INVOKABLE Player *owner() const { return m_owner; }
+    Q_INVOKABLE QString name() const { return m_name; }
 
     void setSignal(ChangeSignal signal) { m_changeSignal = signal; }
 
@@ -66,33 +70,33 @@ public:
     bool remove(const QList<Card *> &cards);
     void clear() { m_cards.clear(); }
 
-    Card *findCard(uint id) const;
-    Card *rand() const;
+    Q_INVOKABLE Card *findCard(uint id) const;
+    Q_INVOKABLE Card *rand() const;
 
-    Card *first() const { return m_cards.first(); }
-    Card *takeFirst() { return m_cards.takeFirst(); }
+    Q_INVOKABLE Card *first() const { return m_cards.first(); }
+    Q_INVOKABLE Card *takeFirst() { return m_cards.takeFirst(); }
 
-    Card *last() const { return m_cards.last(); }
-    Card *takeLast() { return m_cards.takeLast(); }
+    Q_INVOKABLE Card *last() const { return m_cards.last(); }
+    Q_INVOKABLE Card *takeLast() { return m_cards.takeLast(); }
 
-    QList<Card *> first(int n) const { return m_cards.mid(0, n); }
-    QList<Card *> takeFirst(int n);
+    Q_INVOKABLE QList<Card *> first(int n) const { return m_cards.mid(0, n); }
+    Q_INVOKABLE QList<Card *> takeFirst(int n);
 
-    QList<Card *> last(int n) const { return m_cards.mid(m_cards.length() - n); }
-    QList<Card *> takeLast(int n);
+    Q_INVOKABLE QList<Card *> last(int n) const { return m_cards.mid(m_cards.length() - n); }
+    Q_INVOKABLE QList<Card *> takeLast(int n);
 
-    bool contains(const Card *card) const;
-    bool contains(uint id) const;
+    Q_INVOKABLE bool contains(const Card *card) const;
+    Q_INVOKABLE bool contains(uint id) const;
 
     void addVirtualCard(const QString &name) { m_virtualCards << name; }
     void removeVirtualCard(const QString &name) { m_virtualCards.removeOne(name); }
-    bool contains(const char *className) const;
+    Q_INVOKABLE bool contains(const char *className) const;
 
-    QList<Card *> &cards() { return m_cards; }
-    QList<Card *> cards() const { return m_cards; }
+    Q_INVOKABLE QList<Card *> &cards() { return m_cards; }
+    Q_INVOKABLE QList<Card *> cards() const { return m_cards; }
 
-    int length() const { return m_cards.length(); }
-    int size() const { return m_cards.size(); }
+    Q_INVOKABLE int length() const { return m_cards.length(); }
+    Q_INVOKABLE int size() const { return m_cards.size(); }
 
     QVariant toVariant() const;
 

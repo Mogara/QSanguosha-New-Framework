@@ -32,17 +32,23 @@ class Player;
 
 class EventHandler
 {
+    Q_GADGET
+
 public:
     virtual ~EventHandler();
+    Q_INVOKABLE void addEvent(EventType event) { m_events << event; }
     QSet<EventType> events() const { return m_events; }
 
-    QString name() const { return m_name; }
-    int priority() const { return m_priority; }
-    bool isEquipSkill() const { return m_equipSkill; }
+    Q_INVOKABLE void setName(const QString &name) { m_name = name; }
+    Q_INVOKABLE QString name() const { return m_name; }
+    Q_INVOKABLE void setPriority(int priority) { m_priority = priority; }
+    Q_INVOKABLE int priority() const { return m_priority; }
+    Q_INVOKABLE void setEquipSkill(bool isEquipSkill) { m_equipSkill = isEquipSkill; }
+    Q_INVOKABLE bool isEquipSkill() const { return m_equipSkill; }
 
-    virtual EventList triggerable(GameLogic *logic, EventType event, const QVariant &data, ServerPlayer *player = nullptr) const;
-    virtual bool onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player = nullptr) const;
-    virtual bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player = nullptr) const;
+    virtual EventList triggerable(GameLogic *logic, EventType event, const QObject *data, ServerPlayer *player = nullptr) const;
+    virtual bool onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player = nullptr) const;
+    virtual bool effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player = nullptr) const;
 
 
 protected:

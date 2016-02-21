@@ -37,8 +37,6 @@ class Player : public CAbstractPlayer
 {
     Q_OBJECT
 
-    Q_ENUMS(Phase)
-
     Q_PROPERTY(QString screenName READ screenName WRITE setScreenName NOTIFY screenNameChanged)
     Q_PROPERTY(int hp READ hp WRITE setHp NOTIFY hpChanged)
     Q_PROPERTY(int maxHp READ maxHp WRITE setMaxHp NOTIFY maxHpChanged)
@@ -74,7 +72,7 @@ public:
     {
         InvalidPhase, RoundStart, Start, Judge, Draw, Play, Discard, Finish, Inactive
     };
-
+    Q_ENUM(Phase)
 
     enum SkillArea
     {
@@ -83,6 +81,7 @@ public:
         DeputySkillArea,
         AcquiredSkillArea
     };
+    Q_ENUM(SkillArea)
 
     Player(QObject *parent = 0);
     ~Player();

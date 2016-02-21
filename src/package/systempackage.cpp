@@ -21,6 +21,8 @@
 #include "general.h"
 #include "systempackage.h"
 
+#include <QCoreApplication>
+
 static uint hiddenGeneralId;
 
 SystemPackage::SystemPackage()

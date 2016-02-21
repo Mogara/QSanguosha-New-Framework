@@ -22,7 +22,7 @@
 
 #include "event.h"
 #include "player.h"
-#include "structs.h"
+#include "datavalue.h"
 
 class CRoom;
 class CServerAgent;
@@ -71,8 +71,8 @@ public:
     QList<Card *> askForCards(const QString &pattern, int num, bool optional = false);
     QList<Card *> askForCards(const QString &pattern, int minNum, int maxNum, bool optional = false);
     Card *askToChooseCard(ServerPlayer *owner, const QString &areaFlag = "hej", bool handcardVisible = false);
-    CardUseStruct askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets = QList<ServerPlayer *>());
-    SkillInvokeStruct askToInvokeSkill(const Skill *skill);
+    CardUseValue askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets = QList<ServerPlayer *>());
+    SkillInvokeValue askToInvokeSkill(const Skill *skill);
     QList<QList<Card *>> askToArrangeCard(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames = QStringList());
     QString askForOption(const QStringList &options);
 

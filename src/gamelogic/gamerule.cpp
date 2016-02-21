@@ -26,7 +26,7 @@
 
 namespace{
 
-void onTurnStart(GameLogic *, ServerPlayer *current, QVariant &)
+void onTurnStart(GameLogic *, ServerPlayer *current, QObject *)
 {
     current->setTurnCount(current->turnCount() + 1);
     if (!current->faceUp())
@@ -35,7 +35,7 @@ void onTurnStart(GameLogic *, ServerPlayer *current, QVariant &)
         current->play();
 }
 
-void onPhaseProceeding(GameLogic *logic, ServerPlayer *current, QVariant &)
+void onPhaseProceeding(GameLogic *logic, ServerPlayer *current, QObject *)
 {
     GameLogic::msleep(500);
     switch (current->phase()) {
@@ -45,10 +45,10 @@ void onPhaseProceeding(GameLogic *logic, ServerPlayer *current, QVariant &)
             Card *trick = tricks.takeLast();
 
             if (trick->type() == Card::TrickType && trick->subtype() == TrickCard::DelayedType) {
-                CardUseStruct use;
+                CardUseValue use;
                 use.card = trick;
                 use.to << current;
-                CardEffectStruct effect(use);
+                CardEffectValue effect(use);
                 effect.to = current;
                 logic->takeCardEffect(effect);
                 trick->complete(logic);
@@ -57,14 +57,13 @@ void onPhaseProceeding(GameLogic *logic, ServerPlayer *current, QVariant &)
         break;
     }
     case Player::Draw: {
-        int num = 2;
-        QVariant data(num);
-        logic->trigger(DrawNCards, current, data);
-        num = data.toInt();
+        IntValue value(2);
+        logic->trigger(DrawNCards, current, &value);
+        int num = value.value;
         if (num > 0)
             current->drawCards(num);
-        data = num;
-        logic->trigger(AfterDrawNCards, current, data);
+        IntValue valueNew(num);
+        logic->trigger(AfterDrawNCards, current, &valueNew);
         break;
     }
     case Player::Play: {
@@ -76,9 +75,9 @@ void onPhaseProceeding(GameLogic *logic, ServerPlayer *current, QVariant &)
     }
     case Player::Discard: {
         int maxCardNum = current->hp();
-        QVariant data(maxCardNum);
-        logic->trigger(CountMaxCardNum, current, data);
-        maxCardNum = data.toInt();
+        IntValue value(maxCardNum);
+        logic->trigger(CountMaxCardNum, current, &value);
+        maxCardNum = value.value;
         int discardNum = current->handcardNum() - maxCardNum;
         if (discardNum > 0) {
             current->showPrompt("ask_to_discard", discardNum);
@@ -96,7 +95,7 @@ void onPhaseProceeding(GameLogic *logic, ServerPlayer *current, QVariant &)
     }
 }
 
-void onPhaseEnd(GameLogic *, ServerPlayer *current, QVariant &)
+void onPhaseEnd(GameLogic *, ServerPlayer *current, QObject *)
 {
     switch (current->phase()) {
     case Player::Play: {
@@ -112,7 +111,7 @@ void onPhaseEnd(GameLogic *, ServerPlayer *current, QVariant &)
 
 }
 
-void onAfterHpReduced(GameLogic *logic, ServerPlayer *victim, QVariant &data)
+void onAfterHpReduced(GameLogic *logic, ServerPlayer *victim, QObject *data)
 {
     if (victim->hp() > 0)
         return;
@@ -120,15 +119,13 @@ void onAfterHpReduced(GameLogic *logic, ServerPlayer *victim, QVariant &data)
     victim->setDying(true);
     victim->broadcastProperty("dying");
 
-    DeathStruct death;
+    DeathValue death;
     death.who = victim;
-    death.damage = data.value<DamageStruct *>();
-
-    QVariant dyingData = QVariant::fromValue(&death);
+    death.damage = qobject_cast<DamageValue *>(data);
 
     QList<ServerPlayer *> allPlayers = logic->allPlayers();
     foreach (ServerPlayer *player, allPlayers) {
-        if (logic->trigger(EnterDying, player, dyingData) || victim->hp() > 0 || victim->isDead())
+        if (logic->trigger(EnterDying, player, &death) || victim->hp() > 0 || victim->isDead())
             break;
     }
 
@@ -138,19 +135,19 @@ void onAfterHpReduced(GameLogic *logic, ServerPlayer *victim, QVariant &data)
             if (victim->hp() > 0 || victim->isDead())
                 break;
 
-            logic->trigger(AskForPeach, saver, dyingData);
+            logic->trigger(AskForPeach, saver, &death);
         }
-        logic->trigger(AskForPeachDone, victim, dyingData);
+        logic->trigger(AskForPeachDone, victim, &death);
     }
 
     victim->setDying(false);
     victim->broadcastProperty("dying");
-    logic->trigger(QuitDying, victim, dyingData);
+    logic->trigger(QuitDying, victim, &death);
 }
 
-void onAskForPeach(GameLogic *logic, ServerPlayer *current, QVariant &data)
+void onAskForPeach(GameLogic *logic, ServerPlayer *current, QObject *data)
 {
-    DeathStruct *dying = data.value<DeathStruct *>();
+    DeathValue *dying = qobject_cast<DeathValue *>(data);
     while (dying->who->hp() <= 0) {
         Card *peach = nullptr;
         if (dying->who->isAlive()) {
@@ -169,7 +166,7 @@ void onAskForPeach(GameLogic *logic, ServerPlayer *current, QVariant &data)
         if (peach == nullptr)
             break;
 
-        CardUseStruct use;
+        CardUseValue use;
         use.from = current;
         use.card = peach;
         use.to << dying->who;
@@ -177,10 +174,10 @@ void onAskForPeach(GameLogic *logic, ServerPlayer *current, QVariant &data)
     }
 }
 
-void onAskForPeachDone(GameLogic *logic, ServerPlayer *victim, QVariant &data)
+void onAskForPeachDone(GameLogic *logic, ServerPlayer *victim, QObject *data)
 {
     if (victim->hp() <= 0 && victim->isAlive()) {
-        DeathStruct *death = data.value<DeathStruct *>();
+        DeathValue *death = qobject_cast<DeathValue *>(data);
         logic->killPlayer(victim, death->damage);
     }
 }
@@ -200,12 +197,12 @@ GameRule::GameRule()
     m_callbacks[AskForPeachDone] = onAskForPeachDone;
 }
 
-EventList GameRule::triggerable(GameLogic *logic, EventType, const QVariant &, ServerPlayer *) const
+EventList GameRule::triggerable(GameLogic *logic, EventType, const QObject *, ServerPlayer *) const
 {
     return EventList() << Event(logic, this);
 }
 
-bool GameRule::effect(GameLogic *logic, EventType event, EventPtr, QVariant &data, ServerPlayer *player) const
+bool GameRule::effect(GameLogic *logic, EventType event, const EventPtr, QObject *data, ServerPlayer *player) const
 {
     if (logic->skipGameRule())
         return false;

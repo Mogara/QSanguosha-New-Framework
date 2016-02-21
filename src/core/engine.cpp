@@ -24,6 +24,8 @@
 #include "general.h"
 #include "skill.h"
 
+#include <QJsonDocument>
+
 Engine::Engine()
 {
 }

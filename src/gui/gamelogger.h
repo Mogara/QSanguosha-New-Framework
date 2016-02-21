@@ -22,7 +22,7 @@
 
 #include <QObject>
 
-#include "structs.h"
+#include "datavalue.h"
 
 class Client;
 class ClientPlayer;
@@ -39,7 +39,7 @@ signals:
 
 protected:
     void onSeatArranged();
-    void onDamageDone(const ClientPlayer *from, const ClientPlayer *to, DamageStruct::Nature nature, int damage);
+    void onDamageDone(const ClientPlayer *from, const ClientPlayer *to, DamageValue::Nature nature, int damage);
     void onLoseHpDone(const ClientPlayer *victim, int lose);
     void onRecoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
     void onCardUsed(const QVariantMap &card, const ClientPlayer *from, const QList<const ClientPlayer *> &tos);

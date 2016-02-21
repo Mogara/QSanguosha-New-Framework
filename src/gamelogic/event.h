@@ -24,25 +24,43 @@ class EventHandler;
 class ServerPlayer;
 class GameLogic;
 
+#include "eventtype.h"
+
+#include <QObject>
 #include <QList>
 #include <QVariantMap>
 #include <QSharedPointer>
 
-struct Event
+class Event : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(GameLogic *logic MEMBER logic)
+    Q_PROPERTY(const EventHandler *eh MEMBER eh)
+    Q_PROPERTY(ServerPlayer *owner MEMBER owner)
+    Q_PROPERTY(ServerPlayer *invoker MEMBER invoker)
+    Q_PROPERTY(bool isCompulsory MEMBER isCompulsory)
+    Q_PROPERTY(ServerPlayer *preferredTarget MEMBER preferredTarget)
+    Q_PROPERTY(QList<ServerPlayer *> targets MEMBER targets)
+    Q_PROPERTY(bool triggered MEMBER triggered)
+    Q_PROPERTY(QVariantMap tag MEMBER tag)
+
+public:
     explicit Event(GameLogic *logic, const EventHandler *eh = nullptr, ServerPlayer *owner = nullptr, ServerPlayer *invoker = nullptr, bool isCompulsory = false, ServerPlayer *preferredTarget = nullptr);
+    Event(const Event &arg2);
+    Event &operator =(const Event &arg2);
+
 
     GameLogic *logic;
     const EventHandler *eh; // the EventHandler
     ServerPlayer *owner; // skill owner. 2 structs with the same skill and skill owner are treated as of a same skill.
     ServerPlayer *invoker; // skill invoker. When invoking skill, we sort firstly according to the priority, then the seat of invoker, at last weather it is a skill of an equip.
     bool isCompulsory; // judge the skill is compulsory or not. It is set in the skill's triggerable
-    ServerPlayer *preferredTarget; // the preferred target of a certain skill
+    ServerPlayer *preferredTarget; // the preferred target of a certain skill, used for some skills like tieqi and liegong, etc.
 
     QList<ServerPlayer *> targets; // skill targets.
     bool triggered; // judge whether the skill is triggered
 
-    QVariantMap tag; // used to add a tag to the struct. useful for skills like Tieqi and Liegong to save a QVariantList for assisting to assign targets
+    QVariantMap tag; // used to add a tag to the struct. the QVariant value is limited to Int, Bool, QString, QVariantList, QVariantMap in order to suit with JS engine
 
     bool operator <(const Event &arg2) const; // the operator < for sorting the invoke order.
     bool sameSkill(const Event &arg2) const; // the operator ==. it only judge the skill name, the skill invoker, and the skill owner. it don't judge the skill target because it is chosen by the skill invoker
@@ -52,6 +70,7 @@ struct Event
 
     QVariant toVariant() const;
     QStringList toList() const;
+
 };
 
 typedef QList<Event> EventList;

@@ -131,20 +131,19 @@ void ServerPlayer::play()
 
 void ServerPlayer::play(const QList<Player::Phase> &phases)
 {
-    PhaseChangeStruct change;
+    PhaseChangeValue change;
     foreach (Phase to, phases) {
         if (to == Inactive)
             break;
         change.from = phase();
         change.to = to;
 
-        QVariant data = QVariant::fromValue(&change);
-        bool skip = m_logic->trigger(PhaseChanging, this, data);
+        bool skip = m_logic->trigger(PhaseChanging, this, &change);
 
         setPhase(change.to);
         broadcastProperty("phase");
 
-        if ((skip || isPhaseSkipped(change.to)) && !m_logic->trigger(PhaseSkipping, this, data))
+        if ((skip || isPhaseSkipped(change.to)) && !m_logic->trigger(PhaseSkipping, this, &change))
             continue;
 
         if (!m_logic->trigger(PhaseStart, this))
@@ -155,8 +154,7 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
     change.from = phase();
     change.to = Inactive;
 
-    QVariant data = QVariant::fromValue(&change);
-    m_logic->trigger(PhaseChanging, this, data);
+    m_logic->trigger(PhaseChanging, this, &change);
 
     setPhase(change.to);
     broadcastProperty("phase");
@@ -203,7 +201,7 @@ bool ServerPlayer::activate()
                     return false;
 
                 addSkillHistory(skill, cards, targets);
-                SkillInvokeStruct invoke;
+                SkillInvokeValue invoke;
                 invoke.player = this;
                 invoke.skill = proactiveSkill;
                 invoke.targets = targets;
@@ -228,7 +226,7 @@ bool ServerPlayer::activate()
         if (card->canRecast() && targets.isEmpty()) {
             recastCard(card);
         } else if (card->isAvailable(this) && card->isValid(targets, this)) {
-            CardUseStruct use;
+            CardUseValue use;
             use.from = this;
             use.to = targets;
             use.card = card;
@@ -479,7 +477,7 @@ Card *ServerPlayer::askToChooseCard(ServerPlayer *owner, const QString &areaFlag
     return nullptr;
 }
 
-CardUseStruct ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets)
+CardUseValue ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets)
 {
     QVariantMap data;
     data["pattern"] = pattern;
@@ -492,7 +490,7 @@ CardUseStruct ServerPlayer::askToUseCard(const QString &pattern, const QList<Ser
     int timeout = m_logic->settings()->timeout * 1000;
     m_agent->request(S_COMMAND_ACT, data, timeout);
     const QVariantMap reply = m_agent->waitForReply(timeout).toMap();
-    CardUseStruct use;
+    CardUseValue use;
     if (reply.isEmpty())
         return use;
 
@@ -542,14 +540,14 @@ CardUseStruct ServerPlayer::askToUseCard(const QString &pattern, const QList<Ser
     return use;
 }
 
-SkillInvokeStruct ServerPlayer::askToInvokeSkill(const Skill *skill)
+SkillInvokeValue ServerPlayer::askToInvokeSkill(const Skill *skill)
 {
     QVariantMap data;
     data["pattern"] = "@" + skill->name();
     int timeout = m_logic->settings()->timeout * 1000;
     m_agent->request(S_COMMAND_ACT, data, timeout);
     const QVariantMap reply = m_agent->waitForReply(timeout).toMap();
-    SkillInvokeStruct invoke;
+    SkillInvokeValue invoke;
     if (reply.isEmpty())
         return invoke;
     
@@ -739,24 +737,22 @@ void ServerPlayer::addSkill(const Skill *skill, Player::SkillArea area)
 {
     attachSkill(skill, area);
 
-    SkillStruct add;
+    SkillValue add;
     add.owner = this;
     add.skill = skill;
     add.area = area;
-    QVariant data = QVariant::fromValue(&add);
-    m_logic->trigger(SkillAdded, this, data);
+    m_logic->trigger(SkillAdded, this, &add);
 }
 
 void ServerPlayer::removeSkill(const Skill *skill, Player::SkillArea area)
 {
     detachSkill(skill, area);
 
-    SkillStruct remove;
+    SkillValue remove;
     remove.owner = this;
     remove.skill = skill;
     remove.area = area;
-    QVariant data = QVariant::fromValue(&remove);
-    m_logic->trigger(SkillRemoved, this, data);
+    m_logic->trigger(SkillRemoved, this, &remove);
 }
 
 void ServerPlayer::attachSkill(const Skill *skill, SkillArea area)

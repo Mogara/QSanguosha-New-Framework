@@ -31,17 +31,17 @@ EventHandler::~EventHandler()
 {
 }
 
-EventList EventHandler::triggerable(GameLogic *, EventType, const QVariant &, ServerPlayer *) const
+EventList EventHandler::triggerable(GameLogic *, EventType, const QObject *, ServerPlayer *) const
 {
     return EventList();
 }
 
-bool EventHandler::onCost(GameLogic *, EventType, EventPtr, QVariant &, ServerPlayer *) const
+bool EventHandler::onCost(GameLogic *, EventType, EventPtr, QObject *, ServerPlayer *) const
 {
     return true;
 }
 
-bool EventHandler::effect(GameLogic *, EventType, EventPtr, QVariant &, ServerPlayer *) const
+bool EventHandler::effect(GameLogic *, EventType, const EventPtr, QObject *, ServerPlayer *) const
 {
     return false;
 }

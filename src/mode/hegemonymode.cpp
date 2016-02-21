@@ -55,7 +55,7 @@ public:
         }
     }
 
-    static void onGameStart(GameLogic *, ServerPlayer *current, QVariant &)
+    static void onGameStart(GameLogic *, ServerPlayer *current, QObject *)
     {
         current->broadcastProperty("headGeneralId", SystemPackage::HiddenGeneralId(), current);
         current->broadcastProperty("deputyGeneralId", SystemPackage::HiddenGeneralId(), current);

@@ -1,4 +1,5 @@
 /********************************************************************
+
     Copyright (c) 2013-2015 - Mogara
 
     This file is part of QSanguosha.
@@ -19,7 +20,7 @@
 
 #include "card.h"
 #include "serverplayer.h"
-#include "structs.h"
+#include "datavalue.h"
 
 CardsMoveStruct::Area::Area()
     : type(CardArea::Unknown)
@@ -76,7 +77,13 @@ QVariant CardsMoveStruct::toVariant(bool open) const
     return data;
 }
 
-CardUseStruct::CardUseStruct()
+PhaseChangeValue::PhaseChangeValue() 
+    : from(Player::InvalidPhase), to(Player::InvalidPhase)
+{
+
+}
+
+CardUseValue::CardUseValue()
     : from(nullptr)
     , card(nullptr)
     , target(nullptr)
@@ -88,14 +95,47 @@ CardUseStruct::CardUseStruct()
 {
 }
 
-CardEffectStruct::CardEffectStruct(CardUseStruct &use)
+CardUseValue::CardUseValue(const CardUseValue &arg2)
+    : QObject()
+{
+    from = arg2.from;
+    to = arg2.to;
+    card = arg2.card;
+    target = arg2.target;
+    nullifiedList = arg2.nullifiedList;
+    isNullified = arg2.isNullified;
+    isOwnerUse = arg2.isOwnerUse;
+    addHistory = arg2.addHistory;
+    isHandcard = arg2.isHandcard;
+    reason = arg2.reason;
+    extra = arg2.extra;
+}
+
+CardUseValue &CardUseValue::operator =(const CardUseValue &arg2)
+{
+    from = arg2.from;
+    to = arg2.to;
+    card = arg2.card;
+    target = arg2.target;
+    nullifiedList = arg2.nullifiedList;
+    isNullified = arg2.isNullified;
+    isOwnerUse = arg2.isOwnerUse;
+    addHistory = arg2.addHistory;
+    isHandcard = arg2.isHandcard;
+    reason = arg2.reason;
+    extra = arg2.extra;
+
+    return *this;
+}
+
+CardEffectValue::CardEffectValue(CardUseValue &use)
     : use(use)
     , from(use.from)
     , to(nullptr)
 {
 }
 
-DamageStruct::DamageStruct()
+DamageValue::DamageValue()
     : from(nullptr)
     , to(nullptr)
     , card(nullptr)
@@ -108,7 +148,7 @@ DamageStruct::DamageStruct()
 {
 }
 
-RecoverStruct::RecoverStruct()
+RecoverValue::RecoverValue()
     : from(nullptr)
     , to(nullptr)
     , recover(1)
@@ -116,7 +156,7 @@ RecoverStruct::RecoverStruct()
 {
 }
 
-CardResponseStruct::CardResponseStruct()
+CardResponseValue::CardResponseValue()
     : from(nullptr)
     , to(nullptr)
     , card(nullptr)
@@ -125,7 +165,7 @@ CardResponseStruct::CardResponseStruct()
 {
 }
 
-JudgeStruct::JudgeStruct(const QString &pattern)
+JudgeValue::JudgeValue(const QString &pattern)
     : who(nullptr)
     , card(nullptr)
     , matched(false)
@@ -133,27 +173,52 @@ JudgeStruct::JudgeStruct(const QString &pattern)
 {
 }
 
-void JudgeStruct::updateResult()
+void JudgeValue::updateResult()
 {
     matched = m_pattern.match(who, card);
 }
 
-DeathStruct::DeathStruct()
+DeathValue::DeathValue()
     : who(nullptr)
     , damage(nullptr)
 {
 }
 
-SkillStruct::SkillStruct()
+SkillValue::SkillValue()
     : owner(nullptr)
     , skill(nullptr)
     , area(Player::UnknownSkillArea)
 {
 }
 
-SkillInvokeStruct::SkillInvokeStruct()
+SkillInvokeValue::SkillInvokeValue()
     : player(nullptr)
     , skill(nullptr)
+{
+
+}
+
+SkillInvokeValue::SkillInvokeValue(const SkillInvokeValue &arg2)
+    : QObject()
+{
+    player = arg2.player;
+    skill = arg2.skill;
+    targets = arg2.targets;
+    cards = arg2.cards;
+}
+
+SkillInvokeValue &SkillInvokeValue::operator =(const SkillInvokeValue &arg2)
+{
+    player = arg2.player;
+    skill = arg2.skill;
+    targets = arg2.targets;
+    cards = arg2.cards;
+
+    return *this;
+}
+
+IntValue::IntValue(int value)
+    : value(value)
 {
 
 }

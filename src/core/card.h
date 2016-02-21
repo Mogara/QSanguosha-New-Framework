@@ -27,15 +27,11 @@
 class GameLogic;
 class Player;
 
-#include "structs.h"
+#include "datavalue.h"
 
 class Card : public QObject
 {
     Q_OBJECT
-
-    Q_ENUMS(Suit)
-    Q_ENUMS(Color)
-    Q_ENUMS(Type)
 
     Q_PROPERTY(uint id READ id)
     Q_PROPERTY(uint effectiveId READ effectiveId)
@@ -60,6 +56,7 @@ public:
 
         UndeterminedSuit = -1
     };
+    Q_ENUM(Suit)
 
     enum Color
     {
@@ -70,6 +67,7 @@ public:
 
         UndeterminedColor = -1
     };
+    Q_ENUM(Color)
 
     enum Type
     {
@@ -78,6 +76,7 @@ public:
         TrickType,
         EquipType
     };
+    Q_ENUM(Type)
 
     enum Number
     {
@@ -145,15 +144,18 @@ public:
     bool isValid(const QList<ServerPlayer *> &targets, ServerPlayer *source) const;
     bool isValid(const QList<const Player *> &targets, const Player *source) const;
 
-    virtual void onUse(GameLogic *logic, CardUseStruct &use);
-    virtual void use(GameLogic *logic, CardUseStruct &use);
-    virtual void onEffect(GameLogic *logic, CardEffectStruct &effect);
-    virtual void effect(GameLogic *logic, CardEffectStruct &effect);
-    virtual void complete(GameLogic *logic);
+
+    virtual void onUse(GameLogic *logic, CardUseValue &use);
+    virtual void use(GameLogic *logic, CardUseValue &use);
+    virtual void onEffect(GameLogic *logic, CardEffectValue &effect);
+    virtual void effect(GameLogic *logic, CardEffectValue &effect);
 
     static Card *Find(const QList<Card *> &cards, uint id);
     static QList<Card *> Find(const QList<Card *> &cards, const QVariant &data);
     QVariantMap toVariant() const;
+
+    template<typename T>
+    static bool CheckAvailability(const Player *self);
 
 protected:
     explicit Card(Suit suit = UndeterminedSuit, int number = UndeterminedNumber);
@@ -181,6 +183,15 @@ private:
     C_DISABLE_COPY(Card)
 };
 
+template<typename T>
+bool Card::CheckAvailability(const Player *self)
+{
+    T *card = new T(T::UndeterminedSuit, T::UndeterminedNumber);
+    bool result = card->isAvailable(self);
+    delete card;
+    return result;
+}
+
 class BasicCard : public Card
 {
     Q_OBJECT
@@ -205,11 +216,12 @@ public:
         //Delayed Types
         DelayedType
     };
+    Q_ENUM(SubType)
 
     TrickCard(Suit suit, int number);
 
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
-    virtual bool isNullifiable(const CardEffectStruct &effect) const;
+    void onEffect(GameLogic *logic, CardEffectValue &effect) override;
+    virtual bool isNullifiable(const CardEffectValue &effect) const;
 };
 
 class Skill;
@@ -217,7 +229,6 @@ class Skill;
 class EquipCard : public Card
 {
     Q_OBJECT
-    Q_ENUMS(SubType)
 
 public:
     enum SubType
@@ -228,11 +239,12 @@ public:
         OffensiveHorseType,
         TreasureType
     };
+    Q_ENUM(SubType)
 
     EquipCard(Suit suit, int number);
 
-    void onUse(GameLogic *logic, CardUseStruct &use) override;
-    void use(GameLogic *logic, CardUseStruct &use) override;
+    void onUse(GameLogic *logic, CardUseValue &use) override;
+    void use(GameLogic *logic, CardUseValue &use) override;
     void complete(GameLogic *) override;
 
     Skill *skill() const { return m_skill; }
@@ -248,7 +260,7 @@ class GlobalEffect : public TrickCard
 public:
     GlobalEffect(Card::Suit suit, int number);
 
-    void onUse(GameLogic *logic, CardUseStruct &use) override;
+    void onUse(GameLogic *logic, CardUseValue &use) override;
 };
 
 class AreaOfEffect : public TrickCard
@@ -258,7 +270,7 @@ class AreaOfEffect : public TrickCard
 public:
     AreaOfEffect(Suit suit, int number);
 
-    void onUse(GameLogic *logic, CardUseStruct &use) override;
+    void onUse(GameLogic *logic, CardUseValue &use) override;
 };
 
 class SingleTargetTrick : public TrickCard
@@ -278,12 +290,12 @@ public:
 
     bool targetFeasible(const QList<const Player *> &selected, const Player *) const override;
     bool targetFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const override;
-    void onUse(GameLogic *logic, CardUseStruct &use) override;
-    void use(GameLogic *logic, CardUseStruct &use) override;
-    void onEffect(GameLogic *logic, CardEffectStruct &effect) override;
-    void effect(GameLogic *logic, CardEffectStruct &effect) override;
+    void onUse(GameLogic *logic, CardUseValue &use) override;
+    void use(GameLogic *logic, CardUseValue &use) override;
+    void onEffect(GameLogic *logic, CardEffectValue &effect) override;
+    void effect(GameLogic *logic, CardEffectValue &effect) override;
 
-    virtual void takeEffect(GameLogic *logic, CardEffectStruct &effect) = 0;
+    virtual void takeEffect(GameLogic *logic, CardEffectValue &effect) = 0;
 
 protected:
     QString m_judgePattern;
@@ -296,8 +308,8 @@ class MovableDelayedTrick : public DelayedTrick
 public:
     MovableDelayedTrick(Suit suit, int number);
 
-    void onUse(GameLogic *logic, CardUseStruct &use) override;
-    void effect(GameLogic *logic, CardEffectStruct &effect) override;
+    void onUse(GameLogic *logic, CardUseValue &use) override;
+    void effect(GameLogic *logic, CardEffectValue &effect) override;
     void complete(GameLogic *logic) override;
     bool isAvailable(const Player *player) const override;
 };

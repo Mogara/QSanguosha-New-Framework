@@ -22,14 +22,29 @@
 
 #include "event.h"
 #include "eventhandler.h"
-#include "structs.h"
+#include "datavalue.h"
+
+#include <QObject>
 
 #include <QString>
 #include <QList>
+#include <QJSValue>
 
-class Skill
+class Card;
+
+class Skill : public QObject
 {
+    Q_OBJECT
     friend class General;
+    Q_PROPERTY(uint id READ id)
+    Q_PROPERTY(QString name READ name)
+    Q_PROPERTY(Type type READ type)
+    Q_PROPERTY(int subtype READ subtype)
+    Q_PROPERTY(Frequency frequency MEMBER m_frequency READ frequency WRITE setFrequency)
+    Q_PROPERTY(QList<const Skill *> subskills READ subskills)
+    Q_PROPERTY(bool isLordSkill READ isLordSkill)
+    Q_PROPERTY(const Skill *topSkill READ topSkill)
+
 
 public:
     enum Frequency
@@ -40,6 +55,7 @@ public:
         Limited,
         Wake
     };
+    Q_ENUM(Frequency)
 
     enum Type
     {
@@ -48,8 +64,9 @@ public:
         ViewAsType,
         CardModType
     };
+    Q_ENUM(Type)
 
-    explicit Skill(const QString &name);
+    Q_INVOKABLE explicit Skill(const QString &name);
     virtual ~Skill();
 
     uint id() const { return m_id; }
@@ -61,9 +78,14 @@ public:
     bool isLordSkill() const { return m_lordSkill; }
     const Skill *topSkill() const;
 
-protected:
-    void addSubskill(Skill *subskill);
+    Q_INVOKABLE void addSubskill(Skill *subskill);
 
+    void setFrequency(Frequency frequency);
+
+    const QJSValue &skillFuncs() const;
+    static bool InitJsEngine();
+
+protected:
     uint m_id;
     QString m_name;
     Type m_type;
@@ -81,162 +103,155 @@ private:
 
 class TriggerSkill : public Skill, public EventHandler
 {
+    Q_OBJECT
+
 public:
-    explicit TriggerSkill(const QString &name);
+    Q_INVOKABLE explicit TriggerSkill(const QString &name);
 
-    // QString name() const { return Skill::name(); }
     using Skill::name;
+    using Skill::m_name;
 
-    bool triggerable(ServerPlayer *owner) const;
-    EventList triggerable(GameLogic *logic, EventType event, const QVariant &data, ServerPlayer *player = nullptr) const override;
-    bool onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player = nullptr) const final override;
+    EventList triggerable(GameLogic *logic, EventType event, const QObject *data, ServerPlayer *player /* = nullptr */) const override;
+    virtual bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const;
+    bool effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const override;
 
-    virtual bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player = nullptr) const;
-
-protected:
-    void setFrequency(Frequency frequency);
+    bool onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player = nullptr) const final override;
 };
 
 class StatusSkill : public TriggerSkill
 {
+    Q_OBJECT
+
 public:
-    explicit StatusSkill(const QString &name);
+    Q_INVOKABLE explicit StatusSkill(const QString &name);
 
-    virtual void validate(ServerPlayer *target) const = 0;
-    virtual void invalidate(ServerPlayer *target) const = 0;
-    virtual bool isValid(ServerPlayer *target) const;
+    void validate(ServerPlayer *target) const;
+    void invalidate(ServerPlayer *target) const;
+    bool isValid(ServerPlayer *target) const;
 
-    bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player) const final override;
+    bool effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player) const final override;
 };
 
+/*
 class MasochismSkill : public TriggerSkill
 {
+    Q_OBJECT
+
 public:
-    explicit MasochismSkill(const QString &name);
+    Q_INVOKABLE explicit MasochismSkill(const QString &name);
 
-    virtual int triggerable(GameLogic *logic, ServerPlayer *player, const DamageStruct &damage) const = 0;
-    EventList triggerable(GameLogic *logic, EventType event, const QVariant &data, ServerPlayer *player = nullptr) const final override;
+    int triggerable(GameLogic *logic, ServerPlayer *player, const DamageValue *damage) const;
+    void effect(GameLogic *logic, ServerPlayer *player, const EventPtr eventPtr, const DamageValue *damage) const;
 
-    virtual void effect(GameLogic *logic, ServerPlayer *player, EventPtr eventPtr, const DamageStruct &damage) const = 0;
-    bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player) const final override;
+    EventList triggerable(GameLogic *logic, EventType event, const QObject *data, ServerPlayer *player = nullptr) const final override;
+    bool effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player) const final override;
 };
-
-class Card;
-
-template<typename T>
-static bool CheckAvailability(const Player *self)
-{
-    T *card = new T(T::UndeterminedSuit, T::UndeterminedNumber);
-    bool result = card->isAvailable(self);
-    delete card;
-    return result;
-}
+*/
 
 class ViewAsSkill : public Skill
 {
+    Q_OBJECT
+
 public:
     enum Subtype
     {
         ConvertType,
         ProactiveType
     };
+    Q_ENUM(Subtype)
 
-    explicit ViewAsSkill(const QString &name);
+    Q_INVOKABLE explicit ViewAsSkill(const QString &name);
 
-    //An empty pattern means it's the playing phase
-    virtual bool isAvailable(const Player *self, const QString &pattern) const;
-
-    //Check if the card can be selected
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const = 0;
-
-    //Returns the generated new card
-    virtual Card *viewAs(const QList<Card *> &cards, const Player *self) const = 0;
+    bool isAvailable(const Player *self, const QString &pattern) const;
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const;
+    virtual Card *viewAs(const QList<Card *> &cards, const Player *self) const;
 
     //Check if selected cards are valid
     bool isValid(const QList<Card *> &cards, const Player *self, const QString &pattern) const;
 };
 
+/*
 class OneCardViewAsSkill : public ViewAsSkill
 {
+    Q_OBJECT
+
 public:
-    explicit OneCardViewAsSkill(const QString &name);
+    Q_INVOKABLE explicit OneCardViewAsSkill(const QString &name);
+
+    bool viewFilter(const Card *card, const Player *self, const QString &pattern) const;
+    Card *viewAs(Card *card, const Player *self) const;
 
     bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const final override;
     Card *viewAs(const QList<Card *> &cards, const Player *self) const final override;
-
-    virtual bool viewFilter(const Card *card, const Player *self, const QString &pattern) const = 0;
-    virtual Card *viewAs(Card *card, const Player *self) const = 0;
 };
+*/
 
 class ProactiveSkill : public ViewAsSkill
 {
-public:
-    explicit ProactiveSkill(const QString &name);
-
-    //An empty pattern means it's the playing phase
-    virtual bool isAvailable(const Player *self, const QString &pattern) const;
-
-    //Check if cards are feasible
-    virtual bool cardFeasible(const QList<const Card *> &selected, const Player *source) const;
-
-    //Check if the card can be selected
-    virtual bool cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const;
-
+    Q_OBJECT
     //Check if selected cards are valid
     bool isValid(const QList<Card *> &cards, const Player *source, const QString &pattern) const;
 
-    //Check if the target players are feasible
-    virtual bool playerFeasible(const QList<const Player *> &selected, const Player *source) const;
 
-    //Check if a player can be selected
-    virtual bool playerFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
+public:
+    Q_INVOKABLE explicit ProactiveSkill(const QString &name);
 
     //Check if selected players are valid
     bool isValid(const QList<ServerPlayer *> &targets, ServerPlayer *source) const;
     bool isValid(const QList<const Player *> &targets, const Player *source) const;
 
-    virtual bool cost(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const;
-    virtual void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const;
+    bool cardFeasible(const QList<const Card *> &selected, const Player *source) const;
+    bool cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const;
+    bool playerFeasible(const QList<const Player *> &selected, const Player *source) const;
+    bool playerFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
+    bool cost(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const;
+    void effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const;
 
     bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const final override;
     Card *viewAs(const QList<Card *> &cards, const Player *source) const final override;
 };
 
+/*
 class RetrialSkill : public ProactiveSkill
 {
+    Q_OBJECT
+    Q_PROPERTY(bool isReplace MEMBER m_isReplace)
+
 private:
     class Timing;
 public:
-    explicit RetrialSkill(const QString &name, bool isReplace = false);
+    Q_INVOKABLE explicit RetrialSkill(const QString &name, bool replace = false);
 
-    bool cost(GameLogic *, ServerPlayer *, const QList<ServerPlayer *> &, const QList<Card *> &) const final override { return false; }
-    void effect(GameLogic *, ServerPlayer *, const QList<ServerPlayer *> &, const QList<Card *> &) const final override {}
-    
-private:
+protected:
     bool m_isReplace;
 };
 
 class ProactiveSkillTiming : public TriggerSkill
 {
-public:
-    explicit ProactiveSkillTiming(const QString &name, const ProactiveSkill *parent);
+    Q_OBJECT
 
-    bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player /* = nullptr */) const final override;
-    bool effect(GameLogic *logic, EventType event, EventPtr eventPtr, QVariant &data, ServerPlayer *player /* = nullptr */) const final override;
+public:
+    Q_INVOKABLE explicit ProactiveSkillTiming(const QString &name, const ProactiveSkill *parent);
+
+    bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player / * = nullptr * /) const final override;
+    bool effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player / * = nullptr * /) const final override;
 
 private:
     const ProactiveSkill *m_parent;
 };
+*/
 
 class CardModSkill : public Skill
 {
-public:
-    explicit CardModSkill(const QString &name);
+    Q_OBJECT
 
-    virtual bool targetFilter(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
-    virtual int extraDistanceLimit(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
-    virtual int extraMaxTargetNum(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
-    virtual int extraUseNum(const Card *card, const Player *player) const;
+public:
+    Q_INVOKABLE explicit CardModSkill(const QString &name);
+
+    bool targetFilter(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
+    int extraDistanceLimit(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
+    int extraMaxTargetNum(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
+    int extraUseNum(const Card *card, const Player *player) const;
 };
 
 #endif // SKILL_H

@@ -1,4 +1,5 @@
 /********************************************************************
+
     Copyright (c) 2013-2015 - Mogara
 
     This file is part of QSanguosha.
@@ -71,27 +72,19 @@ private:
 
 #define ADD_PACKAGE(name) namespace\
 {\
-struct PackageAdder\
-{\
-    PackageAdder()\
-    {\
-        Sanguosha.addPackage(new name##Package);\
-    }\
-};\
-PackageAdder __packageAdder__;\
-}
+    void addPackage__ ## name() { \
+        Sanguosha.addPackage(new name ## Package); \
+    } \
+} \
+Q_COREAPP_STARTUP_FUNCTION(addPackage__ ## name);
 
 #define ADD_MODE(name) namespace\
 {\
-struct ModeAdder\
-{\
-    ModeAdder()\
-    {\
-        Sanguosha.addMode(new name##Mode);\
-    }\
-};\
-ModeAdder __modeAdder__;\
-}
+    void addMode__ ## name() { \
+        Sanguosha.addMode(new name ## Mode); \
+    } \
+} \
+Q_COREAPP_STARTUP_FUNCTION(addMode__ ## name);
 
 
 #endif // ENGINE_H

@@ -38,11 +38,11 @@
     <Filter Include="mode">
       <UniqueIdentifier>{e77c020b-9b2f-4764-b1c4-6c6ae5d527e5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="package">
-      <UniqueIdentifier>{5568fa66-9bac-45bb-a184-a7a48f82b994}</UniqueIdentifier>
-    </Filter>
     <Filter Include="server">
       <UniqueIdentifier>{6fdec124-82f3-4391-be58-40c8f10e4d22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="package">
+      <UniqueIdentifier>{89193f7c-2e35-46bf-9c30-2b60a906ff74}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +87,6 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\skill.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\core\structs.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\util.cpp">
@@ -200,75 +197,6 @@
     <ClCompile Include="..\..\src\mode\standardmode.cpp">
       <Filter>mode</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\package\standard-equipcard.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_standard-equipcard.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_standard-equipcard.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\standardpackage.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\standard-qun.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\standard-shu.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\standard-trickcard.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_standard-trickcard.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_standard-trickcard.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\standard-wei.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\standard-wu.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\systempackage.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\hegstandardpackage.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\hegstandard-qun.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\hegstandard-shu.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\hegstandard-wei.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\hegstandard-wu.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\maneuveringpackage.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_maneuveringpackage.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_maneuveringpackage.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\standard-basiccard.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_standard-basiccard.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_standard-basiccard.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\server\roomsettings.cpp">
       <Filter>server</Filter>
     </ClCompile>
@@ -289,6 +217,48 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_gamelogger.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_skill.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_skill.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_eventhandler.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_eventhandler.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_cardarea.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_cardarea.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_general.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_general.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\datavalue.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_datavalue.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_datavalue.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_event.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_event.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\systempackage.cpp">
+      <Filter>package</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -328,39 +298,36 @@
     <CustomBuild Include="..\..\src\gui\dialog\startserverdialog.h">
       <Filter>gui\dialog</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\package\standard-equipcard.h">
-      <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\standard-trickcard.h">
-      <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\maneuveringpackage.h">
-      <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\standard-basiccard.h">
-      <Filter>package</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\server\roomsettings.h">
       <Filter>server</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\gui\gamelogger.h">
       <Filter>gui</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\core\skill.h">
+      <Filter>core</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\gamelogic\eventhandler.h">
+      <Filter>gamelogic</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\core\cardarea.h">
+      <Filter>core</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\core\general.h">
+      <Filter>core</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\core\datavalue.h">
+      <Filter>core</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\gamelogic\event.h">
+      <Filter>gamelogic</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\core\protocol.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\core\skill.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\structs.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\core\util.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\cardarea.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\cardpattern.h">
@@ -372,19 +339,10 @@
     <ClInclude Include="..\..\src\core\gamemode.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\core\general.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\core\package.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\gamelogic\gamerule.h">
-      <Filter>gamelogic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\gamelogic\event.h">
-      <Filter>gamelogic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\gamelogic\eventhandler.h">
       <Filter>gamelogic</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\gamelogic\eventtype.h">
@@ -396,17 +354,11 @@
     <ClInclude Include="..\..\src\mode\standardmode.h">
       <Filter>mode</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\package\standardpackage.h">
-      <Filter>package</Filter>
+    <ClInclude Include="..\..\src\server\server.h">
+      <Filter>server</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\package\systempackage.h">
       <Filter>package</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\package\hegstandardpackage.h">
-      <Filter>package</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\server\server.h">
-      <Filter>server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

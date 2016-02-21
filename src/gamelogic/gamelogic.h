@@ -22,7 +22,7 @@
 
 #include "event.h"
 #include "eventtype.h"
-#include "structs.h"
+#include "datavalue.h"
 
 #include <CAbstractGameLogic>
 
@@ -51,8 +51,7 @@ public:
 
     void addEventHandler(const EventHandler *handler);
     void removeEventHandler(const EventHandler *handler);
-    bool trigger(EventType event, ServerPlayer *target);
-    bool trigger(EventType event, ServerPlayer *target, QVariant &data);
+    bool trigger(EventType event, ServerPlayer *target, QObject *data = nullptr);
 
     void setCurrentPlayer(ServerPlayer *player) { m_currentPlayer = player; }
     ServerPlayer *currentPlayer() const { return m_currentPlayer; }
@@ -83,26 +82,26 @@ public:
     void moveCards(CardsMoveStruct &move);
     void moveCards(QList<CardsMoveStruct> &moves);
 
-    bool useCard(CardUseStruct &use);
-    bool takeCardEffect(CardEffectStruct &effect);
+    bool useCard(CardUseValue &use);
+    bool takeCardEffect(CardEffectValue &effect);
 
-    bool invokeProactiveSkill(SkillInvokeStruct &invoke);
+    bool invokeProactiveSkill(SkillInvokeValue &invoke);
 
     //It returns false if the corresponding CardResponded event is broken.
-    bool respondCard(CardResponseStruct &response);
+    bool respondCard(CardResponseValue &response);
 
-    void judge(JudgeStruct &judge);
-    void retrialCost(JudgeStruct &judge, Card *card, bool isReplace = false);
-    void retrialEffect(JudgeStruct &judge, Card *card);
+    void judge(JudgeValue &judge);
+    void retrialCost(JudgeValue &judge, Card *card, bool isReplace = false);
+    void retrialEffect(JudgeValue &judge, Card *card);
 
     Card *findCard(uint id) const { return m_cards.value(id); }
     QList<Card *> findCards(const QVariant &data);
 
-    void damage(DamageStruct &damage);
+    void damage(DamageValue &damage);
     void loseHp(ServerPlayer *victim, int lose);
-    void recover(RecoverStruct &recover);
+    void recover(RecoverValue &recover);
 
-    void killPlayer(ServerPlayer *victim, DamageStruct *damage = nullptr);
+    void killPlayer(ServerPlayer *victim, DamageValue *damage = nullptr);
     void gameOver(const QList<ServerPlayer *> &winners);
 
     QMap<uint, QList<const General *> > broadcastRequestForGenerals(const QList<ServerPlayer *> &players, int num, int limit);
@@ -118,7 +117,7 @@ protected:
     CardArea *findArea(const CardsMoveStruct::Area &area);
     void filterCardsMove(QList<CardsMoveStruct> &moves);
 
-    void getEventHandlersAndSort(EventType event, EventPtrList &detailsList, const EventPtrList &triggered, const QVariant &data, ServerPlayer *player = nullptr);
+    void getEventHandlersAndSort(EventType event, EventPtrList &detailsList, const EventPtrList &triggered, const QObject *data, ServerPlayer *player = nullptr);
 
     void run();
 

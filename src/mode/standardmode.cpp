@@ -105,7 +105,7 @@ public:
     }
 
 private:
-    static void onGameStart(GameLogic *, ServerPlayer *current, QVariant &)
+    static void onGameStart(GameLogic *, ServerPlayer *current, QObject *)
     {
         current->broadcastProperty("generalId");
 
@@ -138,9 +138,9 @@ private:
         return result;
     }
 
-    static void onBuryVictim(GameLogic *logic, ServerPlayer *victim, QVariant &data)
+    static void onBuryVictim(GameLogic *logic, ServerPlayer *victim, QObject *data)
     {
-        DeathStruct *death = data.value<DeathStruct *>();
+        DeathValue *death = qobject_cast<DeathValue *>(data);
         if (death->damage == nullptr)
             return;
 
@@ -160,7 +160,7 @@ private:
         }
     }
 
-    static void onGameOverJudge(GameLogic *logic, ServerPlayer *victim, QVariant &)
+    static void onGameOverJudge(GameLogic *logic, ServerPlayer *victim, QObject *)
     {
         QList<ServerPlayer *> winners;
         QList<ServerPlayer *> alivePlayers = logic->allPlayers();

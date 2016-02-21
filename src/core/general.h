@@ -20,13 +20,19 @@
 #ifndef GENERAL_H
 #define GENERAL_H
 
+#include <QObject>
+
 #include <QSet>
 #include <QString>
 
 class Skill;
+class Package;
 
 class General
 {
+    Q_GADGET
+
+private:
     friend class Package;
 
 public:
@@ -37,6 +43,7 @@ public:
         Female,
         Neuter
     };
+    Q_ENUM(Gender)
 
     General(const QString &name, const QString &kingdom, int maxHp, Gender gender = Male);
     ~General();

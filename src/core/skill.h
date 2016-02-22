@@ -83,7 +83,6 @@ public:
     void setFrequency(Frequency frequency);
 
     const QJSValue &skillFuncs() const;
-    static bool InitJsEngine();
 
 protected:
     uint m_id;

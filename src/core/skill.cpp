@@ -23,17 +23,17 @@
 #include "serverplayer.h"
 #include "event.h"
 #include "gamelogic.h"
+#include "engine.h"
 
 #include <QThreadStorage>
 #include <QCache>
-#include <QJSEngine>
+#include <CJSEngine>
 #include <QFile>
 #include <QJSValueIterator>
 
 namespace
 {
     QThreadStorage<QCache<const Skill *, QJSValue> > skillFuncStorage;
-    QThreadStorage<QJSEngine> jsEngineStorage;
 }
 
 Skill::Skill(const QString &name)
@@ -67,10 +67,10 @@ const QJSValue &Skill::skillFuncs() const
     if (skillFuncCache.contains(this))
         return *(skillFuncCache[this]);
 
-    if (!jsEngineStorage.hasLocalData()) // it is designed not to run here, but as a special state(e.g. we use the functions of a skill in a thread of AI), this case is needed
-        InitJsEngine();
+    CJSEngine *jsEngine = Sanguosha.JsEngineInstance();
+    // todo:check if the skills are loaded
 
-    QJSValue r = jsEngineStorage.localData().globalObject().property(m_name);
+    QJSValue r = jsEngine->globalObject().property(m_name);
     if (r.isObject()) {
         QJSValue *copy = new QJSValue(r);
         skillFuncCache.insert(this, copy);
@@ -78,27 +78,6 @@ const QJSValue &Skill::skillFuncs() const
     }
 
     return QJSValue();
-}
-
-bool Skill::InitJsEngine()
-{
-    if (jsEngineStorage.hasLocalData())
-        return false;
-
-    QFile f("/script/skills/skill.js");
-    if (!f.open(QIODevice::ReadOnly))
-        return false;
-
-    QString str = f.readAll();
-    f.close();
-
-    QJSEngine &jsEngine = jsEngineStorage.localData(); // create a default initialized JS engine in the internal code of QThreadStorage
-    QJSValue v = jsEngine.evaluate(str, "/script/skills/skill.js");
-
-    if (!v.isNull())
-        return true;
-
-    return false;
 }
 
 void Skill::addSubskill(Skill *subskill)

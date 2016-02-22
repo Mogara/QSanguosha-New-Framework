@@ -30,6 +30,7 @@ class General;
 class Package;
 class Skill;
 class GameMode;
+class CJSEngine;
 
 class Engine
 {
@@ -53,6 +54,10 @@ public:
     const Card *getCard(uint id) const { return m_cards.value(id); }
 
     const Skill *getSkill(uint id) const { return m_skills.value(id); }
+
+    void init();
+
+    static CJSEngine *JsEngineInstance(bool create = false);
 
 private:
     Engine();

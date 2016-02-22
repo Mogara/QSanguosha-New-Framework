@@ -25,6 +25,104 @@
 #include "skill.h"
 
 #include <QJsonDocument>
+#include <QFile>
+#include <QJsonArray>
+#include <QCoreApplication>
+
+#include <QThreadStorage>
+#include <CJSEngine>
+
+namespace
+{
+    QThreadStorage<CJSEngine> jsEngineStorage;
+}
+
+namespace
+{
+    void loadGameModes()
+    {
+        // dummy for now because the modes are now in CPP
+    }
+
+    void loadPackages()
+    {
+        CJSEngine *engine = Engine::JsEngineInstance(true);
+        if (engine->globalObject().hasProperty("packageLoaded") && engine->globalObject().property("packageLoaded").isBool() && engine->globalObject().property("packageLoaded").toBool())
+            return;
+
+        QFile packageFile("script/Package/package.json");
+        if (packageFile.open(QIODevice::ReadOnly)) {
+            QJsonParseError error;
+            QJsonDocument packageJson = QJsonDocument::fromJson(packageFile.readAll(), &error);
+            packageFile.close();
+            if (error.error != QJsonParseError::NoError) {
+                // @todo: Takashiro: report error to the UI system!!! there is no way calling QMessageBox::critical
+                return;
+            } else {
+                QVariantList packages = packageJson.array().toVariantList();
+                if (packages.isEmpty()) {
+                    // @todo: Takashiro: report error to the UI system!!! there is no way calling QMessageBox::critical
+                    return;
+                }
+
+                foreach (const QVariant &packageNameV, packages) {
+                    if (!packageNameV.canConvert(QVariant::String)) {
+                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
+                        continue;
+                    }
+                    QString packageName = packageNameV.toString();
+
+                    QFile singlePackageFile("script/Package/" + packageName + "/" + packageName + ".js");
+                    if (!singlePackageFile.open(QIODevice::ReadOnly)) {
+                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
+                        continue;
+                    }
+                    QJSValue evaluateResult = engine->evaluate(singlePackageFile.readAll(), "script/Package/" + packageName + "/" + packageName + ".js");
+                    singlePackageFile.close();
+                    if (evaluateResult.isError()) {
+                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
+                        continue;
+                    }
+                    QJSValue initPackageFunction = engine->globalObject().property("newPackage" + packageName);
+                    if (!initPackageFunction.isCallable()) {
+                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
+                        continue;
+                    }
+                    QJSValue packageValue = initPackageFunction.call();
+                    if (packageValue.isQObject()) {
+                        Package *package = qobject_cast<Package *>(packageValue.toQObject());
+                        if (package == nullptr) {
+                            // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
+                            continue;
+                        }
+                        package->setIsCreatedByJs(true);
+                        Sanguosha.addPackage(package);
+                    } else {
+                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
+                        continue;
+                    }
+                }
+            }
+        } else {
+            // @todo: Takashiro: report error to the UI system!!! there is no way calling QMessageBox::critical
+            return;
+        }
+    }
+}
+
+CJSEngine *Engine::JsEngineInstance(bool create /* = false */)
+{
+    if (jsEngineStorage.hasLocalData())
+        return &jsEngineStorage.localData();
+
+    if (create) {
+        CJSEngine &jsEngine = jsEngineStorage.localData(); // create a default initialized JS engine in the internal code of QThreadStorage
+        // @todo_Fs: Shall we load a start script in this period? if so, we can put the initializations in JS file
+        return &jsEngine;
+    }
+
+    return nullptr;
+}
 
 Engine::Engine()
 {
@@ -41,8 +139,10 @@ Engine::~Engine()
     foreach (const GameMode *mode, m_modes)
         delete mode;
 
-    foreach (Package *package, m_packages)
-        delete package;
+    foreach (Package *package, m_packages) {
+        if (!package->isCreatedByJs()) // JS packages can be deleted by the Garbage Collector
+            delete package;
+    }
 }
 
 const GameMode *Engine::mode(const QString &name) const
@@ -98,4 +198,10 @@ QList<const General *> Engine::getGenerals(bool includeHidden) const
     foreach (const Package *package, m_packages)
         generals << package->generals(includeHidden);
     return generals;
+}
+
+void Engine::init()
+{
+    loadGameModes();
+    loadPackages();
 }

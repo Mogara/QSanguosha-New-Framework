@@ -22,34 +22,43 @@
 
 #include <QString>
 #include <QList>
+#include <QObject>
 
 class Card;
 class General;
 class GameMode;
 
-class Package
+class Package : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PROPERTY(bool isCreatedByJs READ isCreatedByJs WRITE setIsCreatedByJs MEMBER m_isCreatedByJs)
+
 public:
-    Package(const QString &name);
+    Q_INVOKABLE Package(const QString &name);
     virtual ~Package();
 
     virtual bool isAvailable(const GameMode *mode) const;
 
     QString name() const { return m_name; }
     QList<const General *> generals(bool includeHidden = false) const;
-    const General *getGeneral(const QString &name) const;
+    Q_INVOKABLE const General *getGeneral(const QString &name) const;
     QList<const Card *> cards() const;
 
-protected:
-    void addGeneral(General *general);
+    Q_INVOKABLE void addGeneral(General *general);
     void addGenerals(const QList<General *> &generals);
 
-    void addCard(Card *card);
+    Q_INVOKABLE void addCard(Card *card);
     void addCards(const QList<Card *> &cards);
 
+    bool isCreatedByJs() const;
+    void setIsCreatedByJs(bool is);
+
+private:
     QString m_name;
     QList<General *> m_generals;
     QList<Card *> m_cards;
+    bool m_isCreatedByJs;
 };
 
 #endif // PACKAGE_H

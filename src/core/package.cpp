@@ -105,3 +105,13 @@ void Package::addCards(const QList<Card *> &cards)
         card->m_id = GenerateId<Card>();
     m_cards << cards;
 }
+
+bool Package::isCreatedByJs() const
+{
+    return m_isCreatedByJs;
+}
+
+void Package::setIsCreatedByJs(bool is)
+{
+    m_isCreatedByJs = is;
+}

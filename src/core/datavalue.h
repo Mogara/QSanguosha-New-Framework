@@ -32,7 +32,6 @@
 class Card;
 class ServerPlayer;
 class Skill;
-class QJSEngine;
 
 class CardsMoveStruct
 {

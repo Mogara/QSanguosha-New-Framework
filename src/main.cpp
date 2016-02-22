@@ -27,6 +27,8 @@
 #include <CNetwork>
 #include <CTranslator>
 
+#include "engine.h"
+
 #ifdef EMBED_RESOURCE
 #define QsSrc "qrc:/"
 #else
@@ -45,6 +47,8 @@ int main(int argc, char *argv[])
     app.setOrganizationDomain("mogara.org");
     app.setApplicationName("QSanguosha");
 
+    //QDir::setCurrent() should be put here
+
     QString localeName = QLocale::system().name();
     QTranslator translator;
     if (!translator.load(localeName, QStringLiteral("translations"))) {
@@ -55,6 +59,8 @@ int main(int argc, char *argv[])
     if (ctranslator.load(localeName, QStringLiteral("translations")))
         app.installTranslator(&ctranslator);
     app.installTranslator(&translator);
+
+    Sanguosha.init(); // load the mode and generals dynamically from the local files using JSON
 
     CMainWindow window;
     window.rootContext()->setContextProperty("QsSrc", QsSrc);

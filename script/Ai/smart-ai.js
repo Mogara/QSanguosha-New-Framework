@@ -1,6 +1,6 @@
 function init()
 {
-	aiEngineFunctions.notifyToRobot(6, "init")
+	Ai.notifyToRobot(6, "init")
 	return true;
 }
 

@@ -73,7 +73,7 @@ RoomScene {
                             userRole: modelData.role
                             kingdom : modelData.kingdom
 
-                            onSelectedChanged: roomScene.onPhotoSelected(roomScene.getSelectedSeats());
+                            onSelectedChanged: roomScene.onPhotoSelected(seat, selected);
                         }
                     }
 
@@ -505,17 +505,6 @@ RoomScene {
             return photo.delayedTrickArea;
 
         return null;
-    }
-
-    function getSelectedSeats()
-    {
-        var selected = [];
-        for (var i = 0; i < photos.count; i++) {
-            var photo = photos.itemAt(i);
-            if (photo.selected)
-                selected.push(photo.seat);
-        }
-        return selected;
     }
 
     //@to-do: hide the latest dialog. We need a better solution

@@ -349,17 +349,17 @@ void RoomScene::onCardSelected(uint cardId, bool selected)
     }
 }
 
-void RoomScene::onPhotoSelected(const QVariantList &seats)
+void RoomScene::onPhotoSelected(int seat, bool selected)
 {
-    QSet<int> selectedSeats;
-    foreach (const QVariant &seat, seats)
-        selectedSeats << seat.toInt();
-
-    m_selectedPlayer.clear();
     QList<const ClientPlayer *> players = m_client->players();
     foreach (const ClientPlayer *player, players) {
-        if (selectedSeats.contains(player->seat()))
-            m_selectedPlayer << player;
+        if (player->seat() == seat) {
+            if (selected)
+                m_selectedPlayer.append(player);
+            else
+                m_selectedPlayer.removeOne(player);
+            break;
+        }
     }
 
     checkTargetFeasibility();

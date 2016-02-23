@@ -1,6 +1,10 @@
+
+Cardirector.evaluateAnotherJsScript("script/Ai/jsscript2.js");
+
 function init()
 {
-	Ai.notifyToRobot(6, "init")
+	CAi.notifyToRobot(6, "init");
+	aaa();
 	return true;
 }
 

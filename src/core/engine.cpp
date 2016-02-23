@@ -44,11 +44,17 @@ namespace
         // dummy for now because the modes are now in CPP
     }
 
-    void loadPackages()
+    void loadPackages(bool addToEngine = false)
     {
         CJSEngine *engine = Engine::JsEngineInstance(true);
-        if (engine->globalObject().hasProperty("packageLoaded") && engine->globalObject().property("packageLoaded").isBool() && engine->globalObject().property("packageLoaded").toBool())
+        bool packageLoaded = engine->globalObject().hasProperty("packageLoaded") && engine->globalObject().property("packageLoaded").isBool() && engine->globalObject().property("packageLoaded").toBool();
+        bool packageAdded = engine->globalObject().hasProperty("packageAdded") && engine->globalObject().property("packageAdded").isBool() && engine->globalObject().property("packageAdded").toBool();
+
+        if (packageAdded || (packageLoaded && !addToEngine))
             return;
+
+        QJSValueList packageInitializers;
+        QStringList packages;
 
         QFile packageFile("script/Package/package.json");
         if (packageFile.open(QIODevice::ReadOnly)) {
@@ -63,49 +69,61 @@ namespace
                 if (packages.isEmpty()) {
                     // @todo: Takashiro: report error to the UI system!!! there is no way calling QMessageBox::critical
                     return;
-                }
-
+                } 
                 foreach (const QVariant &packageNameV, packages) {
                     if (!packageNameV.canConvert(QVariant::String)) {
                         // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
                         continue;
                     }
                     QString packageName = packageNameV.toString();
-
-                    QFile singlePackageFile("script/Package/" + packageName + "/" + packageName + ".js");
-                    if (!singlePackageFile.open(QIODevice::ReadOnly)) {
-                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                        continue;
-                    }
-                    QJSValue evaluateResult = engine->evaluate(singlePackageFile.readAll(), "script/Package/" + packageName + "/" + packageName + ".js");
-                    singlePackageFile.close();
-                    if (evaluateResult.isError()) {
-                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                        continue;
-                    }
-                    QJSValue initPackageFunction = engine->globalObject().property("newPackage" + packageName);
-                    if (!initPackageFunction.isCallable()) {
-                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                        continue;
-                    }
-                    QJSValue packageValue = initPackageFunction.call();
-                    if (packageValue.isQObject()) {
-                        Package *package = qobject_cast<Package *>(packageValue.toQObject());
-                        if (package == nullptr) {
-                            // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                            continue;
-                        }
-                        package->setIsCreatedByJs(true);
-                        Sanguosha.addPackage(package);
-                    } else {
-                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                        continue;
-                    }
+                    packages << packageName;
                 }
             }
         } else {
             // @todo: Takashiro: report error to the UI system!!! there is no way calling QMessageBox::critical
             return;
+        }
+
+        foreach (const QString &packageName, packages) {
+            if (!packageLoaded) {
+                QFile singlePackageFile("script/Package/" + packageName + "/" + packageName + ".js");
+                if (!singlePackageFile.open(QIODevice::ReadOnly)) {
+                    // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
+                    continue;
+                }
+                QJSValue evaluateResult = engine->evaluate(singlePackageFile.readAll(), "script/Package/" + packageName + "/" + packageName + ".js");
+                singlePackageFile.close();
+                if (evaluateResult.isError()) {
+                    // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
+                    continue;
+                }
+            }
+            if (addToEngine) {
+                QJSValue initPackageFunction = engine->globalObject().property("newPackage" + packageName);
+                if (!initPackageFunction.isCallable()) {
+                    // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
+                    continue;
+                }
+                packageInitializers << initPackageFunction;
+            }
+        }
+        engine->globalObject().setProperty("packageLoaded", true);
+        if (addToEngine) {
+            foreach (QJSValue packageInitializer, packageInitializers) {
+                QJSValue packageValue = packageInitializer.call();
+                if (packageValue.isQObject()) {
+                    Package *package = qobject_cast<Package *>(packageValue.toQObject());
+                    if (package == nullptr) {
+                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
+                        continue;
+                    }
+                    package->setIsCreatedByJs(true);
+                    Sanguosha.addPackage(package);
+                } else {
+                    // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
+                    continue;
+                }
+            }
         }
     }
 }
@@ -203,5 +221,5 @@ QList<const General *> Engine::getGenerals(bool includeHidden) const
 void Engine::init()
 {
     loadGameModes();
-    loadPackages();
+    loadPackages(true);
 }

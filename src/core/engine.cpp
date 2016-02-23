@@ -124,6 +124,7 @@ namespace
                     continue;
                 }
             }
+            engine->globalObject().setProperty("packageAdded", true);
         }
     }
 }

@@ -82,7 +82,7 @@ public:
 
     void setFrequency(Frequency frequency);
 
-    const QJSValue &skillFuncs() const;
+    QJSValue skillFuncs() const;
 
 protected:
     uint m_id;

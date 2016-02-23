@@ -61,7 +61,7 @@ const Skill *Skill::topSkill() const
     return m_topSkill;
 }
 
-const QJSValue &Skill::skillFuncs() const
+QJSValue Skill::skillFuncs() const
 {
     QCache<const Skill *, QJSValue> &skillFuncCache = skillFuncStorage.localData();
     if (skillFuncCache.contains(this))
@@ -77,7 +77,7 @@ const QJSValue &Skill::skillFuncs() const
         return *copy;
     }
 
-    return QJSValue();
+    return QJSValue(); // C4172 can be optimized(ignored???) in release mode
 }
 
 void Skill::addSubskill(Skill *subskill)

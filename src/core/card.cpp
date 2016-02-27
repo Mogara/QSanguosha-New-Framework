@@ -650,6 +650,10 @@ void DelayedTrick::effect(GameLogic *logic, CardEffectValue &effect)
         takeEffect(logic, effect);
 }
 
+void DelayedTrick::takeEffect(GameLogic *, CardEffectValue &) {
+
+}
+
 MovableDelayedTrick::MovableDelayedTrick(Card::Suit suit, int number)
     : DelayedTrick(suit, number)
 {

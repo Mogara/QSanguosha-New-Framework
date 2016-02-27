@@ -299,7 +299,7 @@ public:
     void onEffect(GameLogic *logic, CardEffectValue &effect) override;
     void effect(GameLogic *logic, CardEffectValue &effect) override;
 
-    virtual void takeEffect(GameLogic *logic, CardEffectValue &effect) {} // Fs: I temporily created an empty function body here, for later we put this function to JS
+    virtual void takeEffect(GameLogic *logic, CardEffectValue &effect); // Fs: I temporily created an empty function body here, for later we put this function to JS
 
 protected:
     QString m_judgePattern;

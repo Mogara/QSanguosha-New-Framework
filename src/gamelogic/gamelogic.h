@@ -48,6 +48,7 @@ public:
 
     QList<const Package *> packages() const { return m_packages; }
     void setPackages(const QList<const Package *> &packages) { m_packages = packages; }
+    void setPackages(const QStringList &packages);
 
     void addEventHandler(const EventHandler *handler);
     void removeEventHandler(const EventHandler *handler);

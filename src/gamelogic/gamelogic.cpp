@@ -81,6 +81,18 @@ void GameLogic::setGameRule(const GameRule *rule) {
     }
 }
 
+void GameLogic::setPackages(const QStringList &packages)
+{
+    QList<const Package *> packagePtrs;
+    foreach (const QString &package, packages) {
+        const Package *packagePtr = Sanguosha.package(package);
+        if (packagePtr != nullptr)
+            packagePtrs << packagePtr;
+    }
+
+    setPackages(packagePtrs);
+}
+
 void GameLogic::addEventHandler(const EventHandler *handler)
 {
     QSet<EventType> events = handler->events();
@@ -979,7 +991,7 @@ void GameLogic::loadMode(const GameMode *mode)
     foreach (const EventHandler *rule, rules)
         addEventHandler(rule);
 
-    setPackages(Sanguosha.getPackages(mode));
+    setPackages(mode->avaliablePackages());
 }
 
 const RoomSettings *GameLogic::settings() const

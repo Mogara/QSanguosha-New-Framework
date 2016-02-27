@@ -37,7 +37,8 @@ public:
     int maxPlayerNum() const { return m_maxPlayerNum; }
 
     const GameRule *rule() const { return m_rule; }
-    QList<const EventHandler *> extraRules() const { return m_extraRules; }
+    const QList<const EventHandler *> &extraRules() const { return m_extraRules; }
+    const QStringList &avaliablePackages() const { return m_availablePackages; }
 
 protected:
     QString m_name;
@@ -45,6 +46,7 @@ protected:
     int m_maxPlayerNum;
     const GameRule *m_rule;
     QList<const EventHandler *> m_extraRules;
+    QStringList m_availablePackages;
 };
 
 #endif // GAMEMODE_H

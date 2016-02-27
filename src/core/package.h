@@ -38,8 +38,6 @@ public:
     Q_INVOKABLE Package(const QString &name);
     virtual ~Package();
 
-    virtual bool isAvailable(const GameMode *mode) const;
-
     QString name() const { return m_name; }
     QList<const General *> generals(bool includeHidden = false) const;
     Q_INVOKABLE const General *getGeneral(const QString &name) const;

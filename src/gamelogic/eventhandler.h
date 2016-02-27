@@ -20,7 +20,6 @@
 #ifndef EVENTHANDLER_H
 #define EVENTHANDLER_H
 
-#include "eventtype.h"
 #include "event.h"
 
 #include <QVariant>
@@ -35,6 +34,92 @@ class EventHandler
     Q_GADGET
 
 public:
+
+
+    enum EventType
+    {
+        InvalidEvent,
+
+        GameStart,
+        GameFinish,
+
+        TurnStart,
+        PhaseStart,
+        PhaseProceeding,
+        PhaseEnd,
+        PhaseChanging,
+        PhaseSkipping,
+        TurnBroken,
+        StageChange,
+
+        BeforeCardsMove,
+        AfterCardsMove,
+
+        DrawNCards,
+        AfterDrawNCards,
+        CountMaxCardNum,
+
+        PreCardUsed,
+        CardUsed,
+        TargetChoosing,
+        TargetConfirming,
+        TargetChosen,
+        TargetConfirmed,
+        CardEffect,
+        CardEffected,
+        PostCardEffected,
+        CardFinished,
+        TrickCardCanceling,
+
+        CardResponded,
+
+        SlashEffect,
+        SlashEffected,
+        SlashProceed,
+        SlashHit,
+        SlashMissed,
+
+        ConfirmDamage, // confirm the source, weight and nature of a damage
+        BeforeDamage,  // trigger certain skill -- jueqing
+        DamageStart,
+        Damaging,
+        Damaged,
+        AfterDamaging,
+        AfterDamaged,
+        DamageComplete,
+
+        BeforeRecover,
+        AfterRecover,
+
+        HpLost,
+        AfterHpLost,
+
+        BeforeHpReduced,
+        AfterHpReduced,
+
+        MaxHpChanged,
+
+        StartJudge,
+        AskForRetrial,
+        FinishRetrial,
+        FinishJudge,
+
+        SkillAdded,
+        SkillRemoved,
+
+        EnterDying,
+        QuitDying,
+        AskForPeach,
+        AskForPeachDone,
+        BeforeGameOverJudge,
+        GameOverJudge,
+        Died,
+        BuryVictim,
+
+        EventTypeCount
+    };
+    Q_ENUM(EventType);
+
     virtual ~EventHandler();
     Q_INVOKABLE void addEvent(EventType event) { m_events << event; }
     QSet<EventType> events() const { return m_events; }

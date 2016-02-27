@@ -40,6 +40,7 @@ class Card : public QObject
     Q_PROPERTY(QString color READ colorString WRITE setColorString)
     Q_PROPERTY(QString type READ typeString)
     Q_PROPERTY(bool transferable READ isTransferable WRITE setTransferable)
+    Q_PROPERTY(bool canRecast READ canRecast WRITE setCanRecast)
     //Q_PROPERTY(QString skillName READ skillName WRITE setSkillName)
 
     friend class Package;
@@ -130,25 +131,27 @@ public:
     bool isTransferable() const { return m_transferable; }
 
     bool canRecast() const { return m_canRecast; }
+    void setCanRecast(bool can) { m_canRecast = can; }
+
     int useLimit() const;
     int useLimit(const Player *source) const;
     int maxTargetNum() const;
     int minTargetNum() const;
     int distanceLimit() const;
 
-    bool isTargetFixed() const { return m_targetFixed; }
-    virtual bool targetFeasible(const QList<const Player *> &selected, const Player *source) const;
-    virtual bool targetFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
-    virtual bool isAvailable(const Player *source) const;
-    virtual void complete(GameLogic *logic);
+    Q_INVOKABLE bool isTargetFixed() const { return m_targetFixed; }
+    Q_INVOKABLE virtual bool targetFeasible(const QList<const Player *> &selected, const Player *source) const;
+    Q_INVOKABLE virtual bool targetFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
+    Q_INVOKABLE virtual bool isAvailable(const Player *source) const;
+    Q_INVOKABLE virtual void complete(GameLogic *logic);
 
     bool isValid(const QList<ServerPlayer *> &targets, ServerPlayer *source) const;
     bool isValid(const QList<const Player *> &targets, const Player *source) const;
 
-    virtual void onUse(GameLogic *logic, CardUseValue &use);
-    virtual void use(GameLogic *logic, CardUseValue &use);
-    virtual void onEffect(GameLogic *logic, CardEffectValue &effect);
-    virtual void effect(GameLogic *logic, CardEffectValue &effect);
+    Q_INVOKABLE virtual void onUse(GameLogic *logic, CardUseValue &use);
+    Q_INVOKABLE virtual void use(GameLogic *logic, CardUseValue &use);
+    Q_INVOKABLE virtual void onEffect(GameLogic *logic, CardEffectValue &effect);
+    Q_INVOKABLE virtual void effect(GameLogic *logic, CardEffectValue &effect);
 
     static Card *Find(const QList<Card *> &cards, uint id);
     static QList<Card *> Find(const QList<Card *> &cards, const QVariant &data);
@@ -198,7 +201,7 @@ class BasicCard : public Card
     Q_OBJECT
 
 public:
-    BasicCard(Suit suit, int number);
+    Q_INVOKABLE BasicCard(Suit suit, int number);
 };
 
 class TrickCard : public Card
@@ -219,7 +222,7 @@ public:
     };
     Q_ENUM(SubType)
 
-    TrickCard(Suit suit, int number);
+    Q_INVOKABLE TrickCard(Suit suit, int number);
 
     void onEffect(GameLogic *logic, CardEffectValue &effect) override;
     virtual bool isNullifiable(const CardEffectValue &effect) const;
@@ -242,7 +245,7 @@ public:
     };
     Q_ENUM(SubType)
 
-    EquipCard(Suit suit, int number);
+    Q_INVOKABLE EquipCard(Suit suit, int number);
 
     void onUse(GameLogic *logic, CardUseValue &use) override;
     void use(GameLogic *logic, CardUseValue &use) override;
@@ -259,7 +262,7 @@ class GlobalEffect : public TrickCard
     Q_OBJECT
 
 public:
-    GlobalEffect(Card::Suit suit, int number);
+    Q_INVOKABLE GlobalEffect(Card::Suit suit, int number);
 
     void onUse(GameLogic *logic, CardUseValue &use) override;
 };
@@ -269,7 +272,7 @@ class AreaOfEffect : public TrickCard
     Q_OBJECT
 
 public:
-    AreaOfEffect(Suit suit, int number);
+    Q_INVOKABLE AreaOfEffect(Suit suit, int number);
 
     void onUse(GameLogic *logic, CardUseValue &use) override;
 };
@@ -279,7 +282,7 @@ class SingleTargetTrick : public TrickCard
     Q_OBJECT
 
 public:
-    SingleTargetTrick(Suit suit, int number);
+    Q_INVOKABLE SingleTargetTrick(Suit suit, int number);
 };
 
 class DelayedTrick : public TrickCard
@@ -287,7 +290,7 @@ class DelayedTrick : public TrickCard
     Q_OBJECT
 
 public:
-    DelayedTrick(Suit suit, int number);
+    Q_INVOKABLE DelayedTrick(Suit suit, int number);
 
     bool targetFeasible(const QList<const Player *> &selected, const Player *) const override;
     bool targetFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const override;
@@ -296,7 +299,7 @@ public:
     void onEffect(GameLogic *logic, CardEffectValue &effect) override;
     void effect(GameLogic *logic, CardEffectValue &effect) override;
 
-    virtual void takeEffect(GameLogic *logic, CardEffectValue &effect) = 0;
+    virtual void takeEffect(GameLogic *logic, CardEffectValue &effect) {} // Fs: I temporily created an empty function body here, for later we put this function to JS
 
 protected:
     QString m_judgePattern;
@@ -307,7 +310,7 @@ class MovableDelayedTrick : public DelayedTrick
     Q_OBJECT
 
 public:
-    MovableDelayedTrick(Suit suit, int number);
+    Q_INVOKABLE MovableDelayedTrick(Suit suit, int number);
 
     void onUse(GameLogic *logic, CardUseValue &use) override;
     void effect(GameLogic *logic, CardEffectValue &effect) override;
@@ -320,7 +323,7 @@ class Weapon : public EquipCard
     Q_OBJECT
 
 public:
-    Weapon(Suit suit, int number);
+    Q_INVOKABLE Weapon(Suit suit, int number);
 
     int attackRange() const;
 
@@ -333,7 +336,7 @@ class Armor : public EquipCard
     Q_OBJECT
 
 public:
-    Armor(Suit suit, int number);
+    Q_INVOKABLE Armor(Suit suit, int number);
 };
 
 class Horse : public EquipCard
@@ -341,7 +344,7 @@ class Horse : public EquipCard
     Q_OBJECT
 
 public:
-    Horse(Suit suit, int number);
+    Q_INVOKABLE Horse(Suit suit, int number);
 
     Card *clone() const override;
     Card *makeVirtual() override;
@@ -378,7 +381,7 @@ class Treasure : public EquipCard
     Q_OBJECT
 
 public:
-    Treasure(Suit suit, int number);
+    Q_INVOKABLE Treasure(Suit suit, int number);
 };
 
 #endif // CARD_H

@@ -68,7 +68,7 @@ GameLogic::~GameLogic()
 
 void GameLogic::setGameRule(const GameRule *rule) {
     if (m_gameRule) {
-        foreach (EventType e, m_gameRule->events()) {
+        foreach (EventHandler::EventType e, m_gameRule->events()) {
             if (m_handlers[e].contains(m_gameRule))
                 m_handlers[e].removeOne(m_gameRule);
         }
@@ -76,7 +76,7 @@ void GameLogic::setGameRule(const GameRule *rule) {
 
     m_gameRule = rule;
     if (rule) {
-        foreach (EventType e, rule->events())
+        foreach (EventHandler::EventType e, rule->events())
             m_handlers[e].append(m_gameRule);
     }
 }
@@ -95,8 +95,8 @@ void GameLogic::setPackages(const QStringList &packages)
 
 void GameLogic::addEventHandler(const EventHandler *handler)
 {
-    QSet<EventType> events = handler->events();
-    foreach(EventType event, events) {
+    QSet<EventHandler::EventType> events = handler->events();
+    foreach (EventHandler::EventType event, events) {
         if (!m_handlers[event].contains(handler))
             m_handlers[event] << handler;
     }
@@ -104,13 +104,13 @@ void GameLogic::addEventHandler(const EventHandler *handler)
 
 void GameLogic::removeEventHandler(const EventHandler *handler)
 {
-    QSet<EventType> events = handler->events();
-    foreach (EventType event, events)
+    QSet<EventHandler::EventType> events = handler->events();
+    foreach (EventHandler::EventType event, events)
         m_handlers[event].removeOne(handler);
 }
 
 
-void GameLogic::getEventHandlersAndSort(EventType event, EventPtrList &detailsList, const EventPtrList &triggered, const QObject *data, ServerPlayer *player /*= nullptr*/)
+void GameLogic::getEventHandlersAndSort(EventHandler::EventType event, EventPtrList &detailsList, const EventPtrList &triggered, const QObject *data, ServerPlayer *player /*= nullptr*/)
 {
     // used to get all the event handlers which can be triggered now, and sort them.
     // everytime this function is called, it will get all the event handlers and judge the triggerable one by one
@@ -288,7 +288,7 @@ void GameLogic::getEventHandlersAndSort(EventType event, EventPtrList &detailsLi
     detailsList = details;
 }
 
-bool GameLogic::trigger(EventType event, ServerPlayer *target, QObject *data)
+bool GameLogic::trigger(EventHandler::EventType event, ServerPlayer *target, QObject *data)
 {
 //     EventTriplet triplet(triggerEvent, room);
 //     event_stack.push_back(triplet);
@@ -375,7 +375,7 @@ bool GameLogic::trigger(EventType event, ServerPlayer *target, QObject *data)
 //         event_stack.pop_back();
 
     }
-    catch (EventType) {
+    catch (EventHandler::EventType) {
 //         event_stack.pop_back();
         throw;
     }
@@ -493,7 +493,7 @@ void GameLogic::moveCards(CardsMoveValue &moves)
     filterCardsMove(moves);
     QList<ServerPlayer *> allPlayers = this->allPlayers();
     foreach (ServerPlayer *player, allPlayers)
-        trigger(BeforeCardsMove, player, &moves);
+        trigger(EventHandler::BeforeCardsMove, player, &moves);
 
     filterCardsMove(moves);
 
@@ -534,7 +534,7 @@ void GameLogic::moveCards(CardsMoveValue &moves)
 
     allPlayers = this->allPlayers();
     foreach (ServerPlayer *player, allPlayers)
-        trigger(AfterCardsMove, player, &moves);
+        trigger(EventHandler::AfterCardsMove, player, &moves);
 }
 
 bool GameLogic::useCard(CardUseValue &use)
@@ -561,10 +561,10 @@ bool GameLogic::useCard(CardUseValue &use)
 
     try {
         use.card->onUse(this, use);
-        trigger(CardUsed, use.from, &use);
+        trigger(EventHandler::CardUsed, use.from, &use);
 
         if (use.from) {
-            trigger(TargetChoosing, use.from, &use);
+            trigger(EventHandler::TargetChoosing, use.from, &use);
 
             QVariantMap args;
             args["from"] = use.from->id();
@@ -589,17 +589,17 @@ bool GameLogic::useCard(CardUseValue &use)
                     foreach (ServerPlayer *to, use.to) {
                         if (!use.to.contains(to))
                             continue;
-                        trigger(TargetConfirming, to, &use);
+                        trigger(EventHandler::TargetConfirming, to, &use);
                     }
 
                     if (use.from && !use.to.isEmpty()) {
-                        trigger(TargetChosen, use.from, &use);
+                        trigger(EventHandler::TargetChosen, use.from, &use);
 
                         if (use.from && !use.to.isEmpty()) {
                             foreach (ServerPlayer *to, use.to) {
                                 if (!use.to.contains(to))
                                     continue;
-                                trigger(TargetConfirmed, to, &use);
+                                trigger(EventHandler::TargetConfirmed, to, &use);
                             }
 
                             use.card->use(this, use);
@@ -611,9 +611,9 @@ bool GameLogic::useCard(CardUseValue &use)
             }
         }
 
-        trigger(CardFinished, use.from, &use);
+        trigger(EventHandler::CardFinished, use.from, &use);
 
-    } catch (EventType e) {
+    } catch (EventHandler::EventType e) {
         //@to-do: handle TurnBroken and StageChange
         throw e;
     }
@@ -626,9 +626,9 @@ bool GameLogic::takeCardEffect(CardEffectValue &effect)
     bool canceled = false;
     if (effect.to) {
         if (effect.to->isAlive()) {
-            canceled = trigger(CardEffect, effect.to, &effect);
+            canceled = trigger(EventHandler::CardEffect, effect.to, &effect);
             if (!canceled) {
-                canceled = trigger(CardEffected, effect.to, &effect);
+                canceled = trigger(EventHandler::CardEffected, effect.to, &effect);
                 if (!canceled) {
                     effect.use.card->onEffect(this, effect);
                     if (effect.to->isAlive() && !effect.isNullified())
@@ -641,7 +641,7 @@ bool GameLogic::takeCardEffect(CardEffectValue &effect)
         if (!effect.isNullified())
             effect.use.card->effect(this, effect);
     }
-    trigger(PostCardEffected, effect.to, &effect);
+    trigger(EventHandler::PostCardEffected, effect.to, &effect);
     return !canceled;
 }
 
@@ -673,7 +673,7 @@ bool GameLogic::respondCard(CardResponseValue &response)
 
     bool broken = false;
 
-    broken = trigger(CardResponded, response.from, &response);
+    broken = trigger(EventHandler::CardResponded, response.from, &response);
 
     if (response.card && m_table->contains(response.card)) {
         CardsMoveValue moves;
@@ -690,7 +690,7 @@ bool GameLogic::respondCard(CardResponseValue &response)
 
 void GameLogic::judge(JudgeValue &judge)
 {
-    if (trigger(StartJudge, judge.who, &judge))
+    if (trigger(EventHandler::StartJudge, judge.who, &judge))
         return;
 
     judge.card = getDrawPileCard();
@@ -704,10 +704,10 @@ void GameLogic::judge(JudgeValue &judge)
     moves.moves << move;
     moveCards(moves);
 
-    trigger(AskForRetrial, nullptr, &judge);
+    trigger(EventHandler::AskForRetrial, nullptr, &judge);
 
-    trigger(FinishRetrial, judge.who, &judge);
-    trigger(FinishJudge, judge.who, &judge);
+    trigger(EventHandler::FinishRetrial, judge.who, &judge);
+    trigger(EventHandler::FinishJudge, judge.who, &judge);
 
     const CardArea *judgeCards = judge.who->judgeCards();
     if (judgeCards->contains(judge.card)) {
@@ -754,7 +754,7 @@ void GameLogic::retrialCost(JudgeValue &judge, Card *card, bool isReplace)
         response.isRetrial = true;
         response.to = nullptr;
 
-        trigger(CardResponded, response.from, &response);
+        trigger(EventHandler::CardResponded, response.from, &response);
     }
 }
 
@@ -782,25 +782,25 @@ void GameLogic::damage(DamageValue &damage)
         return;
 
     if (!damage.chain && !damage.transfer) {
-        trigger(ConfirmDamage, damage.from, &damage);
+        trigger(EventHandler::ConfirmDamage, damage.from, &damage);
     }
 
-    if (trigger(BeforeDamage, damage.from, &damage))
+    if (trigger(EventHandler::BeforeDamage, damage.from, &damage))
         return;
 
     try {
         do {
-            if (trigger(DamageStart, damage.to, &damage))
+            if (trigger(EventHandler::DamageStart, damage.to, &damage))
                 break;
 
-            if (damage.from && trigger(Damaging, damage.from, &damage))
+            if (damage.from && trigger(EventHandler::Damaging, damage.from, &damage))
                 break;
 
-            if (damage.to && trigger(Damaged, damage.to, &damage))
+            if (damage.to && trigger(EventHandler::Damaged, damage.to, &damage))
                 break;
 
             if (damage.to)
-                trigger(BeforeHpReduced, damage.to, &damage);
+                trigger(EventHandler::BeforeHpReduced, damage.to, &damage);
 
             if (damage.to) {
                 QVariantMap arg;
@@ -814,21 +814,21 @@ void GameLogic::damage(DamageValue &damage)
                 damage.to->setHp(newHp);
                 damage.to->broadcastProperty("hp");
 
-                trigger(AfterHpReduced, damage.to, &damage);
+                trigger(EventHandler::AfterHpReduced, damage.to, &damage);
             }
 
             if (damage.from)
-                trigger(AfterDamaging, damage.from, &damage);
+                trigger(EventHandler::AfterDamaging, damage.from, &damage);
 
             if (damage.to)
-                trigger(AfterDamaged, damage.to, &damage);
+                trigger(EventHandler::AfterDamaged, damage.to, &damage);
 
         } while (false);
 
         if (damage.to)
-            trigger(DamageComplete, damage.to, &damage);
+            trigger(EventHandler::DamageComplete, damage.to, &damage);
 
-    } catch (EventType e) {
+    } catch (EventHandler::EventType e) {
         //@to-do: handle TurnBroken and StageChange
         throw e;
     }
@@ -840,7 +840,7 @@ void GameLogic::loseHp(ServerPlayer *victim, int lose)
         return;
     
     IntValue data(lose);
-    if (trigger(HpLost, victim, &data))
+    if (trigger(EventHandler::HpLost, victim, &data))
         return;
 
     lose = data.value;
@@ -855,8 +855,8 @@ void GameLogic::loseHp(ServerPlayer *victim, int lose)
     arg["loseHp"] = lose;
     room()->broadcastNotification(S_COMMAND_LOSE_HP, arg);
 
-    trigger(AfterHpReduced, victim, &data);
-    trigger(AfterHpLost, victim, &data);
+    trigger(EventHandler::AfterHpReduced, victim, &data);
+    trigger(EventHandler::AfterHpLost, victim, &data);
 }
 
 void GameLogic::recover(RecoverValue &recover)
@@ -864,7 +864,7 @@ void GameLogic::recover(RecoverValue &recover)
     if (recover.to == nullptr || recover.to->lostHp() == 0 || recover.to->isDead())
         return;
 
-    if (trigger(BeforeRecover, recover.to, &recover))
+    if (trigger(EventHandler::BeforeRecover, recover.to, &recover))
         return;
     if (recover.to == nullptr)
         return;
@@ -879,7 +879,7 @@ void GameLogic::recover(RecoverValue &recover)
     arg["num"] = recover.recover;
     room()->broadcastNotification(S_COMMAND_RECOVER, arg);
 
-    trigger(AfterRecover, recover.to, &recover);
+    trigger(EventHandler::AfterRecover, recover.to, &recover);
 }
 
 void GameLogic::killPlayer(ServerPlayer *victim, DamageValue *damage)
@@ -892,11 +892,11 @@ void GameLogic::killPlayer(ServerPlayer *victim, DamageValue *damage)
     death.who = victim;
     death.damage = damage;
 
-    trigger(BeforeGameOverJudge, victim, damage);
-    trigger(GameOverJudge, victim, damage);
+    trigger(EventHandler::BeforeGameOverJudge, victim, damage);
+    trigger(EventHandler::GameOverJudge, victim, damage);
 
-    trigger(Died, victim, damage);
-    trigger(BuryVictim, victim, damage);
+    trigger(EventHandler::Died, victim, damage);
+    trigger(EventHandler::BuryVictim, victim, damage);
 }
 
 void GameLogic::gameOver(const QList<ServerPlayer *> &winners)
@@ -905,7 +905,7 @@ void GameLogic::gameOver(const QList<ServerPlayer *> &winners)
     foreach (ServerPlayer *winner, winners)
         data << winner->id();
     room()->broadcastNotification(S_COMMAND_GAME_OVER, data);
-    throw GameFinish;
+    throw EventHandler::GameFinish;
 }
 
 QMap<uint, QList<const General *>> GameLogic::broadcastRequestForGenerals(const QList<ServerPlayer *> &players, int num, int limit)
@@ -1118,7 +1118,7 @@ void GameLogic::run()
     //@to-do: Turn broken event
     QList<ServerPlayer *> allPlayers = this->allPlayers();
     foreach (ServerPlayer *player, allPlayers)
-        trigger(GameStart, player);
+        trigger(EventHandler::GameStart, player);
 
     forever {
         try {
@@ -1132,24 +1132,24 @@ void GameLogic::run()
                 }
 
                 setCurrentPlayer(current);
-                trigger(TurnStart, current);
+                trigger(EventHandler::TurnStart, current);
                 current = current->next();
 
                 while (!m_extraTurns.isEmpty()) {
                     ServerPlayer *extra = m_extraTurns.takeFirst();
                     setCurrentPlayer(extra);
-                    trigger(TurnStart, extra);
+                    trigger(EventHandler::TurnStart, extra);
                 }
             }
-        } catch (EventType event) {
-            if (event == GameFinish) {
+        } catch (EventHandler::EventType event) {
+            if (event == EventHandler::GameFinish) {
                 return;
-            } else if (event == TurnBroken) {
+            } else if (event == EventHandler::TurnBroken) {
                 ServerPlayer *current = currentPlayer();
-                trigger(TurnBroken, current);
+                trigger(EventHandler::TurnBroken, current);
                 ServerPlayer *next = current->nextAlive(1, false);
                 if (current->phase() != Player::Inactive) {
-                    m_gameRule->effect(this, PhaseEnd, EventPtr(), nullptr, current);
+                    m_gameRule->effect(this, EventHandler::PhaseEnd, EventPtr(), nullptr, current);
                     //@todo:
                     current->setPhase(Player::Inactive);
                     current->broadcastProperty("phase");

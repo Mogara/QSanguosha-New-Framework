@@ -24,8 +24,6 @@ class EventHandler;
 class ServerPlayer;
 class GameLogic;
 
-#include "eventtype.h"
-
 #include <QObject>
 #include <QList>
 #include <QVariantMap>

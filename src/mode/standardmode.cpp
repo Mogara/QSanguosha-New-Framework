@@ -206,6 +206,8 @@ StandardMode::StandardMode()
 {
     m_name = "standard";
     m_rule = new StandardRule;
+
+    m_availablePackages << "nos_standard" << "standard_cards";
 }
 
 ADD_MODE(Standard)

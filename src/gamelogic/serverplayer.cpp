@@ -57,7 +57,7 @@ void ServerPlayer::setAgent(CServerAgent *agent)
 CRoom *ServerPlayer::room() const
 {
     if (m_room->isAbandoned())
-        throw GameFinish;
+        throw EventHandler::GameFinish;
     return m_room;
 }
 
@@ -144,23 +144,23 @@ void ServerPlayer::play(const QList<Player::Phase> &phases)
         change.from = phase();
         change.to = to;
 
-        bool skip = m_logic->trigger(PhaseChanging, this, &change);
+        bool skip = m_logic->trigger(EventHandler::PhaseChanging, this, &change);
 
         setPhase(change.to);
         broadcastProperty("phase");
 
-        if ((skip || isPhaseSkipped(change.to)) && !m_logic->trigger(PhaseSkipping, this, &change))
+        if ((skip || isPhaseSkipped(change.to)) && !m_logic->trigger(EventHandler::PhaseSkipping, this, &change))
             continue;
 
-        if (!m_logic->trigger(PhaseStart, this))
-            m_logic->trigger(PhaseProceeding, this);
-        m_logic->trigger(PhaseEnd, this);
+        if (!m_logic->trigger(EventHandler::PhaseStart, this))
+            m_logic->trigger(EventHandler::PhaseProceeding, this);
+        m_logic->trigger(EventHandler::PhaseEnd, this);
     }
 
     change.from = phase();
     change.to = Inactive;
 
-    m_logic->trigger(PhaseChanging, this, &change);
+    m_logic->trigger(EventHandler::PhaseChanging, this, &change);
 
     setPhase(change.to);
     broadcastProperty("phase");
@@ -747,7 +747,7 @@ void ServerPlayer::addSkill(const Skill *skill, Player::SkillArea area)
     add.owner = this;
     add.skill = skill;
     add.area = area;
-    m_logic->trigger(SkillAdded, this, &add);
+    m_logic->trigger(EventHandler::SkillAdded, this, &add);
 }
 
 void ServerPlayer::removeSkill(const Skill *skill, Player::SkillArea area)
@@ -758,7 +758,7 @@ void ServerPlayer::removeSkill(const Skill *skill, Player::SkillArea area)
     remove.owner = this;
     remove.skill = skill;
     remove.area = area;
-    m_logic->trigger(SkillRemoved, this, &remove);
+    m_logic->trigger(EventHandler::SkillRemoved, this, &remove);
 }
 
 void ServerPlayer::attachSkill(const Skill *skill, SkillArea area)

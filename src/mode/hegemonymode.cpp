@@ -93,6 +93,8 @@ HegemonyMode::HegemonyMode()
 {
     m_name = "hegemony";
     m_rule = new HegemonyRule;
+
+    m_availablePackages << "hegemony" << "hegemony_cards";
 }
 
 ADD_MODE(Hegemony)

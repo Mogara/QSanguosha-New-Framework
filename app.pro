@@ -56,7 +56,6 @@ HEADERS += \
     src/mode/standardmode.h \
     src/gamelogic/event.h \
     src/gamelogic/eventhandler.h \
-    src/gamelogic/eventtype.h \
     src/gamelogic/gamelogic.h \
     src/gamelogic/gamerule.h \
     src/gamelogic/serverplayer.h \

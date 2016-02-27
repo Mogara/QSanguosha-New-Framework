@@ -21,8 +21,8 @@
 #define CGAMELOGIC_H
 
 #include "event.h"
-#include "eventtype.h"
 #include "datavalue.h"
+#include "eventhandler.h"
 
 #include <CAbstractGameLogic>
 
@@ -52,7 +52,7 @@ public:
 
     void addEventHandler(const EventHandler *handler);
     void removeEventHandler(const EventHandler *handler);
-    bool trigger(EventType event, ServerPlayer *target, QObject *data = nullptr);
+    bool trigger(EventHandler::EventType event, ServerPlayer *target, QObject *data = nullptr);
 
     void setCurrentPlayer(ServerPlayer *player) { m_currentPlayer = player; }
     ServerPlayer *currentPlayer() const { return m_currentPlayer; }
@@ -117,12 +117,12 @@ protected:
     void prepareToStart();
     void filterCardsMove(CardsMoveValue &moves);
 
-    void getEventHandlersAndSort(EventType event, EventPtrList &detailsList, const EventPtrList &triggered, const QObject *data, ServerPlayer *player = nullptr);
+    void getEventHandlersAndSort(EventHandler::EventType event, EventPtrList &detailsList, const EventPtrList &triggered, const QObject *data, ServerPlayer *player = nullptr);
 
     void run();
 
 private:
-    QList<const EventHandler *> m_handlers[EventTypeCount];
+    QList<const EventHandler *> m_handlers[EventHandler::EventTypeCount];
     QList<ServerPlayer *> m_players;
     ServerPlayer *m_currentPlayer;
     QList<ServerPlayer *> m_extraTurns;

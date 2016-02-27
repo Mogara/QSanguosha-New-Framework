@@ -18,7 +18,6 @@
 *********************************************************************/
 
 #include "card.h"
-#include "eventtype.h"
 #include "gamelogic.h"
 #include "serverplayer.h"
 #include "skill.h"
@@ -240,9 +239,8 @@ int Card::distanceLimit() const
     return m_distanceLimit;
 }
 
-bool Card::targetFeasible(const QList<const Player *> &selected, const Player *source) const
+bool Card::targetFeasible(const QList<const Player *> &selected, const Player *) const
 {
-    C_UNUSED(source);
     return minTargetNum() <= selected.length() && selected.length() <= maxTargetNum();
 }
 
@@ -308,7 +306,7 @@ void Card::onUse(GameLogic *logic, CardUseValue &use)
 {
     logic->sortByActionOrder(use.to);
 
-    logic->trigger(PreCardUsed, use.from, &use);
+    logic->trigger(EventHandler::PreCardUsed, use.from, &use);
 
     CardsMoveValue moves;
     CardMove move;
@@ -466,7 +464,7 @@ void EquipCard::onUse(GameLogic *logic, CardUseValue &use)
     if (use.to.isEmpty())
         use.to << player;
 
-    logic->trigger(PreCardUsed, player, &use);
+    logic->trigger(EventHandler::PreCardUsed, player, &use);
 }
 
 void EquipCard::use(GameLogic *logic, CardUseValue &use)
@@ -608,7 +606,7 @@ void DelayedTrick::onUse(GameLogic *logic, CardUseValue &use)
 {
     logic->sortByActionOrder(use.to);
 
-    logic->trigger(PreCardUsed, use.from, &use);
+    logic->trigger(EventHandler::PreCardUsed, use.from, &use);
 }
 
 void DelayedTrick::use(GameLogic *logic, CardUseValue &use)
@@ -712,11 +710,11 @@ void MovableDelayedTrick::complete(GameLogic *logic)
         use.to << target;
 
         foreach (ServerPlayer *to, use.to)
-            logic->trigger(TargetConfirming, to, &use);
+            logic->trigger(EventHandler::TargetConfirming, to, &use);
         if (use.to.isEmpty())
             continue;
         foreach (ServerPlayer *to, use.to)
-            logic->trigger(TargetConfirmed, to, &use);
+            logic->trigger(EventHandler::TargetConfirmed, to, &use);
         if (!use.to.isEmpty())
             break;
     }

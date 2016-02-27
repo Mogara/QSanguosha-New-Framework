@@ -58,12 +58,12 @@ void onPhaseProceeding(GameLogic *logic, ServerPlayer *current, QObject *)
     }
     case Player::Draw: {
         IntValue value(2);
-        logic->trigger(DrawNCards, current, &value);
+        logic->trigger(EventHandler::DrawNCards, current, &value);
         int num = value.value;
         if (num > 0)
             current->drawCards(num);
         IntValue valueNew(num);
-        logic->trigger(AfterDrawNCards, current, &valueNew);
+        logic->trigger(EventHandler::AfterDrawNCards, current, &valueNew);
         break;
     }
     case Player::Play: {
@@ -76,7 +76,7 @@ void onPhaseProceeding(GameLogic *logic, ServerPlayer *current, QObject *)
     case Player::Discard: {
         int maxCardNum = current->hp();
         IntValue value(maxCardNum);
-        logic->trigger(CountMaxCardNum, current, &value);
+        logic->trigger(EventHandler::CountMaxCardNum, current, &value);
         maxCardNum = value.value;
         int discardNum = current->handcardNum() - maxCardNum;
         if (discardNum > 0) {
@@ -129,7 +129,7 @@ void onAfterHpReduced(GameLogic *logic, ServerPlayer *victim, QObject *data)
 
     QList<ServerPlayer *> allPlayers = logic->allPlayers();
     foreach (ServerPlayer *player, allPlayers) {
-        if (logic->trigger(EnterDying, player, &death) || victim->hp() > 0 || victim->isDead())
+        if (logic->trigger(EventHandler::EnterDying, player, &death) || victim->hp() > 0 || victim->isDead())
             break;
     }
 
@@ -139,14 +139,14 @@ void onAfterHpReduced(GameLogic *logic, ServerPlayer *victim, QObject *data)
             if (victim->hp() > 0 || victim->isDead())
                 break;
 
-            logic->trigger(AskForPeach, saver, &death);
+            logic->trigger(EventHandler::AskForPeach, saver, &death);
         }
-        logic->trigger(AskForPeachDone, victim, &death);
+        logic->trigger(EventHandler::AskForPeachDone, victim, &death);
     }
 
     victim->setDying(false);
     victim->broadcastProperty("dying");
-    logic->trigger(QuitDying, victim, &death);
+    logic->trigger(EventHandler::QuitDying, victim, &death);
 }
 
 void onAskForPeach(GameLogic *logic, ServerPlayer *current, QObject *data)

@@ -51,7 +51,7 @@ GameLogic::GameLogic(CRoom *parent)
     m_drawPile = new CardArea(CardArea::DrawPile);
     m_discardPile = new CardArea(CardArea::DiscardPile);
     m_table = new CardArea(CardArea::Table);
-    m_table->setKeepVirtualCard(true);
+    m_table->setIsVirtualCardArea(true);
     m_wugu = new CardArea(CardArea::Wugu);
 }
 
@@ -459,9 +459,8 @@ QList<Card *> GameLogic::getDrawPileCards(int n)
 
 void GameLogic::reshuffleDrawPile()
 {
-    if (m_discardPile->length() <= 0) {
-        //@to-do: stand off. Game over.
-    }
+    if (m_discardPile->length() <= 0)
+        gameOver(QList<ServerPlayer *>());
 
     m_reshufflingCount++;
 
@@ -477,62 +476,53 @@ void GameLogic::reshuffleDrawPile()
     m_drawPile->add(cards, CardArea::Bottom);
 }
 
-void GameLogic::moveCards(CardsMoveStruct &move)
-{
-    QList<CardsMoveStruct> moves;
-    moves << move;
-    moveCards(moves);
-    move = moves.first();
-}
-
-void GameLogic::moveCards(QList<CardsMoveStruct> &moves)
+void GameLogic::moveCards(CardsMoveValue &moves)
 {
     filterCardsMove(moves);
-    CardsMoveValue moveData = moves;
     QList<ServerPlayer *> allPlayers = this->allPlayers();
     foreach (ServerPlayer *player, allPlayers)
-        trigger(BeforeCardsMove, player, &moveData);
+        trigger(BeforeCardsMove, player, &moves);
 
     filterCardsMove(moves);
-    allPlayers = this->allPlayers();
-    foreach (ServerPlayer *player, allPlayers)
-        trigger(CardsMove, player, &moveData);
 
-    filterCardsMove(moves);
-    for (int i = 0 ; i < moves.length(); i++) {
-        const CardsMoveStruct &move = moves.at(i);
-        CardArea *to = findArea(move.to);
-        if (to == nullptr)
-            continue;
-
-        CardArea *from = findArea(move.from);
-        if (from == nullptr)
-            continue;
-
-        foreach (Card *card, move.cards) {
-            if (from != m_cardPosition.value(card))
-                continue;
-            if (from->remove(card)) {
-                to->add(card, move.to.direction);
-                m_cardPosition[card] = to;
+    for (int i = 0; i < moves.moves.length(); ++i) {
+        const CardMove &move = moves.moves.at(i);
+        if (move.fromArea->contains(move.card, true)) {
+            if (move.fromArea->remove(move.card)) {
+                move.toArea->add(move.card, move.toDirection);
+                m_cardPosition[move.card] = move.toArea;
             }
         }
     }
 
+    for (int i = 0; i < moves.virtualMoves.length(); ++i) {
+        const CardMove &move = moves.virtualMoves.at(i);
+        // there are cases each of which fromArea can be nullptr sometimes, so we shouldn't relay on the move.fromArea
+        // but if the move.fromArea != nullptr, the move.fromArea must be virtual card area
+        bool flag = true;
+        if (move.fromArea != nullptr) {
+            // we should check the virtual card is actually in that area
+            if (move.fromArea->contains(move.card))
+                flag = move.fromArea->remove(move.card);
+        }
+        // if move.fromArea has succeeded in removing the old card, we should judge whether the toPosition is virtual card area
+        if (flag && move.toArea->isVirtualCardArea()) {
+            move.toArea->add(move.card);
+            m_cardPosition[move.card] = move.toArea;
+        } else
+            m_cardPosition.remove(move.card);
+    }
+
     QList<ServerPlayer *> viewers = players();
     foreach (ServerPlayer *viewer, viewers) {
-        QVariantList data;
-        foreach (const CardsMoveStruct &move, moves)
-            data << move.toVariant(move.isRelevant(viewer));
+        QVariant data = moves.toVariant(viewer);
         CServerAgent *agent = viewer->agent();
         agent->notify(S_COMMAND_MOVE_CARDS, data);
     }
 
     allPlayers = this->allPlayers();
     foreach (ServerPlayer *player, allPlayers)
-        trigger(AfterCardsMove, player, &moveData);
-
-    moves = moveData;
+        trigger(AfterCardsMove, player, &moves);
 }
 
 bool GameLogic::useCard(CardUseValue &use)
@@ -551,6 +541,9 @@ bool GameLogic::useCard(CardUseValue &use)
         }
     }
 
+    if (!use.card->isVirtual()) // make a virtual card of it since all the card in the card using process is virtual card
+        use.card = use.card->makeVirtual();
+
     if (use.from->phase() == Player::Play && use.addHistory)
         use.from->addCardHistory(use.card->objectName());
 
@@ -567,11 +560,16 @@ bool GameLogic::useCard(CardUseValue &use)
             foreach (ServerPlayer *to, use.to)
                 tos << to->id();
             args["to"] = tos;
-            if (!use.card->isVirtual()) {
+
+            /*
+            since the use card is all virtual card, we can only use the args["card"]
+            if (!use.card->isVirtual())
                 args["cardId"] = use.card->id();
-            } else {
-                args["card"] = use.card->toVariant();
-            }
+            else
+            */
+
+            args["card"] = use.card->toVariant();
+
             room()->broadcastNotification(S_COMMAND_USE_CARD, args);
 
             if (use.from) {
@@ -644,29 +642,35 @@ bool GameLogic::invokeProactiveSkill(SkillInvokeValue &invoke)
             return true;
         }
     } else
-        qt_noop(); // throw std::bad_cast();
+        QT_THROW(std::bad_cast()); // we only throw it in debug mode @todo_Fs: find all the places which can cause an abnormal processing
 
     return false;
 }
 
 bool GameLogic::respondCard(CardResponseValue &response)
 {
-    CardsMoveStruct move;
-    move.cards << response.card;
-    move.to.type = CardArea::Table;
+    // todo_Fs: make the responsed card a virtual card
+
+    CardsMoveValue moves;
+    CardMove move;
+    move.card = response.card;
+    move.toArea = m_table;
     move.isOpen = true;
-    moveCards(move);
+    moves.moves << move;
+    moveCards(moves);
 
     bool broken = false;
 
     broken = trigger(CardResponded, response.from, &response);
 
     if (response.card && m_table->contains(response.card)) {
-        CardsMoveStruct move;
-        move.cards << response.card;
-        move.to.type = CardArea::DiscardPile;
+        CardsMoveValue moves;
+        CardMove move;
+        move.card = response.card;
+        move.toArea = m_discardPile;
         move.isOpen = true;
-        moveCards(move);
+        moves.moves << move;
+        moveCards(moves);
     }
 
     return !broken;
@@ -680,12 +684,13 @@ void GameLogic::judge(JudgeValue &judge)
     judge.card = getDrawPileCard();
     judge.updateResult();
 
-    CardsMoveStruct move;
-    move.cards << judge.card;
-    move.to.type = CardArea::Judge;
-    move.to.owner = judge.who;
+    CardsMoveValue moves;
+    CardMove move;
+    move.card = judge.card;
+    move.toArea = judge.who->judgeCards();
     move.isOpen = true;
-    moveCards(move);
+    moves.moves << move;
+    moveCards(moves);
 
     trigger(AskForRetrial, nullptr, &judge);
 
@@ -694,11 +699,13 @@ void GameLogic::judge(JudgeValue &judge)
 
     const CardArea *judgeCards = judge.who->judgeCards();
     if (judgeCards->contains(judge.card)) {
-        CardsMoveStruct move;
-        move.cards << judge.card;
-        move.to.type = CardArea::DiscardPile;
+        CardsMoveValue moves;
+        CardMove move;
+        move.card = judge.card;
+        move.toArea = m_discardPile;
         move.isOpen = true;
-        moveCards(move);
+        moves.moves << move;
+        moveCards(moves);
     }
 }
 
@@ -708,25 +715,23 @@ void GameLogic::retrialCost(JudgeValue &judge, Card *card, bool isReplace)
     Q_ASSERT(cardArea != nullptr);
 
     bool trigger_responded = cardArea->type() == CardArea::Hand || cardArea->type() == CardArea::Equip;
+    // todo_Fs: make the responsed card a virtual card
 
-    CardsMoveStruct move;
-    move.cards << card;
-    move.to.owner = judge.who;
-    move.to.type = CardArea::Judge;
+    CardsMoveValue moves;
+    CardMove move;
+    move.card = card;
+    move.toArea = judge.who->judgeCards();
     move.isOpen = true;
+    moves.moves << move;
 
-    CardsMoveStruct move2;
-    move.cards << judge.card;
-    if (isReplace && cardArea->owner() != nullptr) {
-        move.to.owner = cardArea->owner();
-        move.to.type = CardArea::Hand;
-    } else {
-        move.to.type = CardArea::DiscardPile;
-    }
-    move.isOpen = true;
-
-    QList<CardsMoveStruct> moves;
-    moves << move << move2;
+    CardMove move2;
+    move2.card = judge.card;
+    if (isReplace && cardArea->owner() != nullptr)
+        move2.toArea = cardArea;
+    else
+        move2.toArea = m_discardPile;
+    move2.isOpen = true;
+    moves.moves << move2;
     moveCards(moves);
 
     if (trigger_responded) {
@@ -1037,107 +1042,58 @@ void GameLogic::prepareToStart()
     m_gameRule->prepareToStart(this);
 }
 
-CardArea *GameLogic::findArea(const CardsMoveStruct::Area &area)
+void GameLogic::filterCardsMove(CardsMoveValue &moves)
 {
-    if (area.owner) {
-        switch (area.type) {
-        case CardArea::Hand: {
-            ServerPlayer *owner = findPlayer(area.owner->id());
-            return owner->handcardArea();
-        }
-        case CardArea::Equip:
-            return area.owner->equipArea();
-        case CardArea::DelayedTrick:
-            return area.owner->delayedTrickArea();
-        case CardArea::Judge:
-            return area.owner->judgeCards();
-        default: qWarning("Owner Area Not Found");
-        }
-    } else {
-        switch (area.type) {
-        case CardArea::DrawPile:
-            return m_drawPile;
-        case CardArea::DiscardPile:
-            return m_discardPile;
-        case CardArea::Table:
-            return m_table;
-        case CardArea::Wugu:
-            return m_wugu;
-        case CardArea::Unknown:
-            return nullptr;
-        default: qWarning("Global Area Not Found");
-        }
-    }
-    return nullptr;
-}
+    // thanks to implicit sharing!!
+    QList<CardMove> move = moves.moves;
+    moves.moves.clear();
 
-void GameLogic::filterCardsMove(QList<CardsMoveStruct> &moves)
-{
-    //Fill card source information
-    for (int i = 0, maxi = moves.length(); i < maxi; i++) {
-        CardsMoveStruct &move = moves[i];
 
-        CardArea *destination = findArea(move.to);
-        foreach (Card *card, move.cards) {
-            if (card->isVirtual()) {
-                QList<Card *> realCards = card->realCards();
-                move.cards.removeOne(card);
-                move.cards << realCards;
+    if (move.isEmpty())
+        return;
 
-                if (m_cardPosition.contains(card)) {
-                    CardArea *source = m_cardPosition.value(card);
-                    if (source) {
-                        source->remove(card);
+    for (int i = 0; i < move.length(); ++i) {
+        // for each card, we should fill the source information into it
+        // for virtual cards, we should find the real cards of it to move
+        const CardMove &singleMove = move.value(i);
+        if (singleMove.card == nullptr)
+            continue;
+        QList<Card *> cards;
+        if (singleMove.card->isVirtual())
+            cards << singleMove.card->realCards();
+        else
+            cards << singleMove.card;
 
-                        QVariantMap data;
-                        data["cardName"] = card->metaObject()->className();
-                        data["area"] = source->toVariant();
-                        data["exists"] = false;
-                        room()->broadcastNotification(S_COMMAND_SET_VIRTUAL_CARD, data);
-                    }
-                    m_cardPosition.remove(card);
-                }
-
-                if (destination->add(card)) {
-                    m_cardPosition[card] = destination;
-
-                    QVariantMap data;
-                    data["cardName"] = card->metaObject()->className();
-                    data["area"] = destination->toVariant();
-                    data["exists"] = true;
-                    room()->broadcastNotification(S_COMMAND_SET_VIRTUAL_CARD, data);
+        // for real cards
+        if (singleMove.fromArea == nullptr) {
+            CardMove modifiedMove = singleMove;
+            foreach (Card *card, cards) {
+                CardArea *area = m_cardPosition.value(card);
+                modifiedMove.fromArea = area;
+                modifiedMove.card = card;
+                moves.moves << modifiedMove;
+            }
+        } else {
+            foreach (Card *card, cards) {
+                // check the card is actually in the position!!! if not, we don't move it
+                if (singleMove.fromArea->contains(card, true)) {
+                    CardMove modifiedMove = singleMove;
+                    modifiedMove.card = card;
+                    moves.moves << modifiedMove;
                 }
             }
         }
 
-        if (move.from.type != CardArea::Unknown)
-            continue;
-
-        QMap<CardArea *, QList<Card *>> cardSource;
-        foreach (Card *card, move.cards) {
-            CardArea *from = m_cardPosition[card];
-            if (from == nullptr)
-                continue;
-            cardSource[from].append(card);
+        // for virtual cards, we should add it to virtual move
+        if (singleMove.card->isVirtual()) {
+            CardMove modifiedMove = singleMove;
+            if (singleMove.fromArea == nullptr)
+                modifiedMove.fromArea = m_cardPosition.value(singleMove.card);
+            else if (!singleMove.fromArea->contains(singleMove.card))
+                modifiedMove.fromArea = nullptr;
+            // we should still move the cards even if there is no fromArea of virtual card
+            moves.virtualMoves << modifiedMove;
         }
-
-        QMapIterator<CardArea *, QList<Card *>> iter(cardSource);
-        while (iter.hasNext()) {
-            iter.next();
-            CardArea *from = iter.key();
-            CardsMoveStruct submove;
-            submove.from.type = from->type();
-            submove.from.owner = from->owner();
-            submove.from.name = from->name();
-            submove.cards = iter.value();
-            submove.to = move.to;
-            submove.isOpen = move.isOpen;
-            moves << submove;
-        }
-
-        moves.removeAt(i);
-        i--;
-        maxi--;
     }
 }
 

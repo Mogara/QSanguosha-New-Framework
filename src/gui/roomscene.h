@@ -84,11 +84,11 @@ private:
     void resetDashboard();
     void enableCards(const QString &pattern);
     void enableCards(const QList<const Card *> &cards);
-    void addCardsMoveLog(const CardsMoveStruct &move);
+    //void addCardsMoveLog(const CardsMoveStruct &move); @takashiro
 
     void onSeatArranged();
     void onChooseGeneralRequested(const QList<const General *> &candidates, int num);
-    void onCardsMoved(const QList<CardsMoveStruct> &moves);
+    //void onCardsMoved(const QList<CardsMoveStruct> &moves); @takashiro
     void onUsingCard(const QString &pattern = QString(), const QList<const Player *> &assignedTargets = QList<const Player *>());
     void onDamageDone(const ClientPlayer *, const ClientPlayer *to, DamageValue::Nature, int damage);
     void onRecoverDone(const ClientPlayer *, const ClientPlayer *, int);

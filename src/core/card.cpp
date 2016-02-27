@@ -310,11 +310,13 @@ void Card::onUse(GameLogic *logic, CardUseValue &use)
 
     logic->trigger(PreCardUsed, use.from, &use);
 
-    CardsMoveStruct move;
-    move.to.type = CardArea::Table;
+    CardsMoveValue moves;
+    CardMove move;
+    move.toArea = logic->table();
+    move.card = use.card->makeVirtual();
     move.isOpen = true;
-    move.cards << use.card;
-    logic->moveCards(move);
+    moves.moves << move;
+    logic->moveCards(moves);
 }
 
 void Card::use(GameLogic *logic, CardUseValue &use)
@@ -344,12 +346,14 @@ void Card::effect(GameLogic *, CardEffectValue &)
 void Card::complete(GameLogic *logic)
 {
     const CardArea *table = logic->table();
-    if (table->contains(this)) {
-        CardsMoveStruct move;
-        move.cards << this;
-        move.to.type = CardArea::DiscardPile;
+    if (table->contains(realCard())) {
+        CardsMoveValue moves;
+        CardMove move;
+        move.card = makeVirtual();
+        move.toArea = logic->discardPile();
         move.isOpen = true;
-        logic->moveCards(move);
+        moves.moves << move;
+        logic->moveCards(moves);
     }
 }
 
@@ -383,6 +387,21 @@ QVariantMap Card::toVariant() const
     data["number"] = number();
     data["color"] = color();
     return data;
+}
+
+Card *Card::makeVirtual()
+{
+    if (isVirtual())
+        return this;
+
+    const QMetaObject *meta = metaObject();
+    Card *card = qobject_cast<Card *>(meta->newInstance(Q_ARG(Card::Suit, suit()), Q_ARG(int, number())));
+    if (card == nullptr)
+        return nullptr;
+
+    card->addSubcard(this);
+    card->deleteLater(); // do not delete from other process of the game logic
+    return card;
 }
 
 BasicCard::BasicCard(Card::Suit suit, int number)
@@ -453,11 +472,13 @@ void EquipCard::onUse(GameLogic *logic, CardUseValue &use)
 void EquipCard::use(GameLogic *logic, CardUseValue &use)
 {
     if (use.to.isEmpty()) {
-        CardsMoveStruct move;
-        move.cards << this;
-        move.to.type = CardArea::DiscardPile;
+        CardsMoveValue moves;
+        CardMove move;
+        move.card = this;
+        move.toArea = logic->discardPile();
         move.isOpen = true;
-        logic->moveCards(move);
+        moves.moves << move;
+        logic->moveCards(moves);
         return;
     }
 
@@ -473,32 +494,33 @@ void EquipCard::use(GameLogic *logic, CardUseValue &use)
         }
     }
 
-    QList<CardsMoveStruct> moves;
+    CardsMoveValue moves;
 
-    CardsMoveStruct install;
-    install.cards << this;
-    install.to.type = CardArea::Equip;
-    install.to.owner = target;
+    CardMove install;
+    install.card = makeVirtual();
+    install.toArea = target->equipArea(); // we should make a virtual card of the equip card
     install.isOpen = true;
-    moves << install;
+    moves.moves << install;
 
     if (equippedCard != nullptr) {
-        CardsMoveStruct uninstall;
-        uninstall.cards << equippedCard;
-        uninstall.to.type = CardArea::Table;
+        CardMove uninstall;
+        uninstall.card = equippedCard;
+        uninstall.toArea = logic->table();
         uninstall.isOpen = true;
-        moves << uninstall;
+        moves.moves << uninstall;
     }
     logic->moveCards(moves);
 
     if (equippedCard != nullptr) {
         const CardArea *table = logic->table();
         if (table->contains(equippedCard)) {
-            CardsMoveStruct discard;
-            discard.cards << equippedCard;
-            discard.to.type = CardArea::DiscardPile;
+            CardsMoveValue discards;
+            CardMove discard;
+            discard.card = equippedCard;
+            discard.toArea = logic->discardPile();
             discard.isOpen = true;
-            logic->moveCards(discard);
+            discards.moves << discard;
+            logic->moveCards(discards);
         }
     }
 }
@@ -591,25 +613,31 @@ void DelayedTrick::onUse(GameLogic *logic, CardUseValue &use)
 
 void DelayedTrick::use(GameLogic *logic, CardUseValue &use)
 {
-    CardsMoveStruct move;
-    move.cards << use.card;
+    CardsMoveValue moves;
+    CardMove move;
+
+    move.card = use.card->makeVirtual();
     move.isOpen = true;
-    if (use.to.isEmpty()) {
-        move.to.type = CardArea::DiscardPile;
-    } else {
-        move.to.type = CardArea::DelayedTrick;
-        move.to.owner = use.to.first();
-    }
-    logic->moveCards(move);
+    if (use.to.isEmpty())
+        move.toArea = logic->discardPile();
+    else
+        move.toArea = use.to.first()->delayedTrickArea();
+
+    moves.moves << move;
+    logic->moveCards(moves);
 }
 
 void DelayedTrick::onEffect(GameLogic *logic, CardEffectValue &effect)
 {
-    CardsMoveStruct move;
-    move.cards << this;
-    move.to.type = CardArea::Table;
+    CardsMoveValue moves;
+    CardMove move;
+
+    move.card = effect.use.card->makeVirtual();
     move.isOpen = true;
-    logic->moveCards(move);
+    move.toArea = logic->table();
+
+    moves.moves << move;
+    logic->moveCards(moves);
 
     TrickCard::onEffect(logic, effect);
 }
@@ -647,11 +675,13 @@ void MovableDelayedTrick::effect(GameLogic *logic, CardEffectValue &effect)
         takeEffect(logic, effect);
         const CardArea *table = logic->table();
         if (table->contains(this)) {
-            CardsMoveStruct move;
-            move.cards << this;
-            move.to.type = CardArea::DiscardPile;
+            CardsMoveValue moves;
+            CardMove move;
+            move.card = this;
+            move.toArea = logic->discardPile();
             move.isOpen = true;
-            logic->moveCards(move);
+            moves.moves << move;
+            logic->moveCards(moves);
         }
     }
 }
@@ -669,12 +699,13 @@ void MovableDelayedTrick::complete(GameLogic *logic)
         if (!targetFilter(QList<const Player *>(), target, nullptr) && target != current)
             continue;
 
-        CardsMoveStruct move;
-        move.cards << this;
-        move.to.type = CardArea::DelayedTrick;
-        move.to.owner = target;
+        CardsMoveValue moves;
+        CardMove move;
+        move.card = makeVirtual();
+        move.toArea = target->delayedTrickArea();
         move.isOpen = true;
-        logic->moveCards(move);
+        moves.moves << move;
+        logic->moveCards(moves);
 
         CardUseValue use;
         use.card = this;
@@ -725,6 +756,16 @@ Horse::Horse(Card::Suit suit, int number)
 Card *Horse::clone() const
 {
     Card *card = Card::clone();
+    card->setObjectName(objectName());
+    return card;
+}
+
+Card *Horse::makeVirtual()
+{
+    Card *card = Card::makeVirtual();
+    if (card == this)
+        return card;
+
     card->setObjectName(objectName());
     return card;
 }

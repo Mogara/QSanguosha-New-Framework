@@ -156,6 +156,7 @@ public:
 
     template<typename T>
     static bool CheckAvailability(const Player *self);
+    virtual Card *makeVirtual();
 
 protected:
     explicit Card(Suit suit = UndeterminedSuit, int number = UndeterminedNumber);
@@ -343,6 +344,7 @@ public:
     Horse(Suit suit, int number);
 
     Card *clone() const override;
+    Card *makeVirtual() override;
 };
 
 class OffensiveHorse : public Horse

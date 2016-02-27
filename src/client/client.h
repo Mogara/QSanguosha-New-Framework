@@ -56,7 +56,7 @@ signals:
     void promptReceived(const QString &prompt);
     void seatArranged();
     void chooseGeneralRequested(const QList<const General *> &candidates, int num /* @to-do: add banned pair */);
-    void cardsMoved(const QList<CardsMoveStruct> &moves);
+    // void cardsMoved(const QList<CardsMoveStruct> &moves); @takashiro
     void damageDone(const ClientPlayer *from, const ClientPlayer *to, DamageValue::Nature nature, int damage);
     void loseHpDone(const ClientPlayer *victim, int lose);
     void recoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
@@ -79,7 +79,7 @@ private:
 
     void restart();
     ClientPlayer *findPlayer(uint id) { return m_players.value(id); }
-    CardArea *findArea(const CardsMoveStruct::Area &area);
+    // CardArea *findArea(const CardsMoveStruct::Area &area);@takashiro
     QList<Card *> findCards(const QVariant &data);
     QList<const ClientPlayer *> findPlayers(const QVariant &data);
 
@@ -92,7 +92,7 @@ private:
     static void PrepareCardsCommand(Client *client, const QVariant &data);
     static void UpdatePlayerPropertyCommand(Client *client, const QVariant &data);
     static void ChooseGeneralRequestCommand(Client *client, const QVariant &data);
-    static void MoveCardsCommand(Client *client, const QVariant &data);
+    //static void MoveCardsCommand(Client *client, const QVariant &data);
     static void ActRequestCommand(Client *client, const QVariant &data);
     static void UseCardCommand(Client *client, const QVariant &data);
     static void AddCardHistoryCommand(Client *client, const QVariant &data);
@@ -115,7 +115,7 @@ private:
     static void InvokeSkillCommand(Client *client, const QVariant &data);
     static void ClearSkillHistoryCommand(Client *client, const QVariant &data);
     static void AskForOptionCommand(Client *client, const QVariant &data);
-    static void SetVirtualCardCommand(Client *client, const QVariant &data);
+    //static void SetVirtualCardCommand(Client *client, const QVariant &data);
     static void SetPlayerTagCommand(Client *client, const QVariant &data);
     static void GameOverCommand(Client *client, const QVariant &data);
 

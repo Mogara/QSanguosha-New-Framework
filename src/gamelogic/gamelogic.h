@@ -79,8 +79,8 @@ public:
     CardArea *table() const { return m_table; }
     CardArea *wugu() const { return m_wugu; }
 
-    void moveCards(CardsMoveStruct &move);
-    void moveCards(QList<CardsMoveStruct> &moves);
+    void moveCards(CardsMoveValue &move);
+    //void moveCards(QList<CardsMoveStruct> &moves);
 
     bool useCard(CardUseValue &use);
     bool takeCardEffect(CardEffectValue &effect);
@@ -114,8 +114,7 @@ protected:
     void loadMode(const GameMode *mode);
 
     void prepareToStart();
-    CardArea *findArea(const CardsMoveStruct::Area &area);
-    void filterCardsMove(QList<CardsMoveStruct> &moves);
+    void filterCardsMove(CardsMoveValue &moves);
 
     void getEventHandlersAndSort(EventType event, EventPtrList &detailsList, const EventPtrList &triggered, const QObject *data, ServerPlayer *player = nullptr);
 

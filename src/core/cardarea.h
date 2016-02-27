@@ -61,44 +61,50 @@ public:
 
     void setSignal(ChangeSignal signal) { m_changeSignal = signal; }
 
-    bool keepVirtualCard() const { return m_keepVirtualCard; }
-    void setKeepVirtualCard(bool keep) { m_keepVirtualCard = keep; }
+    bool isVirtualCardArea() const { return m_isVirtualCardArea; }
+    void setIsVirtualCardArea(bool keep) { m_isVirtualCardArea = keep; }
 
     bool add(Card *card, Direction direction = UndefinedDirection);
     bool add(const QList<Card *> &cards, Direction direction = UndefinedDirection);
     bool remove(Card *card);
     bool remove(const QList<Card *> &cards);
-    void clear() { m_cards.clear(); }
+    void clear();
 
+    // Note: These functions can only find Real Cards!!!!
     Q_INVOKABLE Card *findCard(uint id) const;
     Q_INVOKABLE Card *rand() const;
-
-    Q_INVOKABLE Card *first() const { return m_cards.first(); }
-    Q_INVOKABLE Card *takeFirst() { return m_cards.takeFirst(); }
-
-    Q_INVOKABLE Card *last() const { return m_cards.last(); }
-    Q_INVOKABLE Card *takeLast() { return m_cards.takeLast(); }
-
-    Q_INVOKABLE QList<Card *> first(int n) const { return m_cards.mid(0, n); }
-    Q_INVOKABLE QList<Card *> takeFirst(int n);
-
-    Q_INVOKABLE QList<Card *> last(int n) const { return m_cards.mid(m_cards.length() - n); }
-    Q_INVOKABLE QList<Card *> takeLast(int n);
-
-    Q_INVOKABLE bool contains(const Card *card) const;
-    Q_INVOKABLE bool contains(uint id) const;
-
-    void addVirtualCard(const QString &name) { m_virtualCards << name; }
-    void removeVirtualCard(const QString &name) { m_virtualCards.removeOne(name); }
-    Q_INVOKABLE bool contains(const char *className) const;
-
     Q_INVOKABLE QList<Card *> &cards() { return m_cards; }
-    Q_INVOKABLE QList<Card *> cards() const { return m_cards; }
+    Q_INVOKABLE const QList<Card *> &cards() const { return m_cards; }
 
-    Q_INVOKABLE int length() const { return m_cards.length(); }
-    Q_INVOKABLE int size() const { return m_cards.size(); }
+    // Note: These functions can only find Virtual Cards!!!!
+    Q_INVOKABLE QList<Card *> &virtualCards() { return m_virtualCards; }
+    Q_INVOKABLE const QList<Card *> &virtualCards() const { return m_virtualCards; }
+
+    // Fs: make these functions get virtual cards by default in virtual card area, add a parameter like "forceRealCard" and set a default value of false
+    Q_INVOKABLE Card *first(bool forceRealCard = false) const;
+    Q_INVOKABLE Card *takeFirst(bool forceRealCard = false);
+
+    Q_INVOKABLE Card *last(bool forceRealCard = false) const;
+    Q_INVOKABLE Card *takeLast(bool forceRealCard = false);
+
+    Q_INVOKABLE QList<Card *> first(int n, bool forceRealCard = false) const;
+    Q_INVOKABLE QList<Card *> takeFirst(int n, bool forceRealCard = false);
+
+    Q_INVOKABLE QList<Card *> last(int n, bool forceRealCard = false) const;
+    Q_INVOKABLE QList<Card *> takeLast(int n, bool forceRealCard = false);
+
+    // Fs: judge virtual cards by default in virtual card area, add a parameter like "forceRealCard" and set a default value of false
+    Q_INVOKABLE bool contains(const Card *card, bool forceRealCard = false) const;
+    Q_INVOKABLE bool contains(uint id, bool forceRealCard = false) const;
+    Q_INVOKABLE bool contains(const char *className, bool forceRealCard = false) const;
+
+    Q_INVOKABLE int length(bool forceRealCard = false) const;
 
     QVariant toVariant() const;
+
+private:
+    bool addCardProcedure(Card *card, Direction direction);
+    bool removeCardProcedure(Card *card);
 
 private:
     Type m_type;
@@ -106,8 +112,8 @@ private:
     QString m_name;
     QList<Card *> m_cards;
     ChangeSignal m_changeSignal;
-    bool m_keepVirtualCard;
-    QStringList m_virtualCards;
+    bool m_isVirtualCardArea;
+    QList<Card *> m_virtualCards; // Should we use QSharedPointer to deal with virtual cards?
 
 private:
     C_DISABLE_COPY(CardArea);

@@ -22,59 +22,103 @@
 #include "serverplayer.h"
 #include "datavalue.h"
 
-CardsMoveStruct::Area::Area()
-    : type(CardArea::Unknown)
-    , direction(CardArea::UndefinedDirection)
-    , owner(nullptr)
+CardMove::CardMove()
+    : fromArea(nullptr), toArea(nullptr), toDirection(CardArea::UndefinedDirection), card(nullptr), isOpen(false)
 {
+
 }
 
-QVariant CardsMoveStruct::Area::toVariant() const
+
+CardMove::CardMove(const CardMove &move)
+    : fromArea(move.fromArea), toArea(move.toArea), toDirection(move.toDirection), card(move.card), isOpen(move.isOpen)
 {
-    QVariantMap data;
-    data["type"] = type;
-    data["direction"] = direction;
-    data["ownerId"] = owner ? owner->id() : 0;
-    data["name"] = name;
-    return data;
+
 }
 
-CardsMoveStruct::CardsMoveStruct()
-    : isOpen(false)
-    , isLastHandCard(false)
-    , origin(nullptr)
+bool CardMove::operator ==(const CardMove &move)
 {
+    return fromArea == move.fromArea && toArea == move.toArea && toDirection == move.toDirection && card == move.card && isOpen == move.isOpen;
 }
 
-CardsMoveStruct::~CardsMoveStruct()
+CardMove &CardMove::operator=(const CardMove &move)
 {
-    if (origin)
-        delete origin;
+    fromArea = move.fromArea;
+    toArea = move.toArea;
+    toDirection = move.toDirection;
+    card = move.card;
+    isOpen = move.isOpen;
+
+    return *this;
 }
 
-bool CardsMoveStruct::isRelevant(const Player *player) const
+bool CardMove::isRelevant(const Player *player) const
 {
-    return player == nullptr || player == from.owner || (player == to.owner && to.type != CardArea::Special);
-}
+    if (player == nullptr)
+        return true;
 
-QVariant CardsMoveStruct::toVariant(bool open) const
-{
-    QVariantMap data;
-    data["from"] = from.toVariant();
-    data["to"] = to.toVariant();
-
-    if (isOpen || open) {
-        QVariantList cardData;
-        foreach (const Card *card, cards)
-            cardData << card->id();
-        data["cards"] = cardData;
-    } else {
-        data["cards"] = cards.length();
+    if (fromArea != nullptr) {
+        if (fromArea->type() != CardArea::Special && player == fromArea->owner())
+            return true;
     }
 
-    data["isOpen"] = isOpen;
-    data["isLastHandCard"] = isLastHandCard;
-    return data;
+    if (toArea != nullptr) {
+        if (toArea->type() != CardArea::Special && player == toArea->owner())
+            return true;
+    }
+
+    return false;
+}
+
+QVariant CardMove::toVariant(bool open /*= false*/) const
+{
+    QVariantMap map;
+    if (fromArea != nullptr)
+        map["fromArea"] = fromArea->toVariant();
+    if (toArea != nullptr)
+        map["toArea"] = toArea->toVariant();
+    map["toDirection"] = static_cast<int>(toDirection);
+    if (card != nullptr && (isOpen || open))
+        map["card"] = card->id();
+    map["isOpen"] = isOpen;
+    return map;
+}
+
+CardsMoveValue::CardsMoveValue()
+{
+
+}
+
+
+CardsMoveValue::CardsMoveValue(const CardsMoveValue &move)
+    : moves(move.moves)
+{
+
+}
+
+QVariant CardsMoveValue::toVariant(bool open /*= false*/) const
+{
+    QVariantMap map;
+    QVariantList list;
+    foreach (const CardMove &move, moves)
+        list << move.toVariant(open);
+    map["moves"] = list;
+    return map;
+}
+
+QVariant CardsMoveValue::toVariant(const Player *relevantPlayer) const
+{
+    QVariantMap map;
+    QVariantList list;
+    foreach (const CardMove &move, moves)
+        list << move.toVariant(move.isRelevant(relevantPlayer));
+    map["moves"] = list;
+    return map;
+}
+
+CardsMoveValue &CardsMoveValue::operator=(const CardsMoveValue &move)
+{
+    moves = move.moves;
+    return *this;
 }
 
 PhaseChangeValue::PhaseChangeValue() 

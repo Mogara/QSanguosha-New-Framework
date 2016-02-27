@@ -33,62 +33,47 @@ class Card;
 class ServerPlayer;
 class Skill;
 
-class CardsMoveStruct
+class CardMove: public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(CardArea *fromArea MEMBER fromArea)
+    Q_PROPERTY(CardArea *toArea MEMBER toArea)
+    Q_PROPERTY(CardArea::Direction toDirection MEMBER toDirection)
+    Q_PROPERTY(Card *card MEMBER card)
+    Q_PROPERTY(bool isOpen MEMBER isOpen)
+
 public:
-    struct Area
-    {
-        CardArea::Type type;
-        CardArea::Direction direction;
-        Player *owner;
-        QString name;
+    Q_INVOKABLE CardMove();
+    CardMove(const CardMove &move);
+    CardMove &operator =(const CardMove &move);
+    bool operator ==(const CardMove &move);
 
-        Area();
-        QVariant toVariant() const;
-    };
-
-    Area from;
-    Area to;
-    QList<Card *> cards;
+    CardArea *fromArea;
+    CardArea *toArea;
+    CardArea::Direction toDirection;
+    Card *card;
     bool isOpen;
-    bool isLastHandCard;
-    CardsMoveStruct *origin;
 
-    CardsMoveStruct();
-    ~CardsMoveStruct();
-
-    bool isRelevant(const Player *player) const;
+    Q_INVOKABLE bool isRelevant(const Player *player) const;
     QVariant toVariant(bool open = false) const;
 };
 
-class CardsMoveValue : public QList<CardsMoveStruct>, public QObject
-#pragma message ("warning: todo_Fs: the CardsMoveValue is temporary put here to make the codes running, should be re-defined")
+class CardsMoveValue : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QList<CardMove> moves MEMBER moves)
+    Q_PROPERTY(QList<CardMove> virtualMoves MEMBER virtualMoves)
+
 public:
-    CardsMoveValue(const QList<CardsMoveStruct> &arg2)
-        : QList<CardsMoveStruct>(arg2), QObject()
-    {
-    }
+    QList<CardMove> moves;
+    QList<CardMove> virtualMoves;
 
-    CardsMoveValue(const CardsMoveValue &arg2)
-        : QList<CardsMoveStruct>(arg2), QObject()
-    {
-    }
+    Q_INVOKABLE CardsMoveValue();
+    CardsMoveValue(const CardsMoveValue &move);
+    CardsMoveValue &operator =(const CardsMoveValue &move);
 
-    CardsMoveValue &operator =(const QList<CardsMoveStruct> &arg2)
-    {
-        QList<CardsMoveStruct>::operator =(arg2);
-        return *this;
-    }
-
-    CardsMoveValue &operator =(CardsMoveValue &arg2)
-    {
-        QList<CardsMoveStruct>::operator =(arg2);
-        return *this;
-    }
-
-private:
-    CardsMoveValue() = delete;
+    QVariant toVariant(bool open = false) const;
+    QVariant toVariant(const Player *relevantPlayer) const;
 };
 
 class PhaseChangeValue : public QObject
@@ -98,7 +83,7 @@ class PhaseChangeValue : public QObject
     Q_PROPERTY(Player::Phase to MEMBER to)
 
 public:
-    PhaseChangeValue();
+    Q_INVOKABLE PhaseChangeValue();
 
     Player::Phase from;
     Player::Phase to;
@@ -141,7 +126,7 @@ public:
     Reason reason;
     QVariant extra;
 
-    CardUseValue();
+    Q_INVOKABLE CardUseValue();
     CardUseValue(const CardUseValue &arg2);
     CardUseValue &operator =(const CardUseValue &arg2);
 };
@@ -158,7 +143,7 @@ public:
     ServerPlayer * &from;
     ServerPlayer *to;
 
-    CardEffectValue(CardUseValue &use);
+    Q_INVOKABLE CardEffectValue(CardUseValue &use);
 
     Q_INVOKABLE bool isNullified() const { return use.isNullified || (to && use.nullifiedList.contains(to)); }
 };
@@ -199,7 +184,7 @@ public:
     QString transferReason;
     bool prevented;
 
-    DamageValue();
+    Q_INVOKABLE DamageValue();
 };
 
 class RecoverValue : public QObject
@@ -216,7 +201,7 @@ public:
     int recover;
     Card *card;
 
-    RecoverValue();
+    Q_INVOKABLE RecoverValue();
 };
 
 class CardResponseValue : public QObject
@@ -236,7 +221,7 @@ public:
 
     bool isRetrial;
 
-    CardResponseValue();
+    Q_INVOKABLE CardResponseValue();
 };
 
 class JudgeValue : public QObject
@@ -251,7 +236,7 @@ public:
     Card *card;
     bool matched;
 
-    JudgeValue(const QString &pattern);
+    Q_INVOKABLE JudgeValue(const QString &pattern);
     Q_INVOKABLE void updateResult();
 
 private:
@@ -268,7 +253,7 @@ public:
     ServerPlayer *who;
     DamageValue *damage;
 
-    DeathValue();
+    Q_INVOKABLE DeathValue();
 };
 
 class SkillValue : public QObject
@@ -283,7 +268,7 @@ public:
     const Skill *skill;
     Player::SkillArea area;
 
-    SkillValue();
+    Q_INVOKABLE SkillValue();
 };
 
 class SkillInvokeValue : public QObject
@@ -300,7 +285,7 @@ public:
     QList<ServerPlayer *> targets;
     QList<Card *> cards;
 
-    SkillInvokeValue();
+    Q_INVOKABLE SkillInvokeValue();
     SkillInvokeValue(const SkillInvokeValue &arg2);
     SkillInvokeValue &operator =(const SkillInvokeValue &arg2);
 };
@@ -313,7 +298,7 @@ class IntValue : public QObject
 public:
     int value;
 
-    IntValue(int value);
+    Q_INVOKABLE IntValue(int value);
 };
 
 #endif // STRUCTS_H

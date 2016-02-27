@@ -151,12 +151,15 @@ private:
         if (victim->role() == "rebel") {
             killer->drawCards(3);
         } else if (victim->role() == "loyalist" && killer->role() == "lord") {
-            CardsMoveStruct discard;
-            discard.cards << killer->handcardArea()->cards();
-            discard.cards << killer->equipArea()->cards();
-            discard.to.type = CardArea::DiscardPile;
-            discard.isOpen = true;
-            logic->moveCards(discard);
+            CardsMoveValue moves;
+            foreach (Card *c, killer->handcardArea()->cards() + killer->equipArea()->virtualCards()) {
+                CardMove move;
+                move.card = c;
+                move.toArea = logic->discardPile();
+                move.isOpen = true;
+                moves.moves << move;
+            }
+            logic->moveCards(moves);
         }
     }
 

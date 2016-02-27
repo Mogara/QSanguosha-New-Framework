@@ -83,11 +83,15 @@ void onPhaseProceeding(GameLogic *logic, ServerPlayer *current, QObject *)
             current->showPrompt("ask_to_discard", discardNum);
             QList<Card *> cards = current->askForCards(".|.|.|hand", discardNum);
 
-            CardsMoveStruct move;
-            move.cards = cards;
-            move.to.type = CardArea::DiscardPile;
-            move.isOpen = true;
-            logic->moveCards(move);
+            CardsMoveValue moves;
+            foreach (Card *card, cards) {
+                CardMove move;
+                move.card = card;
+                move.toArea = logic->discardPile();
+                move.isOpen = true;
+                moves.moves << move;
+            }
+            logic->moveCards(moves);
         }
         break;
     }

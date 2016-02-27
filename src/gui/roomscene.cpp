@@ -55,6 +55,7 @@ static QString AreaTypeToString(CardArea::Type type)
     }
 }
 
+/* @takashiro
 static QVariant AreaToVariant(const CardsMoveStruct::Area area)
 {
     QVariantMap data;
@@ -62,7 +63,7 @@ static QVariant AreaToVariant(const CardsMoveStruct::Area area)
     data["type"] = AreaTypeToString(area.type);
     data["name"] = area.name;
     return data;
-}
+}*/
 
 RoomScene::RoomScene(QQuickItem *parent)
     : QQuickItem(parent)
@@ -76,7 +77,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(m_client, &Client::promptReceived, this, &RoomScene::showPrompt);
     connect(m_client, &Client::chooseGeneralRequested, this, &RoomScene::onChooseGeneralRequested);
     connect(m_client, &Client::seatArranged, this, &RoomScene::onSeatArranged);
-    connect(m_client, &Client::cardsMoved, this, &RoomScene::onCardsMoved);
+    //connect(m_client, &Client::cardsMoved, this, &RoomScene::onCardsMoved); @takashiro
     connect(m_client, &Client::usingCard, this, &RoomScene::onUsingCard);
     connect(m_client, &Client::damageDone, this, &RoomScene::onDamageDone);
     connect(m_client, &Client::recoverDone, this, &RoomScene::onRecoverDone);
@@ -95,6 +96,7 @@ RoomScene::RoomScene(QQuickItem *parent)
     connect(logger, &GameLogger::logAdded, this, &RoomScene::addLog);
 }
 
+/* @takashiro
 void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
 {
     QVariantList paths;
@@ -115,6 +117,7 @@ void RoomScene::onCardsMoved(const QList<CardsMoveStruct> &moves)
 
     moveCards(paths);
 }
+*/
 
 bool RoomScene::checkTargetFeasibility()
 {

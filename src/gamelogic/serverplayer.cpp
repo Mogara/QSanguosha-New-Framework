@@ -36,8 +36,8 @@ ServerPlayer::ServerPlayer(GameLogic *logic, CServerAgent *agent)
     , m_room(logic->room())
     , m_agent(agent)
 {
-    m_equipArea->setKeepVirtualCard(true);
-    m_delayedTrickArea->setKeepVirtualCard(true);
+    m_equipArea->setIsVirtualCardArea(true);
+    m_delayedTrickArea->setIsVirtualCardArea(true);
 }
 
 ServerPlayer::~ServerPlayer()
@@ -63,30 +63,36 @@ CRoom *ServerPlayer::room() const
 
 void ServerPlayer::drawCards(int n)
 {
-    CardsMoveStruct move;
-    move.from.type = CardArea::DrawPile;
-    move.from.direction = CardArea::Top;
-    move.to.type = CardArea::Hand;
-    move.to.owner = this;
-    move.cards = m_logic->getDrawPileCards(n);
+    CardsMoveValue moves;
+    for (int i = 0; i < n; ++i) {
+        CardMove move;
+        move.fromArea = m_logic->drawPile();
+        move.toArea = handcardArea();
+        move.card = m_logic->getDrawPileCard();
+        moves.moves << move;
+    }
 
-    m_logic->moveCards(move);
+    m_logic->moveCards(moves);
 }
 
 void ServerPlayer::recastCard(Card *card)
 {
-    CardsMoveStruct recast;
-    recast.cards << card;
-    recast.to.type = CardArea::Table;
-    recast.isOpen = true;
+    CardsMoveValue recast;
+    CardMove move;
+    move.card = card;
+    move.toArea = m_logic->table();
+    move.isOpen = true;
+    recast.moves << move;
     m_logic->moveCards(recast);
 
     const CardArea *table = m_logic->table();
     if (table->contains(card)) {
-        CardsMoveStruct discard;
-        discard.cards << card;
-        discard.to.type = CardArea::DiscardPile;
-        discard.isOpen = true;
+        CardsMoveValue discard;
+        CardMove move;
+        move.card = card;
+        move.toArea = m_logic->discardPile();
+        move.isOpen = true;
+        discard.moves << move;
         m_logic->moveCards(discard);
     }
 

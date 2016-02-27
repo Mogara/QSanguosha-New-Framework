@@ -24,67 +24,50 @@ CardArea::CardArea(CardArea::Type type, Player *owner, const QString &name)
     : m_type(type)
     , m_owner(owner)
     , m_name(name)
-    , m_keepVirtualCard(false)
+    , m_isVirtualCardArea(false)
 {
 }
 
-bool CardArea::add(Card *card, Direction direction) {
-    if (card) {
-        if (m_cards.contains(card))
-            return false;
-        if (!keepVirtualCard() && card->isVirtual()) {
-            delete card;
-            return false;
-        }
-    }
-    if (direction == Top)
-        m_cards.prepend(card);
-    else
-        m_cards.append(card);
-    if (m_changeSignal)
+bool CardArea::add(Card *card, Direction direction)
+{
+    bool r = addCardProcedure(card, direction);
+    if (r && m_changeSignal)
         m_changeSignal();
-    return true;
+
+    return r;
 }
 
 bool CardArea::add(const QList<Card *> &cards, Direction direction)
 {
-    int num = length();
-    if (direction == Top) {
-        for (int i = 0; i < cards.length(); i++) {
-            Card *card = cards.at(i);
-            if (card) {
-                if (m_cards.contains(card))
-                    continue;
-                if (!keepVirtualCard() && card->isVirtual()) {
-                    delete card;
-                    continue;
-                }
-            }
-            m_cards.insert(i, card);
+    bool returnFlag = true;
+    bool signalFlag = false;
+    if (direction == Bottom) {
+        for (int i = 0; i < cards.length(); ++i) {
+            Card *card = cards.value(i);
+            if (!addCardProcedure(card, direction))
+                returnFlag = false;
+            else
+                signalFlag = true;
         }
     } else {
-        foreach (Card *card, cards) {
-            if (card) {
-                if (m_cards.contains(card))
-                    continue;
-                if (!keepVirtualCard() && card->isVirtual()) {
-                    delete card;
-                    continue;
-                }
-            }
-            m_cards.append(card);
+        for (int i = cards.length() - 1; i >= 0; --i) {
+            Card *card = cards.value(i);
+            if (!addCardProcedure(card, direction))
+                returnFlag = false;
+            else
+                signalFlag = true;
         }
     }
 
-    if (m_changeSignal && num != length())
-            m_changeSignal();
+    if (signalFlag && m_changeSignal)
+        m_changeSignal();
 
-    return num + cards.length() == length();
+    return returnFlag;
 }
 
 bool CardArea::remove(Card *card)
 {
-    if (m_cards.removeOne(card)) {
+    if (removeCardProcedure(card)) {
         if (m_changeSignal)
             m_changeSignal();
         return true;
@@ -95,14 +78,24 @@ bool CardArea::remove(Card *card)
 
 bool CardArea::remove(const QList<Card *> &cards)
 {
-    int num = length();
-    foreach (Card *card, cards)
-        m_cards.removeOne(card);
+    bool returnFlag = true;
+    bool signalFlag = false;
+    foreach (Card *card, cards) {
+        if (removeCardProcedure(card))
+            signalFlag = true;
+        else
+            returnFlag = false;
+    }
 
-    if (m_changeSignal && num != length())
-            m_changeSignal();
+    if (m_changeSignal && signalFlag)
+        m_changeSignal();
 
-    return num - cards.length() == length();
+    return returnFlag;
+}
+
+void CardArea::clear()
+{
+    m_cards.clear(); m_virtualCards.clear();
 }
 
 Card *CardArea::findCard(uint id) const
@@ -123,42 +116,93 @@ Card *CardArea::rand() const
     return m_cards.at(index);
 }
 
-QList<Card *> CardArea::takeFirst(int n)
+QList<Card *> CardArea::takeFirst(int n, bool forceRealCard/* = false*/)
 {
-    QList<Card *> cards = m_cards.mid(0, n);
-    m_cards = m_cards.mid(n + 1);
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    QList<Card *> cards = cardsToOperate.mid(0, n);
+    remove(cards);
     return cards;
 }
 
-QList<Card *> CardArea::takeLast(int n)
+Card *CardArea::takeFirst(bool forceRealCard/* = false*/)
 {
-    QList<Card *> cards = m_cards.mid(length() - n);
-    m_cards = m_cards.mid(0, length() - n);
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    Card *card = cardsToOperate.first();
+    remove(card);
+    return card;
+}
+
+Card *CardArea::last(bool forceRealCard/* = false*/) const
+{
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    return cardsToOperate.last();
+}
+
+QList<Card *> CardArea::last(int n, bool forceRealCard/* = false*/) const
+{
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    return cardsToOperate.mid(m_cards.length() - n);
+}
+
+QList<Card *> CardArea::takeLast(int n, bool forceRealCard/* = false*/)
+{
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    QList<Card *> cards = cardsToOperate.mid(length() - n);
+    remove(cards);
     return cards;
 }
 
-bool CardArea::contains(const Card *card) const
+Card *CardArea::takeLast(bool forceRealCard/* = false*/)
 {
-    foreach (const Card *c, m_cards)
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    Card *card = cardsToOperate.last();
+    remove(card);
+    return card;
+}
+
+Card *CardArea::first(bool forceRealCard/* = false*/) const
+{
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    return cardsToOperate.first();
+}
+
+QList<Card *> CardArea::first(int n, bool forceRealCard/* = false*/) const
+{
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    return cardsToOperate.mid(0, n);
+}
+
+bool CardArea::contains(const Card *card, bool forceRealCard/* = false*/) const
+{
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    foreach (const Card *c, cardsToOperate)
         if (c == card)
             return true;
     return false;
 }
 
-bool CardArea::contains(uint id) const
+bool CardArea::contains(uint id, bool forceRealCard/* = false*/) const
 {
-    foreach (const Card *card, m_cards)
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    foreach (const Card *card, cardsToOperate)
         if (card && card->id() == id)
             return true;
     return false;
 }
 
-bool CardArea::contains(const char *className) const
+bool CardArea::contains(const char *className, bool forceRealCard/* = false*/) const
 {
-    foreach (const Card *card, m_cards)
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    foreach (const Card *card, cardsToOperate)
         if (card && card->inherits(className))
             return true;
-    return m_virtualCards.contains(className);
+    return false;
+}
+
+int CardArea::length(bool forceRealCard /*= false*/) const
+{
+    QList<Card *> cardsToOperate = (isVirtualCardArea() && !forceRealCard) ? m_virtualCards : m_cards;
+    return cardsToOperate.length();
 }
 
 QVariant CardArea::toVariant() const
@@ -168,4 +212,30 @@ QVariant CardArea::toVariant() const
     data["type"] = type();
     data["name"] = name();
     return data;
+}
+
+bool CardArea::addCardProcedure(Card *card, Direction direction)
+{
+    if (card == nullptr)
+        return false;
+
+    if (card->isVirtual() && !m_isVirtualCardArea) // Fs: don't delete the pointer since we use deleteLater to virtual cards
+        return false;
+
+    QList<Card *> &cards = card->isVirtual() ? m_virtualCards : m_cards;
+    if (direction == Bottom)
+        cards.append(card);
+    else
+        cards.prepend(card);
+
+    return true;
+}
+
+bool CardArea::removeCardProcedure(Card *card)
+{
+    if (card == nullptr)
+        return false;
+
+    QList<Card *> &cards = card->isVirtual() ? m_virtualCards : m_cards;
+    return cards.removeOne(card);
 }

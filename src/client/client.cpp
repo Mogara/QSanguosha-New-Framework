@@ -128,6 +128,7 @@ void Client::restart()
     m_cards.clear();
 }
 
+/* @takashiro
 CardArea *Client::findArea(const CardsMoveStruct::Area &area)
 {
     if (area.owner) {
@@ -153,6 +154,7 @@ CardArea *Client::findArea(const CardsMoveStruct::Area &area)
     }
     return nullptr;
 }
+*/
 
 QList<Card *> Client::findCards(const QVariant &data)
 {
@@ -332,6 +334,7 @@ void Client::ChooseGeneralRequestCommand(Client *client, const QVariant &data)
     emit client->chooseGeneralRequested(generals, num);
 }
 
+/* @takashiro
 void Client::MoveCardsCommand(Client *client, const QVariant &data)
 {
     QList<CardsMoveStruct> moves;
@@ -367,6 +370,7 @@ void Client::MoveCardsCommand(Client *client, const QVariant &data)
 
     emit client->cardsMoved(moves);
 }
+*/
 
 void Client::ActRequestCommand(Client *client, const QVariant &data)
 {
@@ -675,6 +679,7 @@ void Client::AskForOptionCommand(Client *client, const QVariant &data)
     emit client->optionRequested(options);
 }
 
+/*@takashiro
 void Client::SetVirtualCardCommand(Client *client, const QVariant &data)
 {
     const QVariantMap arg = data.toMap();
@@ -696,6 +701,7 @@ void Client::SetVirtualCardCommand(Client *client, const QVariant &data)
             area->removeVirtualCard(cardName);
     }
 }
+*/
 
 void Client::SetPlayerTagCommand(Client *client, const QVariant &data)
 {
@@ -739,7 +745,7 @@ void Client::Init()
     AddCallback(S_COMMAND_ARRANGE_SEAT, ArrangeSeatCommand);
     AddCallback(S_COMMAND_PREPARE_CARDS, PrepareCardsCommand);
     AddCallback(S_COMMAND_UPDATE_PLAYER_PROPERTY, UpdatePlayerPropertyCommand);
-    AddCallback(S_COMMAND_MOVE_CARDS, MoveCardsCommand);
+    //AddCallback(S_COMMAND_MOVE_CARDS, MoveCardsCommand);
     AddCallback(S_COMMAND_ADD_CARD_HISTORY, AddCardHistoryCommand);
     AddCallback(S_COMMAND_DAMAGE, DamageCommand);
     AddCallback(S_COMMAND_LOSE_HP, LoseHpCommand);
@@ -755,7 +761,7 @@ void Client::Init()
     AddCallback(S_COMMAND_ARRANGE_CARD_END, ArrangeCardEndCommand);
     AddCallback(S_COMMAND_INVOKE_SKILL, InvokeSkillCommand);
     AddCallback(S_COMMAND_CLEAR_SKILL_HISTORY, ClearSkillHistoryCommand);
-    AddCallback(S_COMMAND_SET_VIRTUAL_CARD, SetVirtualCardCommand);
+    //AddCallback(S_COMMAND_SET_VIRTUAL_CARD, SetVirtualCardCommand);
     AddCallback(S_COMMAND_SET_PLAYER_TAG, SetPlayerTagCommand);
     AddCallback(S_COMMAND_GAME_OVER, GameOverCommand);
 

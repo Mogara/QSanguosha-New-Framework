@@ -1,4 +1,4 @@
 function aaa()
 {
-	Ai.notifyToRobot(6, "aaa");
+	CAi.notifyToRobot(6, "aaa");
 }

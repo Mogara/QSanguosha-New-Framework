@@ -22,247 +22,300 @@
 #include "serverplayer.h"
 #include "datavalue.h"
 
-CardMove::CardMove()
-    : fromArea(nullptr), toArea(nullptr), toDirection(CardArea::UndefinedDirection), card(nullptr), isOpen(false)
+namespace DataValue
 {
 
-}
-
-
-CardMove::CardMove(const CardMove &move)
-    : fromArea(move.fromArea), toArea(move.toArea), toDirection(move.toDirection), card(move.card), isOpen(move.isOpen)
-{
-
-}
-
-bool CardMove::operator ==(const CardMove &move)
-{
-    return fromArea == move.fromArea && toArea == move.toArea && toDirection == move.toDirection && card == move.card && isOpen == move.isOpen;
-}
-
-CardMove &CardMove::operator=(const CardMove &move)
-{
-    fromArea = move.fromArea;
-    toArea = move.toArea;
-    toDirection = move.toDirection;
-    card = move.card;
-    isOpen = move.isOpen;
-
-    return *this;
-}
-
-bool CardMove::isRelevant(const Player *player) const
-{
-    if (player == nullptr)
-        return true;
-
-    if (fromArea != nullptr) {
-        if (fromArea->type() != CardArea::Special && player == fromArea->owner())
-            return true;
+    namespace
+    {
+#define DATAVALUE_METAOBJECT(x) std::make_pair(QString(#x), &x::staticMetaObject)
+        QMap<QString, const QMetaObject *> metaObjects {
+            DATAVALUE_METAOBJECT(CardMove),
+            DATAVALUE_METAOBJECT(CardsMoveValue),
+            DATAVALUE_METAOBJECT(PhaseChangeValue),
+            DATAVALUE_METAOBJECT(CardUseValue),
+            DATAVALUE_METAOBJECT(CardEffectValue),
+            DATAVALUE_METAOBJECT(DamageValue),
+            DATAVALUE_METAOBJECT(RecoverValue),
+            DATAVALUE_METAOBJECT(CardResponseValue),
+            DATAVALUE_METAOBJECT(JudgeValue),
+            DATAVALUE_METAOBJECT(DeathValue),
+            DATAVALUE_METAOBJECT(SkillValue),
+            DATAVALUE_METAOBJECT(SkillInvokeValue),
+            DATAVALUE_METAOBJECT(IntValue)
+        };
+#undef DATAVALUE_METAOBJECT
     }
 
-    if (toArea != nullptr) {
-        if (toArea->type() != CardArea::Special && player == toArea->owner())
-            return true;
+    QObject *newDataValue(const QString &type)
+    {
+        if (!metaObjects.contains(type))
+            return nullptr;
+
+        const QMetaObject *meta = metaObjects.value(type);
+        QObject *value = meta->newInstance();
+        return value;
     }
 
-    return false;
-}
+    QObject *newDataValue(const QString &, int value)
+    {
+        return new IntValue(value);
+    }
 
-QVariant CardMove::toVariant(bool open /*= false*/) const
-{
-    QVariantMap map;
-    if (fromArea != nullptr)
-        map["fromArea"] = fromArea->toVariant();
-    if (toArea != nullptr)
-        map["toArea"] = toArea->toVariant();
-    map["toDirection"] = static_cast<int>(toDirection);
-    if (card != nullptr && (isOpen || open))
-        map["card"] = card->id();
-    map["isOpen"] = isOpen;
-    return map;
-}
+    QObject *newDataValue(const QString &, QObject *value) // we must use a list to deal with this condition!!!
+    {
+        CardUseValue *use = qobject_cast<CardUseValue *>(value);
+        if (use == nullptr)
+            return nullptr;
+        return new CardEffectValue(*use);
+    }
 
-CardsMoveValue::CardsMoveValue()
-{
+    QObject *newDataValue(const QString &, const QString &value)
+    {
+        return new JudgeValue(value);
+    }
 
-}
+    CardMove::CardMove()
+        : fromArea(nullptr), toArea(nullptr), toDirection(CardArea::UndefinedDirection), card(nullptr), isOpen(false)
+    {
+
+    }
 
 
-CardsMoveValue::CardsMoveValue(const CardsMoveValue &move)
-    : moves(move.moves)
-{
+    CardMove::CardMove(const CardMove &move)
+        : fromArea(move.fromArea), toArea(move.toArea), toDirection(move.toDirection), card(move.card), isOpen(move.isOpen)
+    {
 
-}
+    }
 
-QVariant CardsMoveValue::toVariant(bool open /*= false*/) const
-{
-    QVariantMap map;
-    QVariantList list;
-    foreach (const CardMove &move, moves)
-        list << move.toVariant(open);
-    map["moves"] = list;
-    return map;
-}
+    bool CardMove::operator ==(const CardMove &move)
+    {
+        return fromArea == move.fromArea && toArea == move.toArea && toDirection == move.toDirection && card == move.card && isOpen == move.isOpen;
+    }
 
-QVariant CardsMoveValue::toVariant(const Player *relevantPlayer) const
-{
-    QVariantMap map;
-    QVariantList list;
-    foreach (const CardMove &move, moves)
-        list << move.toVariant(move.isRelevant(relevantPlayer));
-    map["moves"] = list;
-    return map;
-}
+    CardMove &CardMove::operator=(const CardMove &move)
+    {
+        fromArea = move.fromArea;
+        toArea = move.toArea;
+        toDirection = move.toDirection;
+        card = move.card;
+        isOpen = move.isOpen;
 
-CardsMoveValue &CardsMoveValue::operator=(const CardsMoveValue &move)
-{
-    moves = move.moves;
-    return *this;
-}
+        return *this;
+    }
 
-PhaseChangeValue::PhaseChangeValue() 
-    : from(Player::InvalidPhase), to(Player::InvalidPhase)
-{
+    bool CardMove::isRelevant(const Player *player) const
+    {
+        if (player == nullptr)
+            return true;
 
-}
+        if (fromArea != nullptr) {
+            if (fromArea->type() != CardArea::Special && player == fromArea->owner())
+                return true;
+        }
 
-CardUseValue::CardUseValue()
-    : from(nullptr)
-    , card(nullptr)
-    , target(nullptr)
-    , isNullified(false)
-    , isOwnerUse(true)
-    , addHistory(true)
-    , isHandcard(true)
-    , reason(PlayReason)
-{
-}
+        if (toArea != nullptr) {
+            if (toArea->type() != CardArea::Special && player == toArea->owner())
+                return true;
+        }
 
-CardUseValue::CardUseValue(const CardUseValue &arg2)
-    : QObject()
-{
-    from = arg2.from;
-    to = arg2.to;
-    card = arg2.card;
-    target = arg2.target;
-    nullifiedList = arg2.nullifiedList;
-    isNullified = arg2.isNullified;
-    isOwnerUse = arg2.isOwnerUse;
-    addHistory = arg2.addHistory;
-    isHandcard = arg2.isHandcard;
-    reason = arg2.reason;
-    extra = arg2.extra;
-}
+        return false;
+    }
 
-CardUseValue &CardUseValue::operator =(const CardUseValue &arg2)
-{
-    from = arg2.from;
-    to = arg2.to;
-    card = arg2.card;
-    target = arg2.target;
-    nullifiedList = arg2.nullifiedList;
-    isNullified = arg2.isNullified;
-    isOwnerUse = arg2.isOwnerUse;
-    addHistory = arg2.addHistory;
-    isHandcard = arg2.isHandcard;
-    reason = arg2.reason;
-    extra = arg2.extra;
+    QVariant CardMove::toVariant(bool open /*= false*/) const
+    {
+        QVariantMap map;
+        if (fromArea != nullptr)
+            map["fromArea"] = fromArea->toVariant();
+        if (toArea != nullptr)
+            map["toArea"] = toArea->toVariant();
+        map["toDirection"] = static_cast<int>(toDirection);
+        if (card != nullptr && (isOpen || open))
+            map["card"] = card->id();
+        map["isOpen"] = isOpen;
+        return map;
+    }
 
-    return *this;
-}
+    CardsMoveValue::CardsMoveValue()
+    {
 
-CardEffectValue::CardEffectValue(CardUseValue &use)
-    : use(use)
-    , from(use.from)
-    , to(nullptr)
-{
-}
+    }
 
-DamageValue::DamageValue()
-    : from(nullptr)
-    , to(nullptr)
-    , card(nullptr)
-    , damage(1)
-    , nature(Normal)
-    , chain(false)
-    , transfer(false)
-    , byUser(true)
-    , prevented(false)
-{
-}
 
-RecoverValue::RecoverValue()
-    : from(nullptr)
-    , to(nullptr)
-    , recover(1)
-    , card(nullptr)
-{
-}
+    CardsMoveValue::CardsMoveValue(const CardsMoveValue &move)
+        : moves(move.moves)
+    {
 
-CardResponseValue::CardResponseValue()
-    : from(nullptr)
-    , to(nullptr)
-    , card(nullptr)
-    , target(nullptr)
-    , isRetrial(false)
-{
-}
+    }
 
-JudgeValue::JudgeValue(const QString &pattern)
-    : who(nullptr)
-    , card(nullptr)
-    , matched(false)
-    , m_pattern(pattern)
-{
-}
+    QVariant CardsMoveValue::toVariant(bool open /*= false*/) const
+    {
+        QVariantMap map;
+        QVariantList list;
+        foreach(const CardMove &move, moves)
+            list << move.toVariant(open);
+        map["moves"] = list;
+        return map;
+    }
 
-void JudgeValue::updateResult()
-{
-    matched = m_pattern.match(who, card);
-}
+    QVariant CardsMoveValue::toVariant(const Player *relevantPlayer) const
+    {
+        QVariantMap map;
+        QVariantList list;
+        foreach(const CardMove &move, moves)
+            list << move.toVariant(move.isRelevant(relevantPlayer));
+        map["moves"] = list;
+        return map;
+    }
 
-DeathValue::DeathValue()
-    : who(nullptr)
-    , damage(nullptr)
-{
-}
+    CardsMoveValue &CardsMoveValue::operator=(const CardsMoveValue &move)
+    {
+        moves = move.moves;
+        return *this;
+    }
 
-SkillValue::SkillValue()
-    : owner(nullptr)
-    , skill(nullptr)
-    , area(Player::UnknownSkillArea)
-{
-}
+    PhaseChangeValue::PhaseChangeValue()
+        : from(Player::InvalidPhase), to(Player::InvalidPhase)
+    {
 
-SkillInvokeValue::SkillInvokeValue()
-    : player(nullptr)
-    , skill(nullptr)
-{
+    }
 
-}
+    CardUseValue::CardUseValue()
+        : from(nullptr)
+        , card(nullptr)
+        , target(nullptr)
+        , isNullified(false)
+        , isOwnerUse(true)
+        , addHistory(true)
+        , isHandcard(true)
+        , reason(PlayReason)
+    {
+    }
 
-SkillInvokeValue::SkillInvokeValue(const SkillInvokeValue &arg2)
-    : QObject()
-{
-    player = arg2.player;
-    skill = arg2.skill;
-    targets = arg2.targets;
-    cards = arg2.cards;
-}
+    CardUseValue::CardUseValue(const CardUseValue &arg2)
+        : QObject()
+    {
+        from = arg2.from;
+        to = arg2.to;
+        card = arg2.card;
+        target = arg2.target;
+        nullifiedList = arg2.nullifiedList;
+        isNullified = arg2.isNullified;
+        isOwnerUse = arg2.isOwnerUse;
+        addHistory = arg2.addHistory;
+        isHandcard = arg2.isHandcard;
+        reason = arg2.reason;
+        extra = arg2.extra;
+    }
 
-SkillInvokeValue &SkillInvokeValue::operator =(const SkillInvokeValue &arg2)
-{
-    player = arg2.player;
-    skill = arg2.skill;
-    targets = arg2.targets;
-    cards = arg2.cards;
+    CardUseValue &CardUseValue::operator =(const CardUseValue &arg2)
+    {
+        from = arg2.from;
+        to = arg2.to;
+        card = arg2.card;
+        target = arg2.target;
+        nullifiedList = arg2.nullifiedList;
+        isNullified = arg2.isNullified;
+        isOwnerUse = arg2.isOwnerUse;
+        addHistory = arg2.addHistory;
+        isHandcard = arg2.isHandcard;
+        reason = arg2.reason;
+        extra = arg2.extra;
 
-    return *this;
-}
+        return *this;
+    }
 
-IntValue::IntValue(int value)
-    : value(value)
-{
+    CardEffectValue::CardEffectValue(CardUseValue &use)
+        : use(use)
+        , from(use.from)
+        , to(nullptr)
+    {
+    }
 
+    DamageValue::DamageValue()
+        : from(nullptr)
+        , to(nullptr)
+        , card(nullptr)
+        , damage(1)
+        , nature(Normal)
+        , chain(false)
+        , transfer(false)
+        , byUser(true)
+        , prevented(false)
+    {
+    }
+
+    RecoverValue::RecoverValue()
+        : from(nullptr)
+        , to(nullptr)
+        , recover(1)
+        , card(nullptr)
+    {
+    }
+
+    CardResponseValue::CardResponseValue()
+        : from(nullptr)
+        , to(nullptr)
+        , card(nullptr)
+        , target(nullptr)
+        , isRetrial(false)
+    {
+    }
+
+    JudgeValue::JudgeValue(const QString &pattern)
+        : who(nullptr)
+        , card(nullptr)
+        , matched(false)
+        , m_pattern(pattern)
+    {
+    }
+
+    void JudgeValue::updateResult()
+    {
+        matched = m_pattern.match(who, card);
+    }
+
+    DeathValue::DeathValue()
+        : who(nullptr)
+        , damage(nullptr)
+    {
+    }
+
+    SkillValue::SkillValue()
+        : owner(nullptr)
+        , skill(nullptr)
+        , area(Player::UnknownSkillArea)
+    {
+    }
+
+    SkillInvokeValue::SkillInvokeValue()
+        : player(nullptr)
+        , skill(nullptr)
+    {
+
+    }
+
+    SkillInvokeValue::SkillInvokeValue(const SkillInvokeValue &arg2)
+        : QObject()
+    {
+        player = arg2.player;
+        skill = arg2.skill;
+        targets = arg2.targets;
+        cards = arg2.cards;
+    }
+
+    SkillInvokeValue &SkillInvokeValue::operator =(const SkillInvokeValue &arg2)
+    {
+        player = arg2.player;
+        skill = arg2.skill;
+        targets = arg2.targets;
+        cards = arg2.cards;
+
+        return *this;
+    }
+
+    IntValue::IntValue(int value)
+        : value(value)
+    {
+
+    }
 }

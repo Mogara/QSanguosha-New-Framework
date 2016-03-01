@@ -30,6 +30,8 @@
 #include <CRoom>
 #include <CServerAgent>
 
+using namespace DataValue;
+
 class StandardRule : public GameRule
 {
 public:

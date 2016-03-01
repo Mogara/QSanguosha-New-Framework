@@ -24,6 +24,8 @@
 #include "serverplayer.h"
 #include "skill.h"
 
+using namespace DataValue;
+
 namespace{
 
 void onTurnStart(GameLogic *, ServerPlayer *current, QObject *)

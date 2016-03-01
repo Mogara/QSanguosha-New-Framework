@@ -22,6 +22,8 @@
 #include "serverplayer.h"
 #include "skill.h"
 
+using namespace DataValue;
+
 Card::Card(Suit suit, int number)
     : m_id(0)
     , m_suit(suit)

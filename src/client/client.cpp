@@ -432,7 +432,7 @@ void Client::DamageCommand(Client *client, const QVariant &data)
     if (to == nullptr)
         return;
 
-    DamageValue::Nature nature = static_cast<DamageValue::Nature>(arg["nature"].toInt());
+    DataValue::DamageValue::Nature nature = static_cast<DataValue::DamageValue::Nature>(arg["nature"].toInt());
     int damage = arg["damage"].toInt();
     emit client->damageDone(from, to, nature, damage);
 }

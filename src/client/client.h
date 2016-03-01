@@ -57,7 +57,7 @@ signals:
     void seatArranged();
     void chooseGeneralRequested(const QList<const General *> &candidates, int num /* @to-do: add banned pair */);
     // void cardsMoved(const QList<CardsMoveStruct> &moves); @takashiro
-    void damageDone(const ClientPlayer *from, const ClientPlayer *to, DamageValue::Nature nature, int damage);
+    void damageDone(const ClientPlayer *from, const ClientPlayer *to, DataValue::DamageValue::Nature nature, int damage);
     void loseHpDone(const ClientPlayer *victim, int lose);
     void recoverDone(const ClientPlayer *from, const ClientPlayer *to, int num);
     void usingCard(const QString &pattern, const QList<const Player *> &assignedTarget);

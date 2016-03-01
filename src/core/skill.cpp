@@ -34,6 +34,25 @@
 namespace
 {
     QThreadStorage<QCache<const Skill *, QJSValue> > skillFuncStorage;
+#define SKILL_METAOBJECT(x) std::make_pair(QString(#x), &x::staticMetaObject)
+    QMap<QString, const QMetaObject *> skillMetaObjects {
+        SKILL_METAOBJECT(TriggerSkill),
+        SKILL_METAOBJECT(StatusSkill),
+        SKILL_METAOBJECT(ViewAsSkill),
+        SKILL_METAOBJECT(ProactiveSkill),
+        SKILL_METAOBJECT(CardModSkill)
+    };
+#undef SKILL_METAOBJECT
+}
+
+Skill *Skill::newSkill(const QString &type, const QString &name)
+{
+    if (!skillMetaObjects.contains(type))
+        return nullptr;
+
+    const QMetaObject *meta = skillMetaObjects.value(type);
+    Skill *skill = qobject_cast<Skill *>(meta->newInstance(Q_ARG(QString, name)));
+    return skill;
 }
 
 Skill::Skill(const QString &name)
@@ -106,12 +125,14 @@ EventList TriggerSkill::triggerable(GameLogic *logic, EventType event, const QOb
     if (funcs.hasProperty("triggerable") && funcs.property("triggerable").isCallable()) {
         QJSEngine *engine = funcs.engine();
         QJSValue logicValue = engine->newQObject(logic);
+        // we should push a "this" value to the JS engine
+        QJSValue thisValue = engine->newQObject(const_cast<TriggerSkill *>(this)); // warning!! make sure the JS script won't modify this data
         QJSValue eventValue = QJSValue(static_cast<int>(event));
         QJSValue dataValue = engine->newQObject(const_cast<QObject *>(data)); // warning!! make sure the JS script won't modify this data
         QJSValue playerValue = engine->newQObject(player);
-        QJSValue returnValue = funcs.property("triggerable").callWithInstance(funcs, QJSValueList() << logicValue << eventValue << dataValue << playerValue);
+        QJSValue returnValue = funcs.property("triggerable").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << eventValue << dataValue << playerValue);
 
-        if (returnValue.isObject()) {
+        if (returnValue.isQObject()) {
             Event *event = qobject_cast<Event *>(returnValue.toQObject());
             if (event == nullptr || !event->isValid())
                 return EventList();
@@ -166,17 +187,21 @@ bool TriggerSkill::onCost(GameLogic *logic, EventType event, EventPtr eventPtr, 
 bool TriggerSkill::cost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const
 {
     const QJSValue &funcs = skillFuncs();
-    if (funcs.hasProperty("cost") && funcs.property("cost").isCallable()) {
-        QJSEngine *engine = funcs.engine();
-        QJSValue logicValue = engine->newQObject(logic);
-        QJSValue eventValue = QJSValue(static_cast<int>(event));
-        QJSValue eventPtrValue = engine->newQObject(eventPtr.data());
-        QJSValue dataValue = engine->newQObject(data);
-        QJSValue playerValue = engine->newQObject(player);
-        QJSValue returnValue = funcs.property("cost").callWithInstance(funcs, QJSValueList() << logicValue << eventValue << eventPtrValue << dataValue << playerValue);
+    if (funcs.hasProperty("cost")) {
+        if (funcs.property("cost").isCallable()) {
+            QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<TriggerSkill *>(this)); // warning!! make sure the JS script won't modify this data
+            QJSValue logicValue = engine->newQObject(logic);
+            QJSValue eventValue = QJSValue(static_cast<int>(event));
+            QJSValue eventPtrValue = engine->newQObject(eventPtr.data());
+            QJSValue dataValue = engine->newQObject(data);
+            QJSValue playerValue = engine->newQObject(player);
+            QJSValue returnValue = funcs.property("cost").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << eventValue << eventPtrValue << dataValue << playerValue);
 
-        if (returnValue.isBool())
-            return returnValue.toBool();
+            if (returnValue.isBool())
+                return returnValue.toBool();
+        } else if (funcs.property("cost").isBool())
+            return funcs.property("cost").toBool();
     }
 
     // default
@@ -186,17 +211,21 @@ bool TriggerSkill::cost(GameLogic *logic, EventType event, EventPtr eventPtr, QO
 bool TriggerSkill::effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const
 {
     const QJSValue &funcs = skillFuncs();
-    if (funcs.hasProperty("effect") && funcs.property("effect").isCallable()) {
-        QJSEngine *engine = funcs.engine();
-        QJSValue logicValue = engine->newQObject(logic);
-        QJSValue eventValue = QJSValue(static_cast<int>(event));
-        QJSValue eventPtrValue = engine->newQObject(eventPtr.data());
-        QJSValue dataValue = engine->newQObject(data);
-        QJSValue playerValue = engine->newQObject(player);
-        QJSValue returnValue = funcs.property("effect").callWithInstance(funcs, QJSValueList() << logicValue << eventValue << eventPtrValue << dataValue << playerValue);
+    if (funcs.hasProperty("effect")) {
+        if (funcs.property("effect").isCallable()) {
+            QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<TriggerSkill *>(this)); // warning!! make sure the JS script won't modify this data
+            QJSValue logicValue = engine->newQObject(logic);
+            QJSValue eventValue = QJSValue(static_cast<int>(event));
+            QJSValue eventPtrValue = engine->newQObject(eventPtr.data());
+            QJSValue dataValue = engine->newQObject(data);
+            QJSValue playerValue = engine->newQObject(player);
+            QJSValue returnValue = funcs.property("effect").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << eventValue << eventPtrValue << dataValue << playerValue);
 
-        if (returnValue.isBool())
-            return returnValue.toBool();
+            if (returnValue.isBool())
+                return returnValue.toBool();
+        } else if (funcs.property("effect").isBool())
+            return funcs.property("effect").toBool();
     }
 
     //default
@@ -215,8 +244,9 @@ void StatusSkill::validate(ServerPlayer *target) const
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("validate") && funcs.property("validate").isCallable()) {
         QJSEngine *engine = funcs.engine();
+        QJSValue thisValue = engine->newQObject(const_cast<StatusSkill *>(this)); // warning!! make sure the JS script won't modify this data
         QJSValue targetValue = engine->newQObject(target);
-        funcs.property("validate").callWithInstance(funcs, QJSValueList() << targetValue);
+        funcs.property("validate").callWithInstance(funcs, QJSValueList() << thisValue << targetValue);
     }
 
     // default: do nothing
@@ -227,8 +257,9 @@ void StatusSkill::invalidate(ServerPlayer *target) const
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("invalidate") && funcs.property("invalidate").isCallable()) {
         QJSEngine *engine = funcs.engine();
+        QJSValue thisValue = engine->newQObject(const_cast<StatusSkill *>(this)); // warning!! make sure the JS script won't modify this data
         QJSValue targetValue = engine->newQObject(target);
-        funcs.property("invalidate").callWithInstance(funcs, QJSValueList() << targetValue);
+        funcs.property("invalidate").callWithInstance(funcs, QJSValueList() << thisValue << targetValue);
     }
 
     // default: do nothing
@@ -240,8 +271,9 @@ bool StatusSkill::isValid(ServerPlayer *target) const
     if (funcs.hasProperty("isValid")) {
         if (funcs.property("isValid").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<StatusSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue targetValue = engine->newQObject(target);
-            QJSValue returnValue = funcs.property("isValid").callWithInstance(funcs, QJSValueList() << targetValue);
+            QJSValue returnValue = funcs.property("isValid").callWithInstance(funcs, QJSValueList() << thisValue << targetValue);
 
             if (returnValue.isBool())
                 return returnValue.toBool();
@@ -324,9 +356,10 @@ bool ViewAsSkill::isAvailable(const Player *self, const QString &pattern) const
     if (funcs.hasProperty("isAvailable")) {
         if (funcs.property("isAvailable").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<ViewAsSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue selfValue = engine->newQObject(const_cast<Player *>(self)); // warning!! make sure the JS script won't modify this data
             QJSValue patternValue = QJSValue(pattern);
-            QJSValue returnValue = funcs.property("isAvailable").callWithInstance(funcs, QJSValueList() << selfValue << patternValue);
+            QJSValue returnValue = funcs.property("isAvailable").callWithInstance(funcs, QJSValueList() << thisValue << selfValue << patternValue);
 
             if (returnValue.isBool())
                 return returnValue.toBool();
@@ -357,13 +390,14 @@ bool ViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *ca
     if (funcs.hasProperty("viewFilter")) {
         if (funcs.property("viewFilter").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<ViewAsSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue selectedValue = engine->newArray(selected.length());
             for (int i = 0; i < selected.length(); ++i)
                 selectedValue.setProperty(i, engine->newQObject(const_cast<Card *>(selected.value(i))));
             QJSValue cardValue = engine->newQObject(const_cast<Card *>(card));
             QJSValue selfValue = engine->newQObject(const_cast<Player *>(self));
             QJSValue patternValue = QJSValue(pattern);
-            QJSValue returnValue = funcs.property("viewFilter").callWithInstance(funcs, QJSValueList() << selectedValue << cardValue << selfValue << patternValue);
+            QJSValue returnValue = funcs.property("viewFilter").callWithInstance(funcs, QJSValueList() << thisValue << selectedValue << cardValue << selfValue << patternValue);
 
             if (returnValue.isBool())
                 return returnValue.toBool();
@@ -380,11 +414,12 @@ Card *ViewAsSkill::viewAs(const QList<Card *> &cards, const Player *self) const
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("viewAs") && funcs.property("viewAs").isCallable()) {
         QJSEngine *engine = funcs.engine();
+        QJSValue thisValue = engine->newQObject(const_cast<ViewAsSkill *>(this)); // warning!! make sure the JS script won't modify this data
         QJSValue cardsValue = engine->newArray(cards.length());
         for (int i = 0; i < cards.length(); ++i)
             cardsValue.setProperty(i, engine->newQObject(const_cast<Card *>(cards.value(i))));
         QJSValue selfValue = engine->newQObject(const_cast<Player *>(self));
-        QJSValue returnValue = funcs.property("viewAs").callWithInstance(funcs, QJSValueList() << cardsValue << selfValue);
+        QJSValue returnValue = funcs.property("viewAs").callWithInstance(funcs, QJSValueList() << thisValue << cardsValue << selfValue);
 
         if (returnValue.isQObject()) {
             Card *card = qobject_cast<Card *>(returnValue.toQObject());
@@ -465,11 +500,12 @@ bool ProactiveSkill::cardFeasible(const QList<const Card *> &selected, const Pla
     if (funcs.hasProperty("cardFeasible")) {
         if (funcs.property("cardFeasible").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<ProactiveSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue selectedValue = engine->newArray(selected.length());
             for (int i = 0; i < selected.length(); ++i)
                 selectedValue.setProperty(i, engine->newQObject(const_cast<Card *>(selected.value(i))));
             QJSValue sourceValue = engine->newQObject(const_cast<Player *>(source));
-            QJSValue returnValue = funcs.property("cardFeasible").callWithInstance(funcs, QJSValueList() << selectedValue << sourceValue);
+            QJSValue returnValue = funcs.property("cardFeasible").callWithInstance(funcs, QJSValueList() << thisValue << selectedValue << sourceValue);
 
             if (returnValue.isBool())
                 return returnValue.toBool();
@@ -487,13 +523,14 @@ bool ProactiveSkill::cardFilter(const QList<const Card *> &selected, const Card 
     if (funcs.hasProperty("cardFilter")) {
         if (funcs.property("cardFilter").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<ProactiveSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue selectedValue = engine->newArray(selected.length());
             for (int i = 0; i < selected.length(); ++i)
                 selectedValue.setProperty(i, engine->newQObject(const_cast<Card *>(selected.value(i))));
             QJSValue cardValue = engine->newQObject(const_cast<Card *>(card));
             QJSValue sourceValue = engine->newQObject(const_cast<Player *>(source));
             QJSValue patternValue = QJSValue(pattern);
-            QJSValue returnValue = funcs.property("cardFilter").callWithInstance(funcs, QJSValueList() << selectedValue << cardValue << sourceValue << patternValue);
+            QJSValue returnValue = funcs.property("cardFilter").callWithInstance(funcs, QJSValueList() << thisValue << selectedValue << cardValue << sourceValue << patternValue);
 
             if (returnValue.isBool())
                 return returnValue.toBool();
@@ -523,11 +560,12 @@ bool ProactiveSkill::playerFeasible(const QList<const Player *> &selected, const
     if (funcs.hasProperty("playerFeasible")) {
         if (funcs.property("playerFeasible").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<ProactiveSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue selectedValue = engine->newArray(selected.length());
             for (int i = 0; i < selected.length(); ++i)
                 selectedValue.setProperty(i, engine->newQObject(const_cast<Player *>(selected.value(i))));
             QJSValue sourceValue = engine->newQObject(const_cast<Player *>(source));
-            QJSValue returnValue = funcs.property("playerFeasible").callWithInstance(funcs, QJSValueList() << selectedValue << sourceValue);
+            QJSValue returnValue = funcs.property("playerFeasible").callWithInstance(funcs, QJSValueList() << thisValue << selectedValue << sourceValue);
 
             if (returnValue.isBool())
                 return returnValue.toBool();
@@ -545,12 +583,13 @@ bool ProactiveSkill::playerFilter(const QList<const Player *> &selected, const P
     if (funcs.hasProperty("playerFilter")) {
         if (funcs.property("playerFilter").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<ProactiveSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue selectedValue = engine->newArray(selected.length());
             for (int i = 0; i < selected.length(); ++i)
                 selectedValue.setProperty(i, engine->newQObject(const_cast<Player *>(selected.value(i))));
             QJSValue toSelectValue = engine->newQObject(const_cast<Player *>(toSelect));
             QJSValue sourceValue = engine->newQObject(const_cast<Player *>(source));
-            QJSValue returnValue = funcs.property("playerFilter").callWithInstance(funcs, QJSValueList() << selectedValue << toSelectValue << sourceValue);
+            QJSValue returnValue = funcs.property("playerFilter").callWithInstance(funcs, QJSValueList() << thisValue << selectedValue << toSelectValue << sourceValue);
 
             if (returnValue.isBool())
                 return returnValue.toBool();
@@ -589,6 +628,7 @@ bool ProactiveSkill::cost(GameLogic *logic, ServerPlayer *from, const QList<Serv
     if (funcs.hasProperty("cost")) {
         if (funcs.property("cost").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<ProactiveSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue logicValue = engine->newQObject(logic);
             QJSValue fromValue = engine->newQObject(from);
             QJSValue toValue = engine->newArray(to.length());
@@ -597,7 +637,7 @@ bool ProactiveSkill::cost(GameLogic *logic, ServerPlayer *from, const QList<Serv
             QJSValue cardsValue = engine->newArray(cards.length());
             for (int i = 0; i < cards.length(); ++i)
                 cardsValue.setProperty(i, engine->newQObject(cards.value(i)));
-            QJSValue returnValue = funcs.property("cost").callWithInstance(funcs, QJSValueList() << logicValue << fromValue << toValue << cardsValue);
+            QJSValue returnValue = funcs.property("cost").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << fromValue << toValue << cardsValue);
 
             if (returnValue.isBool())
                 return returnValue.toBool();
@@ -614,6 +654,7 @@ void ProactiveSkill::effect(GameLogic *logic, ServerPlayer *from, const QList<Se
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("effect") && funcs.property("effect").isCallable()) {
         QJSEngine *engine = funcs.engine();
+        QJSValue thisValue = engine->newQObject(const_cast<ProactiveSkill *>(this)); // warning!! make sure the JS script won't modify this data
         QJSValue logicValue = engine->newQObject(logic);
         QJSValue fromValue = engine->newQObject(from);
         QJSValue toValue = engine->newArray(to.length());
@@ -622,7 +663,7 @@ void ProactiveSkill::effect(GameLogic *logic, ServerPlayer *from, const QList<Se
         QJSValue cardsValue = engine->newArray(cards.length());
         for (int i = 0; i < cards.length(); ++i)
             cardsValue.setProperty(i, engine->newQObject(cards.value(i)));
-        funcs.property("effect").callWithInstance(funcs, QJSValueList() << logicValue << fromValue << toValue << cardsValue);
+        funcs.property("effect").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << fromValue << toValue << cardsValue);
     }
 }
 
@@ -750,13 +791,14 @@ bool CardModSkill::targetFilter(const Card *card, const QList<const Player *> &s
     if (funcs.hasProperty("targetFilter")) {
         if (funcs.property("targetFilter").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<CardModSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue cardValue = engine->newQObject(const_cast<Card *>(card));
             QJSValue selectedValue = engine->newArray(selected.length());
             for (int i = 0; i < selected.length(); ++i)
                 selectedValue.setProperty(i, engine->newQObject(const_cast<Player *>(selected.value(i))));
             QJSValue toSelectValue = engine->newQObject(const_cast<Player *>(toSelect));
             QJSValue sourceValue = engine->newQObject(const_cast<Player *>(source));
-            QJSValue returnValue = funcs.property("targetFilter").callWithInstance(funcs, QJSValueList() << cardValue << selectedValue << toSelectValue << sourceValue);
+            QJSValue returnValue = funcs.property("targetFilter").callWithInstance(funcs, QJSValueList() << thisValue << cardValue << selectedValue << toSelectValue << sourceValue);
 
             if (returnValue.isBool())
                 return returnValue.toBool();
@@ -773,13 +815,14 @@ int CardModSkill::extraDistanceLimit(const Card *card, const QList<const Player 
     if (funcs.hasProperty("extraDistanceLimit")) {
         if (funcs.property("extraDistanceLimit").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<CardModSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue cardValue = engine->newQObject(const_cast<Card *>(card));
             QJSValue selectedValue = engine->newArray(selected.length());
             for (int i = 0; i < selected.length(); ++i)
                 selectedValue.setProperty(i, engine->newQObject(const_cast<Player *>(selected.value(i))));
             QJSValue toSelectValue = engine->newQObject(const_cast<Player *>(toSelect));
             QJSValue sourceValue = engine->newQObject(const_cast<Player *>(source));
-            QJSValue returnValue = funcs.property("extraDistanceLimit").callWithInstance(funcs, QJSValueList() << cardValue << selectedValue << toSelectValue << sourceValue);
+            QJSValue returnValue = funcs.property("extraDistanceLimit").callWithInstance(funcs, QJSValueList() << thisValue << cardValue << selectedValue << toSelectValue << sourceValue);
 
             if (returnValue.isNumber())
                 return returnValue.toInt();
@@ -796,13 +839,14 @@ int CardModSkill::extraMaxTargetNum(const Card *card, const QList<const Player *
     if (funcs.hasProperty("extraMaxTargetNum")) {
         if (funcs.property("extraMaxTargetNum").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<CardModSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue cardValue = engine->newQObject(const_cast<Card *>(card));
             QJSValue selectedValue = engine->newArray(selected.length());
             for (int i = 0; i < selected.length(); ++i)
                 selectedValue.setProperty(i, engine->newQObject(const_cast<Player *>(selected.value(i))));
             QJSValue toSelectValue = engine->newQObject(const_cast<Player *>(toSelect));
             QJSValue sourceValue = engine->newQObject(const_cast<Player *>(source));
-            QJSValue returnValue = funcs.property("extraMaxTargetNum").callWithInstance(funcs, QJSValueList() << cardValue << selectedValue << toSelectValue << sourceValue);
+            QJSValue returnValue = funcs.property("extraMaxTargetNum").callWithInstance(funcs, QJSValueList() << thisValue << cardValue << selectedValue << toSelectValue << sourceValue);
 
             if (returnValue.isNumber())
                 return returnValue.toInt();
@@ -819,9 +863,10 @@ int CardModSkill::extraUseNum(const Card *card, const Player *player) const
     if (funcs.hasProperty("extraUseNum")) {
         if (funcs.property("extraUseNum").isCallable()) {
             QJSEngine *engine = funcs.engine();
+            QJSValue thisValue = engine->newQObject(const_cast<CardModSkill *>(this)); // warning!! make sure the JS script won't modify this data
             QJSValue cardValue = engine->newQObject(const_cast<Card *>(card));
             QJSValue playerValue = engine->newQObject(const_cast<Player *>(player));
-            QJSValue returnValue = funcs.property("extraUseNum").callWithInstance(funcs, QJSValueList() << cardValue << playerValue);
+            QJSValue returnValue = funcs.property("extraUseNum").callWithInstance(funcs, QJSValueList() << thisValue << cardValue << playerValue);
 
             if (returnValue.isNumber())
                 return returnValue.toInt();

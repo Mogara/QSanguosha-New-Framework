@@ -39,7 +39,7 @@ class GameLogic : public CAbstractGameLogic
     Q_OBJECT
 
 public:
-    GameLogic(CRoom *parent = 0);
+    explicit GameLogic(CRoom *parent = 0);
     ~GameLogic();
 
     const RoomSettings *settings() const;
@@ -61,11 +61,11 @@ public:
     ServerPlayer *findPlayer(uint id) const;
     ServerPlayer *findPlayer(CServerAgent *agent) const;
 
-    QList<ServerPlayer *> allPlayers(bool includeDead = false) const;
-    QList<ServerPlayer *> otherPlayers(ServerPlayer *except, bool includeDead = false) const;
-    void sortByActionOrder(QList<ServerPlayer *> &players) const;
+    Q_INVOKABLE QList<ServerPlayer *> allPlayers(bool includeDead = false) const;
+    Q_INVOKABLE QList<ServerPlayer *> otherPlayers(ServerPlayer *except, bool includeDead = false) const;
+    Q_INVOKABLE void sortByActionOrder(QList<ServerPlayer *> &players) const;
 
-    void addExtraTurn(ServerPlayer *player) { m_extraTurns << player; }
+    Q_INVOKABLE void addExtraTurn(ServerPlayer *player) { m_extraTurns << player; }
     QList<ServerPlayer *> extraTurns() const { return m_extraTurns; }
 
     bool skipGameRule() const { return m_skipGameRule; }
@@ -75,39 +75,38 @@ public:
     void reshuffleDrawPile();
     int reshufflingCount() const { return m_reshufflingCount; }
 
-    CardArea *drawPile() const { return m_drawPile; }
-    CardArea *discardPile() const { return m_discardPile; }
-    CardArea *table() const { return m_table; }
-    CardArea *wugu() const { return m_wugu; }
+    Q_INVOKABLE CardArea *drawPile() const { return m_drawPile; }
+    Q_INVOKABLE CardArea *discardPile() const { return m_discardPile; }
+    Q_INVOKABLE CardArea *table() const { return m_table; }
+    Q_INVOKABLE CardArea *wugu() const { return m_wugu; }
 
-    void moveCards(CardsMoveValue &move);
+    Q_INVOKABLE void moveCards(DataValue::CardsMoveValue &move);
     //void moveCards(QList<CardsMoveStruct> &moves);
 
-    bool useCard(CardUseValue &use);
-    bool takeCardEffect(CardEffectValue &effect);
-
-    bool invokeProactiveSkill(SkillInvokeValue &invoke);
+    Q_INVOKABLE bool useCard(DataValue::CardUseValue &use);
+    Q_INVOKABLE bool takeCardEffect(DataValue::CardEffectValue &effect);
+    Q_INVOKABLE bool invokeProactiveSkill(DataValue::SkillInvokeValue &invoke);
 
     //It returns false if the corresponding CardResponded event is broken.
-    bool respondCard(CardResponseValue &response);
+    Q_INVOKABLE bool respondCard(DataValue::CardResponseValue &response);
 
-    void judge(JudgeValue &judge);
-    void retrialCost(JudgeValue &judge, Card *card, bool isReplace = false);
-    void retrialEffect(JudgeValue &judge, Card *card);
+    Q_INVOKABLE void judge(DataValue::JudgeValue &judge);
+    void retrialCost(DataValue::JudgeValue &judge, Card *card, bool isReplace = false);
+    void retrialEffect(DataValue::JudgeValue &judge, Card *card);
 
     Card *findCard(uint id) const { return m_cards.value(id); }
     QList<Card *> findCards(const QVariant &data);
 
-    void damage(DamageValue &damage);
-    void loseHp(ServerPlayer *victim, int lose);
-    void recover(RecoverValue &recover);
+    Q_INVOKABLE void damage(DataValue::DamageValue &damage);
+    Q_INVOKABLE void loseHp(ServerPlayer *victim, int lose);
+    Q_INVOKABLE void recover(DataValue::RecoverValue &recover);
 
-    void killPlayer(ServerPlayer *victim, DamageValue *damage = nullptr);
-    void gameOver(const QList<ServerPlayer *> &winners);
+    Q_INVOKABLE void killPlayer(ServerPlayer *victim, DataValue::DamageValue *damage = nullptr);
+    Q_INVOKABLE void gameOver(const QList<ServerPlayer *> &winners);
 
     QMap<uint, QList<const General *> > broadcastRequestForGenerals(const QList<ServerPlayer *> &players, int num, int limit);
 
-    ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
+    Q_INVOKABLE ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
 
 protected:
     CAbstractPlayer *createPlayer(CServerAgent *agent) override;
@@ -115,7 +114,7 @@ protected:
     void loadMode(const GameMode *mode);
 
     void prepareToStart();
-    void filterCardsMove(CardsMoveValue &moves);
+    void filterCardsMove(DataValue::CardsMoveValue &moves);
 
     void getEventHandlersAndSort(EventHandler::EventType event, EventPtrList &detailsList, const EventPtrList &triggered, const QObject *data, ServerPlayer *player = nullptr);
 

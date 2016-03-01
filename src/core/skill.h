@@ -83,6 +83,7 @@ public:
     void setFrequency(Frequency frequency);
 
     QJSValue skillFuncs() const;
+    static Skill *newSkill(const QString &type, const QString &name);
 
 protected:
     uint m_id;

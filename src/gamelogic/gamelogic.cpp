@@ -40,6 +40,8 @@
 #include <QThread>
 #include "skill.h"
 
+using namespace DataValue;
+
 GameLogic::GameLogic(CRoom *parent)
     : CAbstractGameLogic(parent)
     , m_currentPlayer(nullptr)

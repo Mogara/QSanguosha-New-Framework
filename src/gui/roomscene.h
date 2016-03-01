@@ -90,7 +90,7 @@ private:
     void onChooseGeneralRequested(const QList<const General *> &candidates, int num);
     //void onCardsMoved(const QList<CardsMoveStruct> &moves); @takashiro
     void onUsingCard(const QString &pattern = QString(), const QList<const Player *> &assignedTargets = QList<const Player *>());
-    void onDamageDone(const ClientPlayer *, const ClientPlayer *to, DamageValue::Nature, int damage);
+    void onDamageDone(const ClientPlayer *, const ClientPlayer *to, DataValue::DamageValue::Nature, int damage);
     void onRecoverDone(const ClientPlayer *, const ClientPlayer *, int);
     void onCardUsed(const QVariantMap &, const ClientPlayer *from, const QList<const ClientPlayer *> &tos);
     void onCardAsked(const QString &pattern);

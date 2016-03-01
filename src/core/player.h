@@ -66,6 +66,8 @@ class Player : public CAbstractPlayer
     Q_PROPERTY(QString deputyGeneralName READ deputyGeneralName NOTIFY deputyGeneralChanged)
     Q_PROPERTY(int extraOutDistance READ extraOutDistance WRITE setExtraOutDistance)
     Q_PROPERTY(int extraInDistance READ extraInDistance WRITE setExtraInDistance)
+    Q_PROPERTY(bool nude READ isNude CONSTANT STORED false)
+    Q_PROPERTY(bool allNude READ isAllNude CONSTANT STORED false)
 
 public:
     enum Phase
@@ -83,7 +85,7 @@ public:
     };
     Q_ENUM(SkillArea)
 
-    Player(QObject *parent = 0);
+    explicit Player(QObject *parent = 0);
     ~Player();
 
     QString screenName() const { return m_screenName; }
@@ -188,28 +190,28 @@ public:
     int extraInDistance() const { return m_extraInDistance; }
     void setExtraInDistance(int extra) { m_extraInDistance = extra; }
 
-    CardArea *handcardArea() { return m_handcardArea; }
+    Q_INVOKABLE CardArea *handcardArea() { return m_handcardArea; }
     const CardArea *handcardArea() const { return m_handcardArea; }
     int handcardNum() const { return m_handcardNum; }
     bool hasHandcard() const { return handcardNum() > 0; }
 
+    Q_INVOKABLE CardArea *equipArea() { return m_equipArea; }
     const CardArea *equipArea() const { return m_equipArea; }
-    CardArea *equipArea() { return m_equipArea; }
     int equipNum() const;
     bool hasEquip() const { return equipNum() > 0; }
 
-    CardArea *delayedTrickArea() { return m_delayedTrickArea; }
+    Q_INVOKABLE CardArea *delayedTrickArea() { return m_delayedTrickArea; }
     const CardArea *delayedTrickArea() const { return m_delayedTrickArea; }
     int delayedTrickNum() const;
 
     bool isNude() const { return !hasHandcard() && !hasEquip(); }
     bool isAllNude() const { return isNude() && delayedTrickNum() <= 0; }
 
-    CardArea *judgeCards() { return m_judgeCards; }
+    Q_INVOKABLE CardArea *judgeCards() { return m_judgeCards; }
     const CardArea *judgeCards() const { return m_judgeCards; }
 
-    bool hasSkill(const Skill *skill) const;
-    bool hasShownSkill(const Skill *skill) const;
+    Q_INVOKABLE bool hasSkill(const Skill *skill) const;
+    Q_INVOKABLE bool hasShownSkill(const Skill *skill) const;
     const Skill *getSkill(uint id) const;
     const Skill *getSkill(const QString &name) const;
 
@@ -227,7 +229,7 @@ public:
     void addSkillHistory(const Skill *skill) { m_skillHistory[skill]++; }
     int skillHistory(const Skill *skill) const { return m_skillHistory.value(skill); }
 
-    QMap<QString, QVariant> tag;
+    mutable QVariantMap tag;
 
 protected:
     void addHeadSkill(const Skill *skill) { m_headSkills << skill; }

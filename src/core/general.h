@@ -28,9 +28,19 @@
 class Skill;
 class Package;
 
-class General
+class General : public QObject
 {
-    Q_GADGET
+    Q_OBJECT
+    Q_PROPERTY(QString name READ name WRITE setName MEMBER m_name)
+    Q_PROPERTY(QString kingdom READ kingdom WRITE setKingdom MEMBER m_kingdom)
+    Q_PROPERTY(int maxHp READ maxHp WRITE setMaxHp MEMBER m_maxHp)
+    Q_PROPERTY(Gender gender READ gender WRITE setGender MEMBER m_gender)
+    Q_PROPERTY(bool isLord READ isLord WRITE setLord MEMBER m_lord)
+    Q_PROPERTY(bool isHidden READ isHidden WRITE setHidden MEMBER m_hidden)
+    Q_PROPERTY(bool isNeverShown READ isNeverShown WRITE setNeverShown MEMBER m_neverShown)
+    Q_PROPERTY(int headExtraMaxHp READ headExtraMaxHp WRITE setHeadExtraMaxHp MEMBER m_headExtraMaxHp)
+    Q_PROPERTY(int deputyExtraMaxHp READ deputyExtraMaxHp WRITE setDeputyExtraMaxHp MEMBER m_deputyExtraMaxHp)
+        
 
 private:
     friend class Package;
@@ -45,7 +55,7 @@ public:
     };
     Q_ENUM(Gender)
 
-    General(const QString &name, const QString &kingdom, int maxHp, Gender gender = Male);
+    Q_INVOKABLE General(const QString &name, const QString &kingdom, int maxHp, Gender gender = Male);
     ~General();
 
     uint id() const { return m_id; }
@@ -79,13 +89,14 @@ public:
     int deputyExtraMaxHp() const { return m_deputyExtraMaxHp; }
     int deputyMaxHp() const { return maxHp() + deputyExtraMaxHp(); }
 
-    void addCompanion(const QString &companion) { m_companions.insert(companion); }
+    Q_INVOKABLE void addCompanion(const QString &companion) { m_companions.insert(companion); }
     QSet<QString> companions() const { return m_companions; }
-    bool isCompanionWith(const General *general) const;
+    Q_INVOKABLE bool isCompanionWith(const General *general) const;
+    Q_INVOKABLE QStringList companionList() const { return m_companions.toList(); }
 
-    void addSkill(Skill *skill);
-    bool hasSkill(const Skill *skill) const;
-    QList<const Skill *> skills() const { return m_skills; }
+    Q_INVOKABLE void addSkill(Skill *skill);
+    Q_INVOKABLE bool hasSkill(const Skill *skill) const;
+    Q_INVOKABLE const QList<const Skill *> &skills() const { return m_skills; }
 
 private:
     int m_id;

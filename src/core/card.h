@@ -148,10 +148,10 @@ public:
     bool isValid(const QList<ServerPlayer *> &targets, ServerPlayer *source) const;
     bool isValid(const QList<const Player *> &targets, const Player *source) const;
 
-    Q_INVOKABLE virtual void onUse(GameLogic *logic, CardUseValue &use);
-    Q_INVOKABLE virtual void use(GameLogic *logic, CardUseValue &use);
-    Q_INVOKABLE virtual void onEffect(GameLogic *logic, CardEffectValue &effect);
-    Q_INVOKABLE virtual void effect(GameLogic *logic, CardEffectValue &effect);
+    Q_INVOKABLE virtual void onUse(GameLogic *logic, DataValue::CardUseValue &use);
+    Q_INVOKABLE virtual void use(GameLogic *logic, DataValue::CardUseValue &use);
+    Q_INVOKABLE virtual void onEffect(GameLogic *logic, DataValue::CardEffectValue &effect);
+    Q_INVOKABLE virtual void effect(GameLogic *logic, DataValue::CardEffectValue &effect);
 
     static Card *Find(const QList<Card *> &cards, uint id);
     static QList<Card *> Find(const QList<Card *> &cards, const QVariant &data);
@@ -224,8 +224,8 @@ public:
 
     Q_INVOKABLE TrickCard(Suit suit, int number);
 
-    void onEffect(GameLogic *logic, CardEffectValue &effect) override;
-    virtual bool isNullifiable(const CardEffectValue &effect) const;
+    void onEffect(GameLogic *logic, DataValue::CardEffectValue &effect) override;
+    virtual bool isNullifiable(const DataValue::CardEffectValue &effect) const;
 };
 
 class Skill;
@@ -247,8 +247,8 @@ public:
 
     Q_INVOKABLE EquipCard(Suit suit, int number);
 
-    void onUse(GameLogic *logic, CardUseValue &use) override;
-    void use(GameLogic *logic, CardUseValue &use) override;
+    void onUse(GameLogic *logic, DataValue::CardUseValue &use) override;
+    void use(GameLogic *logic, DataValue::CardUseValue &use) override;
     void complete(GameLogic *) override;
 
     Skill *skill() const { return m_skill; }
@@ -264,7 +264,7 @@ class GlobalEffect : public TrickCard
 public:
     Q_INVOKABLE GlobalEffect(Card::Suit suit, int number);
 
-    void onUse(GameLogic *logic, CardUseValue &use) override;
+    void onUse(GameLogic *logic, DataValue::CardUseValue &use) override;
 };
 
 class AreaOfEffect : public TrickCard
@@ -274,7 +274,7 @@ class AreaOfEffect : public TrickCard
 public:
     Q_INVOKABLE AreaOfEffect(Suit suit, int number);
 
-    void onUse(GameLogic *logic, CardUseValue &use) override;
+    void onUse(GameLogic *logic, DataValue::CardUseValue &use) override;
 };
 
 class SingleTargetTrick : public TrickCard
@@ -294,12 +294,12 @@ public:
 
     bool targetFeasible(const QList<const Player *> &selected, const Player *) const override;
     bool targetFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const override;
-    void onUse(GameLogic *logic, CardUseValue &use) override;
-    void use(GameLogic *logic, CardUseValue &use) override;
-    void onEffect(GameLogic *logic, CardEffectValue &effect) override;
-    void effect(GameLogic *logic, CardEffectValue &effect) override;
+    void onUse(GameLogic *logic, DataValue::CardUseValue &use) override;
+    void use(GameLogic *logic, DataValue::CardUseValue &use) override;
+    void onEffect(GameLogic *logic, DataValue::CardEffectValue &effect) override;
+    void effect(GameLogic *logic, DataValue::CardEffectValue &effect) override;
 
-    virtual void takeEffect(GameLogic *logic, CardEffectValue &effect); // Fs: I temporily created an empty function body here, for later we put this function to JS
+    virtual void takeEffect(GameLogic *logic, DataValue::CardEffectValue &effect); // Fs: I temporily created an empty function body here, for later we put this function to JS
 
 protected:
     QString m_judgePattern;
@@ -312,8 +312,8 @@ class MovableDelayedTrick : public DelayedTrick
 public:
     Q_INVOKABLE MovableDelayedTrick(Suit suit, int number);
 
-    void onUse(GameLogic *logic, CardUseValue &use) override;
-    void effect(GameLogic *logic, CardEffectValue &effect) override;
+    void onUse(GameLogic *logic, DataValue::CardUseValue &use) override;
+    void effect(GameLogic *logic, DataValue::CardEffectValue &effect) override;
     void complete(GameLogic *logic) override;
     bool isAvailable(const Player *player) const override;
 };

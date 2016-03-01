@@ -30,6 +30,8 @@
 #include <CRoom>
 #include <CServerAgent>
 
+using namespace DataValue;
+
 ServerPlayer::ServerPlayer(GameLogic *logic, CServerAgent *agent)
     : Player(logic)
     , m_logic(logic)

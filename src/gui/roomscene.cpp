@@ -467,7 +467,7 @@ void RoomScene::onArrangeCardDone(const QVariantList &results)
     m_client->replyToServer(S_COMMAND_ARRANGE_CARD, data);
 }
 
-void RoomScene::onDamageDone(const ClientPlayer *, const ClientPlayer *to, DamageValue::Nature, int damage)
+void RoomScene::onDamageDone(const ClientPlayer *, const ClientPlayer *to, DataValue::DamageValue::Nature, int damage)
 {
     if (damage <= 0 || to == nullptr)
         return;

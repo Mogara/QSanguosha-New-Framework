@@ -266,6 +266,12 @@
     <ClCompile Include="GeneratedFiles\Release\moc_package.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_engine.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_engine.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\client\client.h">
@@ -331,6 +337,9 @@
     <CustomBuild Include="..\..\src\core\package.h">
       <Filter>core</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\core\engine.h">
+      <Filter>core</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\core\protocol.h">
@@ -340,9 +349,6 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\cardpattern.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\engine.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\gamemode.h">

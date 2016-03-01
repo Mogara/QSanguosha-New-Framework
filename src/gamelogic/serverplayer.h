@@ -71,8 +71,8 @@ public:
     QList<Card *> askForCards(const QString &pattern, int num, bool optional = false);
     QList<Card *> askForCards(const QString &pattern, int minNum, int maxNum, bool optional = false);
     Card *askToChooseCard(ServerPlayer *owner, const QString &areaFlag = "hej", bool handcardVisible = false);
-    CardUseValue askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets = QList<ServerPlayer *>());
-    SkillInvokeValue askToInvokeSkill(const Skill *skill);
+    DataValue::CardUseValue askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets = QList<ServerPlayer *>());
+    DataValue::SkillInvokeValue askToInvokeSkill(const Skill *skill);
     QList<QList<Card *>> askToArrangeCard(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames = QStringList());
     QString askForOption(const QStringList &options);
 

@@ -24,6 +24,10 @@
 #include <QString>
 #include <QList>
 #include <QMap>
+#include <QVariant>
+
+// seems we should include "general.h" here, but seems like we shouldn't include it here....
+#include "general.h"
 
 class Card;
 class General;
@@ -31,6 +35,10 @@ class Package;
 class Skill;
 class GameMode;
 class CJSEngine;
+class Event;
+class EventHandler;
+class ServerPlayer;
+class GameLogic;
 
 class Engine
 {
@@ -66,6 +74,18 @@ private:
     QMap<uint, const General *> m_generals;
     QMap<uint, const Card *> m_cards;
     QMap<uint, const Skill *> m_skills;
+};
+
+class SanguoshaFunctions : public QObject
+{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE QObject *newSkill(const QString &type, const QString &name);
+    Q_INVOKABLE QObject *newPackage(const QString &name);
+    Q_INVOKABLE QObject *newGeneral(const QString &name, const QString &kingdom, int maxHp, General::Gender gender = General::Male);
+    Q_INVOKABLE QObject *newDataValue(const QString &type, const QVariant &value = QVariant());
+    Q_INVOKABLE QObject *newEvent(GameLogic *logic, const EventHandler *eh = nullptr, ServerPlayer *owner = nullptr, ServerPlayer *invoker = nullptr, bool isCompulsory = false, ServerPlayer *preferredTarget = nullptr);
 };
 
 #ifdef Sanguosha

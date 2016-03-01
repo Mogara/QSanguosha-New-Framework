@@ -151,7 +151,14 @@ QML_FILES = \
     script/Gui/RoomElement/TablePile.qml \
     script/engine.js \
     script/utility.js \
-    script/main.qml
+    script/main.qml \
+    script/Ai/smart-ai.js \
+    script/Ai/jsscript2.js \
+    script/Package/Packages.json \
+    script/Package/standard_cards/standard_cards.js \
+    script/Package/nos_standard/nos_standard.js \
+    script/Package/hegemony/hegemony.js \
+    script/Package/hegemony_cards/hegemony_cards.js
 
 # Embed some essential system resources
 embedresource{

@@ -119,4 +119,8 @@ private:
     C_DISABLE_COPY(CardArea);
 };
 
+Q_DECLARE_METATYPE(CardArea::Type)
+Q_DECLARE_METATYPE(CardArea::Direction)
+
+
 #endif // CARDAREA_H

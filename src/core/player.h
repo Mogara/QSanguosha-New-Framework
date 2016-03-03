@@ -309,5 +309,7 @@ protected:
 private:
     C_DISABLE_COPY(Player);
 };
+Q_DECLARE_METATYPE(Player::Phase)
+Q_DECLARE_METATYPE(Player::SkillArea)
 
 #endif // PLAYER_H

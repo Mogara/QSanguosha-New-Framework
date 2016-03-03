@@ -89,8 +89,8 @@ namespace DataValue
     class PhaseChangeValue : public QObject
     {
         Q_OBJECT
-            Q_PROPERTY(Player::Phase from MEMBER from)
-            Q_PROPERTY(Player::Phase to MEMBER to)
+        Q_PROPERTY(Player::Phase from MEMBER from)
+        Q_PROPERTY(Player::Phase to MEMBER to)
 
     public:
         Q_INVOKABLE PhaseChangeValue();
@@ -124,7 +124,7 @@ namespace DataValue
         };
         Q_ENUM(Reason)
 
-            ServerPlayer *from;
+        ServerPlayer *from;
         QList<ServerPlayer *> to;
         Card *card;
         Card *target;
@@ -140,6 +140,7 @@ namespace DataValue
         CardUseValue(const CardUseValue &arg2);
         CardUseValue &operator =(const CardUseValue &arg2);
     };
+    Q_DECLARE_METATYPE(CardUseValue::Reason)
 
     class CardEffectValue : public QObject
     {
@@ -182,7 +183,7 @@ namespace DataValue
         };
         Q_ENUM(Nature)
 
-            ServerPlayer *from;
+        ServerPlayer *from;
         ServerPlayer *to;
         Card *card;
         int damage;
@@ -196,6 +197,7 @@ namespace DataValue
 
         Q_INVOKABLE DamageValue();
     };
+    Q_DECLARE_METATYPE(DamageValue::Nature)
 
     class RecoverValue : public QObject
     {

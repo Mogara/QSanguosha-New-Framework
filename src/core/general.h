@@ -117,5 +117,6 @@ private:
 };
 
 typedef QList<const General *> GeneralList;
+Q_DECLARE_METATYPE(General::Gender)
 
 #endif // GENERAL_H

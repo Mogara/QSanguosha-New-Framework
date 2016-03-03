@@ -101,6 +101,9 @@ private:
     C_DISABLE_COPY(Skill);
 };
 
+Q_DECLARE_METATYPE(Skill::Frequency)
+Q_DECLARE_METATYPE(Skill::Type)
+
 class TriggerSkill : public Skill, public EventHandler
 {
     Q_OBJECT
@@ -169,6 +172,8 @@ public:
     //Check if selected cards are valid
     bool isValid(const QList<Card *> &cards, const Player *self, const QString &pattern) const;
 };
+
+Q_DECLARE_METATYPE(ViewAsSkill::Subtype)
 
 /*
 class OneCardViewAsSkill : public ViewAsSkill

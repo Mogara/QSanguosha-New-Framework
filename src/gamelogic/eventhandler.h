@@ -145,5 +145,6 @@ protected:
     bool m_equipSkill;
 
 };
+Q_DECLARE_METATYPE(EventHandler::EventType)
 
 #endif // EVENTHANDLER_H

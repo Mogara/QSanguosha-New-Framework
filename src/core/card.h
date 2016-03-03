@@ -187,6 +187,10 @@ private:
     C_DISABLE_COPY(Card)
 };
 
+Q_DECLARE_METATYPE(Card::Suit)
+Q_DECLARE_METATYPE(Card::Color)
+Q_DECLARE_METATYPE(Card::Type)
+
 template<typename T>
 bool Card::CheckAvailability(const Player *self)
 {
@@ -228,6 +232,8 @@ public:
     virtual bool isNullifiable(const DataValue::CardEffectValue &effect) const;
 };
 
+Q_DECLARE_METATYPE(TrickCard::SubType)
+
 class Skill;
 
 class EquipCard : public Card
@@ -256,6 +262,8 @@ public:
 protected:
     Skill *m_skill;
 };
+
+Q_DECLARE_METATYPE(EquipCard::SubType)
 
 class GlobalEffect : public TrickCard
 {

@@ -60,5 +60,7 @@ enum SanguoshaCommand
 
     SANGUOSHA_COMMAND_COUNT
 };
+Q_DECLARE_METATYPE(SanguoshaCommand)
+
 
 #endif // PROTOCOL_H

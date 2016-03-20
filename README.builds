@@ -3,11 +3,10 @@ Tips: "~" stands for the folder where the repo is in.
 
 To build QSanguosha targeting Windows
 
-1. Download and install Qt 5.5.0 from http://www.qt.io/download-open-source/.
+1. Download and install Qt 5.6.0 from http://download.qt.io/official_releases/qt/5.6/5.6.0/
 
-1.1 Choose Qt 5.5.0 for Windows 64-bit (VS 2013, 650 MB) if your OS is Windows 64-bit and you installed Visual Studio 2013.
-1.2 Choose Qt 5.5.0 for Windows 32-bit (VS 2013, 633 MB) if your OS is Windows 32-bit and you installed Visual Studio 2013.
-1.3 Choose Qt 5.5.0 for Windows 32-bit (MinGW 4.9.2, 959 MB) if you don't want Visual Studio 2013.
+1.1 Choose Qt 5.6.0 for Windows 64-bit (VS 2015, 836 MB) if your OS is Windows 64-bit and you installed Visual Studio 2015.
+1.2 Choose Qt 5.6.0 for Windows 32-bit (VS 2015, 840 MB) if your OS is Windows 32-bit and you installed Visual Studio 2015.
 
 2. Start up Qt Creator. Open Qsanguosha.pro right under ~, and click "Configure Project".
 
@@ -37,5 +36,7 @@ To build QSanguosha targeting Windows
     QtQuick.2/
 
 6.4 Copy the following files from VS redist to ~,
-    msvcp120.dll
-    msvcr120.dll
+    msvcp140.dll
+    concrt140.dll
+    vccorlib140.dll
+    vcruntime140.dll

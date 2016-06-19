@@ -54,7 +54,7 @@ namespace
         if (packageAdded || (packageLoaded && !addToEngine))
             return;
 
-        QJSValueList packageInitializers;
+        QMap<QString,QJSValue> packageInitializers;
         QStringList packages;
 
         QFile packageFile("script/Package/package.json");
@@ -115,7 +115,7 @@ namespace
                     qDebug() << "xz7";
                     continue;
                 }
-                packageInitializers << initPackageFunction;
+                packageInitializers.insert(packageName,initPackageFunction);
             }
         }
 
@@ -123,8 +123,8 @@ namespace
 
         engine->globalObject().setProperty("packageLoaded", true);
         if (addToEngine) {
-            qDebug() << "s3" << packageInitializers.size();
-            foreach (QJSValue packageInitializer, packageInitializers) {
+            qDebug() << "s3" << packageInitializers.values().size();
+            foreach (QJSValue packageInitializer, packageInitializers.values()) {
                 QJSValue packageValue = packageInitializer.call();
                 if (packageValue.isQObject()) {
                     Package *package = qobject_cast<Package *>(packageValue.toQObject());

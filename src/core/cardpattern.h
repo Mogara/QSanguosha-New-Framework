@@ -31,6 +31,7 @@ public:
     CardPattern(const QString &pattern);
 
     bool match(const Player *player, const Card *card) const;
+    const QString &toString() const { return m_str; }
 
 private:
     struct Exp
@@ -44,6 +45,7 @@ private:
     bool matchOne(const Player *player, const Card *card, const Exp &exp) const;
 
     QList<Exp> m_exps;
+    QString m_str;
 };
 
 #endif // CARDPATTERN_H

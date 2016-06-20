@@ -22,6 +22,18 @@
 #include "general.h"
 #include "engine.h"
 #include "skill.h"
+#include <QtQml>
+#include <QCoreApplication>
+
+namespace
+{
+    void registerQmlTypePlayer__()
+    {
+        qmlRegisterUncreatableType<Player>("Sanguosha.player", 1, 0, "Player", "Player is created in the game logic/client, and shouldn't be created in QML");
+    }
+}
+
+Q_COREAPP_STARTUP_FUNCTION(registerQmlTypePlayer__);
 
 Player::Player(QObject *parent)
     : CAbstractPlayer(parent)

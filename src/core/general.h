@@ -24,6 +24,7 @@
 
 #include <QSet>
 #include <QString>
+#include <QtQml>
 
 class Skill;
 class Package;
@@ -55,7 +56,7 @@ public:
     };
     Q_ENUM(Gender)
 
-    Q_INVOKABLE General(const QString &name, const QString &kingdom, int maxHp, Gender gender = Male);
+    Q_INVOKABLE explicit General(const QString &name = QString(), const QString &kingdom = QString(), int maxHp = 0, Gender gender = Male);
     ~General();
 
     uint id() const { return m_id; }
@@ -117,6 +118,6 @@ private:
 };
 
 typedef QList<const General *> GeneralList;
-Q_DECLARE_METATYPE(General::Gender)
+QML_DECLARE_TYPE(General::Gender);
 
 #endif // GENERAL_H

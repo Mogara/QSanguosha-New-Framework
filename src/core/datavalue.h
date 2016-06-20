@@ -28,6 +28,7 @@
 #include <QString>
 #include <QVariant>
 #include <QObject>
+#include <QtQml>
 
 class Card;
 class ServerPlayer;
@@ -35,12 +36,6 @@ class Skill;
 
 namespace DataValue
 {
-
-    extern QObject *newDataValue(const QString &type);
-    extern QObject *newDataValue(const QString &type, int value);
-    extern QObject *newDataValue(const QString &type, QObject *value);
-    extern QObject *newDataValue(const QString &type, const QString &value);
-
     class CardMove : public QObject
     {
         Q_OBJECT
@@ -65,26 +60,29 @@ namespace DataValue
         Q_INVOKABLE bool isRelevant(const Player *player) const;
         QVariant toVariant(bool open = false) const;
     };
+    QML_DECLARE_TYPE(CardMove);
 
     class CardsMoveValue : public QObject
     {
         Q_OBJECT
-            //     Q_PROPERTY(QList<CardMove> moves MEMBER moves)
-            //     Q_PROPERTY(QList<CardMove> virtualMoves MEMBER virtualMoves)
+        Q_PROPERTY(QQmlListProperty<CardMove> moves MEMBER movesProp CONSTANT)
+        Q_PROPERTY(QQmlListProperty<CardMove> virtualMoves MEMBER virtualMovesProp CONSTANT)
 
     public:
-        QList<CardMove> moves;
-        QList<CardMove> virtualMoves;
+        QList<CardMove *> moves;
+        QList<CardMove *> virtualMoves;
+
+        QQmlListProperty<CardMove> movesProp;
+        QQmlListProperty<CardMove> virtualMovesProp;
 
         Q_INVOKABLE CardsMoveValue();
         CardsMoveValue(const CardsMoveValue &move);
         CardsMoveValue &operator =(const CardsMoveValue &move);
 
-        Q_INVOKABLE void addSubMove(CardMove &move) { moves << move; }
-
         QVariant toVariant(bool open = false) const;
         QVariant toVariant(const Player *relevantPlayer) const;
     };
+    QML_DECLARE_TYPE(CardsMoveValue);
 
     class PhaseChangeValue : public QObject
     {
@@ -98,15 +96,16 @@ namespace DataValue
         Player::Phase from;
         Player::Phase to;
     };
+    QML_DECLARE_TYPE(PhaseChangeValue);
 
     class CardUseValue : public QObject
     {
         Q_OBJECT
         Q_PROPERTY(ServerPlayer *from MEMBER from)
-        //    Q_PROPERTY(QList<ServerPlayer *> to MEMBER to)
+        Q_PROPERTY(QQmlListProperty<ServerPlayer> to MEMBER toProp CONSTANT)
         Q_PROPERTY(Card *card MEMBER card)
         Q_PROPERTY(Card *target MEMBER target)
-        //    Q_PROPERTY(QList<ServerPlayer *> nullifiedList MEMBER nullifiedList)
+        Q_PROPERTY(QQmlListProperty<ServerPlayer> nullifiedList MEMBER nullifiedListProp CONSTANT)
         Q_PROPERTY(bool isNullified MEMBER isNullified)
         Q_PROPERTY(bool isOwnerUse MEMBER isOwnerUse)
         Q_PROPERTY(bool addHistory MEMBER addHistory)
@@ -136,28 +135,34 @@ namespace DataValue
         Reason reason;
         QVariant extra;
 
+        QQmlListProperty<ServerPlayer> toProp;
+        QQmlListProperty<ServerPlayer> nullifiedListProp;
+
         Q_INVOKABLE CardUseValue();
         CardUseValue(const CardUseValue &arg2);
         CardUseValue &operator =(const CardUseValue &arg2);
     };
-    Q_DECLARE_METATYPE(CardUseValue::Reason)
+    QML_DECLARE_TYPE(CardUseValue);
+    Q_DECLARE_METATYPE(CardUseValue::Reason);
 
     class CardEffectValue : public QObject
     {
         Q_OBJECT
-        Q_PROPERTY(CardUseValue use MEMBER use CONSTANT)
-        Q_PROPERTY(ServerPlayer *from MEMBER from CONSTANT)
+        Q_PROPERTY(const CardUseValue *use MEMBER use)
+        Q_PROPERTY(ServerPlayer *from MEMBER from)
         Q_PROPERTY(ServerPlayer *to MEMBER to)
 
     public:
-        CardUseValue &use;
-        ServerPlayer * &from;
+        const CardUseValue *use;
+        ServerPlayer *from;
         ServerPlayer *to;
 
-        Q_INVOKABLE CardEffectValue(CardUseValue &use);
+        CardEffectValue(const CardUseValue &use);
+        Q_INVOKABLE CardEffectValue();
 
-        Q_INVOKABLE bool isNullified() const { return use.isNullified || (to && use.nullifiedList.contains(to)); }
+        Q_INVOKABLE bool isNullified() const;
     };
+    QML_DECLARE_TYPE(CardEffectValue);
 
     class DamageValue : public QObject
     {
@@ -197,7 +202,8 @@ namespace DataValue
 
         Q_INVOKABLE DamageValue();
     };
-    Q_DECLARE_METATYPE(DamageValue::Nature)
+    QML_DECLARE_TYPE(DamageValue);
+    Q_DECLARE_METATYPE(DamageValue::Nature);
 
     class RecoverValue : public QObject
     {
@@ -215,6 +221,7 @@ namespace DataValue
 
         Q_INVOKABLE RecoverValue();
     };
+    QML_DECLARE_TYPE(RecoverValue);
 
     class CardResponseValue : public QObject
     {
@@ -235,6 +242,7 @@ namespace DataValue
 
         Q_INVOKABLE CardResponseValue();
     };
+    QML_DECLARE_TYPE(CardResponseValue);
 
     class JudgeValue : public QObject
     {
@@ -242,18 +250,24 @@ namespace DataValue
         Q_PROPERTY(ServerPlayer *who MEMBER who)
         Q_PROPERTY(Card *card MEMBER card)
         Q_PROPERTY(bool matched MEMBER matched)
+        Q_PROPERTY(QString pattern STORED false READ pattern WRITE setPattern)
 
     public:
         ServerPlayer *who;
         Card *card;
         bool matched;
 
-        Q_INVOKABLE JudgeValue(const QString &pattern);
+        Q_INVOKABLE JudgeValue();
+        JudgeValue(const QString &pattern);
         Q_INVOKABLE void updateResult();
+
+        const QString &pattern() const { return m_pattern.toString(); }
+        void setPattern(const QString &pattern) { m_pattern = CardPattern(pattern); }
 
     private:
         CardPattern m_pattern;
     };
+    QML_DECLARE_TYPE(JudgeValue);
 
     class DeathValue : public QObject
     {
@@ -267,6 +281,7 @@ namespace DataValue
 
         Q_INVOKABLE DeathValue();
     };
+    QML_DECLARE_TYPE(DeathValue);
 
     class SkillValue : public QObject
     {
@@ -282,14 +297,15 @@ namespace DataValue
 
         Q_INVOKABLE SkillValue();
     };
+    QML_DECLARE_TYPE(SkillValue);
 
     class SkillInvokeValue : public QObject
     {
         Q_OBJECT
         Q_PROPERTY(ServerPlayer *player MEMBER player)
         Q_PROPERTY(const Skill *skill MEMBER skill)
-        //     Q_PROPERTY(QList<ServerPlayer *> targets MEMBER targets)
-        //     Q_PROPERTY(QList<Card *> cards MEMBER cards)
+        Q_PROPERTY(QQmlListProperty<ServerPlayer> targets MEMBER targetsProp CONSTANT)
+        Q_PROPERTY(QQmlListProperty<Card> cards MEMBER cardsProp CONSTANT)
 
     public:
         ServerPlayer *player;
@@ -297,10 +313,14 @@ namespace DataValue
         QList<ServerPlayer *> targets;
         QList<Card *> cards;
 
+        QQmlListProperty<ServerPlayer> targetsProp;
+        QQmlListProperty<Card> cardsProp;
+
         Q_INVOKABLE SkillInvokeValue();
         SkillInvokeValue(const SkillInvokeValue &arg2);
         SkillInvokeValue &operator =(const SkillInvokeValue &arg2);
     };
+    QML_DECLARE_TYPE(SkillInvokeValue);
 
     class IntValue : public QObject
     {
@@ -310,8 +330,9 @@ namespace DataValue
     public:
         int value;
 
-        Q_INVOKABLE IntValue(int value);
+        Q_INVOKABLE IntValue(int value = 0);
     };
+    QML_DECLARE_TYPE(IntValue);
 }
 
 #endif // STRUCTS_H

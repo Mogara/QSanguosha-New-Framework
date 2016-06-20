@@ -315,7 +315,7 @@ void Card::onUse(GameLogic *logic, CardUseValue &use)
     move.toArea = logic->table();
     move.card = use.card->makeVirtual();
     move.isOpen = true;
-    moves.moves << move;
+    moves.moves.append(&move);
     logic->moveCards(moves);
 }
 
@@ -352,7 +352,7 @@ void Card::complete(GameLogic *logic)
         move.card = makeVirtual();
         move.toArea = logic->discardPile();
         move.isOpen = true;
-        moves.moves << move;
+        moves.moves.append(&move);
         logic->moveCards(moves);
     }
 }
@@ -425,20 +425,20 @@ void TrickCard::onEffect(GameLogic *logic, CardEffectValue &effect)
         foreach (ServerPlayer *player, players) {
             if (effect.from) {
                 if (effect.to)
-                    player->showPrompt("trick-nullification-1", effect.from, effect.to, effect.use.card);
+                    player->showPrompt("trick-nullification-1", effect.from, effect.to, effect.use->card);
                 else
-                    player->showPrompt("trick-nullification-2", effect.from, effect.use.card);
+                    player->showPrompt("trick-nullification-2", effect.from, effect.use->card);
             } else if (effect.to) {
-                player->showPrompt("trick-nullification-3", effect.to, effect.use.card);
+                player->showPrompt("trick-nullification-3", effect.to, effect.use->card);
             } else {
-                player->showPrompt("trick-nullification-4", effect.use.card);
+                player->showPrompt("trick-nullification-4", effect.use->card);
             }
             Card *card = player->askForCard("Nullification"); // @to-do: Takashiro: the ask of Nullification is actually a race request(according to the old framework)
             if (card) {
                 CardUseValue use;
                 use.from = player;
                 use.card = card;
-                use.target = effect.use.card;
+                use.target = effect.use->card;
                 use.extra = QVariant::fromValue(&effect);
                 logic->useCard(use);
                 break;
@@ -477,7 +477,7 @@ void EquipCard::use(GameLogic *logic, CardUseValue &use)
         move.card = this;
         move.toArea = logic->discardPile();
         move.isOpen = true;
-        moves.moves << move;
+        moves.moves << &move;
         logic->moveCards(moves);
         return;
     }
@@ -500,14 +500,14 @@ void EquipCard::use(GameLogic *logic, CardUseValue &use)
     install.card = makeVirtual();
     install.toArea = target->equipArea(); // we should make a virtual card of the equip card
     install.isOpen = true;
-    moves.moves << install;
+    moves.moves << &install;
 
     if (equippedCard != nullptr) {
         CardMove uninstall;
         uninstall.card = equippedCard;
         uninstall.toArea = logic->table();
         uninstall.isOpen = true;
-        moves.moves << uninstall;
+        moves.moves << &uninstall;
     }
     logic->moveCards(moves);
 
@@ -519,7 +519,7 @@ void EquipCard::use(GameLogic *logic, CardUseValue &use)
             discard.card = equippedCard;
             discard.toArea = logic->discardPile();
             discard.isOpen = true;
-            discards.moves << discard;
+            discards.moves << &discard;
             logic->moveCards(discards);
         }
     }
@@ -623,7 +623,7 @@ void DelayedTrick::use(GameLogic *logic, CardUseValue &use)
     else
         move.toArea = use.to.first()->delayedTrickArea();
 
-    moves.moves << move;
+    moves.moves << &move;
     logic->moveCards(moves);
 }
 
@@ -632,11 +632,11 @@ void DelayedTrick::onEffect(GameLogic *logic, CardEffectValue &effect)
     CardsMoveValue moves;
     CardMove move;
 
-    move.card = effect.use.card->makeVirtual();
+    move.card = effect.use->card->makeVirtual();
     move.isOpen = true;
     move.toArea = logic->table();
 
-    moves.moves << move;
+    moves.moves << &move;
     logic->moveCards(moves);
 
     TrickCard::onEffect(logic, effect);
@@ -684,7 +684,7 @@ void MovableDelayedTrick::effect(GameLogic *logic, CardEffectValue &effect)
             move.card = this;
             move.toArea = logic->discardPile();
             move.isOpen = true;
-            moves.moves << move;
+            moves.moves << &move;
             logic->moveCards(moves);
         }
     }
@@ -708,7 +708,7 @@ void MovableDelayedTrick::complete(GameLogic *logic)
         move.card = makeVirtual();
         move.toArea = target->delayedTrickArea();
         move.isOpen = true;
-        moves.moves << move;
+        moves.moves << &move;
         logic->moveCards(moves);
 
         CardUseValue use;

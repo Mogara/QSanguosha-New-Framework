@@ -32,10 +32,9 @@ class Package : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
-    Q_PROPERTY(bool isCreatedByJs READ isCreatedByJs WRITE setIsCreatedByJs MEMBER m_isCreatedByJs)
 
 public:
-    Q_INVOKABLE Package(const QString &name);
+    Q_INVOKABLE explicit Package(const QString &name = QString());
     virtual ~Package();
 
     QString name() const { return m_name; }
@@ -48,9 +47,6 @@ public:
 
     Q_INVOKABLE void addCard(Card *card);
     void addCards(const QList<Card *> &cards);
-
-    bool isCreatedByJs() const;
-    void setIsCreatedByJs(bool is);
 
 private:
     QString m_name;

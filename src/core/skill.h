@@ -37,7 +37,7 @@ class Skill : public QObject
     Q_OBJECT
     friend class General;
     Q_PROPERTY(uint id READ id)
-    Q_PROPERTY(QString name READ name)
+    Q_PROPERTY(QString name READ name WRITE setName)
     Q_PROPERTY(Type type READ type)
     Q_PROPERTY(int subtype READ subtype)
     Q_PROPERTY(Frequency frequency MEMBER m_frequency READ frequency WRITE setFrequency)
@@ -66,15 +66,16 @@ public:
     };
     Q_ENUM(Type)
 
-    Q_INVOKABLE explicit Skill(const QString &name);
+    Q_INVOKABLE explicit Skill(const QString &name = QString());
     virtual ~Skill();
 
     uint id() const { return m_id; }
-    QString name() const { return m_name; }
+    const QString &name() const { return m_name; }
+    void setName(const QString &name) { m_name = name; }
     Type type() const { return m_type; }
     int subtype() const { return m_subtype; }
     Frequency frequency() const { return m_frequency; }
-    QList<const Skill *> subskills() const { return m_subskills; }
+    const QList<const Skill *> &subskills() const { return m_subskills; }
     bool isLordSkill() const { return m_lordSkill; }
     const Skill *topSkill() const;
 
@@ -82,8 +83,8 @@ public:
 
     void setFrequency(Frequency frequency);
 
-    QJSValue skillFuncs() const;
-    static Skill *newSkill(const QString &type, const QString &name);
+    Q_INVOKABLE void setSkillScript(QObject *script);
+    inline QObject *skillScript() const;
 
 protected:
     uint m_id;
@@ -100,7 +101,6 @@ private:
 private:
     C_DISABLE_COPY(Skill);
 };
-
 Q_DECLARE_METATYPE(Skill::Frequency)
 Q_DECLARE_METATYPE(Skill::Type)
 
@@ -109,7 +109,7 @@ class TriggerSkill : public Skill, public EventHandler
     Q_OBJECT
 
 public:
-    Q_INVOKABLE explicit TriggerSkill(const QString &name);
+    Q_INVOKABLE explicit TriggerSkill(const QString &name = QString());
 
     using Skill::name;
     using Skill::m_name;
@@ -120,13 +120,14 @@ public:
 
     bool onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player = nullptr) const final override;
 };
+QML_DECLARE_TYPE(TriggerSkill);
 
 class StatusSkill : public TriggerSkill
 {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE explicit StatusSkill(const QString &name);
+    Q_INVOKABLE explicit StatusSkill(const QString &name = QString());
 
     void validate(ServerPlayer *target) const;
     void invalidate(ServerPlayer *target) const;
@@ -134,6 +135,7 @@ public:
 
     bool effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player) const final override;
 };
+QML_DECLARE_TYPE(StatusSkill);
 
 /*
 class MasochismSkill : public TriggerSkill
@@ -163,7 +165,7 @@ public:
     };
     Q_ENUM(Subtype)
 
-    Q_INVOKABLE explicit ViewAsSkill(const QString &name);
+    Q_INVOKABLE explicit ViewAsSkill(const QString &name = QString());
 
     bool isAvailable(const Player *self, const QString &pattern) const;
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const;
@@ -172,7 +174,7 @@ public:
     //Check if selected cards are valid
     bool isValid(const QList<Card *> &cards, const Player *self, const QString &pattern) const;
 };
-
+QML_DECLARE_TYPE(ViewAsSkill);
 Q_DECLARE_METATYPE(ViewAsSkill::Subtype)
 
 /*
@@ -197,7 +199,7 @@ class ProactiveSkill : public ViewAsSkill
 
 
 public:
-    Q_INVOKABLE explicit ProactiveSkill(const QString &name);
+    Q_INVOKABLE explicit ProactiveSkill(const QString &name = QString());
 
     //Check if selected players are valid
     bool isValid(const QList<ServerPlayer *> &targets, ServerPlayer *source) const;
@@ -215,6 +217,7 @@ public:
     bool viewFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const final override;
     Card *viewAs(const QList<Card *> &cards, const Player *source) const final override;
 };
+QML_DECLARE_TYPE(ProactiveSkill);
 
 /*
 class RetrialSkill : public ProactiveSkill
@@ -251,12 +254,13 @@ class CardModSkill : public Skill
     Q_OBJECT
 
 public:
-    Q_INVOKABLE explicit CardModSkill(const QString &name);
+    Q_INVOKABLE explicit CardModSkill(const QString &name = QString());
 
     bool targetFilter(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
     int extraDistanceLimit(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
     int extraMaxTargetNum(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const;
     int extraUseNum(const Card *card, const Player *player) const;
 };
+QML_DECLARE_TYPE(CardModSkill);
 
 #endif // SKILL_H

@@ -71,7 +71,7 @@ void ServerPlayer::drawCards(int n)
         move.fromArea = m_logic->drawPile();
         move.toArea = handcardArea();
         move.card = m_logic->getDrawPileCard();
-        moves.moves << move;
+        moves.moves << &move;
     }
 
     m_logic->moveCards(moves);
@@ -84,7 +84,7 @@ void ServerPlayer::recastCard(Card *card)
     move.card = card;
     move.toArea = m_logic->table();
     move.isOpen = true;
-    recast.moves << move;
+    recast.moves << &move;
     m_logic->moveCards(recast);
 
     const CardArea *table = m_logic->table();
@@ -94,7 +94,7 @@ void ServerPlayer::recastCard(Card *card)
         move.card = card;
         move.toArea = m_logic->discardPile();
         move.isOpen = true;
-        discard.moves << move;
+        discard.moves << &move;
         m_logic->moveCards(discard);
     }
 

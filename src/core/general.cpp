@@ -20,6 +20,10 @@
 #include "general.h"
 #include "skill.h"
 
+#include <QtQml>
+
+C_REGISTER_QMLTYPE("Sanguosha.General", 1, 0, General);
+
 General::General(const QString &name, const QString &kingdom, int maxHp, Gender gender)
     : m_name(name)
     , m_kingdom(kingdom)

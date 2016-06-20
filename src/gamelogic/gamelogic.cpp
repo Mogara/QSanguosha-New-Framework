@@ -500,31 +500,31 @@ void GameLogic::moveCards(CardsMoveValue &moves)
     filterCardsMove(moves);
 
     for (int i = 0; i < moves.moves.length(); ++i) {
-        const CardMove &move = moves.moves.at(i);
-        if (move.fromArea->contains(move.card, true)) {
-            if (move.fromArea->remove(move.card)) {
-                move.toArea->add(move.card, move.toDirection);
-                m_cardPosition[move.card] = move.toArea;
+        const CardMove *move = moves.moves.at(i);
+        if (move->fromArea->contains(move->card, true)) {
+            if (move->fromArea->remove(move->card)) {
+                move->toArea->add(move->card, move->toDirection);
+                m_cardPosition[move->card] = move->toArea;
             }
         }
     }
 
     for (int i = 0; i < moves.virtualMoves.length(); ++i) {
-        const CardMove &move = moves.virtualMoves.at(i);
+        const CardMove *move = moves.virtualMoves.at(i);
         // there are cases each of which fromArea can be nullptr sometimes, so we shouldn't relay on the move.fromArea
         // but if the move.fromArea != nullptr, the move.fromArea must be virtual card area
         bool flag = true;
-        if (move.fromArea != nullptr) {
+        if (move->fromArea != nullptr) {
             // we should check the virtual card is actually in that area
-            if (move.fromArea->contains(move.card))
-                flag = move.fromArea->remove(move.card);
+            if (move->fromArea->contains(move->card))
+                flag = move->fromArea->remove(move->card);
         }
         // if move.fromArea has succeeded in removing the old card, we should judge whether the toPosition is virtual card area
-        if (flag && move.toArea->isVirtualCardArea()) {
-            move.toArea->add(move.card);
-            m_cardPosition[move.card] = move.toArea;
+        if (flag && move->toArea->isVirtualCardArea()) {
+            move->toArea->add(move->card);
+            m_cardPosition[move->card] = move->toArea;
         } else
-            m_cardPosition.remove(move.card);
+            m_cardPosition.remove(move->card);
     }
 
     QList<ServerPlayer *> viewers = players();
@@ -632,16 +632,16 @@ bool GameLogic::takeCardEffect(CardEffectValue &effect)
             if (!canceled) {
                 canceled = trigger(EventHandler::CardEffected, effect.to, &effect);
                 if (!canceled) {
-                    effect.use.card->onEffect(this, effect);
+                    effect.use->card->onEffect(this, effect);
                     if (effect.to->isAlive() && !effect.isNullified())
-                        effect.use.card->effect(this, effect);
+                        effect.use->card->effect(this, effect);
                 }
             }
         }
-    } else if (effect.use.target) {
-        effect.use.card->onEffect(this, effect);
+    } else if (effect.use->target) {
+        effect.use->card->onEffect(this, effect);
         if (!effect.isNullified())
-            effect.use.card->effect(this, effect);
+            effect.use->card->effect(this, effect);
     }
     trigger(EventHandler::PostCardEffected, effect.to, &effect);
     return !canceled;
@@ -670,7 +670,7 @@ bool GameLogic::respondCard(CardResponseValue &response)
     move.card = response.card;
     move.toArea = m_table;
     move.isOpen = true;
-    moves.moves << move;
+    moves.moves << &move;
     moveCards(moves);
 
     bool broken = false;
@@ -683,7 +683,7 @@ bool GameLogic::respondCard(CardResponseValue &response)
         move.card = response.card;
         move.toArea = m_discardPile;
         move.isOpen = true;
-        moves.moves << move;
+        moves.moves << &move;
         moveCards(moves);
     }
 
@@ -703,7 +703,7 @@ void GameLogic::judge(JudgeValue &judge)
     move.card = judge.card;
     move.toArea = judge.who->judgeCards();
     move.isOpen = true;
-    moves.moves << move;
+    moves.moves << &move;
     moveCards(moves);
 
     trigger(EventHandler::AskForRetrial, nullptr, &judge);
@@ -718,7 +718,7 @@ void GameLogic::judge(JudgeValue &judge)
         move.card = judge.card;
         move.toArea = m_discardPile;
         move.isOpen = true;
-        moves.moves << move;
+        moves.moves << &move;
         moveCards(moves);
     }
 }
@@ -736,7 +736,7 @@ void GameLogic::retrialCost(JudgeValue &judge, Card *card, bool isReplace)
     move.card = card;
     move.toArea = judge.who->judgeCards();
     move.isOpen = true;
-    moves.moves << move;
+    moves.moves << &move;
 
     CardMove move2;
     move2.card = judge.card;
@@ -745,7 +745,7 @@ void GameLogic::retrialCost(JudgeValue &judge, Card *card, bool isReplace)
     else
         move2.toArea = m_discardPile;
     move2.isOpen = true;
-    moves.moves << move2;
+    moves.moves << &move2;
     moveCards(moves);
 
     if (trigger_responded) {
@@ -1056,10 +1056,10 @@ void GameLogic::prepareToStart()
     m_gameRule->prepareToStart(this);
 }
 
-void GameLogic::filterCardsMove(CardsMoveValue &moves)
+void GameLogic::filterCardsMove(CardsMoveValue &moves) // This function is not as we thought it to be. it must crash at this time. todo_Fs
 {
     // thanks to implicit sharing!!
-    QList<CardMove> move = moves.moves;
+    QList<CardMove *> move = moves.moves;
     moves.moves.clear();
 
 
@@ -1069,44 +1069,44 @@ void GameLogic::filterCardsMove(CardsMoveValue &moves)
     for (int i = 0; i < move.length(); ++i) {
         // for each card, we should fill the source information into it
         // for virtual cards, we should find the real cards of it to move
-        const CardMove &singleMove = move.value(i);
-        if (singleMove.card == nullptr)
+        const CardMove *singleMove = move.value(i);
+        if (singleMove->card == nullptr)
             continue;
         QList<Card *> cards;
-        if (singleMove.card->isVirtual())
-            cards << singleMove.card->realCards();
+        if (singleMove->card->isVirtual())
+            cards << singleMove->card->realCards();
         else
-            cards << singleMove.card;
+            cards << singleMove->card;
 
         // for real cards
-        if (singleMove.fromArea == nullptr) {
-            CardMove modifiedMove = singleMove;
+        if (singleMove->fromArea == nullptr) {
+            CardMove modifiedMove = *singleMove;
             foreach (Card *card, cards) {
                 CardArea *area = m_cardPosition.value(card);
                 modifiedMove.fromArea = area;
                 modifiedMove.card = card;
-                moves.moves << modifiedMove;
+                moves.moves << &modifiedMove;
             }
         } else {
             foreach (Card *card, cards) {
                 // check the card is actually in the position!!! if not, we don't move it
-                if (singleMove.fromArea->contains(card, true)) {
-                    CardMove modifiedMove = singleMove;
+                if (singleMove->fromArea->contains(card, true)) {
+                    CardMove modifiedMove = *singleMove;
                     modifiedMove.card = card;
-                    moves.moves << modifiedMove;
+                    moves.moves << &modifiedMove;
                 }
             }
         }
 
         // for virtual cards, we should add it to virtual move
-        if (singleMove.card->isVirtual()) {
-            CardMove modifiedMove = singleMove;
-            if (singleMove.fromArea == nullptr)
-                modifiedMove.fromArea = m_cardPosition.value(singleMove.card);
-            else if (!singleMove.fromArea->contains(singleMove.card))
+        if (singleMove->card->isVirtual()) {
+            CardMove modifiedMove = *singleMove;
+            if (singleMove->fromArea == nullptr)
+                modifiedMove.fromArea = m_cardPosition.value(singleMove->card);
+            else if (!singleMove->fromArea->contains(singleMove->card))
                 modifiedMove.fromArea = nullptr;
             // we should still move the cards even if there is no fromArea of virtual card
-            moves.virtualMoves << modifiedMove;
+            moves.virtualMoves << &modifiedMove;
         }
     }
 }

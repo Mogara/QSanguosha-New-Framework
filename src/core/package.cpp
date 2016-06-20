@@ -20,16 +20,18 @@
 #include "package.h"
 #include "card.h"
 #include "general.h"
+#include <QtQml>
 
-namespace{
+C_REGISTER_QMLTYPE("Sanguosha.Package", 1, 0, Package);
 
-template<typename T> uint GenerateId()
+namespace
 {
-    static uint id = 0;
-    id++;
-    return id;
-}
-
+    template<typename T> uint GenerateId()
+    {
+        static uint id = 0;
+        id++;
+        return id;
+    }
 }
 
 Package::Package(const QString &name)
@@ -39,6 +41,7 @@ Package::Package(const QString &name)
 
 Package::~Package()
 {
+    // todo: use parent/children to manage the card and generals
     foreach (Card *card, m_cards)
         delete card;
 
@@ -99,14 +102,4 @@ void Package::addCards(const QList<Card *> &cards)
     foreach (Card *card, cards)
         card->m_id = GenerateId<Card>();
     m_cards << cards;
-}
-
-bool Package::isCreatedByJs() const
-{
-    return m_isCreatedByJs;
-}
-
-void Package::setIsCreatedByJs(bool is)
-{
-    m_isCreatedByJs = is;
 }

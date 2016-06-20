@@ -30,16 +30,23 @@
 #include <QCoreApplication>
 
 #include <QThreadStorage>
-#include <CJSEngine>
+#include <QQmlEngine>
 #include <QDebug>
 
 namespace
 {
-    QThreadStorage<CJSEngine> jsEngineStorage;
-}
+    QThreadStorage<QQmlEngine> qmlEngineStorage;
 
-namespace
-{
+    QQmlEngine *getQmlEngine()
+    {
+        if (!qmlEngineStorage.hasLocalData()) {
+            QQmlEngine &engine = qmlEngineStorage.localData();
+            // should we call loadPackages() first?
+        }
+
+        return &qmlEngineStorage.localData();
+    }
+
     void loadGameModes()
     {
         // dummy for now because the modes are now in CPP
@@ -47,126 +54,10 @@ namespace
 
     void loadPackages(bool addToEngine = false)
     {
-        CJSEngine *engine = Engine::JsEngineInstance(true);
-        bool packageLoaded = engine->globalObject().hasProperty("packageLoaded") && engine->globalObject().property("packageLoaded").isBool() && engine->globalObject().property("packageLoaded").toBool();
-        bool packageAdded = engine->globalObject().hasProperty("packageAdded") && engine->globalObject().property("packageAdded").isBool() && engine->globalObject().property("packageAdded").toBool();
-
-        if (packageAdded || (packageLoaded && !addToEngine))
-            return;
-
-        QJSValueList packageInitializers;
-        QStringList packages;
-
-        QFile packageFile("script/Package/package.json");
-        if (packageFile.open(QIODevice::ReadOnly)) {
-            QJsonParseError error;
-            QJsonDocument packageJson = QJsonDocument::fromJson(packageFile.readAll(), &error);
-            packageFile.close();
-            if (error.error != QJsonParseError::NoError) {
-                // @todo: Takashiro: report error to the UI system!!! there is no way calling QMessageBox::critical
-                qDebug() << "xz1";
-                return;
-            } else {
-                QVariantList apackages = packageJson.array().toVariantList();
-                if (apackages.isEmpty()) {
-                    // @todo: Takashiro: report error to the UI system!!! there is no way calling QMessageBox::critical
-                    qDebug() << "xz2";
-                    return;
-                } 
-                foreach (const QVariant &packageNameV, apackages) {
-                    if (!packageNameV.canConvert(QVariant::String)) {
-                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                        qDebug() << "xz3";
-                        continue;
-                    }
-                    QString packageName = packageNameV.toString();
-                    packages << packageName;
-                }
-            }
-        } else {
-            // @todo: Takashiro: report error to the UI system!!! there is no way calling QMessageBox::critical
-            qDebug() << "xz4";
-            return;
-        }
-
-        qDebug() << "s1";
-
-        foreach (const QString &packageName, packages) {
-            qDebug() << packageName;
-            if (!packageLoaded) {
-                QFile singlePackageFile("script/Package/" + packageName + "/" + packageName + ".js");
-                if (!singlePackageFile.open(QIODevice::ReadOnly)) {
-                    // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                    qDebug() << "xz5";
-                    continue;
-                }
-                QJSValue evaluateResult = engine->evaluate(singlePackageFile.readAll(), "script/Package/" + packageName + "/" + packageName + ".js");
-                singlePackageFile.close();
-                if (evaluateResult.isError()) {
-                    // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                    qDebug() << evaluateResult.toString() << evaluateResult.property("lineNumber").toInt();
-                    continue;
-                }
-            }
-            if (addToEngine) {
-                QJSValue initPackageFunction = engine->globalObject().property("newPackage" + packageName);
-                if (!initPackageFunction.isCallable()) {
-                    // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                    qDebug() << "xz7";
-                    continue;
-                }
-                packageInitializers << initPackageFunction;
-            }
-        }
-
-        qDebug() << "s2";
-
-        engine->globalObject().setProperty("packageLoaded", true);
-        if (addToEngine) {
-            qDebug() << "s3" << packageInitializers.size();
-            foreach (QJSValue packageInitializer, packageInitializers) {
-                QJSValue packageValue = packageInitializer.call();
-                if (packageValue.isQObject()) {
-                    Package *package = qobject_cast<Package *>(packageValue.toQObject());
-                    if (package == nullptr) {
-                        qDebug() << "xx1";
-                        // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                        continue;
-                    }
-                    qDebug() << "s";
-                    package->setIsCreatedByJs(true);
-                    Sanguosha.addPackage(package);
-                } else if (packageValue.isError()) {
-                    // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                    qDebug() << packageValue.toString() << packageValue.property("lineNumber").toInt();
-                } else {
-                    // @todo: Takashiro: report warning to the UI system!!! there is no way calling QMessageBox::warning
-                    qDebug() << "xx2";
-                    continue;
-                }
-            }
-            engine->globalObject().setProperty("packageAdded", true);
-        }
     }
 }
 
-CJSEngine *Engine::JsEngineInstance(bool create /* = false */)
-{
-    if (jsEngineStorage.hasLocalData())
-        return &jsEngineStorage.localData();
 
-    if (create) {
-        CJSEngine &jsEngine = jsEngineStorage.localData(); // create a default initialized JS engine in the internal code of QThreadStorage
-        // @todo_Fs: Shall we load a start script in this period? if so, we can put the initializations in JS file
-        SanguoshaFunctions *functions = new SanguoshaFunctions;
-        QObject::connect(&jsEngine, &CJSEngine::destroyed, functions, &SanguoshaFunctions::deleteLater);
-        QJSValue SanguoshaValue = jsEngine.newQObject(functions);
-        jsEngine.globalObject().setProperty("Sanguosha", SanguoshaValue);
-        return &jsEngine;
-    }
-
-    return nullptr;
-}
 
 Engine::Engine()
 {
@@ -183,10 +74,8 @@ Engine::~Engine()
     foreach (const GameMode *mode, m_modes)
         delete mode;
 
-    foreach (Package *package, m_packages) {
-        if (!package->isCreatedByJs()) // JS packages can be deleted by the Garbage Collector
-            delete package;
-    }
+    foreach (Package *package, m_packages)
+        delete package;
 }
 
 const GameMode *Engine::mode(const QString &name) const
@@ -238,41 +127,4 @@ void Engine::init()
 {
     loadGameModes();
     loadPackages(true);
-}
-
-QObject *SanguoshaFunctions::newSkill(const QString &type, const QString &name)
-{
-    return Skill::newSkill(type, name);
-}
-
-QObject *SanguoshaFunctions::newPackage(const QString &name)
-{
-    return new Package(name);
-}
-
-QObject *SanguoshaFunctions::newGeneral(const QString &name, const QString &kingdom, int maxHp, General::Gender gender /*= General::Male*/)
-{
-    return new General(name, kingdom, maxHp, gender);
-}
-
-QObject *SanguoshaFunctions::newDataValue(const QString &type, const QVariant &value /*= QVariant()*/)
-{
-    if (value.isNull())
-        return DataValue::newDataValue(type);
-    else if (value.canConvert(QVariant::String))
-        return DataValue::newDataValue(type, value.toString());
-    else if (value.canConvert(QVariant::Int))
-        return DataValue::newDataValue(type, value.toInt());
-    else /*if (value.canConvert<QObject *>())*/ {
-        QObject *object = value.value<QObject *>();
-        if (object != nullptr)
-            return DataValue::newDataValue(type, object);
-    }
-
-    return nullptr;
-}
-
-QObject *SanguoshaFunctions::newEvent(GameLogic *logic, const EventHandler *eh /*= nullptr*/, ServerPlayer *owner /*= nullptr*/, ServerPlayer *invoker /*= nullptr*/, bool isCompulsory /*= false*/, ServerPlayer *preferredTarget /*= nullptr*/)
-{
-    return new Event(logic, eh, owner, invoker, isCompulsory, preferredTarget);
 }

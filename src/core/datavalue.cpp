@@ -21,58 +21,23 @@
 #include "card.h"
 #include "serverplayer.h"
 #include "datavalue.h"
+#include <QtQml>
 
 namespace DataValue
 {
-
-    namespace
-    {
-#define DATAVALUE_METAOBJECT(x) std::make_pair(QString(#x), &x::staticMetaObject)
-        QMap<QString, const QMetaObject *> metaObjects {
-            DATAVALUE_METAOBJECT(CardMove),
-            DATAVALUE_METAOBJECT(CardsMoveValue),
-            DATAVALUE_METAOBJECT(PhaseChangeValue),
-            DATAVALUE_METAOBJECT(CardUseValue),
-            DATAVALUE_METAOBJECT(CardEffectValue),
-            DATAVALUE_METAOBJECT(DamageValue),
-            DATAVALUE_METAOBJECT(RecoverValue),
-            DATAVALUE_METAOBJECT(CardResponseValue),
-            DATAVALUE_METAOBJECT(JudgeValue),
-            DATAVALUE_METAOBJECT(DeathValue),
-            DATAVALUE_METAOBJECT(SkillValue),
-            DATAVALUE_METAOBJECT(SkillInvokeValue),
-            DATAVALUE_METAOBJECT(IntValue)
-        };
-#undef DATAVALUE_METAOBJECT
-    }
-
-    QObject *newDataValue(const QString &type)
-    {
-        if (!metaObjects.contains(type))
-            return nullptr;
-
-        const QMetaObject *meta = metaObjects.value(type);
-        QObject *value = meta->newInstance();
-        return value;
-    }
-
-    QObject *newDataValue(const QString &, int value)
-    {
-        return new IntValue(value);
-    }
-
-    QObject *newDataValue(const QString &, QObject *value) // we must use a list to deal with this condition!!!
-    {
-        CardUseValue *use = qobject_cast<CardUseValue *>(value);
-        if (use == nullptr)
-            return nullptr;
-        return new CardEffectValue(*use);
-    }
-
-    QObject *newDataValue(const QString &, const QString &value)
-    {
-        return new JudgeValue(value);
-    }
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, CardMove);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, CardsMoveValue);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, PhaseChangeValue);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, CardUseValue);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, CardEffectValue);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, DamageValue);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, RecoverValue);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, CardResponseValue);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, JudgeValue);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, DeathValue);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, SkillValue);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, SkillInvokeValue);
+    C_REGISTER_QMLTYPE("Sanguosha.DataValues", 1, 0, IntValue);
 
     CardMove::CardMove()
         : fromArea(nullptr), toArea(nullptr), toDirection(CardArea::UndefinedDirection), card(nullptr), isOpen(false)
@@ -136,6 +101,8 @@ namespace DataValue
     }
 
     CardsMoveValue::CardsMoveValue()
+        : movesProp(this, moves)
+        , virtualMovesProp(this, virtualMoves)
     {
 
     }
@@ -143,6 +110,8 @@ namespace DataValue
 
     CardsMoveValue::CardsMoveValue(const CardsMoveValue &move)
         : moves(move.moves)
+        , movesProp(this, moves)
+        , virtualMovesProp(this, virtualMoves)
     {
 
     }
@@ -151,8 +120,8 @@ namespace DataValue
     {
         QVariantMap map;
         QVariantList list;
-        foreach(const CardMove &move, moves)
-            list << move.toVariant(open);
+        foreach(CardMove *move, moves)
+            list << move->toVariant(open);
         map["moves"] = list;
         return map;
     }
@@ -161,8 +130,8 @@ namespace DataValue
     {
         QVariantMap map;
         QVariantList list;
-        foreach(const CardMove &move, moves)
-            list << move.toVariant(move.isRelevant(relevantPlayer));
+        foreach(const CardMove *move, moves)
+            list << move->toVariant(move->isRelevant(relevantPlayer));
         map["moves"] = list;
         return map;
     }
@@ -188,11 +157,15 @@ namespace DataValue
         , addHistory(true)
         , isHandcard(true)
         , reason(PlayReason)
+        , toProp(this, to)
+        , nullifiedListProp(this, nullifiedList)
     {
     }
 
     CardUseValue::CardUseValue(const CardUseValue &arg2)
         : QObject()
+        , toProp(this, to)
+        , nullifiedListProp(this, nullifiedList)
     {
         from = arg2.from;
         to = arg2.to;
@@ -224,11 +197,30 @@ namespace DataValue
         return *this;
     }
 
-    CardEffectValue::CardEffectValue(CardUseValue &use)
-        : use(use)
+    CardEffectValue::CardEffectValue(const CardUseValue &use)
+        : use(&use)
         , from(use.from)
         , to(nullptr)
     {
+    }
+
+    CardEffectValue::CardEffectValue()
+        : use(nullptr), from(nullptr), to(nullptr)
+    {
+
+    }
+
+    bool CardEffectValue::isNullified() const
+    {
+        if (use->isNullified)
+            return true;
+
+        for (int i = 0; i < use->nullifiedList.count(); ++i) {
+            if (use->nullifiedList.at(i) == to)
+                return true;
+        }
+
+        return false;
     }
 
     DamageValue::DamageValue()
@@ -261,6 +253,15 @@ namespace DataValue
     {
     }
 
+    JudgeValue::JudgeValue()
+        : who(nullptr)
+        , card(nullptr)
+        , matched(false)
+        , m_pattern(".")
+    {
+
+    }
+
     JudgeValue::JudgeValue(const QString &pattern)
         : who(nullptr)
         , card(nullptr)
@@ -290,12 +291,16 @@ namespace DataValue
     SkillInvokeValue::SkillInvokeValue()
         : player(nullptr)
         , skill(nullptr)
+        , targetsProp(this, targets)
+        , cardsProp(this, cards)
     {
 
     }
 
     SkillInvokeValue::SkillInvokeValue(const SkillInvokeValue &arg2)
         : QObject()
+        , targetsProp(this, targets)
+        , cardsProp(this, cards)
     {
         player = arg2.player;
         skill = arg2.skill;

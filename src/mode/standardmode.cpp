@@ -159,7 +159,7 @@ private:
                 move.card = c;
                 move.toArea = logic->discardPile();
                 move.isOpen = true;
-                moves.moves << move;
+                moves.moves << &move;
             }
             logic->moveCards(moves);
         }

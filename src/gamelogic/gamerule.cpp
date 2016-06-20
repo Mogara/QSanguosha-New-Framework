@@ -91,7 +91,7 @@ void onPhaseProceeding(GameLogic *logic, ServerPlayer *current, QObject *)
                 move.card = card;
                 move.toArea = logic->discardPile();
                 move.isOpen = true;
-                moves.moves << move;
+                moves.moves << &move;
             }
             logic->moveCards(moves);
         }

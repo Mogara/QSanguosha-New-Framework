@@ -30,29 +30,18 @@
 #include <CJSEngine>
 #include <QFile>
 #include <QJSValueIterator>
+#include <QtQml>
+#include <QThreadStorage>
+
+C_REGISTER_QMLTYPE("Sanguosha.Skills", 1, 0, TriggerSkill);
+C_REGISTER_QMLTYPE("Sanguosha.Skills", 1, 0, StatusSkill);
+C_REGISTER_QMLTYPE("Sanguosha.Skills", 1, 0, ViewAsSkill);
+C_REGISTER_QMLTYPE("Sanguosha.Skills", 1, 0, ProactiveSkill);
+C_REGISTER_QMLTYPE("Sanguosha.Skills", 1, 0, CardModSkill);
 
 namespace
 {
-    QThreadStorage<QCache<const Skill *, QJSValue> > skillFuncStorage;
-#define SKILL_METAOBJECT(x) std::make_pair(QString(#x), &x::staticMetaObject)
-    QMap<QString, const QMetaObject *> skillMetaObjects {
-        SKILL_METAOBJECT(TriggerSkill),
-        SKILL_METAOBJECT(StatusSkill),
-        SKILL_METAOBJECT(ViewAsSkill),
-        SKILL_METAOBJECT(ProactiveSkill),
-        SKILL_METAOBJECT(CardModSkill)
-    };
-#undef SKILL_METAOBJECT
-}
-
-Skill *Skill::newSkill(const QString &type, const QString &name)
-{
-    if (!skillMetaObjects.contains(type))
-        return nullptr;
-
-    const QMetaObject *meta = skillMetaObjects.value(type);
-    Skill *skill = qobject_cast<Skill *>(meta->newInstance(Q_ARG(QString, name)));
-    return skill;
+    QThreadStorage<QHash<QString /*skillName*/, QObject * /*skillScript*/> > skillScriptStorage;
 }
 
 Skill::Skill(const QString &name)
@@ -80,23 +69,14 @@ const Skill *Skill::topSkill() const
     return m_topSkill;
 }
 
-QJSValue Skill::skillFuncs() const
+void Skill::setSkillScript(QObject *script)
 {
-    QCache<const Skill *, QJSValue> &skillFuncCache = skillFuncStorage.localData();
-    if (skillFuncCache.contains(this))
-        return *(skillFuncCache[this]);
+    skillScriptStorage.localData()[m_name] = script;
+}
 
-    CJSEngine *jsEngine = Sanguosha.JsEngineInstance();
-    // todo:check if the skills are loaded
-
-    QJSValue r = jsEngine->globalObject().property(m_name);
-    if (r.isObject()) {
-        QJSValue *copy = new QJSValue(r);
-        skillFuncCache.insert(this, copy);
-        return *copy;
-    }
-
-    return QJSValue(); // C4172 can be optimized(ignored???) in release mode
+QObject *Skill::skillScript() const
+{
+    return skillScriptStorage.localData().value(m_name);
 }
 
 void Skill::addSubskill(Skill *subskill)
@@ -121,6 +101,22 @@ TriggerSkill::TriggerSkill(const QString &name)
 
 EventList TriggerSkill::triggerable(GameLogic *logic, EventType event, const QObject *data, ServerPlayer *player /* = nullptr */) const
 {
+    if (skillScript() != nullptr) {
+        EventList l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "triggerable",
+            Q_RETURN_ARG(EventList, l),
+            Q_ARG(const TriggerSkill *, this),
+            Q_ARG(GameLogic *, logic),
+            Q_ARG(EventType, event),
+            Q_ARG(const QObject *, data),
+            Q_ARG(ServerPlayer *, player));
+
+        if (r)
+            return l;
+    }
+
+
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("triggerable") && funcs.property("triggerable").isCallable()) {
         QJSEngine *engine = funcs.engine();
@@ -152,6 +148,7 @@ EventList TriggerSkill::triggerable(GameLogic *logic, EventType event, const QOb
             return l;
         } // any other conditions falls into default
     }
+*/
 
     // default
     if (player != nullptr && player->isAlive() && player->hasSkill(this))
@@ -186,6 +183,22 @@ bool TriggerSkill::onCost(GameLogic *logic, EventType event, EventPtr eventPtr, 
 
 bool TriggerSkill::cost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const
 {
+    if (skillScript() != nullptr) {
+        bool l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "cost",
+            Q_RETURN_ARG(bool, l),
+            Q_ARG(const TriggerSkill *, this),
+            Q_ARG(GameLogic *, logic),
+            Q_ARG(EventType, event),
+            Q_ARG(EventPtr, eventPtr),
+            Q_ARG(QObject *, data),
+            Q_ARG(ServerPlayer *, player));
+
+        if (r)
+            return l;
+    }
+
+    /*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("cost")) {
         if (funcs.property("cost").isCallable()) {
@@ -202,7 +215,7 @@ bool TriggerSkill::cost(GameLogic *logic, EventType event, EventPtr eventPtr, QO
                 return returnValue.toBool();
         } else if (funcs.property("cost").isBool())
             return funcs.property("cost").toBool();
-    }
+    }*/
 
     // default
     return true;
@@ -210,6 +223,22 @@ bool TriggerSkill::cost(GameLogic *logic, EventType event, EventPtr eventPtr, QO
 
 bool TriggerSkill::effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const
 {
+    if (skillScript() != nullptr) {
+        bool l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "effect",
+            Q_RETURN_ARG(bool, l),
+            Q_ARG(const TriggerSkill *, this),
+            Q_ARG(GameLogic *, logic),
+            Q_ARG(EventType, event),
+            Q_ARG(EventPtr, eventPtr),
+            Q_ARG(QObject *, data),
+            Q_ARG(ServerPlayer *, player));
+
+        if (r)
+            return l;
+    }
+
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("effect")) {
         if (funcs.property("effect").isCallable()) {
@@ -226,7 +255,7 @@ bool TriggerSkill::effect(GameLogic *logic, EventType event, const EventPtr even
                 return returnValue.toBool();
         } else if (funcs.property("effect").isBool())
             return funcs.property("effect").toBool();
-    }
+    }*/
 
     //default
     return false;
@@ -241,32 +270,52 @@ StatusSkill::StatusSkill(const QString &name)
 
 void StatusSkill::validate(ServerPlayer *target) const
 {
+    if (skillScript() != nullptr)
+        QMetaObject::invokeMethod(skillScript(), "validate", Q_ARG(const StatusSkill *, this), Q_ARG(ServerPlayer *, target));
+
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("validate") && funcs.property("validate").isCallable()) {
         QJSEngine *engine = funcs.engine();
         QJSValue thisValue = engine->newQObject(const_cast<StatusSkill *>(this)); // warning!! make sure the JS script won't modify this data
         QJSValue targetValue = engine->newQObject(target);
         funcs.property("validate").callWithInstance(funcs, QJSValueList() << thisValue << targetValue);
-    }
+    }*/
 
     // default: do nothing
 }
 
 void StatusSkill::invalidate(ServerPlayer *target) const
 {
+    if (skillScript() != nullptr)
+        QMetaObject::invokeMethod(skillScript(), "invalidate", Q_ARG(const StatusSkill *, this), Q_ARG(ServerPlayer *, target));
+
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("invalidate") && funcs.property("invalidate").isCallable()) {
         QJSEngine *engine = funcs.engine();
         QJSValue thisValue = engine->newQObject(const_cast<StatusSkill *>(this)); // warning!! make sure the JS script won't modify this data
         QJSValue targetValue = engine->newQObject(target);
         funcs.property("invalidate").callWithInstance(funcs, QJSValueList() << thisValue << targetValue);
-    }
+    }*/
 
     // default: do nothing
 }
 
 bool StatusSkill::isValid(ServerPlayer *target) const
 {
+    if (skillScript() != nullptr) {
+        bool l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "isValid",
+            Q_RETURN_ARG(bool, l),
+            Q_ARG(const StatusSkill *, this),
+            Q_ARG(ServerPlayer *, target));
+
+        if (r)
+            return l;
+    }
+    
+    /*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("isValid")) {
         if (funcs.property("isValid").isCallable()) {
@@ -279,7 +328,7 @@ bool StatusSkill::isValid(ServerPlayer *target) const
                 return returnValue.toBool();
         } else if (funcs.property("isValid").isBool())
             return funcs.property("isValid").toBool();
-    }
+    }*/
     // default
     return true;
 }
@@ -352,6 +401,19 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 
 bool ViewAsSkill::isAvailable(const Player *self, const QString &pattern) const
 {
+    if (skillScript() != nullptr) {
+        bool l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "isAvaliable",
+            Q_RETURN_ARG(bool, l),
+            Q_ARG(const ViewAsSkill *, this),
+            Q_ARG(const Player *, self),
+            Q_ARG(const QString &, pattern));
+
+        if (r)
+            return l;
+    }
+
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("isAvailable")) {
         if (funcs.property("isAvailable").isCallable()) {
@@ -365,7 +427,7 @@ bool ViewAsSkill::isAvailable(const Player *self, const QString &pattern) const
                 return returnValue.toBool();
         } else if (funcs.property("isAvailable").isBool())
             return funcs.property("isAvailable").toBool();
-    }
+    }*/
 
     // default
     return pattern.isEmpty();
@@ -386,6 +448,23 @@ bool ViewAsSkill::isValid(const QList<Card *> &cards, const Player *self, const 
 
 bool ViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *self, const QString &pattern) const
 {
+    if (skillScript()) {
+        QQmlListProperty<const Card> qmlListSelected(skillScript(), const_cast<QList<const Card *> &>(selected));
+
+        bool l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "viewFilter",
+            Q_RETURN_ARG(bool, l),
+            Q_ARG(const ViewAsSkill *, this),
+            Q_ARG(QQmlListProperty<const Card>, qmlListSelected),
+            Q_ARG(const Card *, card),
+            Q_ARG(const Player *, self),
+            Q_ARG(const QString &, pattern));
+
+        if (r)
+            return l;
+    }
+
+    /*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("viewFilter")) {
         if (funcs.property("viewFilter").isCallable()) {
@@ -403,7 +482,7 @@ bool ViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *ca
                 return returnValue.toBool();
         } else if (funcs.property("viewFilter").isBool())
             return funcs.property("viewFilter").toBool();
-    }
+    }*/
 
     // default
     return false;
@@ -411,6 +490,21 @@ bool ViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *ca
 
 Card *ViewAsSkill::viewAs(const QList<Card *> &cards, const Player *self) const
 {
+    if (skillScript()) {
+        QQmlListProperty<Card> qmlListSelected(skillScript(), const_cast<QList<Card *> &>(cards));
+
+        Card *l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "viewAs",
+            Q_RETURN_ARG(Card *, l),
+            Q_ARG(const ViewAsSkill *, this),
+            Q_ARG(QQmlListProperty<Card>, qmlListSelected),
+            Q_ARG(const Player *, self));
+
+        if (r)
+            return l;
+    }
+
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("viewAs") && funcs.property("viewAs").isCallable()) {
         QJSEngine *engine = funcs.engine();
@@ -426,7 +520,7 @@ Card *ViewAsSkill::viewAs(const QList<Card *> &cards, const Player *self) const
             if (card != nullptr)
                 return card;
         }
-    }
+    }*/
     
     // default
     return nullptr;
@@ -496,6 +590,20 @@ ProactiveSkill::ProactiveSkill(const QString &name)
 
 bool ProactiveSkill::cardFeasible(const QList<const Card *> &selected, const Player *source) const
 {
+    if (skillScript()) {
+        QQmlListProperty<const Card> qmlListSelected(skillScript(), const_cast<QList<const Card *> &>(selected));
+
+        bool l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "cardFeasible",
+            Q_RETURN_ARG(bool, l),
+            Q_ARG(const ProactiveSkill *, this),
+            Q_ARG(QQmlListProperty<const Card>, qmlListSelected),
+            Q_ARG(const Player *, source));
+
+        if (r)
+            return l;
+    }
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("cardFeasible")) {
         if (funcs.property("cardFeasible").isCallable()) {
@@ -511,7 +619,7 @@ bool ProactiveSkill::cardFeasible(const QList<const Card *> &selected, const Pla
                 return returnValue.toBool();
         } else if (funcs.property("cardFeasible").isBool())
             return funcs.property("cardFeasible").toBool();
-    }
+    }*/
 
     // default
     return true;
@@ -519,6 +627,22 @@ bool ProactiveSkill::cardFeasible(const QList<const Card *> &selected, const Pla
 
 bool ProactiveSkill::cardFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const
 {
+    if (skillScript()) {
+        QQmlListProperty<const Card> qmlListSelected(skillScript(), const_cast<QList<const Card *> &>(selected));
+
+        bool l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "cardFilter",
+            Q_RETURN_ARG(bool, l),
+            Q_ARG(const ProactiveSkill *, this),
+            Q_ARG(QQmlListProperty<const Card>, qmlListSelected),
+            Q_ARG(const Card *, card),
+            Q_ARG(const Player *, source),
+            Q_ARG(const QString &, pattern));
+
+        if (r)
+            return l;
+    }
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("cardFilter")) {
         if (funcs.property("cardFilter").isCallable()) {
@@ -536,7 +660,7 @@ bool ProactiveSkill::cardFilter(const QList<const Card *> &selected, const Card 
                 return returnValue.toBool();
         } else if (funcs.property("cardFilter").isBool())
             return funcs.property("cardFilter").toBool();
-    }
+    }*/
 
     // default
     return false;
@@ -556,6 +680,20 @@ bool ProactiveSkill::isValid(const QList<Card *> &cards, const Player *source, c
 
 bool ProactiveSkill::playerFeasible(const QList<const Player *> &selected, const Player *source) const
 {
+    if (skillScript()) {
+        QQmlListProperty<const Player> qmlListSelected(skillScript(), const_cast<QList<const Player *> &>(selected));
+
+        bool l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "playerFeasible",
+            Q_RETURN_ARG(bool, l),
+            Q_ARG(const ProactiveSkill *, this),
+            Q_ARG(QQmlListProperty<const Player>, qmlListSelected),
+            Q_ARG(const Player *, source));
+
+        if (r)
+            return l;
+    }
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("playerFeasible")) {
         if (funcs.property("playerFeasible").isCallable()) {
@@ -571,7 +709,7 @@ bool ProactiveSkill::playerFeasible(const QList<const Player *> &selected, const
                 return returnValue.toBool();
         } else if (funcs.property("playerFeasible").isBool())
             return funcs.property("playerFeasible").toBool();
-    }
+    }*/
 
     // default
     return true;
@@ -579,6 +717,22 @@ bool ProactiveSkill::playerFeasible(const QList<const Player *> &selected, const
 
 bool ProactiveSkill::playerFilter(const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
 {
+    if (skillScript() != nullptr) {
+        QQmlListProperty<const Player> qmlListSelected(skillScript(), const_cast<QList<const Player *> &>(selected));
+
+        bool l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "playerFilter",
+            Q_RETURN_ARG(bool, l),
+            Q_ARG(const ProactiveSkill *, this),
+            Q_ARG(QQmlListProperty<const Player>, qmlListSelected),
+            Q_ARG(const Player *, toSelect),
+            Q_ARG(const Player *, source));
+
+        if (r)
+            return l;
+    }
+    
+    /*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("playerFilter")) {
         if (funcs.property("playerFilter").isCallable()) {
@@ -595,7 +749,7 @@ bool ProactiveSkill::playerFilter(const QList<const Player *> &selected, const P
                 return returnValue.toBool();
         } else if (funcs.property("playerFilter").isBool())
             return funcs.property("cost").toBool();
-    }
+    }*/
 
     // default
     return false;
@@ -624,6 +778,24 @@ bool ProactiveSkill::isValid(const QList<const Player *> &targets, const Player 
 
 bool ProactiveSkill::cost(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const
 {
+    if (skillScript() != nullptr) {
+        QQmlListProperty<ServerPlayer> qmlListTo(skillScript(), const_cast<QList<ServerPlayer *> &>(to));
+        QQmlListProperty<Card> qmlListCards(skillScript(), const_cast<QList<Card *> &>(cards));
+
+        bool l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "cost",
+            Q_RETURN_ARG(bool, l),
+            Q_ARG(const ProactiveSkill *, this),
+            Q_ARG(GameLogic *, logic),
+            Q_ARG(ServerPlayer *, from),
+            Q_ARG(QQmlListProperty<ServerPlayer>, qmlListTo),
+            Q_ARG(QQmlListProperty<Card>, qmlListCards));
+
+        if (r)
+            return l;
+    }
+    
+    /*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("cost")) {
         if (funcs.property("cost").isCallable()) {
@@ -643,7 +815,7 @@ bool ProactiveSkill::cost(GameLogic *logic, ServerPlayer *from, const QList<Serv
                 return returnValue.toBool();
         } else if (funcs.property("cost").isBool())
             return funcs.property("cost").toBool();
-    }
+    }*/
 
     // default
     return false;
@@ -651,6 +823,20 @@ bool ProactiveSkill::cost(GameLogic *logic, ServerPlayer *from, const QList<Serv
 
 void ProactiveSkill::effect(GameLogic *logic, ServerPlayer *from, const QList<ServerPlayer *> &to, const QList<Card *> &cards) const
 {
+    if (skillScript() != nullptr) {
+        QQmlListProperty<ServerPlayer> qmlListTo(skillScript(), const_cast<QList<ServerPlayer *> &>(to));
+        QQmlListProperty<Card> qmlListCards(skillScript(), const_cast<QList<Card *> &>(cards));
+
+        QMetaObject::invokeMethod(skillScript(), "effect",
+            Q_ARG(const ProactiveSkill *, this),
+            Q_ARG(GameLogic *, logic),
+            Q_ARG(ServerPlayer *, from),
+            Q_ARG(QQmlListProperty<ServerPlayer>, qmlListTo),
+            Q_ARG(QQmlListProperty<Card>, qmlListCards));
+    }
+
+    
+    /*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("effect") && funcs.property("effect").isCallable()) {
         QJSEngine *engine = funcs.engine();
@@ -664,7 +850,7 @@ void ProactiveSkill::effect(GameLogic *logic, ServerPlayer *from, const QList<Se
         for (int i = 0; i < cards.length(); ++i)
             cardsValue.setProperty(i, engine->newQObject(cards.value(i)));
         funcs.property("effect").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << fromValue << toValue << cardsValue);
-    }
+    }*/
 }
 
 bool ProactiveSkill::viewFilter(const QList<const Card *> &selected, const Card *card, const Player *source, const QString &pattern) const
@@ -787,6 +973,23 @@ CardModSkill::CardModSkill(const QString &name)
 
 bool CardModSkill::targetFilter(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
 {
+    if (skillScript() != nullptr) {
+        QQmlListProperty<const Player> qmlListSelected(skillScript(), const_cast<QList<const Player *> &>(selected));
+
+        bool l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "targetFilter",
+            Q_RETURN_ARG(bool, l),
+            Q_ARG(const CardModSkill *, this),
+            Q_ARG(const Card *, card),
+            Q_ARG(QQmlListProperty<const Player>, qmlListSelected),
+            Q_ARG(const Player *, toSelect),
+            Q_ARG(const Player *, source));
+
+        if (r)
+            return l;
+    }
+
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("targetFilter")) {
         if (funcs.property("targetFilter").isCallable()) {
@@ -804,13 +1007,29 @@ bool CardModSkill::targetFilter(const Card *card, const QList<const Player *> &s
                 return returnValue.toBool();
         } else if (funcs.property("targetFilter").isBool())
             return funcs.property("targetFilter").toBool();
-    }
+    }*/
 
     return true;
 }
 
 int CardModSkill::extraDistanceLimit(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
 {
+    if (skillScript() != nullptr) {
+        QQmlListProperty<const Player> qmlListSelected(skillScript(), const_cast<QList<const Player *> &>(selected));
+
+        int l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "extraDistanceLimit",
+            Q_RETURN_ARG(int, l),
+            Q_ARG(const CardModSkill *, this),
+            Q_ARG(const Card *, card),
+            Q_ARG(QQmlListProperty<const Player>, qmlListSelected),
+            Q_ARG(const Player *, toSelect),
+            Q_ARG(const Player *, source));
+
+        if (r)
+            return l;
+    }
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("extraDistanceLimit")) {
         if (funcs.property("extraDistanceLimit").isCallable()) {
@@ -828,13 +1047,30 @@ int CardModSkill::extraDistanceLimit(const Card *card, const QList<const Player 
                 return returnValue.toInt();
         } else if (funcs.property("extraDistanceLimit").isNumber())
             return funcs.property("extraDistanceLimit").toInt();
-    }
+    }*/
 
     return 0;
 }
 
 int CardModSkill::extraMaxTargetNum(const Card *card, const QList<const Player *> &selected, const Player *toSelect, const Player *source) const
 {
+    if (skillScript() != nullptr) {
+        QQmlListProperty<const Player> qmlListSelected(skillScript(), const_cast<QList<const Player *> &>(selected));
+
+        int l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "extraMaxTargetNum",
+            Q_RETURN_ARG(int, l),
+            Q_ARG(const CardModSkill *, this),
+            Q_ARG(const Card *, card),
+            Q_ARG(QQmlListProperty<const Player>, qmlListSelected),
+            Q_ARG(const Player *, toSelect),
+            Q_ARG(const Player *, source));
+
+        if (r)
+            return l;
+    }
+
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("extraMaxTargetNum")) {
         if (funcs.property("extraMaxTargetNum").isCallable()) {
@@ -852,13 +1088,25 @@ int CardModSkill::extraMaxTargetNum(const Card *card, const QList<const Player *
                 return returnValue.toInt();
         } else if (funcs.property("extraMaxTargetNum").isNumber())
             return funcs.property("extraMaxTargetNum").toInt();
-    }
+    }*/
 
     return 0;
 }
 
 int CardModSkill::extraUseNum(const Card *card, const Player *player) const
 {
+    if (skillScript() != nullptr) {
+        int l;
+        bool r = QMetaObject::invokeMethod(skillScript(), "extraUseNum",
+            Q_RETURN_ARG(int, l),
+            Q_ARG(const CardModSkill *, this),
+            Q_ARG(const Card *, card),
+            Q_ARG(const Player *, player));
+
+        if (r)
+            return l;
+    }
+/*
     const QJSValue &funcs = skillFuncs();
     if (funcs.hasProperty("extraUseNum")) {
         if (funcs.property("extraUseNum").isCallable()) {
@@ -872,7 +1120,7 @@ int CardModSkill::extraUseNum(const Card *card, const Player *player) const
                 return returnValue.toInt();
         } else if (funcs.property("extraUseNum").isNumber())
             return funcs.property("extraUseNum").toInt();
-    }
+    }*/
 
     return 0;
 }

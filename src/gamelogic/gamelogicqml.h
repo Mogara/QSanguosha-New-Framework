@@ -39,6 +39,90 @@ class GameLogic : public CAbstractGameLogic
     Q_OBJECT
 
 public:
+    enum EventType
+    {
+        InvalidEvent,
+
+        GameStart,
+        GameFinish,
+
+        TurnStart,
+        PhaseStart,
+        PhaseProceeding,
+        PhaseEnd,
+        PhaseChanging,
+        PhaseSkipping,
+        TurnBroken,
+        StageChange,
+
+        BeforeCardsMove,
+        AfterCardsMove,
+
+        DrawNCards,
+        AfterDrawNCards,
+        CountMaxCardNum,
+
+        PreCardUsed,
+        CardUsed,
+        TargetChoosing,
+        TargetConfirming,
+        TargetChosen,
+        TargetConfirmed,
+        CardEffect,
+        CardEffected,
+        PostCardEffected,
+        CardFinished,
+        TrickCardCanceling,
+
+        CardResponded,
+
+        SlashEffect,
+        SlashEffected,
+        SlashProceed,
+        SlashHit,
+        SlashMissed,
+
+        ConfirmDamage, // confirm the source, weight and nature of a damage
+        BeforeDamage,  // trigger certain skill -- jueqing
+        DamageStart,
+        Damaging,
+        Damaged,
+        AfterDamaging,
+        AfterDamaged,
+        DamageComplete,
+
+        BeforeRecover,
+        AfterRecover,
+
+        HpLost,
+        AfterHpLost,
+
+        BeforeHpReduced,
+        AfterHpReduced,
+
+        MaxHpChanged,
+
+        StartJudge,
+        AskForRetrial,
+        FinishRetrial,
+        FinishJudge,
+
+        SkillAdded,
+        SkillRemoved,
+
+        EnterDying,
+        QuitDying,
+        AskForPeach,
+        AskForPeachDone,
+        BeforeGameOverJudge,
+        GameOverJudge,
+        Died,
+        BuryVictim,
+
+        EventTypeCount
+    };
+    Q_ENUM(EventType)
+
     explicit GameLogic(CRoom *parent = 0);
     ~GameLogic();
 
@@ -58,12 +142,15 @@ public:
 //    ServerPlayer *currentPlayer() const { return m_currentPlayer; }
 
     Q_INVOKABLE QList<ServerPlayer *> players() const;
+    Q_INVOKABLE QQmlListProperty<ServerPlayer> playersList();
     Q_INVOKABLE ServerPlayer *findPlayer(uint id) const;
     Q_INVOKABLE ServerPlayer *findPlayer(CServerAgent *agent) const;
 
     Q_INVOKABLE QList<ServerPlayer *> allPlayers(bool includeDead = false) const;
     Q_INVOKABLE QList<ServerPlayer *> otherPlayers(ServerPlayer *except, bool includeDead = false) const;
     Q_INVOKABLE void sortByActionOrder(QList<ServerPlayer *> &players) const;
+
+    Q_INVOKABLE void broadcastSeats();
 
 //    Q_INVOKABLE void addExtraTurn(ServerPlayer *player) { m_extraTurns << player; }
 //    QList<ServerPlayer *> extraTurns() const { return m_extraTurns; }

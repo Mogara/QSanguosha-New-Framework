@@ -19,6 +19,7 @@
 
 #include "card.h"
 #include "cardarea.h"
+#include "util.h"
 
 #include <QtQml>
 
@@ -119,6 +120,11 @@ Card *CardArea::rand() const
 
     int index = qrand() % m_cards.length();
     return m_cards.at(index);
+}
+
+void CardArea::shuffleCards()
+{
+    qShuffle(m_cards);
 }
 
 QList<Card *> CardArea::takeFirst(int n, bool forceRealCard/* = false*/)

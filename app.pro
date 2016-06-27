@@ -216,3 +216,6 @@ INCLUDEPATH += Cardirector/include
 LIBS += -L$$PWD/Cardirector/lib -lCardirector -loggvorbis
 CONFIG(release, debug|release): LIBS += -lbreakpad
 
+DISTFILES += \
+    script/Server/EventTypes.js
+

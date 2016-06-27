@@ -405,6 +405,32 @@ QList<ServerPlayer *> GameLogic::players() const
     return players;
 }
 
+namespace {
+ServerPlayer *playersAt(QQmlListProperty<ServerPlayer> *v, int x)
+{
+    GameLogic *logic = qobject_cast<GameLogic *>(v->object);
+    if (logic == nullptr)
+        return nullptr;
+
+    return logic->players().value(x);
+}
+
+int playersCount(QQmlListProperty<ServerPlayer> *v)
+{
+    GameLogic *logic = qobject_cast<GameLogic *>(v->object);
+    if (logic == nullptr)
+        return 0;
+
+    return logic->players().count();
+}
+
+}
+
+QQmlListProperty<ServerPlayer> GameLogic::playersList()
+{
+    return QQmlListProperty<ServerPlayer>(this, nullptr, &playersCount, &playersAt);
+}
+
 ServerPlayer *GameLogic::findPlayer(uint id) const
 {
     return qobject_cast<ServerPlayer *>(findAbstractPlayer(id));
@@ -1019,6 +1045,19 @@ void GameLogic::loadMode(const GameMode *mode)
 const RoomSettings *GameLogic::settings() const
 {
     return room()->settings<RoomSettings>();
+}
+
+void GameLogic::broadcastSeats()
+{
+//    QVariantList playerList;
+//    foreach (ServerPlayer *player, players) {
+//        CServerAgent *agent = findAgent(player);
+//        QVariantMap info;
+//        info["agentId"] = agent->id();
+//        info["playerId"] = player->id();
+//        playerList << info;
+//    }
+//    room->broadcastNotification(S_COMMAND_ARRANGE_SEAT, playerList);
 }
 
 void GameLogic::prepareToStart()

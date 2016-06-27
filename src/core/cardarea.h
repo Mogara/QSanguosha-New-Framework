@@ -78,6 +78,7 @@ public:
     Q_INVOKABLE Card *rand() const;
     Q_INVOKABLE QList<Card *> &cards() { return m_cards; }
     Q_INVOKABLE const QList<Card *> &cards() const { return m_cards; }
+    Q_INVOKABLE void shuffleCards();
 
     // Note: These functions can only find Virtual Cards!!!!
     Q_INVOKABLE QList<Card *> &virtualCards() { return m_virtualCards; }

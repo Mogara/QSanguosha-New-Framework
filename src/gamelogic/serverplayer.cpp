@@ -19,23 +19,33 @@
 
 #include "card.h"
 #include "cardpattern.h"
-#include "gamelogic.h"
+//#include "gamelogic.h"
 #include "general.h"
 #include "protocol.h"
 #include "roomsettings.h"
 #include "serverplayer.h"
 #include "skill.h"
-#include "event.h"
+//#include "event.h"
 
 #include <CRoom>
 #include <CServerAgent>
 
+namespace
+{
+    void registerQmlTypePlayer__()
+    {
+        qmlRegisterUncreatableType<ServerPlayer>("Sanguosha.Player", 1, 0, "ServerPlayer", "ServerPlayer is created in the game logic/client, and shouldn't be created in QML");
+    }
+}
+
+Q_COREAPP_STARTUP_FUNCTION(registerQmlTypePlayer__);
+
 using namespace DataValue;
 
 ServerPlayer::ServerPlayer(GameLogic *logic, CServerAgent *agent)
-    : Player(logic)
-    , m_logic(logic)
-    , m_room(logic->room())
+    : Player(nullptr/*logic*/)
+//    , m_logic(logic)
+//    , m_room(logic->room())
     , m_agent(agent)
 {
     m_equipArea->setIsVirtualCardArea(true);
@@ -58,47 +68,48 @@ void ServerPlayer::setAgent(CServerAgent *agent)
 
 CRoom *ServerPlayer::room() const
 {
-    if (m_room->isAbandoned())
-        throw EventHandler::GameFinish;
-    return m_room;
+//    if (m_room->isAbandoned())
+//        throw EventHandler::GameFinish;
+//    return m_room;
+    return nullptr;
 }
 
 void ServerPlayer::drawCards(int n)
 {
-    CardsMoveValue moves;
-    for (int i = 0; i < n; ++i) {
-        CardMove move;
-        move.fromArea = m_logic->drawPile();
-        move.toArea = handcardArea();
-        move.card = m_logic->getDrawPileCard();
-        moves.moves << &move;
-    }
+//    CardsMoveValue moves;
+//    for (int i = 0; i < n; ++i) {
+//        CardMove move;
+//        move.fromArea = m_logic->drawPile();
+//        move.toArea = handcardArea();
+//        move.card = m_logic->getDrawPileCard();
+//        moves.moves << &move;
+//    }
 
-    m_logic->moveCards(moves);
+//    m_logic->moveCards(moves);
 }
 
 void ServerPlayer::recastCard(Card *card)
 {
-    CardsMoveValue recast;
-    CardMove move;
-    move.card = card;
-    move.toArea = m_logic->table();
-    move.isOpen = true;
-    recast.moves << &move;
-    m_logic->moveCards(recast);
+//    CardsMoveValue recast;
+//    CardMove move;
+//    move.card = card;
+//    move.toArea = m_logic->table();
+//    move.isOpen = true;
+//    recast.moves << &move;
+//    m_logic->moveCards(recast);
 
-    const CardArea *table = m_logic->table();
-    if (table->contains(card)) {
-        CardsMoveValue discard;
-        CardMove move;
-        move.card = card;
-        move.toArea = m_logic->discardPile();
-        move.isOpen = true;
-        discard.moves << &move;
-        m_logic->moveCards(discard);
-    }
+//    const CardArea *table = m_logic->table();
+//    if (table->contains(card)) {
+//        CardsMoveValue discard;
+//        CardMove move;
+//        move.card = card;
+//        move.toArea = m_logic->discardPile();
+//        move.isOpen = true;
+//        discard.moves << &move;
+//        m_logic->moveCards(discard);
+//    }
 
-    drawCards(1);
+//    drawCards(1);
 }
 
 void ServerPlayer::showCard(Card *card)
@@ -139,111 +150,112 @@ void ServerPlayer::play()
 
 void ServerPlayer::play(const QList<Player::Phase> &phases)
 {
-    PhaseChangeValue change;
-    foreach (Phase to, phases) {
-        if (to == Inactive)
-            break;
-        change.from = phase();
-        change.to = to;
+//    PhaseChangeValue change;
+//    foreach (Phase to, phases) {
+//        if (to == Inactive)
+//            break;
+//        change.from = phase();
+//        change.to = to;
 
-        bool skip = m_logic->trigger(EventHandler::PhaseChanging, this, &change);
+//        bool skip = m_logic->trigger(EventHandler::PhaseChanging, this, &change);
 
-        setPhase(change.to);
-        broadcastProperty("phase");
+//        setPhase(change.to);
+//        broadcastProperty("phase");
 
-        if ((skip || isPhaseSkipped(change.to)) && !m_logic->trigger(EventHandler::PhaseSkipping, this, &change))
-            continue;
+//        if ((skip || isPhaseSkipped(change.to)) && !m_logic->trigger(EventHandler::PhaseSkipping, this, &change))
+//            continue;
 
-        if (!m_logic->trigger(EventHandler::PhaseStart, this))
-            m_logic->trigger(EventHandler::PhaseProceeding, this);
-        m_logic->trigger(EventHandler::PhaseEnd, this);
-    }
+//        if (!m_logic->trigger(EventHandler::PhaseStart, this))
+//            m_logic->trigger(EventHandler::PhaseProceeding, this);
+//        m_logic->trigger(EventHandler::PhaseEnd, this);
+//    }
 
-    change.from = phase();
-    change.to = Inactive;
+//    change.from = phase();
+//    change.to = Inactive;
 
-    m_logic->trigger(EventHandler::PhaseChanging, this, &change);
+//    m_logic->trigger(EventHandler::PhaseChanging, this, &change);
 
-    setPhase(change.to);
-    broadcastProperty("phase");
+//    setPhase(change.to);
+//    broadcastProperty("phase");
 
-    clearSkippedPhase();
+//    clearSkippedPhase();
 }
 
 bool ServerPlayer::activate()
 {
-    int timeout = m_logic->settings()->timeout * 1000;
-    m_agent->request(S_COMMAND_ACT, QVariant(), timeout);
-    QVariant replyData = m_agent->waitForReply(timeout);
-    if (replyData.isNull())
-        return true;
-    const QVariantMap reply = replyData.toMap();
-    if (reply.isEmpty())
-        return true;
+//    int timeout = m_logic->settings()->timeout * 1000;
+//    m_agent->request(S_COMMAND_ACT, QVariant(), timeout);
+//    QVariant replyData = m_agent->waitForReply(timeout);
+//    if (replyData.isNull())
+//        return true;
+//    const QVariantMap reply = replyData.toMap();
+//    if (reply.isEmpty())
+//        return true;
 
-    QList<ServerPlayer *> targets;
-    QVariantList tos = reply["to"].toList();
-    foreach (const QVariant &to, tos) {
-        uint toId = to.toUInt();
-        ServerPlayer *target = m_logic->findPlayer(toId);
-        if (target)
-            targets << target;
-    }
+//    QList<ServerPlayer *> targets;
+//    QVariantList tos = reply["to"].toList();
+//    foreach (const QVariant &to, tos) {
+//        uint toId = to.toUInt();
+//        ServerPlayer *target = m_logic->findPlayer(toId);
+//        if (target)
+//            targets << target;
+//    }
 
-    QList<Card *> cards = m_logic->findCards(reply["cards"]);
+//    QList<Card *> cards = m_logic->findCards(reply["cards"]);
 
-    const Skill *skill = nullptr;
-    uint skillId = reply["skillId"].toUInt();
-    if (skillId)
-        skill = getSkill(skillId);
+//    const Skill *skill = nullptr;
+//    uint skillId = reply["skillId"].toUInt();
+//    if (skillId)
+//        skill = getSkill(skillId);
 
-    Card *card = nullptr;
-    if (skill) {
-        if (skill->type() == Skill::ViewAsType) {
-            if (skill->subtype() == ViewAsSkill::ProactiveType) {
-                const ProactiveSkill *proactiveSkill = dynamic_cast<const ProactiveSkill *>(skill);
-                if (proactiveSkill == nullptr)
-                    return false;
+//    Card *card = nullptr;
+//    if (skill) {
+//        if (skill->type() == Skill::ViewAsType) {
+//            if (skill->subtype() == ViewAsSkill::ProactiveType) {
+//                const ProactiveSkill *proactiveSkill = dynamic_cast<const ProactiveSkill *>(skill);
+//                if (proactiveSkill == nullptr)
+//                    return false;
 
-                if (!proactiveSkill->isValid(targets, this) || !proactiveSkill->isValid(cards, this, QString()))
-                    return false;
+//                if (!proactiveSkill->isValid(targets, this) || !proactiveSkill->isValid(cards, this, QString()))
+//                    return false;
 
-                addSkillHistory(skill, cards, targets);
-                SkillInvokeValue invoke;
-                invoke.player = this;
-                invoke.skill = proactiveSkill;
-                invoke.targets = targets;
-                invoke.cards = cards;
+//                addSkillHistory(skill, cards, targets);
+//                SkillInvokeValue invoke;
+//                invoke.player = this;
+//                invoke.skill = proactiveSkill;
+//                invoke.targets = targets;
+//                invoke.cards = cards;
 
-                m_logic->invokeProactiveSkill(invoke);
-                return false;
-            } else if (skill->subtype() == ViewAsSkill::ConvertType) {
-                const ViewAsSkill *viewAsSkill = dynamic_cast<const ViewAsSkill *>(skill);
-                if (viewAsSkill == nullptr || viewAsSkill->isValid(cards, this, QString()))
-                    return false;
+//                m_logic->invokeProactiveSkill(invoke);
+//                return false;
+//            } else if (skill->subtype() == ViewAsSkill::ConvertType) {
+//                const ViewAsSkill *viewAsSkill = dynamic_cast<const ViewAsSkill *>(skill);
+//                if (viewAsSkill == nullptr || viewAsSkill->isValid(cards, this, QString()))
+//                    return false;
 
-                card = viewAsSkill->viewAs(cards, this);
-                addSkillHistory(skill, cards);
-            }
-        }
-    } else {
-        card = cards.length() > 0 ? cards.first() : nullptr;
-    }
+//                card = viewAsSkill->viewAs(cards, this);
+//                addSkillHistory(skill, cards);
+//            }
+//        }
+//    } else {
+//        card = cards.length() > 0 ? cards.first() : nullptr;
+//    }
 
-    if (card != nullptr) {
-        if (card->canRecast() && targets.isEmpty()) {
-            recastCard(card);
-        } else if (card->isAvailable(this) && card->isValid(targets, this)) {
-            CardUseValue use;
-            use.from = this;
-            use.to = targets;
-            use.card = card;
-            m_logic->useCard(use);
-        }
-        return false;
-    } else {
-        return true;
-    }
+//    if (card != nullptr) {
+//        if (card->canRecast() && targets.isEmpty()) {
+//            recastCard(card);
+//        } else if (card->isAvailable(this) && card->isValid(targets, this)) {
+//            CardUseValue use;
+//            use.from = this;
+//            use.to = targets;
+//            use.card = card;
+//            m_logic->useCard(use);
+//        }
+//        return false;
+//    } else {
+//        return true;
+//    }
+    return false;
 }
 
 void ServerPlayer::showPrompt(const QString &message, int number)
@@ -288,81 +300,83 @@ void ServerPlayer::showPrompt(const QString &message, const ServerPlayer *p1, co
     showPrompt(message, args);
 }
 
-EventPtr ServerPlayer::askForTriggerOrder(const EventPtrList &options, bool cancelable)
+/*EventPtr*/ int ServerPlayer::askForTriggerOrder(const /*EventPtrList*/ int &options, bool cancelable)
 {
-    QVariantMap data;
-    data["cancelable"] = cancelable;
+//    QVariantMap data;
+//    data["cancelable"] = cancelable;
 
-    QVariantList optionData;
-    foreach (const EventPtr &e, options) {
-        QVariant eventData = e->toVariant();
-        optionData << eventData;
-    }
-    data["options"] = optionData;
+//    QVariantList optionData;
+//    foreach (const EventPtr &e, options) {
+//        QVariant eventData = e->toVariant();
+//        optionData << eventData;
+//    }
+//    data["options"] = optionData;
 
-    int timeout = m_logic->settings()->timeout * 1000;
-    m_agent->request(S_COMMAND_TRIGGER_ORDER, data, timeout);
-    QVariant replyData = m_agent->waitForReply(timeout);
-    if (replyData.isNull())
-        return cancelable ? EventPtr() : options.first();
+//    int timeout = m_logic->settings()->timeout * 1000;
+//    m_agent->request(S_COMMAND_TRIGGER_ORDER, data, timeout);
+//    QVariant replyData = m_agent->waitForReply(timeout);
+//    if (replyData.isNull())
+//        return cancelable ? EventPtr() : options.first();
 
-    int eventId = replyData.toInt();
-    if (eventId >= 0 && eventId < options.length())
-        return options.at(eventId);
+//    int eventId = replyData.toInt();
+//    if (eventId >= 0 && eventId < options.length())
+//        return options.at(eventId);
 
-    return cancelable ? EventPtr() : options.first();
+//    return cancelable ? EventPtr() : options.first();
+    return 0;
 }
 
 Card *ServerPlayer::askForCard(const QString &pattern, bool optional)
 {
-    QVariantMap data;
-    data["pattern"] = pattern;
-    data["optional"] = optional;
+//    QVariantMap data;
+//    data["pattern"] = pattern;
+//    data["optional"] = optional;
 
-    int timeout = m_logic->settings()->timeout * 1000;
-    QVariant replyData;
-    forever {
-        m_agent->request(S_COMMAND_ASK_FOR_CARD, data, timeout);
-        replyData = m_agent->waitForReply(timeout);
-        if (replyData.isNull())
-            break;
+//    int timeout = m_logic->settings()->timeout * 1000;
+//    QVariant replyData;
+//    forever {
+//        m_agent->request(S_COMMAND_ASK_FOR_CARD, data, timeout);
+//        replyData = m_agent->waitForReply(timeout);
+//        if (replyData.isNull())
+//            break;
 
-        const QVariantMap reply = replyData.toMap();
-        QList<Card *> cards = m_logic->findCards(reply["cards"]);
-        uint skillId = reply["skillId"].toUInt();
-        if (skillId) {
-            const Skill *skill = getSkill(skillId);
-            if (skill->type() == Skill::ViewAsType) {
-                const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
-                if (viewAsSkill->isValid(cards, this, pattern))
-                    return viewAsSkill->viewAs(cards, this);
-            }
-        }
-        if (cards.length() != 1)
-            break;
+//        const QVariantMap reply = replyData.toMap();
+//        QList<Card *> cards = m_logic->findCards(reply["cards"]);
+//        uint skillId = reply["skillId"].toUInt();
+//        if (skillId) {
+//            const Skill *skill = getSkill(skillId);
+//            if (skill->type() == Skill::ViewAsType) {
+//                const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
+//                if (viewAsSkill->isValid(cards, this, pattern))
+//                    return viewAsSkill->viewAs(cards, this);
+//            }
+//        }
+//        if (cards.length() != 1)
+//            break;
 
-        Card *card = cards.first();
-        CardPattern p(pattern);
-        if (p.match(this, card))
-            return card;
-    }
+//        Card *card = cards.first();
+//        CardPattern p(pattern);
+//        if (p.match(this, card))
+//            return card;
+//    }
 
-    if (!optional) {
-        CardPattern p(pattern);
+//    if (!optional) {
+//        CardPattern p(pattern);
 
-        QList<Card *> allCards = handcardArea()->cards();
-        foreach (Card *card, allCards) {
-            if (p.match(this, card))
-                return card;
-        }
+//        QList<Card *> allCards = handcardArea()->cards();
+//        foreach (Card *card, allCards) {
+//            if (p.match(this, card))
+//                return card;
+//        }
 
-        allCards = equipArea()->cards();
-        foreach (Card *card, allCards) {
-            if (p.match(this, card))
-                return card;
-        }
-    }
+//        allCards = equipArea()->cards();
+//        foreach (Card *card, allCards) {
+//            if (p.match(this, card))
+//                return card;
+//        }
+//    }
 
+//    return nullptr;
     return nullptr;
 }
 
@@ -373,241 +387,246 @@ QList<Card *> ServerPlayer::askForCards(const QString &pattern, int num, bool op
 
 QList<Card *> ServerPlayer::askForCards(const QString &pattern, int minNum, int maxNum, bool optional)
 {
-    if (maxNum < minNum)
-        maxNum = minNum;
+//    if (maxNum < minNum)
+//        maxNum = minNum;
 
-    QVariantMap data;
-    data["pattern"] = pattern;
-    data["minNum"] = minNum;
-    data["maxNum"] = maxNum;
-    data["optional"] = optional;
+//    QVariantMap data;
+//    data["pattern"] = pattern;
+//    data["minNum"] = minNum;
+//    data["maxNum"] = maxNum;
+//    data["optional"] = optional;
 
-    int timeout = m_logic->settings()->timeout * 1000;
-    m_agent->request(S_COMMAND_ASK_FOR_CARD, data, timeout);
-    const QVariantMap replyData = m_agent->waitForReply(timeout).toMap();
+//    int timeout = m_logic->settings()->timeout * 1000;
+//    m_agent->request(S_COMMAND_ASK_FOR_CARD, data, timeout);
+//    const QVariantMap replyData = m_agent->waitForReply(timeout).toMap();
 
-    if (optional) {
-        if (replyData.isEmpty())
-            return QList<Card *>();
-    }
+//    if (optional) {
+//        if (replyData.isEmpty())
+//            return QList<Card *>();
+//    }
 
-    QList<Card *> cards = m_logic->findCards(replyData["cards"]);
-    CardPattern p(pattern);
-    foreach (Card *card, cards) {
-        if (!p.match(this, card))
-            cards.removeOne(card);
-    }
+//    QList<Card *> cards = m_logic->findCards(replyData["cards"]);
+//    CardPattern p(pattern);
+//    foreach (Card *card, cards) {
+//        if (!p.match(this, card))
+//            cards.removeOne(card);
+//    }
 
-    if (!optional) {
-        if (cards.length() < minNum) {
-            QList<Card *> allCards = handcardArea()->cards() + equipArea()->cards();
-            CardPattern p(pattern);
-            foreach (Card *card, allCards) {
-                if (!cards.contains(card) && p.match(this, card)) {
-                    cards << card;
-                    if (cards.length() >= minNum)
-                        break;
-                }
-            }
-        } else if (cards.length() > maxNum) {
-            cards = cards.mid(0, maxNum);
-        }
-    }
-    return cards;
+//    if (!optional) {
+//        if (cards.length() < minNum) {
+//            QList<Card *> allCards = handcardArea()->cards() + equipArea()->cards();
+//            CardPattern p(pattern);
+//            foreach (Card *card, allCards) {
+//                if (!cards.contains(card) && p.match(this, card)) {
+//                    cards << card;
+//                    if (cards.length() >= minNum)
+//                        break;
+//                }
+//            }
+//        } else if (cards.length() > maxNum) {
+//            cards = cards.mid(0, maxNum);
+//        }
+//    }
+//    return cards;
+    return QList<Card *>();
 }
 
 Card *ServerPlayer::askToChooseCard(ServerPlayer *owner, const QString &areaFlag, bool handcardVisible)
 {
-    const CardArea *handcards = owner->handcardArea();
-    const CardArea *equips = owner->equipArea();
-    const CardArea *delayedTricks = owner->delayedTrickArea();
+//    const CardArea *handcards = owner->handcardArea();
+//    const CardArea *equips = owner->equipArea();
+//    const CardArea *delayedTricks = owner->delayedTrickArea();
 
-    QVariantMap data;
+//    QVariantMap data;
 
-    if (areaFlag.contains('h')) {
-        QVariantList handcardData;
-        if (handcardVisible) {
-            QList<Card *> cards = handcards->cards();
-            foreach (const Card *card, cards)
-                handcardData << card->id();
-            data["handcards"] = handcardData;
-        } else {
-            data["handcards"] = owner->handcardNum();
-        }
-    }
+//    if (areaFlag.contains('h')) {
+//        QVariantList handcardData;
+//        if (handcardVisible) {
+//            QList<Card *> cards = handcards->cards();
+//            foreach (const Card *card, cards)
+//                handcardData << card->id();
+//            data["handcards"] = handcardData;
+//        } else {
+//            data["handcards"] = owner->handcardNum();
+//        }
+//    }
 
-    if (areaFlag.contains('e')) {
-        QVariantList equipData;
-        QList<Card *> cards = equips->cards();
-        foreach (const Card *card, cards)
-            equipData << card->id();
-        data["equips"] = equipData;
-    }
+//    if (areaFlag.contains('e')) {
+//        QVariantList equipData;
+//        QList<Card *> cards = equips->cards();
+//        foreach (const Card *card, cards)
+//            equipData << card->id();
+//        data["equips"] = equipData;
+//    }
 
-    if (areaFlag.contains('j')) {
-        QVariantList trickData;
-        QList<Card *> cards = delayedTricks->cards();
-        foreach (const Card *card, cards)
-            trickData << card->id();
-        data["delayedTricks"] = trickData;
-    }
+//    if (areaFlag.contains('j')) {
+//        QVariantList trickData;
+//        QList<Card *> cards = delayedTricks->cards();
+//        foreach (const Card *card, cards)
+//            trickData << card->id();
+//        data["delayedTricks"] = trickData;
+//    }
 
-    int timeout = m_logic->settings()->timeout * 1000;
-    m_agent->request(S_COMMAND_CHOOSE_PLAYER_CARD, data, timeout);
-    uint cardId = m_agent->waitForReply(timeout).toUInt();
-    if (cardId > 0) {
-        if (areaFlag.contains('h') && handcardVisible) {
-            Card *card = handcards->findCard(cardId);
-            if (card)
-                return card;
-        }
-        if (areaFlag.contains('e')) {
-            Card *card = equips->findCard(cardId);
-            if (card)
-                return card;
-        }
-        if (areaFlag.contains('j')) {
-            Card *card = delayedTricks->findCard(cardId);
-            if (card)
-                return card;
-        }
-    }
+//    int timeout = m_logic->settings()->timeout * 1000;
+//    m_agent->request(S_COMMAND_CHOOSE_PLAYER_CARD, data, timeout);
+//    uint cardId = m_agent->waitForReply(timeout).toUInt();
+//    if (cardId > 0) {
+//        if (areaFlag.contains('h') && handcardVisible) {
+//            Card *card = handcards->findCard(cardId);
+//            if (card)
+//                return card;
+//        }
+//        if (areaFlag.contains('e')) {
+//            Card *card = equips->findCard(cardId);
+//            if (card)
+//                return card;
+//        }
+//        if (areaFlag.contains('j')) {
+//            Card *card = delayedTricks->findCard(cardId);
+//            if (card)
+//                return card;
+//        }
+//    }
 
-    if (areaFlag.contains('h') && handcards->length() > 0)
-        return handcards->rand();
+//    if (areaFlag.contains('h') && handcards->length() > 0)
+//        return handcards->rand();
 
-    if (areaFlag.contains('e') && equips->length() > 0)
-        return equips->rand();
+//    if (areaFlag.contains('e') && equips->length() > 0)
+//        return equips->rand();
 
-    if (areaFlag.contains('j') && delayedTricks->length() > 0)
-        return delayedTricks->rand();
+//    if (areaFlag.contains('j') && delayedTricks->length() > 0)
+//        return delayedTricks->rand();
 
+//    return nullptr;
     return nullptr;
 }
 
 CardUseValue ServerPlayer::askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets)
 {
-    QVariantMap data;
-    data["pattern"] = pattern;
+//    QVariantMap data;
+//    data["pattern"] = pattern;
 
-    QVariantList targetIds;
-    foreach (ServerPlayer *target, assignedTargets)
-        targetIds << target->id();
-    data["assignedTargets"] = targetIds;
+//    QVariantList targetIds;
+//    foreach (ServerPlayer *target, assignedTargets)
+//        targetIds << target->id();
+//    data["assignedTargets"] = targetIds;
 
-    int timeout = m_logic->settings()->timeout * 1000;
-    m_agent->request(S_COMMAND_ACT, data, timeout);
-    const QVariantMap reply = m_agent->waitForReply(timeout).toMap();
-    CardUseValue use;
-    if (reply.isEmpty())
-        return use;
+//    int timeout = m_logic->settings()->timeout * 1000;
+//    m_agent->request(S_COMMAND_ACT, data, timeout);
+//    const QVariantMap reply = m_agent->waitForReply(timeout).toMap();
+//    CardUseValue use;
+//    if (reply.isEmpty())
+//        return use;
 
-    QList<ServerPlayer *> targets;
-    QVariantList tos = reply["to"].toList();
-    foreach (const QVariant &to, tos) {
-        uint toId = to.toUInt();
-        ServerPlayer *target = m_logic->findPlayer(toId);
-        if (target)
-            targets << target;
-    }
+//    QList<ServerPlayer *> targets;
+//    QVariantList tos = reply["to"].toList();
+//    foreach (const QVariant &to, tos) {
+//        uint toId = to.toUInt();
+//        ServerPlayer *target = m_logic->findPlayer(toId);
+//        if (target)
+//            targets << target;
+//    }
 
-    QList<Card *> cards = m_logic->findCards(reply["cards"]);
+//    QList<Card *> cards = m_logic->findCards(reply["cards"]);
 
-    const Skill *skill = nullptr;
-    uint skillId = reply["skillId"].toUInt();
-    if (skillId)
-        skill = getSkill(skillId);
+//    const Skill *skill = nullptr;
+//    uint skillId = reply["skillId"].toUInt();
+//    if (skillId)
+//        skill = getSkill(skillId);
 
-    Card *card = nullptr;
-    if (skill) {
-        if (skill->type() == Skill::ViewAsType) {
-            if (skill->subtype() == ViewAsSkill::ConvertType) {
-                const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
-                if (viewAsSkill->isValid(cards, this, pattern))
-                    card = viewAsSkill->viewAs(cards, this);
-            }
-        }
-    } else {
-        card = cards.length() > 0 ? cards.first() : nullptr;
-    }
+//    Card *card = nullptr;
+//    if (skill) {
+//        if (skill->type() == Skill::ViewAsType) {
+//            if (skill->subtype() == ViewAsSkill::ConvertType) {
+//                const ViewAsSkill *viewAsSkill = static_cast<const ViewAsSkill *>(skill);
+//                if (viewAsSkill->isValid(cards, this, pattern))
+//                    card = viewAsSkill->viewAs(cards, this);
+//            }
+//        }
+//    } else {
+//        card = cards.length() > 0 ? cards.first() : nullptr;
+//    }
 
-    if (card == nullptr)
-        return use;
+//    if (card == nullptr)
+//        return use;
 
-    foreach (ServerPlayer *target, assignedTargets) {
-        if (!targets.contains(target))
-            return use;
-    }
+//    foreach (ServerPlayer *target, assignedTargets) {
+//        if (!targets.contains(target))
+//            return use;
+//    }
 
-    if (!card->isValid(targets, this))
-        return use;
+//    if (!card->isValid(targets, this))
+//        return use;
 
-    use.from = this;
-    use.card = card;
-    use.to = targets;
-    return use;
+//    use.from = this;
+//    use.card = card;
+//    use.to = targets;
+//    return use;
+    return CardUseValue();
 }
 
 SkillInvokeValue ServerPlayer::askToInvokeSkill(const Skill *skill)
 {
-    QVariantMap data;
-    data["pattern"] = "@" + skill->name();
-    int timeout = m_logic->settings()->timeout * 1000;
-    m_agent->request(S_COMMAND_ACT, data, timeout);
-    const QVariantMap reply = m_agent->waitForReply(timeout).toMap();
-    SkillInvokeValue invoke;
-    if (reply.isEmpty())
-        return invoke;
+//    QVariantMap data;
+//    data["pattern"] = "@" + skill->name();
+//    int timeout = m_logic->settings()->timeout * 1000;
+//    m_agent->request(S_COMMAND_ACT, data, timeout);
+//    const QVariantMap reply = m_agent->waitForReply(timeout).toMap();
+//    SkillInvokeValue invoke;
+//    if (reply.isEmpty())
+//        return invoke;
     
-    QList<ServerPlayer *> targets;
-    QVariantList tos = reply["to"].toList();
-    foreach (const QVariant &to, tos) {
-        uint toId = to.toUInt();
-        ServerPlayer *target = m_logic->findPlayer(toId);
-        if (target)
-            targets << target;
-    }
+//    QList<ServerPlayer *> targets;
+//    QVariantList tos = reply["to"].toList();
+//    foreach (const QVariant &to, tos) {
+//        uint toId = to.toUInt();
+//        ServerPlayer *target = m_logic->findPlayer(toId);
+//        if (target)
+//            targets << target;
+//    }
 
-    QList<Card *> cards = m_logic->findCards(reply["cards"]);
+//    QList<Card *> cards = m_logic->findCards(reply["cards"]);
 
-    if (skill->subtype() == ViewAsSkill::ProactiveType) {
-        invoke.skill = skill;
-        invoke.player = this;
-        invoke.targets = targets;
-        invoke.cards = cards;
-    }
+//    if (skill->subtype() == ViewAsSkill::ProactiveType) {
+//        invoke.skill = skill;
+//        invoke.player = this;
+//        invoke.targets = targets;
+//        invoke.cards = cards;
+//    }
 
-    return invoke;
+//    return invoke;
+    return SkillInvokeValue();
 }
 
 QList<QList<Card *> > ServerPlayer::askToArrangeCard(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames)
 {
-    QVariantMap data;
+//    QVariantMap data;
 
-    QVariantList capacityData;
-    foreach (int capacity, capacities)
-        capacityData << capacity;
-    data["capacities"] = capacityData;
+//    QVariantList capacityData;
+//    foreach (int capacity, capacities)
+//        capacityData << capacity;
+//    data["capacities"] = capacityData;
 
-    QVariantList cardData;
-    foreach (const Card *card, cards)
-        cardData << card->id();
-    data["cards"] = cardData;
+//    QVariantList cardData;
+//    foreach (const Card *card, cards)
+//        cardData << card->id();
+//    data["cards"] = cardData;
 
-    data["areaNames"] = areaNames;
+//    data["areaNames"] = areaNames;
 
-    int timeout = m_logic->settings()->timeout * 1000;
-    m_agent->request(S_COMMAND_ARRANGE_CARD, data, timeout * 3);
+//    int timeout = m_logic->settings()->timeout * 1000;
+//    m_agent->request(S_COMMAND_ARRANGE_CARD, data, timeout * 3);
 
-    QList<QList<Card *> > result;
-    const QVariantList reply = m_agent->waitForReply().toList();
-    int maxi = qMin(capacities.length(), reply.length());
-    for (int i = 0; i < maxi; i++) {
-        const QVariant cardData = reply.at(i);
-        result << Card::Find(cards, cardData).mid(0, capacities.at(i));
-    }
+//    QList<QList<Card *> > result;
+//    const QVariantList reply = m_agent->waitForReply().toList();
+//    int maxi = qMin(capacities.length(), reply.length());
+//    for (int i = 0; i < maxi; i++) {
+//        const QVariant cardData = reply.at(i);
+//        result << Card::Find(cards, cardData).mid(0, capacities.at(i));
+//    }
 
-    return result;
+//    return result;
+    return QList<QList<Card *> >();
 }
 
 QString ServerPlayer::askForOption(const QStringList &options)
@@ -743,24 +762,24 @@ void ServerPlayer::clearCardHistory()
 
 void ServerPlayer::addSkill(const Skill *skill, Player::SkillArea area)
 {
-    attachSkill(skill, area);
+//    attachSkill(skill, area);
 
-    SkillValue add;
-    add.owner = this;
-    add.skill = skill;
-    add.area = area;
-    m_logic->trigger(EventHandler::SkillAdded, this, &add);
+//    SkillValue add;
+//    add.owner = this;
+//    add.skill = skill;
+//    add.area = area;
+//    m_logic->trigger(EventHandler::SkillAdded, this, &add);
 }
 
 void ServerPlayer::removeSkill(const Skill *skill, Player::SkillArea area)
 {
-    detachSkill(skill, area);
+//    detachSkill(skill, area);
 
-    SkillValue remove;
-    remove.owner = this;
-    remove.skill = skill;
-    remove.area = area;
-    m_logic->trigger(EventHandler::SkillRemoved, this, &remove);
+//    SkillValue remove;
+//    remove.owner = this;
+//    remove.skill = skill;
+//    remove.area = area;
+//    m_logic->trigger(EventHandler::SkillRemoved, this, &remove);
 }
 
 void ServerPlayer::attachSkill(const Skill *skill, SkillArea area)
@@ -809,76 +828,78 @@ void ServerPlayer::unicastTagTo(const QString &key, ServerPlayer *to)
 
 QList<const General *> ServerPlayer::askForGeneral(const QList<const General *> &candidates, int num)
 {
-    QVariantMap data;
-    data["num"] = num;
+//    QVariantMap data;
+//    data["num"] = num;
 
-    QVariantList candidateData;
-    foreach (const General *candidate, candidates)
-        candidateData << candidate->id();
-    data["candidates"] = candidateData;
+//    QVariantList candidateData;
+//    foreach (const General *candidate, candidates)
+//        candidateData << candidate->id();
+//    data["candidates"] = candidateData;
 
-    int timeout = m_logic->settings()->timeout * 1000;
-    m_agent->request(S_COMMAND_CHOOSE_GENERAL, data, timeout);
-    QVariantList reply = m_agent->waitForReply(timeout).toList();
+//    int timeout = m_logic->settings()->timeout * 1000;
+//    m_agent->request(S_COMMAND_CHOOSE_GENERAL, data, timeout);
+//    QVariantList reply = m_agent->waitForReply(timeout).toList();
 
-    GeneralList result;
-    foreach (const QVariant &idData, reply) {
-        uint id = idData.toUInt();
-        foreach (const General *candidate, candidates) {
-            if (candidate->id() == id) {
-                result << candidate;
-                break;
-            }
-        }
-    }
+//    GeneralList result;
+//    foreach (const QVariant &idData, reply) {
+//        uint id = idData.toUInt();
+//        foreach (const General *candidate, candidates) {
+//            if (candidate->id() == id) {
+//                result << candidate;
+//                break;
+//            }
+//        }
+//    }
 
-    if (result.length() < num)
-        result = candidates.mid(0, num);
+//    if (result.length() < num)
+//        result = candidates.mid(0, num);
 
-    return result;
+//    return result;
+    return QList<const General *>();
 }
 
 void ServerPlayer::addTriggerSkill(const Skill *skill)
 {
-    if (skill->type() == Skill::TriggerType)
-        m_logic->addEventHandler(static_cast<const TriggerSkill *>(skill));
+//    if (skill->type() == Skill::TriggerType)
+//        m_logic->addEventHandler(static_cast<const TriggerSkill *>(skill));
 
-    QList<const Skill *> subskills = skill->subskills();
-    foreach (const Skill *subskill, subskills) {
-        if (subskill->type() == Skill::TriggerType)
-            m_logic->addEventHandler(static_cast<const TriggerSkill *>(subskill));
-    }
+//    QList<const Skill *> subskills = skill->subskills();
+//    foreach (const Skill *subskill, subskills) {
+//        if (subskill->type() == Skill::TriggerType)
+//            m_logic->addEventHandler(static_cast<const TriggerSkill *>(subskill));
+//    }
 }
 
 void ServerPlayer::removeTriggerSkill(const Skill *skill)
 {
-    const Player *current = this->nextAlive(1, false);
-    while (current != this) {
-        QList<const Skill *> skills = current->skills();
-        if (skills.contains(skill))
-            return;
-        current = current->nextAlive(1, false);
-    }
+//    const Player *current = this->nextAlive(1, false);
+//    while (current != this) {
+//        QList<const Skill *> skills = current->skills();
+//        if (skills.contains(skill))
+//            return;
+//        current = current->nextAlive(1, false);
+//    }
 
-    if (skill->type() == Skill::TriggerType)
-        m_logic->removeEventHandler(static_cast<const TriggerSkill *>(skill));
+//    if (skill->type() == Skill::TriggerType)
+//        m_logic->removeEventHandler(static_cast<const TriggerSkill *>(skill));
 
-    QList<const Skill *> subskills = skill->subskills();
-    foreach (const Skill *subskill, subskills) {
-        if (subskill->type() == Skill::TriggerType)
-            m_logic->removeEventHandler(static_cast<const TriggerSkill *>(subskill));
-    }
+//    QList<const Skill *> subskills = skill->subskills();
+//    foreach (const Skill *subskill, subskills) {
+//        if (subskill->type() == Skill::TriggerType)
+//            m_logic->removeEventHandler(static_cast<const TriggerSkill *>(subskill));
+//    }
 }
 
 bool ServerPlayer::sortByActionOrder(ServerPlayer *a, ServerPlayer *b)
 {
-    if (a == nullptr)
-        return false;
+//    if (a == nullptr)
+//        return false;
 
-    if (b == nullptr)
-        return true;
+//    if (b == nullptr)
+//        return true;
 
-    GameLogic *l = a->m_logic;
+//    GameLogic *l = a->m_logic;
 
-    return l->getFront(a, b) == a;
+//    return l->getFront(a, b) == a;
+    return false;
 }

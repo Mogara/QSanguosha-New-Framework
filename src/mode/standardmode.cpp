@@ -19,8 +19,8 @@
 
 #include "standardmode.h"
 #include "engine.h"
-#include "gamelogic.h"
-#include "gamerule.h"
+//#include "gamelogic.h"
+//#include "gamerule.h"
 #include "general.h"
 #include "package.h"
 #include "protocol.h"
@@ -32,78 +32,78 @@
 
 using namespace DataValue;
 
-class StandardRule : public GameRule
+class StandardRule : public /*GameRule*/ QObject
 {
 public:
-    StandardRule() : GameRule()
+    StandardRule() :/* GameRule()*/ QObject()
     {
-        m_name = "standard_rule";
-        m_events << GameStart << BuryVictim << GameOverJudge;
+//        m_name = "standard_rule";
+//        m_events << GameStart << BuryVictim << GameOverJudge;
 
-        m_callbacks[GameStart] = onGameStart;
-        m_callbacks[BuryVictim] = onBuryVictim;
-        m_callbacks[GameOverJudge] = onGameOverJudge;
+//        m_callbacks[GameStart] = onGameStart;
+//        m_callbacks[BuryVictim] = onBuryVictim;
+//        m_callbacks[GameOverJudge] = onGameOverJudge;
     }
 
-    void prepareToStart(GameLogic *logic) const override
+    void prepareToStart(GameLogic *logic) const // override
     {
-        QList<ServerPlayer *> players = logic->players();
-        qShuffle(players);
-        int playerNum = players.length();
-        ServerPlayer *lord = players.first();
-        players.removeFirst();
+//        QList<ServerPlayer *> players = logic->players();
+//        qShuffle(players);
+//        int playerNum = players.length();
+//        ServerPlayer *lord = players.first();
+//        players.removeFirst();
 
-        lord->setRole("lord");
-        lord->broadcastProperty("role");
+//        lord->setRole("lord");
+//        lord->broadcastProperty("role");
 
-        int renegadeNum = playerNum > 4 ? 1 : 0;
-        int rebelNum = playerNum / 2;
-        int loyalistNum = playerNum - 1 - renegadeNum - rebelNum;
+//        int renegadeNum = playerNum > 4 ? 1 : 0;
+//        int rebelNum = playerNum / 2;
+//        int loyalistNum = playerNum - 1 - renegadeNum - rebelNum;
 
-        QMap<QString, int> roleMap;
-        roleMap["renagade"] = renegadeNum;
-        roleMap["rebel"] = rebelNum;
-        roleMap["loyalist"] = loyalistNum;
+//        QMap<QString, int> roleMap;
+//        roleMap["renagade"] = renegadeNum;
+//        roleMap["rebel"] = rebelNum;
+//        roleMap["loyalist"] = loyalistNum;
 
-        int playerIndex = 0;
-        for (QMapIterator<QString, int> iter(roleMap); iter.hasNext(); ) {
-            iter.next();
-            int num = iter.value();
-            for (int i = 0; i < num; i++) {
-                ServerPlayer *player = players.at(playerIndex);
-                playerIndex++;
-                player->setRole(iter.key());
-            }
-        }
-        foreach (ServerPlayer *player, players) {
-            player->unicastPropertyTo("role", player);
-            player->broadcastProperty("role", "unknown");
-        }
+//        int playerIndex = 0;
+//        for (QMapIterator<QString, int> iter(roleMap); iter.hasNext(); ) {
+//            iter.next();
+//            int num = iter.value();
+//            for (int i = 0; i < num; i++) {
+//                ServerPlayer *player = players.at(playerIndex);
+//                playerIndex++;
+//                player->setRole(iter.key());
+//            }
+//        }
+//        foreach (ServerPlayer *player, players) {
+//            player->unicastPropertyTo("role", player);
+//            player->broadcastProperty("role", "unknown");
+//        }
 
-        GeneralList generals;
-        QList<const Package *> packages = logic->packages();
-        foreach (const Package *package, packages)
-            generals << package->generals();
-        qShuffle(generals);
+//        GeneralList generals;
+//        QList<const Package *> packages = logic->packages();
+//        foreach (const Package *package, packages)
+//            generals << package->generals();
+//        qShuffle(generals);
 
-        GeneralList lordCandidates;
-        foreach (const General *general, generals) {
-            if (general->isLord())
-                lordCandidates << general;
-        }
-        lordCandidates << generals.mid(0, 2);
-        GeneralList reply = lord->askForGeneral(lordCandidates, 1);
-        lord->setGeneral(reply.first());
-        lord->broadcastProperty("generalId");
+//        GeneralList lordCandidates;
+//        foreach (const General *general, generals) {
+//            if (general->isLord())
+//                lordCandidates << general;
+//        }
+//        lordCandidates << generals.mid(0, 2);
+//        GeneralList reply = lord->askForGeneral(lordCandidates, 1);
+//        lord->setGeneral(reply.first());
+//        lord->broadcastProperty("generalId");
 
-        QMap<uint, GeneralList> replies = logic->broadcastRequestForGenerals(players, 1, 5);
-        for (QMapIterator<uint, GeneralList> iter(replies); iter.hasNext(); ) {
-            iter.next();
-            ServerPlayer *player = logic->findPlayer(iter.key());
-            const GeneralList &generals = iter.value();
-            player->setGeneral(generals.first());
-            player->broadcastProperty("generalId");
-        }
+//        QMap<uint, GeneralList> replies = logic->broadcastRequestForGenerals(players, 1, 5);
+//        for (QMapIterator<uint, GeneralList> iter(replies); iter.hasNext(); ) {
+//            iter.next();
+//            ServerPlayer *player = logic->findPlayer(iter.key());
+//            const GeneralList &generals = iter.value();
+//            player->setGeneral(generals.first());
+//            player->broadcastProperty("generalId");
+//        }
     }
 
 private:
@@ -131,83 +131,83 @@ private:
 
     static QList<ServerPlayer *> getPlayersByRole(GameLogic *logic, const QString &role)
     {
-        QList<ServerPlayer *> result;
-        QList<ServerPlayer *> allPlayers = logic->allPlayers(true);
-        foreach (ServerPlayer *player, allPlayers) {
-            if (player->role() == role)
-                result << player;
-        }
-        return result;
+//        QList<ServerPlayer *> result;
+//        QList<ServerPlayer *> allPlayers = logic->allPlayers(true);
+//        foreach (ServerPlayer *player, allPlayers) {
+//            if (player->role() == role)
+//                result << player;
+//        }
+//        return result;
     }
 
     static void onBuryVictim(GameLogic *logic, ServerPlayer *victim, QObject *data)
     {
-        DeathValue *death = qobject_cast<DeathValue *>(data);
-        if (death->damage == nullptr)
-            return;
+//        DeathValue *death = qobject_cast<DeathValue *>(data);
+//        if (death->damage == nullptr)
+//            return;
 
-        ServerPlayer *killer = death->damage->from;
-        if (killer->isDead())
-            return;
+//        ServerPlayer *killer = death->damage->from;
+//        if (killer->isDead())
+//            return;
 
-        if (victim->role() == "rebel") {
-            killer->drawCards(3);
-        } else if (victim->role() == "loyalist" && killer->role() == "lord") {
-            CardsMoveValue moves;
-            foreach (Card *c, killer->handcardArea()->cards() + killer->equipArea()->virtualCards()) {
-                CardMove move;
-                move.card = c;
-                move.toArea = logic->discardPile();
-                move.isOpen = true;
-                moves.moves << &move;
-            }
-            logic->moveCards(moves);
-        }
+//        if (victim->role() == "rebel") {
+//            killer->drawCards(3);
+//        } else if (victim->role() == "loyalist" && killer->role() == "lord") {
+//            CardsMoveValue moves;
+//            foreach (Card *c, killer->handcardArea()->cards() + killer->equipArea()->virtualCards()) {
+//                CardMove move;
+//                move.card = c;
+//                move.toArea = logic->discardPile();
+//                move.isOpen = true;
+//                moves.moves << &move;
+//            }
+//            logic->moveCards(moves);
+//        }
     }
 
     static void onGameOverJudge(GameLogic *logic, ServerPlayer *victim, QObject *)
     {
-        QList<ServerPlayer *> winners;
-        QList<ServerPlayer *> alivePlayers = logic->allPlayers();
-        if (victim->role() == "lord") {
-            if (alivePlayers.length() == 1 && alivePlayers.first()->role() == "renagade") {
-                winners = alivePlayers;
-            } else {
-                winners = getPlayersByRole(logic, "rebel");
-            }
-        } else {
-            victim->broadcastProperty("role");
+//        QList<ServerPlayer *> winners;
+//        QList<ServerPlayer *> alivePlayers = logic->allPlayers();
+//        if (victim->role() == "lord") {
+//            if (alivePlayers.length() == 1 && alivePlayers.first()->role() == "renagade") {
+//                winners = alivePlayers;
+//            } else {
+//                winners = getPlayersByRole(logic, "rebel");
+//            }
+//        } else {
+//            victim->broadcastProperty("role");
 
-            bool lordWin = true;
-            foreach (ServerPlayer *player, alivePlayers) {
-                if (player->role() == "rebel" || player->role() == "renagade") {
-                    lordWin = false;
-                    break;
-                }
-            }
-            if (lordWin) {
-                winners << getPlayersByRole(logic, "lord");
-                winners << getPlayersByRole(logic, "loyalist");
-            }
-        }
+//            bool lordWin = true;
+//            foreach (ServerPlayer *player, alivePlayers) {
+//                if (player->role() == "rebel" || player->role() == "renagade") {
+//                    lordWin = false;
+//                    break;
+//                }
+//            }
+//            if (lordWin) {
+//                winners << getPlayersByRole(logic, "lord");
+//                winners << getPlayersByRole(logic, "loyalist");
+//            }
+//        }
 
-        if (winners.length() > 0) {
-            foreach (ServerPlayer *player, alivePlayers)
-                player->broadcastProperty("role");
+//        if (winners.length() > 0) {
+//            foreach (ServerPlayer *player, alivePlayers)
+//                player->broadcastProperty("role");
 
-            ServerPlayer *current = logic->currentPlayer();
-            current->setPhase(Player::Inactive);
-            current->broadcastProperty("phase");
+//            ServerPlayer *current = logic->currentPlayer();
+//            current->setPhase(Player::Inactive);
+//            current->broadcastProperty("phase");
 
-            logic->gameOver(winners);
-        }
+//            logic->gameOver(winners);
+//        }
     }
 };
 
 StandardMode::StandardMode()
 {
     m_name = "standard";
-    m_rule = new StandardRule;
+//    m_rule = new StandardRule;
 
     m_availablePackages << "nos_standard" << "standard_cards";
 }

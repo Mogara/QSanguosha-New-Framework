@@ -18,7 +18,7 @@
 *********************************************************************/
 
 #include "engine.h"
-#include "gamelogic.h"
+//#include "gamelogic.h"
 #include "gamemode.h"
 #include "roomsettings.h"
 #include "server.h"
@@ -34,16 +34,16 @@ Server::Server(QObject *parent)
     lobby->setName(tr("QSanguosha Lobby"));
 
     connect(this, &CServer::roomCreated, [](CRoom *room){
-        GameLogic *logic = new GameLogic(room);
-        room->setGameLogic(logic);
+//        GameLogic *logic = new GameLogic(room);
+//        room->setGameLogic(logic);
 
-        room->setSettings(new RoomSettings);
-        CServerUser *owner = room->owner();
-        if (owner->screenName().endsWith("s"))
-            room->setName(tr("%1' Room").arg(owner->screenName()));
-        else
-            room->setName(tr("%1's Room").arg(owner->screenName()));
-        room->broadcastConfig();
+//        room->setSettings(new RoomSettings);
+//        CServerUser *owner = room->owner();
+//        if (owner->screenName().endsWith("s"))
+//            room->setName(tr("%1' Room").arg(owner->screenName()));
+//        else
+//            room->setName(tr("%1's Room").arg(owner->screenName()));
+//        room->broadcastConfig();
     });
 
     connect(this, &CServer::robotAdded, [](CServerRobot *robot) {

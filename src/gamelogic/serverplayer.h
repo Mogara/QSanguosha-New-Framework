@@ -20,8 +20,8 @@
 #ifndef SERVERPLAYER_H
 #define SERVERPLAYER_H
 
-#include "event.h"
-#include "player.h"
+//#include "event.h"
+//#include "player.h"
 #include "datavalue.h"
 
 class CRoom;
@@ -42,69 +42,69 @@ public:
 
     CRoom *room() const;
 
-    ServerPlayer *next() const { return qobject_cast<ServerPlayer *>(Player::next()); }
-    ServerPlayer *next(bool ignoreRemoved) const{ return qobject_cast<ServerPlayer *>(Player::next(ignoreRemoved)); }
-    ServerPlayer *nextAlive(int step = 1, bool ignoreRemoved = true) const { return qobject_cast<ServerPlayer *>(Player::nextAlive(step, ignoreRemoved)); }
+    Q_INVOKABLE ServerPlayer *next() const { return qobject_cast<ServerPlayer *>(Player::next()); }
+    Q_INVOKABLE ServerPlayer *next(bool ignoreRemoved) const{ return qobject_cast<ServerPlayer *>(Player::next(ignoreRemoved)); }
+    Q_INVOKABLE ServerPlayer *nextAlive(int step = 1, bool ignoreRemoved = true) const { return qobject_cast<ServerPlayer *>(Player::nextAlive(step, ignoreRemoved)); }
 
-    void drawCards(int n);
-    void recastCard(Card *card);
+    Q_INVOKABLE void drawCards(int n);
+    Q_INVOKABLE void recastCard(Card *card);
 
-    void showCard(Card *card);
-    void showCards(const QList<Card *> &cards);
+    Q_INVOKABLE void showCard(Card *card);
+    Q_INVOKABLE void showCards(const QList<Card *> &cards);
 
-    void play();
-    void play(const QList<Phase> &phases);
-    bool activate();
+    Q_INVOKABLE void play();
+    Q_INVOKABLE void play(const QList<Phase> &phases);
+    Q_INVOKABLE bool activate();
 
-    void skipPhase(Phase phase) { m_skippedPhase.insert(phase); }
-    bool isPhaseSkipped(Phase phase) { return m_skippedPhase.contains(phase); }
-    void clearSkippedPhase() { m_skippedPhase.clear(); }
+    Q_INVOKABLE void skipPhase(Phase phase) { m_skippedPhase.insert(phase); }
+    Q_INVOKABLE bool isPhaseSkipped(Phase phase) { return m_skippedPhase.contains(phase); }
+    Q_INVOKABLE void clearSkippedPhase() { m_skippedPhase.clear(); }
 
-    void showPrompt(const QString &message, int number);
-    void showPrompt(const QString &message, const Card *card);
-    void showPrompt(const QString &message, const ServerPlayer *p1, const Card *card = nullptr);
-    void showPrompt(const QString &message, const ServerPlayer *p1, const ServerPlayer *p2, const Card *card = nullptr);
-    void showPrompt(const QString &message, const QVariantList &args = QVariantList());
+    Q_INVOKABLE void showPrompt(const QString &message, int number);
+    Q_INVOKABLE void showPrompt(const QString &message, const Card *card);
+    Q_INVOKABLE void showPrompt(const QString &message, const ServerPlayer *p1, const Card *card = nullptr);
+    Q_INVOKABLE void showPrompt(const QString &message, const ServerPlayer *p1, const ServerPlayer *p2, const Card *card = nullptr);
+    Q_INVOKABLE void showPrompt(const QString &message, const QVariantList &args = QVariantList());
 
-    EventPtr askForTriggerOrder(const EventPtrList &options, bool cancelable);
-    Card *askForCard(const QString &pattern, bool optional = true);
-    QList<Card *> askForCards(const QString &pattern, int num, bool optional = false);
-    QList<Card *> askForCards(const QString &pattern, int minNum, int maxNum, bool optional = false);
-    Card *askToChooseCard(ServerPlayer *owner, const QString &areaFlag = "hej", bool handcardVisible = false);
-    DataValue::CardUseValue askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets = QList<ServerPlayer *>());
-    DataValue::SkillInvokeValue askToInvokeSkill(const Skill *skill);
-    QList<QList<Card *>> askToArrangeCard(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames = QStringList());
-    QString askForOption(const QStringList &options);
+    Q_INVOKABLE /*EventPtr*/ int askForTriggerOrder(const /*EventPtrList*/ int &options, bool cancelable);
+    Q_INVOKABLE Card *askForCard(const QString &pattern, bool optional = true);
+    Q_INVOKABLE QList<Card *> askForCards(const QString &pattern, int num, bool optional = false);
+    Q_INVOKABLE QList<Card *> askForCards(const QString &pattern, int minNum, int maxNum, bool optional = false);
+    Q_INVOKABLE Card *askToChooseCard(ServerPlayer *owner, const QString &areaFlag = "hej", bool handcardVisible = false);
+    Q_INVOKABLE DataValue::CardUseValue askToUseCard(const QString &pattern, const QList<ServerPlayer *> &assignedTargets = QList<ServerPlayer *>());
+    Q_INVOKABLE DataValue::SkillInvokeValue askToInvokeSkill(const Skill *skill);
+    Q_INVOKABLE QList<QList<Card *> > askToArrangeCard(const QList<Card *> &cards, const QList<int> &capacities, const QStringList &areaNames = QStringList());
+    Q_INVOKABLE QString askForOption(const QStringList &options);
 
-    void broadcastProperty(const char *name) const;
-    void broadcastProperty(const char *name, const QVariant &value, ServerPlayer *except = nullptr) const;
-    void unicastPropertyTo(const char *name, ServerPlayer *player);
+    Q_INVOKABLE void broadcastProperty(const char *name) const;
+    Q_INVOKABLE void broadcastProperty(const char *name, const QVariant &value, ServerPlayer *except = nullptr) const;
+    Q_INVOKABLE void unicastPropertyTo(const char *name, ServerPlayer *player);
 
-    void addSkillHistory(const Skill *skill);
-    void addSkillHistory(const Skill *skill, const QList<Card *> &cards);
-    void addSkillHistory(const Skill *skill, const QList<ServerPlayer *> &targets);
-    void addSkillHistory(const Skill *skill, const QList<Card *> &cards, const QList<ServerPlayer *> &targets);
-    void clearSkillHistory();
+    Q_INVOKABLE void addSkillHistory(const Skill *skill);
+    Q_INVOKABLE void addSkillHistory(const Skill *skill, const QList<Card *> &cards);
+    Q_INVOKABLE void addSkillHistory(const Skill *skill, const QList<ServerPlayer *> &targets);
+    Q_INVOKABLE void addSkillHistory(const Skill *skill, const QList<Card *> &cards, const QList<ServerPlayer *> &targets);
+    Q_INVOKABLE void clearSkillHistory();
 
-    void addCardHistory(const QString &name, int times = 1);
-    void clearCardHistory();
+    Q_INVOKABLE void addCardHistory(const QString &name, int times = 1);
+    Q_INVOKABLE void clearCardHistory();
 
-    void addSkill(const Skill *skill, SkillArea area = HeadSkillArea);
-    void removeSkill(const Skill *skill, SkillArea area = UnknownSkillArea);
+    Q_INVOKABLE void addSkill(const Skill *skill, SkillArea area = HeadSkillArea);
+    Q_INVOKABLE void removeSkill(const Skill *skill, SkillArea area = UnknownSkillArea);
 
     //These two functions don't trigger SkillAdded/SkillRemoved events
-    void attachSkill(const Skill *skill, SkillArea area = HeadSkillArea);
-    void detachSkill(const Skill *skill, SkillArea area = UnknownSkillArea);
+    Q_INVOKABLE void attachSkill(const Skill *skill, SkillArea area = HeadSkillArea);
+    Q_INVOKABLE void detachSkill(const Skill *skill, SkillArea area = UnknownSkillArea);
 
-    void broadcastTag(const QString &key);
-    void unicastTagTo(const QString &key, ServerPlayer *to);
+    Q_INVOKABLE void broadcastTag(const QString &key);
+    Q_INVOKABLE void unicastTagTo(const QString &key, ServerPlayer *to);
 
-    QList<const General *> askForGeneral(const QList<const General *> &candidates, int num);
+    Q_INVOKABLE QList<const General *> askForGeneral(const QList<const General *> &candidates, int num);
 
-    static bool sortByActionOrder(ServerPlayer *a, ServerPlayer *b);
+    Q_INVOKABLE static bool sortByActionOrder(ServerPlayer *a, ServerPlayer *b);
 
-    GameLogic *logic() { return m_logic; }
-    const GameLogic *gameLogic() const { return m_logic; }
+    Q_INVOKABLE GameLogic *logic() { return m_logic; }
+    Q_INVOKABLE const GameLogic *gameLogic() const { return m_logic; }
 
 private:
     void addTriggerSkill(const Skill *skill);

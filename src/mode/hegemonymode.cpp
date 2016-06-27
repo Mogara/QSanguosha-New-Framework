@@ -19,8 +19,8 @@
 
 #include "hegemonymode.h"
 #include "engine.h"
-#include "gamelogic.h"
-#include "gamerule.h"
+//#include "gamelogic.h"
+//#include "gamerule.h"
 #include "general.h"
 #include "protocol.h"
 #include "serverplayer.h"
@@ -30,29 +30,29 @@
 #include <CRoom>
 #include <CServerAgent>
 
-class HegemonyRule : public GameRule
+class HegemonyRule : public /*GameRule*/ QObject
 {
 public:
-    HegemonyRule() : GameRule()
+    HegemonyRule() : /*GameRule()*/ QObject()
     {
-        m_name = "hegemony_rule";
-        m_events << GameStart;
-        m_callbacks[GameStart] = &onGameStart;
+//        m_name = "hegemony_rule";
+//        m_events << GameStart;
+//        m_callbacks[GameStart] = &onGameStart;
     }
 
-    void prepareToStart(GameLogic *logic) const override
+    void prepareToStart(GameLogic *logic) const // override
     {
-        //Choose 7 random generals for each player
-        //@to-do: config
-        QMap<uint, GeneralList> replies = logic->broadcastRequestForGenerals(logic->players(), 2, 7);
-        QMapIterator<uint, GeneralList> iter(replies);
-        while (iter.hasNext()) {
-            iter.next();
-            ServerPlayer *player = logic->findPlayer(iter.key());
-            const GeneralList &generals = iter.value();
-            player->setHeadGeneral(generals.at(0));
-            player->setDeputyGeneral(generals.at(1));
-        }
+//        //Choose 7 random generals for each player
+//        //@to-do: config
+//        QMap<uint, GeneralList> replies = logic->broadcastRequestForGenerals(logic->players(), 2, 7);
+//        QMapIterator<uint, GeneralList> iter(replies);
+//        while (iter.hasNext()) {
+//            iter.next();
+//            ServerPlayer *player = logic->findPlayer(iter.key());
+//            const GeneralList &generals = iter.value();
+//            player->setHeadGeneral(generals.at(0));
+//            player->setDeputyGeneral(generals.at(1));
+//        }
     }
 
     static void onGameStart(GameLogic *, ServerPlayer *current, QObject *)
@@ -92,7 +92,7 @@ public:
 HegemonyMode::HegemonyMode()
 {
     m_name = "hegemony";
-    m_rule = new HegemonyRule;
+//    m_rule = new HegemonyRule;
 
     m_availablePackages << "hegemony" << "hegemony_cards";
 }

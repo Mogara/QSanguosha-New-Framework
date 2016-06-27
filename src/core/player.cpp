@@ -29,7 +29,7 @@ namespace
 {
     void registerQmlTypePlayer__()
     {
-        qmlRegisterUncreatableType<Player>("Sanguosha.player", 1, 0, "Player", "Player is created in the game logic/client, and shouldn't be created in QML");
+        qmlRegisterUncreatableType<Player>("Sanguosha.Player", 1, 0, "Player", "Player is created in the game logic/client, and shouldn't be created in QML");
     }
 }
 

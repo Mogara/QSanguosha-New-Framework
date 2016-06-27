@@ -28,7 +28,8 @@ class Card;
 class CardPattern
 {
 public:
-    CardPattern(const QString &pattern);
+    CardPattern(const QString &pattern = QString());
+    void setPattern(const QString &pattern);
 
     bool match(const Player *player, const Card *card) const;
     const QString &toString() const { return m_str; }

@@ -21,8 +21,8 @@
 #include "general.h"
 #include "skill.h"
 #include "serverplayer.h"
-#include "event.h"
-#include "gamelogic.h"
+//#include "event.h"
+//#include "gamelogic.h"
 #include "engine.h"
 
 #include <QThreadStorage>
@@ -94,259 +94,259 @@ void Skill::setFrequency(Frequency frequency)
 TriggerSkill::TriggerSkill(const QString &name)
     : Skill(name)
 {
-    EventHandler::m_name = name;
+    // EventHandler::m_name = name;
     m_type = TriggerType;
-    m_priority = 1;
+    // m_priority = 1;
 }
 
-EventList TriggerSkill::triggerable(GameLogic *logic, EventType event, const QObject *data, ServerPlayer *player /* = nullptr */) const
-{
-    if (skillScript() != nullptr) {
-        EventList l;
-        bool r = QMetaObject::invokeMethod(skillScript(), "triggerable",
-            Q_RETURN_ARG(EventList, l),
-            Q_ARG(const TriggerSkill *, this),
-            Q_ARG(GameLogic *, logic),
-            Q_ARG(EventType, event),
-            Q_ARG(const QObject *, data),
-            Q_ARG(ServerPlayer *, player));
+//EventList TriggerSkill::triggerable(GameLogic *logic, EventType event, const QObject *data, ServerPlayer *player /* = nullptr */) const
+//{
+//    if (skillScript() != nullptr) {
+//        EventList l;
+//        bool r = QMetaObject::invokeMethod(skillScript(), "triggerable",
+//            Q_RETURN_ARG(EventList, l),
+//            Q_ARG(const TriggerSkill *, this),
+//            Q_ARG(GameLogic *, logic),
+//            Q_ARG(EventType, event),
+//            Q_ARG(const QObject *, data),
+//            Q_ARG(ServerPlayer *, player));
 
-        if (r)
-            return l;
-    }
+//        if (r)
+//            return l;
+//    }
 
 
-/*
-    const QJSValue &funcs = skillFuncs();
-    if (funcs.hasProperty("triggerable") && funcs.property("triggerable").isCallable()) {
-        QJSEngine *engine = funcs.engine();
-        QJSValue logicValue = engine->newQObject(logic);
-        // we should push a "this" value to the JS engine
-        QJSValue thisValue = engine->newQObject(const_cast<TriggerSkill *>(this)); // warning!! make sure the JS script won't modify this data
-        QJSValue eventValue = QJSValue(static_cast<int>(event));
-        QJSValue dataValue = engine->newQObject(const_cast<QObject *>(data)); // warning!! make sure the JS script won't modify this data
-        QJSValue playerValue = engine->newQObject(player);
-        QJSValue returnValue = funcs.property("triggerable").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << eventValue << dataValue << playerValue);
+///*
+//    const QJSValue &funcs = skillFuncs();
+//    if (funcs.hasProperty("triggerable") && funcs.property("triggerable").isCallable()) {
+//        QJSEngine *engine = funcs.engine();
+//        QJSValue logicValue = engine->newQObject(logic);
+//        // we should push a "this" value to the JS engine
+//        QJSValue thisValue = engine->newQObject(const_cast<TriggerSkill *>(this)); // warning!! make sure the JS script won't modify this data
+//        QJSValue eventValue = QJSValue(static_cast<int>(event));
+//        QJSValue dataValue = engine->newQObject(const_cast<QObject *>(data)); // warning!! make sure the JS script won't modify this data
+//        QJSValue playerValue = engine->newQObject(player);
+//        QJSValue returnValue = funcs.property("triggerable").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << eventValue << dataValue << playerValue);
 
-        if (returnValue.isQObject()) {
-            Event *event = qobject_cast<Event *>(returnValue.toQObject());
-            if (event == nullptr || !event->isValid())
-                return EventList();
-            else
-                return EventList() << *event;
-        } else if (returnValue.isArray()) {
-            EventList l;
-            QJSValueIterator it(returnValue);
-            while (it.hasNext()) {
-                if (!it.next())
-                    break;
+//        if (returnValue.isQObject()) {
+//            Event *event = qobject_cast<Event *>(returnValue.toQObject());
+//            if (event == nullptr || !event->isValid())
+//                return EventList();
+//            else
+//                return EventList() << *event;
+//        } else if (returnValue.isArray()) {
+//            EventList l;
+//            QJSValueIterator it(returnValue);
+//            while (it.hasNext()) {
+//                if (!it.next())
+//                    break;
                 
-                Event *event = qobject_cast<Event *>(returnValue.toQObject());
-                if (event != nullptr && event->isValid())
-                    l << *event;
-            }
-            return l;
-        } // any other conditions falls into default
-    }
-*/
+//                Event *event = qobject_cast<Event *>(returnValue.toQObject());
+//                if (event != nullptr && event->isValid())
+//                    l << *event;
+//            }
+//            return l;
+//        } // any other conditions falls into default
+//    }
+//*/
 
-    // default
-    if (player != nullptr && player->isAlive() && player->hasSkill(this))
-        return EventList() << Event(logic, this, player, player, m_frequency == Skill::Compulsory || m_frequency == Skill::Wake);
+//    // default
+//    if (player != nullptr && player->isAlive() && player->hasSkill(this))
+//        return EventList() << Event(logic, this, player, player, m_frequency == Skill::Compulsory || m_frequency == Skill::Wake);
 
-    return EventList();
-}
+//    return EventList();
+//}
 
-bool TriggerSkill::onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player) const
-{
-    bool takeEffect = cost(logic, event, eventPtr, data, player);
-    if (takeEffect) {
-        // hegemony mode show general
-        const General *headGeneral = eventPtr->owner->headGeneral();
-        if (headGeneral->hasSkill(this)) {
-            if (!eventPtr->owner->hasShownHeadGeneral()) {
-                eventPtr->owner->setHeadGeneralShown(true);
-                eventPtr->owner->broadcastProperty("headGeneralId");
-            }
-        } else {
-            const General *deputyGeneral = eventPtr->owner->deputyGeneral();
-            if (deputyGeneral && deputyGeneral->hasSkill(this) && !eventPtr->owner->hasShownDeputyGeneral()) {
-                eventPtr->owner->setDeputyGeneralShown(true);
-                eventPtr->owner->broadcastProperty("deputyGeneralId");
-            }
-        }
+//bool TriggerSkill::onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player) const
+//{
+//    bool takeEffect = cost(logic, event, eventPtr, data, player);
+//    if (takeEffect) {
+//        // hegemony mode show general
+//        const General *headGeneral = eventPtr->owner->headGeneral();
+//        if (headGeneral->hasSkill(this)) {
+//            if (!eventPtr->owner->hasShownHeadGeneral()) {
+//                eventPtr->owner->setHeadGeneralShown(true);
+//                eventPtr->owner->broadcastProperty("headGeneralId");
+//            }
+//        } else {
+//            const General *deputyGeneral = eventPtr->owner->deputyGeneral();
+//            if (deputyGeneral && deputyGeneral->hasSkill(this) && !eventPtr->owner->hasShownDeputyGeneral()) {
+//                eventPtr->owner->setDeputyGeneralShown(true);
+//                eventPtr->owner->broadcastProperty("deputyGeneralId");
+//            }
+//        }
 
-        eventPtr->owner->addSkillHistory(this);
-    }
-    return takeEffect;
-}
+//        eventPtr->owner->addSkillHistory(this);
+//    }
+//    return takeEffect;
+//}
 
-bool TriggerSkill::cost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const
-{
-    if (skillScript() != nullptr) {
-        bool l;
-        bool r = QMetaObject::invokeMethod(skillScript(), "cost",
-            Q_RETURN_ARG(bool, l),
-            Q_ARG(const TriggerSkill *, this),
-            Q_ARG(GameLogic *, logic),
-            Q_ARG(EventType, event),
-            Q_ARG(EventPtr, eventPtr),
-            Q_ARG(QObject *, data),
-            Q_ARG(ServerPlayer *, player));
+//bool TriggerSkill::cost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const
+//{
+//    if (skillScript() != nullptr) {
+//        bool l;
+//        bool r = QMetaObject::invokeMethod(skillScript(), "cost",
+//            Q_RETURN_ARG(bool, l),
+//            Q_ARG(const TriggerSkill *, this),
+//            Q_ARG(GameLogic *, logic),
+//            Q_ARG(EventType, event),
+//            Q_ARG(EventPtr, eventPtr),
+//            Q_ARG(QObject *, data),
+//            Q_ARG(ServerPlayer *, player));
 
-        if (r)
-            return l;
-    }
+//        if (r)
+//            return l;
+//    }
 
-    /*
-    const QJSValue &funcs = skillFuncs();
-    if (funcs.hasProperty("cost")) {
-        if (funcs.property("cost").isCallable()) {
-            QJSEngine *engine = funcs.engine();
-            QJSValue thisValue = engine->newQObject(const_cast<TriggerSkill *>(this)); // warning!! make sure the JS script won't modify this data
-            QJSValue logicValue = engine->newQObject(logic);
-            QJSValue eventValue = QJSValue(static_cast<int>(event));
-            QJSValue eventPtrValue = engine->newQObject(eventPtr.data());
-            QJSValue dataValue = engine->newQObject(data);
-            QJSValue playerValue = engine->newQObject(player);
-            QJSValue returnValue = funcs.property("cost").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << eventValue << eventPtrValue << dataValue << playerValue);
+//    /*
+//    const QJSValue &funcs = skillFuncs();
+//    if (funcs.hasProperty("cost")) {
+//        if (funcs.property("cost").isCallable()) {
+//            QJSEngine *engine = funcs.engine();
+//            QJSValue thisValue = engine->newQObject(const_cast<TriggerSkill *>(this)); // warning!! make sure the JS script won't modify this data
+//            QJSValue logicValue = engine->newQObject(logic);
+//            QJSValue eventValue = QJSValue(static_cast<int>(event));
+//            QJSValue eventPtrValue = engine->newQObject(eventPtr.data());
+//            QJSValue dataValue = engine->newQObject(data);
+//            QJSValue playerValue = engine->newQObject(player);
+//            QJSValue returnValue = funcs.property("cost").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << eventValue << eventPtrValue << dataValue << playerValue);
 
-            if (returnValue.isBool())
-                return returnValue.toBool();
-        } else if (funcs.property("cost").isBool())
-            return funcs.property("cost").toBool();
-    }*/
+//            if (returnValue.isBool())
+//                return returnValue.toBool();
+//        } else if (funcs.property("cost").isBool())
+//            return funcs.property("cost").toBool();
+//    }*/
 
-    // default
-    return true;
-}
+//    // default
+//    return true;
+//}
 
-bool TriggerSkill::effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const
-{
-    if (skillScript() != nullptr) {
-        bool l;
-        bool r = QMetaObject::invokeMethod(skillScript(), "effect",
-            Q_RETURN_ARG(bool, l),
-            Q_ARG(const TriggerSkill *, this),
-            Q_ARG(GameLogic *, logic),
-            Q_ARG(EventType, event),
-            Q_ARG(EventPtr, eventPtr),
-            Q_ARG(QObject *, data),
-            Q_ARG(ServerPlayer *, player));
+//bool TriggerSkill::effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const
+//{
+//    if (skillScript() != nullptr) {
+//        bool l;
+//        bool r = QMetaObject::invokeMethod(skillScript(), "effect",
+//            Q_RETURN_ARG(bool, l),
+//            Q_ARG(const TriggerSkill *, this),
+//            Q_ARG(GameLogic *, logic),
+//            Q_ARG(EventType, event),
+//            Q_ARG(EventPtr, eventPtr),
+//            Q_ARG(QObject *, data),
+//            Q_ARG(ServerPlayer *, player));
 
-        if (r)
-            return l;
-    }
+//        if (r)
+//            return l;
+//    }
 
-/*
-    const QJSValue &funcs = skillFuncs();
-    if (funcs.hasProperty("effect")) {
-        if (funcs.property("effect").isCallable()) {
-            QJSEngine *engine = funcs.engine();
-            QJSValue thisValue = engine->newQObject(const_cast<TriggerSkill *>(this)); // warning!! make sure the JS script won't modify this data
-            QJSValue logicValue = engine->newQObject(logic);
-            QJSValue eventValue = QJSValue(static_cast<int>(event));
-            QJSValue eventPtrValue = engine->newQObject(eventPtr.data());
-            QJSValue dataValue = engine->newQObject(data);
-            QJSValue playerValue = engine->newQObject(player);
-            QJSValue returnValue = funcs.property("effect").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << eventValue << eventPtrValue << dataValue << playerValue);
+///*
+//    const QJSValue &funcs = skillFuncs();
+//    if (funcs.hasProperty("effect")) {
+//        if (funcs.property("effect").isCallable()) {
+//            QJSEngine *engine = funcs.engine();
+//            QJSValue thisValue = engine->newQObject(const_cast<TriggerSkill *>(this)); // warning!! make sure the JS script won't modify this data
+//            QJSValue logicValue = engine->newQObject(logic);
+//            QJSValue eventValue = QJSValue(static_cast<int>(event));
+//            QJSValue eventPtrValue = engine->newQObject(eventPtr.data());
+//            QJSValue dataValue = engine->newQObject(data);
+//            QJSValue playerValue = engine->newQObject(player);
+//            QJSValue returnValue = funcs.property("effect").callWithInstance(funcs, QJSValueList() << thisValue << logicValue << eventValue << eventPtrValue << dataValue << playerValue);
 
-            if (returnValue.isBool())
-                return returnValue.toBool();
-        } else if (funcs.property("effect").isBool())
-            return funcs.property("effect").toBool();
-    }*/
+//            if (returnValue.isBool())
+//                return returnValue.toBool();
+//        } else if (funcs.property("effect").isBool())
+//            return funcs.property("effect").toBool();
+//    }*/
 
-    //default
-    return false;
-}
+//    //default
+//    return false;
+//}
 
 StatusSkill::StatusSkill(const QString &name)
     : TriggerSkill(name)
 {
-    m_events << SkillAdded << SkillRemoved;
-    setFrequency(Compulsory);
+//    m_events << SkillAdded << SkillRemoved;
+//    setFrequency(Compulsory);
 }
 
-void StatusSkill::validate(ServerPlayer *target) const
-{
-    if (skillScript() != nullptr)
-        QMetaObject::invokeMethod(skillScript(), "validate", Q_ARG(const StatusSkill *, this), Q_ARG(ServerPlayer *, target));
+//void StatusSkill::validate(ServerPlayer *target) const
+//{
+//    if (skillScript() != nullptr)
+//        QMetaObject::invokeMethod(skillScript(), "validate", Q_ARG(const StatusSkill *, this), Q_ARG(ServerPlayer *, target));
 
-/*
-    const QJSValue &funcs = skillFuncs();
-    if (funcs.hasProperty("validate") && funcs.property("validate").isCallable()) {
-        QJSEngine *engine = funcs.engine();
-        QJSValue thisValue = engine->newQObject(const_cast<StatusSkill *>(this)); // warning!! make sure the JS script won't modify this data
-        QJSValue targetValue = engine->newQObject(target);
-        funcs.property("validate").callWithInstance(funcs, QJSValueList() << thisValue << targetValue);
-    }*/
+///*
+//    const QJSValue &funcs = skillFuncs();
+//    if (funcs.hasProperty("validate") && funcs.property("validate").isCallable()) {
+//        QJSEngine *engine = funcs.engine();
+//        QJSValue thisValue = engine->newQObject(const_cast<StatusSkill *>(this)); // warning!! make sure the JS script won't modify this data
+//        QJSValue targetValue = engine->newQObject(target);
+//        funcs.property("validate").callWithInstance(funcs, QJSValueList() << thisValue << targetValue);
+//    }*/
 
-    // default: do nothing
-}
+//    // default: do nothing
+//}
 
-void StatusSkill::invalidate(ServerPlayer *target) const
-{
-    if (skillScript() != nullptr)
-        QMetaObject::invokeMethod(skillScript(), "invalidate", Q_ARG(const StatusSkill *, this), Q_ARG(ServerPlayer *, target));
+//void StatusSkill::invalidate(ServerPlayer *target) const
+//{
+//    if (skillScript() != nullptr)
+//        QMetaObject::invokeMethod(skillScript(), "invalidate", Q_ARG(const StatusSkill *, this), Q_ARG(ServerPlayer *, target));
 
-/*
-    const QJSValue &funcs = skillFuncs();
-    if (funcs.hasProperty("invalidate") && funcs.property("invalidate").isCallable()) {
-        QJSEngine *engine = funcs.engine();
-        QJSValue thisValue = engine->newQObject(const_cast<StatusSkill *>(this)); // warning!! make sure the JS script won't modify this data
-        QJSValue targetValue = engine->newQObject(target);
-        funcs.property("invalidate").callWithInstance(funcs, QJSValueList() << thisValue << targetValue);
-    }*/
+///*
+//    const QJSValue &funcs = skillFuncs();
+//    if (funcs.hasProperty("invalidate") && funcs.property("invalidate").isCallable()) {
+//        QJSEngine *engine = funcs.engine();
+//        QJSValue thisValue = engine->newQObject(const_cast<StatusSkill *>(this)); // warning!! make sure the JS script won't modify this data
+//        QJSValue targetValue = engine->newQObject(target);
+//        funcs.property("invalidate").callWithInstance(funcs, QJSValueList() << thisValue << targetValue);
+//    }*/
 
-    // default: do nothing
-}
+//    // default: do nothing
+//}
 
-bool StatusSkill::isValid(ServerPlayer *target) const
-{
-    if (skillScript() != nullptr) {
-        bool l;
-        bool r = QMetaObject::invokeMethod(skillScript(), "isValid",
-            Q_RETURN_ARG(bool, l),
-            Q_ARG(const StatusSkill *, this),
-            Q_ARG(ServerPlayer *, target));
+//bool StatusSkill::isValid(ServerPlayer *target) const
+//{
+//    if (skillScript() != nullptr) {
+//        bool l;
+//        bool r = QMetaObject::invokeMethod(skillScript(), "isValid",
+//            Q_RETURN_ARG(bool, l),
+//            Q_ARG(const StatusSkill *, this),
+//            Q_ARG(ServerPlayer *, target));
 
-        if (r)
-            return l;
-    }
+//        if (r)
+//            return l;
+//    }
     
-    /*
-    const QJSValue &funcs = skillFuncs();
-    if (funcs.hasProperty("isValid")) {
-        if (funcs.property("isValid").isCallable()) {
-            QJSEngine *engine = funcs.engine();
-            QJSValue thisValue = engine->newQObject(const_cast<StatusSkill *>(this)); // warning!! make sure the JS script won't modify this data
-            QJSValue targetValue = engine->newQObject(target);
-            QJSValue returnValue = funcs.property("isValid").callWithInstance(funcs, QJSValueList() << thisValue << targetValue);
+//    /*
+//    const QJSValue &funcs = skillFuncs();
+//    if (funcs.hasProperty("isValid")) {
+//        if (funcs.property("isValid").isCallable()) {
+//            QJSEngine *engine = funcs.engine();
+//            QJSValue thisValue = engine->newQObject(const_cast<StatusSkill *>(this)); // warning!! make sure the JS script won't modify this data
+//            QJSValue targetValue = engine->newQObject(target);
+//            QJSValue returnValue = funcs.property("isValid").callWithInstance(funcs, QJSValueList() << thisValue << targetValue);
 
-            if (returnValue.isBool())
-                return returnValue.toBool();
-        } else if (funcs.property("isValid").isBool())
-            return funcs.property("isValid").toBool();
-    }*/
-    // default
-    return true;
-}
+//            if (returnValue.isBool())
+//                return returnValue.toBool();
+//        } else if (funcs.property("isValid").isBool())
+//            return funcs.property("isValid").toBool();
+//    }*/
+//    // default
+//    return true;
+//}
 
-bool StatusSkill::effect(GameLogic *, EventType event, EventPtr eventPtr, QObject *, ServerPlayer *player) const
-{
-    if (event == SkillAdded) {
-        validate(player);
-    } else if (event == SkillRemoved) {
-        invalidate(player);
-    } else {
-        if (isValid(player))
-            validate(player);
-        else
-            invalidate(player);
-    }
-    return false;
-}
+//bool StatusSkill::effect(GameLogic *, EventType event, EventPtr eventPtr, QObject *, ServerPlayer *player) const
+//{
+//    if (event == SkillAdded) {
+//        validate(player);
+//    } else if (event == SkillRemoved) {
+//        invalidate(player);
+//    } else {
+//        if (isValid(player))
+//            validate(player);
+//        else
+//            invalidate(player);
+//    }
+//    return false;
+//}
 
 /*
 MasochismSkill::MasochismSkill(const QString &name)

@@ -18,7 +18,7 @@
 *********************************************************************/
 
 #include "card.h"
-#include "gamelogic.h"
+// #include "gamelogic.h"
 #include "serverplayer.h"
 #include "skill.h"
 
@@ -306,33 +306,33 @@ bool Card::isValid(const QList<const Player *> &targets, const Player *source) c
 
 void Card::onUse(GameLogic *logic, CardUseValue &use)
 {
-    logic->sortByActionOrder(use.to);
+//    logic->sortByActionOrder(use.to);
 
-    logic->trigger(EventHandler::PreCardUsed, use.from, &use);
+//    logic->trigger(EventHandler::PreCardUsed, use.from, &use);
 
-    CardsMoveValue moves;
-    CardMove move;
-    move.toArea = logic->table();
-    move.card = use.card->makeVirtual();
-    move.isOpen = true;
-    moves.moves.append(&move);
-    logic->moveCards(moves);
+//    CardsMoveValue moves;
+//    CardMove move;
+//    move.toArea = logic->table();
+//    move.card = use.card->makeVirtual();
+//    move.isOpen = true;
+//    moves.moves.append(&move);
+//    logic->moveCards(moves);
 }
 
 void Card::use(GameLogic *logic, CardUseValue &use)
 {
-    foreach (ServerPlayer *target, use.to) {
-        CardEffectValue effect(use);
-        effect.to = target;
-        logic->takeCardEffect(effect);
-    }
+//    foreach (ServerPlayer *target, use.to) {
+//        CardEffectValue effect(use);
+//        effect.to = target;
+//        logic->takeCardEffect(effect);
+//    }
 
-    if (use.target) {
-        CardEffectValue effect(use);
-        logic->takeCardEffect(effect);
-    }
+//    if (use.target) {
+//        CardEffectValue effect(use);
+//        logic->takeCardEffect(effect);
+//    }
 
-    complete(logic);
+//    complete(logic);
 }
 
 void Card::onEffect(GameLogic *, CardEffectValue &)
@@ -345,16 +345,16 @@ void Card::effect(GameLogic *, CardEffectValue &)
 
 void Card::complete(GameLogic *logic)
 {
-    const CardArea *table = logic->table();
-    if (table->contains(realCard())) {
-        CardsMoveValue moves;
-        CardMove move;
-        move.card = makeVirtual();
-        move.toArea = logic->discardPile();
-        move.isOpen = true;
-        moves.moves.append(&move);
-        logic->moveCards(moves);
-    }
+//    const CardArea *table = logic->table();
+//    if (table->contains(realCard())) {
+//        CardsMoveValue moves;
+//        CardMove move;
+//        move.card = makeVirtual();
+//        move.toArea = logic->discardPile();
+//        move.isOpen = true;
+//        moves.moves.append(&move);
+//        logic->moveCards(moves);
+//    }
 }
 
 Card *Card::Find(const QList<Card *> &cards, uint id)
@@ -420,30 +420,30 @@ TrickCard::TrickCard(Card::Suit suit, int number)
 void TrickCard::onEffect(GameLogic *logic, CardEffectValue &effect)
 {
     if (isNullifiable(effect)) {
-        QList<ServerPlayer *> players = logic->allPlayers();
-        //@to-do: do not ask if no player can use nullification
-        foreach (ServerPlayer *player, players) {
-            if (effect.from) {
-                if (effect.to)
-                    player->showPrompt("trick-nullification-1", effect.from, effect.to, effect.use->card);
-                else
-                    player->showPrompt("trick-nullification-2", effect.from, effect.use->card);
-            } else if (effect.to) {
-                player->showPrompt("trick-nullification-3", effect.to, effect.use->card);
-            } else {
-                player->showPrompt("trick-nullification-4", effect.use->card);
-            }
-            Card *card = player->askForCard("Nullification"); // @to-do: Takashiro: the ask of Nullification is actually a race request(according to the old framework)
-            if (card) {
-                CardUseValue use;
-                use.from = player;
-                use.card = card;
-                use.target = effect.use->card;
-                use.extra = QVariant::fromValue(&effect);
-                logic->useCard(use);
-                break;
-            }
-        }
+//        QList<ServerPlayer *> players = logic->allPlayers();
+//        //@to-do: do not ask if no player can use nullification
+//        foreach (ServerPlayer *player, players) {
+//            if (effect.from) {
+//                if (effect.to)
+//                    player->showPrompt("trick-nullification-1", effect.from, effect.to, effect.use->card);
+//                else
+//                    player->showPrompt("trick-nullification-2", effect.from, effect.use->card);
+//            } else if (effect.to) {
+//                player->showPrompt("trick-nullification-3", effect.to, effect.use->card);
+//            } else {
+//                player->showPrompt("trick-nullification-4", effect.use->card);
+//            }
+//            Card *card = player->askForCard("Nullification"); // @to-do: Takashiro: the ask of Nullification is actually a race request(according to the old framework)
+//            if (card) {
+//                CardUseValue use;
+//                use.from = player;
+//                use.card = card;
+//                use.target = effect.use->card;
+//                use.extra = QVariant::fromValue(&effect);
+//                logic->useCard(use);
+//                break;
+//            }
+//        }
     }
 }
 
@@ -462,67 +462,67 @@ EquipCard::EquipCard(Card::Suit suit, int number)
 
 void EquipCard::onUse(GameLogic *logic, CardUseValue &use)
 {
-    ServerPlayer *player = use.from;
-    if (use.to.isEmpty())
-        use.to << player;
+//    ServerPlayer *player = use.from;
+//    if (use.to.isEmpty())
+//        use.to << player;
 
-    logic->trigger(EventHandler::PreCardUsed, player, &use);
+//    logic->trigger(EventHandler::PreCardUsed, player, &use);
 }
 
 void EquipCard::use(GameLogic *logic, CardUseValue &use)
 {
-    if (use.to.isEmpty()) {
-        CardsMoveValue moves;
-        CardMove move;
-        move.card = this;
-        move.toArea = logic->discardPile();
-        move.isOpen = true;
-        moves.moves << &move;
-        logic->moveCards(moves);
-        return;
-    }
+//    if (use.to.isEmpty()) {
+//        CardsMoveValue moves;
+//        CardMove move;
+//        move.card = this;
+//        move.toArea = logic->discardPile();
+//        move.isOpen = true;
+//        moves.moves << &move;
+//        logic->moveCards(moves);
+//        return;
+//    }
 
-    ServerPlayer *target = use.to.first();
+//    ServerPlayer *target = use.to.first();
 
-    //Find the existing equip
-    Card *equippedCard = nullptr;
-    QList<Card *> equips = target->equipArea()->cards();
-    foreach (Card *card, equips) {
-        if (card->subtype() == subtype()) {
-            equippedCard = card;
-            break;
-        }
-    }
+//    //Find the existing equip
+//    Card *equippedCard = nullptr;
+//    QList<Card *> equips = target->equipArea()->cards();
+//    foreach (Card *card, equips) {
+//        if (card->subtype() == subtype()) {
+//            equippedCard = card;
+//            break;
+//        }
+//    }
 
-    CardsMoveValue moves;
+//    CardsMoveValue moves;
 
-    CardMove install;
-    install.card = makeVirtual();
-    install.toArea = target->equipArea(); // we should make a virtual card of the equip card
-    install.isOpen = true;
-    moves.moves << &install;
+//    CardMove install;
+//    install.card = makeVirtual();
+//    install.toArea = target->equipArea(); // we should make a virtual card of the equip card
+//    install.isOpen = true;
+//    moves.moves << &install;
 
-    if (equippedCard != nullptr) {
-        CardMove uninstall;
-        uninstall.card = equippedCard;
-        uninstall.toArea = logic->table();
-        uninstall.isOpen = true;
-        moves.moves << &uninstall;
-    }
-    logic->moveCards(moves);
+//    if (equippedCard != nullptr) {
+//        CardMove uninstall;
+//        uninstall.card = equippedCard;
+//        uninstall.toArea = logic->table();
+//        uninstall.isOpen = true;
+//        moves.moves << &uninstall;
+//    }
+//    logic->moveCards(moves);
 
-    if (equippedCard != nullptr) {
-        const CardArea *table = logic->table();
-        if (table->contains(equippedCard)) {
-            CardsMoveValue discards;
-            CardMove discard;
-            discard.card = equippedCard;
-            discard.toArea = logic->discardPile();
-            discard.isOpen = true;
-            discards.moves << &discard;
-            logic->moveCards(discards);
-        }
-    }
+//    if (equippedCard != nullptr) {
+//        const CardArea *table = logic->table();
+//        if (table->contains(equippedCard)) {
+//            CardsMoveValue discards;
+//            CardMove discard;
+//            discard.card = equippedCard;
+//            discard.toArea = logic->discardPile();
+//            discard.isOpen = true;
+//            discards.moves << &discard;
+//            logic->moveCards(discards);
+//        }
+//    }
 }
 
 void EquipCard::complete(GameLogic *)
@@ -539,17 +539,17 @@ GlobalEffect::GlobalEffect(Card::Suit suit, int number)
 
 void GlobalEffect::onUse(GameLogic *logic, CardUseValue &use)
 {
-    if (use.to.isEmpty()) {
-        QList<const Player *> selected;
-        QList<ServerPlayer *> targets = logic->allPlayers();
-        foreach (ServerPlayer *toSelect, targets) {
-            if (targetFilter(selected, toSelect, use.from)) {
-                selected << toSelect;
-                use.to << toSelect;
-            }
-        }
-    }
-    TrickCard::onUse(logic, use);
+//    if (use.to.isEmpty()) {
+//        QList<const Player *> selected;
+//        QList<ServerPlayer *> targets = logic->allPlayers();
+//        foreach (ServerPlayer *toSelect, targets) {
+//            if (targetFilter(selected, toSelect, use.from)) {
+//                selected << toSelect;
+//                use.to << toSelect;
+//            }
+//        }
+//    }
+//    TrickCard::onUse(logic, use);
 }
 
 AreaOfEffect::AreaOfEffect(Card::Suit suit, int number)
@@ -562,17 +562,17 @@ AreaOfEffect::AreaOfEffect(Card::Suit suit, int number)
 
 void AreaOfEffect::onUse(GameLogic *logic, CardUseValue &use)
 {
-    if (use.to.isEmpty()) {
-        QList<const Player *> selected;
-        QList<ServerPlayer *> targets = logic->otherPlayers(use.from);
-        foreach (ServerPlayer *toSelect, targets) {
-            if (targetFilter(selected, toSelect, use.from)) {
-                selected << toSelect;
-                use.to << toSelect;
-            }
-        }
-    }
-    TrickCard::onUse(logic, use);
+//    if (use.to.isEmpty()) {
+//        QList<const Player *> selected;
+//        QList<ServerPlayer *> targets = logic->otherPlayers(use.from);
+//        foreach (ServerPlayer *toSelect, targets) {
+//            if (targetFilter(selected, toSelect, use.from)) {
+//                selected << toSelect;
+//                use.to << toSelect;
+//            }
+//        }
+//    }
+//    TrickCard::onUse(logic, use);
 }
 
 SingleTargetTrick::SingleTargetTrick(Card::Suit suit, int number)
@@ -606,50 +606,50 @@ bool DelayedTrick::targetFilter(const QList<const Player *> &selected, const Pla
 
 void DelayedTrick::onUse(GameLogic *logic, CardUseValue &use)
 {
-    logic->sortByActionOrder(use.to);
+//    logic->sortByActionOrder(use.to);
 
-    logic->trigger(EventHandler::PreCardUsed, use.from, &use);
+//    logic->trigger(EventHandler::PreCardUsed, use.from, &use);
 }
 
 void DelayedTrick::use(GameLogic *logic, CardUseValue &use)
 {
-    CardsMoveValue moves;
-    CardMove move;
+//    CardsMoveValue moves;
+//    CardMove move;
 
-    move.card = use.card->makeVirtual();
-    move.isOpen = true;
-    if (use.to.isEmpty())
-        move.toArea = logic->discardPile();
-    else
-        move.toArea = use.to.first()->delayedTrickArea();
+//    move.card = use.card->makeVirtual();
+//    move.isOpen = true;
+//    if (use.to.isEmpty())
+//        move.toArea = logic->discardPile();
+//    else
+//        move.toArea = use.to.first()->delayedTrickArea();
 
-    moves.moves << &move;
-    logic->moveCards(moves);
+//    moves.moves << &move;
+//    logic->moveCards(moves);
 }
 
 void DelayedTrick::onEffect(GameLogic *logic, CardEffectValue &effect)
 {
-    CardsMoveValue moves;
-    CardMove move;
+//    CardsMoveValue moves;
+//    CardMove move;
 
-    move.card = effect.use->card->makeVirtual();
-    move.isOpen = true;
-    move.toArea = logic->table();
+//    move.card = effect.use->card->makeVirtual();
+//    move.isOpen = true;
+//    move.toArea = logic->table();
 
-    moves.moves << &move;
-    logic->moveCards(moves);
+//    moves.moves << &move;
+//    logic->moveCards(moves);
 
-    TrickCard::onEffect(logic, effect);
+//    TrickCard::onEffect(logic, effect);
 }
 
 void DelayedTrick::effect(GameLogic *logic, CardEffectValue &effect)
 {
-    JudgeValue judge(m_judgePattern);
-    judge.who = effect.to;
-    logic->judge(judge);
+//    JudgeValue judge(m_judgePattern);
+//    judge.who = effect.to;
+//    logic->judge(judge);
 
-    if (judge.matched)
-        takeEffect(logic, effect);
+//    if (judge.matched)
+//        takeEffect(logic, effect);
 }
 
 void DelayedTrick::takeEffect(GameLogic *, CardEffectValue &) {
@@ -671,59 +671,59 @@ void MovableDelayedTrick::onUse(GameLogic *logic, CardUseValue &use)
 
 void MovableDelayedTrick::effect(GameLogic *logic, CardEffectValue &effect)
 {
-    JudgeValue judge(m_judgePattern);
-    judge.who = effect.to;
-    logic->judge(judge);
+//    JudgeValue judge(m_judgePattern);
+//    judge.who = effect.to;
+//    logic->judge(judge);
 
-    if (judge.matched) {
-        takeEffect(logic, effect);
-        const CardArea *table = logic->table();
-        if (table->contains(this)) {
-            CardsMoveValue moves;
-            CardMove move;
-            move.card = this;
-            move.toArea = logic->discardPile();
-            move.isOpen = true;
-            moves.moves << &move;
-            logic->moveCards(moves);
-        }
-    }
+//    if (judge.matched) {
+//        takeEffect(logic, effect);
+//        const CardArea *table = logic->table();
+//        if (table->contains(this)) {
+//            CardsMoveValue moves;
+//            CardMove move;
+//            move.card = this;
+//            move.toArea = logic->discardPile();
+//            move.isOpen = true;
+//            moves.moves << &move;
+//            logic->moveCards(moves);
+//        }
+//    }
 }
 
 void MovableDelayedTrick::complete(GameLogic *logic)
 {
-    const CardArea *table = logic->table();
-    if (!table->contains(this))
-        return;
+//    const CardArea *table = logic->table();
+//    if (!table->contains(this))
+//        return;
 
-    ServerPlayer *current = logic->currentPlayer();
-    ServerPlayer *target = logic->currentPlayer();
-    forever {
-        target = target->nextAlive();
-        if (!targetFilter(QList<const Player *>(), target, nullptr) && target != current)
-            continue;
+//    ServerPlayer *current = logic->currentPlayer();
+//    ServerPlayer *target = logic->currentPlayer();
+//    forever {
+//        target = target->nextAlive();
+//        if (!targetFilter(QList<const Player *>(), target, nullptr) && target != current)
+//            continue;
 
-        CardsMoveValue moves;
-        CardMove move;
-        move.card = makeVirtual();
-        move.toArea = target->delayedTrickArea();
-        move.isOpen = true;
-        moves.moves << &move;
-        logic->moveCards(moves);
+//        CardsMoveValue moves;
+//        CardMove move;
+//        move.card = makeVirtual();
+//        move.toArea = target->delayedTrickArea();
+//        move.isOpen = true;
+//        moves.moves << &move;
+//        logic->moveCards(moves);
 
-        CardUseValue use;
-        use.card = this;
-        use.to << target;
+//        CardUseValue use;
+//        use.card = this;
+//        use.to << target;
 
-        foreach (ServerPlayer *to, use.to)
-            logic->trigger(EventHandler::TargetConfirming, to, &use);
-        if (use.to.isEmpty())
-            continue;
-        foreach (ServerPlayer *to, use.to)
-            logic->trigger(EventHandler::TargetConfirmed, to, &use);
-        if (!use.to.isEmpty())
-            break;
-    }
+//        foreach (ServerPlayer *to, use.to)
+//            logic->trigger(EventHandler::TargetConfirming, to, &use);
+//        if (use.to.isEmpty())
+//            continue;
+//        foreach (ServerPlayer *to, use.to)
+//            logic->trigger(EventHandler::TargetConfirmed, to, &use);
+//        if (!use.to.isEmpty())
+//            break;
+//    }
 }
 
 bool MovableDelayedTrick::isAvailable(const Player *player) const

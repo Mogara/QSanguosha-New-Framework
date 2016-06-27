@@ -18,9 +18,9 @@
 *********************************************************************/
 
 #include "gamemode.h"
-#include "gamerule.h"
+// #include "gamerule.h"
 #include "engine.h"
-#include "eventhandler.h"
+// #include "eventhandler.h"
 
 GameMode::GameMode()
     : m_minPlayerNum(2)
@@ -31,8 +31,8 @@ GameMode::GameMode()
 
 GameMode::~GameMode()
 {
-    delete m_rule;
+//    delete m_rule;
 
-    foreach (const EventHandler *rule, m_extraRules)
-        delete rule;
+//    foreach (const EventHandler *rule, m_extraRules)
+//        delete rule;
 }

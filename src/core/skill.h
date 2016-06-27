@@ -20,9 +20,10 @@
 #ifndef SKILL_H
 #define SKILL_H
 
-#include "event.h"
-#include "eventhandler.h"
-#include "datavalue.h"
+//#include "event.h"
+//#include "eventhandler.h"
+//#include "datavalue.h"
+#include "serverplayer.h"
 
 #include <QObject>
 
@@ -104,7 +105,7 @@ private:
 Q_DECLARE_METATYPE(Skill::Frequency)
 Q_DECLARE_METATYPE(Skill::Type)
 
-class TriggerSkill : public Skill, public EventHandler
+class TriggerSkill : public Skill
 {
     Q_OBJECT
 
@@ -114,11 +115,11 @@ public:
     using Skill::name;
     using Skill::m_name;
 
-    EventList triggerable(GameLogic *logic, EventType event, const QObject *data, ServerPlayer *player /* = nullptr */) const override;
-    virtual bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const;
-    bool effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const override;
+//    EventList triggerable(GameLogic *logic, EventType event, const QObject *data, ServerPlayer *player /* = nullptr */) const override;
+//    virtual bool cost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const;
+//    bool effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player /* = nullptr */) const override;
 
-    bool onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player = nullptr) const final override;
+//    bool onCost(GameLogic *logic, EventType event, EventPtr eventPtr, QObject *data, ServerPlayer *player = nullptr) const final override;
 };
 QML_DECLARE_TYPE(TriggerSkill);
 
@@ -133,7 +134,7 @@ public:
     void invalidate(ServerPlayer *target) const;
     bool isValid(ServerPlayer *target) const;
 
-    bool effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player) const final override;
+//     bool effect(GameLogic *logic, EventType event, const EventPtr eventPtr, QObject *data, ServerPlayer *player) const final override;
 };
 QML_DECLARE_TYPE(StatusSkill);
 

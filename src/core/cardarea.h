@@ -22,7 +22,7 @@
 
 #include <QList>
 #include <QVariant>
-
+#include <QObject>
 #include <functional>
 
 #include <CardirectorGlobal>
@@ -30,9 +30,9 @@
 class Player;
 class Card;
 
-class CardArea
+class CardArea : public QObject
 {
-    Q_GADGET
+    Q_OBJECT
 
 public:
     enum Type
@@ -54,21 +54,24 @@ public:
 
     typedef std::function<void()> ChangeSignal;
 
-    explicit CardArea(Type type, Player *owner = nullptr, const QString &name = QString());
+    Q_INVOKABLE explicit CardArea(Type type = Unknown, Player *owner = nullptr, const QString &name = QString());
     Q_INVOKABLE Type type() const { return m_type; }
+    Q_INVOKABLE void setType(Type type) { m_type = type; }
     Q_INVOKABLE Player *owner() const { return m_owner; }
+    Q_INVOKABLE void setOwner(Player *owner) { m_owner = owner; }
     Q_INVOKABLE QString name() const { return m_name; }
+    Q_INVOKABLE void setName(const QString &name) { m_name = name; }
 
     void setSignal(ChangeSignal signal) { m_changeSignal = signal; }
 
-    bool isVirtualCardArea() const { return m_isVirtualCardArea; }
-    void setIsVirtualCardArea(bool keep) { m_isVirtualCardArea = keep; }
+    Q_INVOKABLE bool isVirtualCardArea() const { return m_isVirtualCardArea; }
+    Q_INVOKABLE void setIsVirtualCardArea(bool keep) { m_isVirtualCardArea = keep; }
 
-    bool add(Card *card, Direction direction = UndefinedDirection);
-    bool add(const QList<Card *> &cards, Direction direction = UndefinedDirection);
-    bool remove(Card *card);
-    bool remove(const QList<Card *> &cards);
-    void clear();
+    Q_INVOKABLE bool add(Card *card, Direction direction = UndefinedDirection);
+    Q_INVOKABLE bool add(const QList<Card *> &cards, Direction direction = UndefinedDirection);
+    Q_INVOKABLE bool remove(Card *card);
+    Q_INVOKABLE bool remove(const QList<Card *> &cards);
+    Q_INVOKABLE void clear();
 
     // Note: These functions can only find Real Cards!!!!
     Q_INVOKABLE Card *findCard(uint id) const;

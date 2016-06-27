@@ -20,6 +20,11 @@
 #include "card.h"
 #include "cardarea.h"
 
+#include <QtQml>
+
+C_REGISTER_QMLTYPE("Sanguosha.CardArea", 1, 0, CardArea);
+
+
 CardArea::CardArea(CardArea::Type type, Player *owner, const QString &name)
     : m_type(type)
     , m_owner(owner)

@@ -23,6 +23,12 @@
 
 CardPattern::CardPattern(const QString &pattern)
 {
+    if (!pattern.isEmpty())
+        setPattern(pattern);
+}
+
+void CardPattern::setPattern(const QString &pattern)
+{
     QStringList exps = pattern.split('#');
     foreach (const QString &subexp, exps) {
         QStringList factors = subexp.split('|');

@@ -19,10 +19,7 @@ SOURCES += src/main.cpp \
     src/core/skill.cpp \
     src/core/datavalue.cpp \
     src/core/util.cpp \
-    src/gamelogic/event.cpp \
-    src/gamelogic/eventhandler.cpp \
-    src/gamelogic/gamelogic.cpp \
-    src/gamelogic/gamerule.cpp \
+    src/gamelogic/gamelogicqml.cpp \
     src/gamelogic/serverplayer.cpp \
     src/gui/dialog/pcconsolestartdialog.cpp \
     src/gui/dialog/startserverdialog.cpp \
@@ -54,10 +51,7 @@ HEADERS += \
     src/core/util.h \
     src/mode/hegemonymode.h \
     src/mode/standardmode.h \
-    src/gamelogic/event.h \
-    src/gamelogic/eventhandler.h \
-    src/gamelogic/gamelogic.h \
-    src/gamelogic/gamerule.h \
+    src/gamelogic/gamelogicqml.h \
     src/gamelogic/serverplayer.h \
     src/gui/dialog/pcconsolestartdialog.h \
     src/gui/dialog/startserverdialog.h \
@@ -158,7 +152,12 @@ QML_FILES = \
     script/Package/standard_cards/standard_cards.js \
     script/Package/nos_standard/nos_standard.js \
     script/Package/hegemony/hegemony.js \
-    script/Package/hegemony_cards/hegemony_cards.js
+    script/Package/hegemony_cards/hegemony_cards.js \
+    script/Server/qmldir \
+    script/Server/Event.qml \
+    script/Server/EventHandler.qml \
+    script/Server/GameRule.qml \
+    script/Server/LogicMain.qml
 
 # Embed some essential system resources
 embedresource{
@@ -216,3 +215,4 @@ DEFINES += MCD_STATIC
 INCLUDEPATH += Cardirector/include
 LIBS += -L$$PWD/Cardirector/lib -lCardirector -loggvorbis
 CONFIG(release, debug|release): LIBS += -lbreakpad
+

@@ -9,14 +9,14 @@ QtObject {
 
     property ServerPlayer skillOwner;
     property ServerPlayer skillInvoker;
-    property list targets;
+    property var m_targets;
 
     property bool isCompulsory;
     property bool triggered;
 
     property ServerPlayer preferredTarget;
 
-    property list tag;
+    property var tag;
 
     function init(skill,owner,invoker,targets,is_compulsory,preferred_target) {
         triggerSkill = skill;    // TriggerSkill
@@ -28,9 +28,9 @@ QtObject {
         skillOwner = owner;      //ServerPlayer
         preferredTarget = preferred_target; //ServerPlayer
 
-        targets = targets;    //QList<ServerPlayer *>
+        m_targets = targets;    //QList<ServerPlayer *>
 
-        tag = new Array;        //QVariantMap
+        tag = {};               //QVariantMap
     }
 
     function isValid() {
@@ -38,26 +38,36 @@ QtObject {
     }
 
     function sameSkillWith(other) {
-        return triggerSkill === other.triggerSkill && owner === other.owner && invoker === other.invoker;
+        return triggerSkill === other.triggerSkill && skillOwner === other.skillOwner && skillInvoker === other.skillInvoker;
     }
 
     function sameTimingWith(other) {
         if (!isValid() || !other.isValid())
             return false;
-        return triggerSkill.getPriority() === other.triggerSkill.getPriority() && triggerSkill.inherits("EquipSkill") === other.inherits("EquipSkill")
+        return triggerSkill.getPriority() === other.triggerSkill.getPriority() && triggerSkill.inherits("EquipSkill") === other.triggerSkill.inherits("EquipSkill")
     }
 
     function toVariant() {
-        var ob = new JSON;
+        var ob = {};
         if (triggerSkill)
             ob["skill"] = triggerSkill.objectName;
         if (owner)
-            ob["owner"] = owner.objectName;
+            ob["owner"] = skillOwner.objectName;
         if (invoker)
-            ob["invoker"] = invoker.objectName;
+            ob["invoker"] = skillInvoker.objectName;
         // @to_do(Xusine):insert preferredTarget into ob.
 
         return ob;
+    }
+
+    function compare(other) { // a function to stand for the operator "<"
+        if (!isValid() || !other.isValid())
+            return false;
+        if (triggerSkill.getPriority() !== other.triggerSkill.getPriority())
+            return triggerSkill.getPriority() > other.triggerSkill.getPriority()
+        if (skillInvoker !== other.skillInvoker)
+            return ServerPlayer.sortByActionOrder(skillInvoker,other.skillInvkoer);
+        return triggerSkill.inherits("EquipSkill") && !other.triggerSkill.inherits("EquipSkill")
     }
 
     function toList() {
@@ -67,8 +77,8 @@ QtObject {
                 result.push("");
         } else {
             result.push(triggerSkill.objectName);
-            result.push(owner.objectName);
-            result.push(invoker.objectName);
+            result.push(skillOwner.objectName);
+            result.push(skillInvoker.objectName);
             result.push(preferredTarget.objectName)
         }
         return result;

@@ -7,14 +7,14 @@ QtObject {
     //property EventType e;
     property var triggerSkill;
 
-    property var skillOwner;
-    property var skillInvoker;
+    property ServerPlayer skillOwner;
+    property ServerPlayer skillInvoker;
     property list targets;
 
     property bool isCompulsory;
     property bool triggered;
 
-    property var preferredTarget;
+    property ServerPlayer preferredTarget;
 
     property list tag;
 

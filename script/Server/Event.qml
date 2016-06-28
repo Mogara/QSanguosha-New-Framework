@@ -5,7 +5,7 @@ import Sanguosha.Player 1.0
 QtObject {
 
     //property EventType e;
-    property var triggerSkill;
+    property var eventHander;
 
     property ServerPlayer skillOwner;
     property ServerPlayer skillInvoker;
@@ -19,7 +19,7 @@ QtObject {
     property var tag;
 
     function init(skill,owner,invoker,targets,is_compulsory,preferred_target) {
-        triggerSkill = skill;    // TriggerSkill
+        eventHander = skill;    // TriggerSkill
 
         triggered = false;
         isCompulsory = is_compulsory;
@@ -34,23 +34,23 @@ QtObject {
     }
 
     function isValid() {
-        return triggerSkill !== null;
+        return eventHander !== null;
     }
 
     function sameSkillWith(other) {
-        return triggerSkill === other.triggerSkill && skillOwner === other.skillOwner && skillInvoker === other.skillInvoker;
+        return eventHander === other.eventHander && skillOwner === other.skillOwner && skillInvoker === other.skillInvoker;
     }
 
     function sameTimingWith(other) {
         if (!isValid() || !other.isValid())
             return false;
-        return triggerSkill.getPriority() === other.triggerSkill.getPriority() && triggerSkill.inherits("EquipSkill") === other.triggerSkill.inherits("EquipSkill")
+        return eventHander.priority === other.eventHander.priority && eventHander.isEquipSkill === other.eventHander.isEquipSkill
     }
 
     function toVariant() {
         var ob = {};
-        if (triggerSkill)
-            ob["skill"] = triggerSkill.objectName;
+        if (eventHander)
+            ob["skill"] = eventHander.objectName;
         if (owner)
             ob["owner"] = skillOwner.objectName;
         if (invoker)
@@ -63,11 +63,11 @@ QtObject {
     function compare(other) { // a function to stand for the operator "<"
         if (!isValid() || !other.isValid())
             return false;
-        if (triggerSkill.getPriority() !== other.triggerSkill.getPriority())
-            return triggerSkill.getPriority() > other.triggerSkill.getPriority()
+        if (eventHander.priority !== other.eventHander.priority)
+            return eventHander.priority > other.eventHander.priority
         if (skillInvoker !== other.skillInvoker)
             return ServerPlayer.sortByActionOrder(skillInvoker,other.skillInvkoer);
-        return triggerSkill.inherits("EquipSkill") && !other.triggerSkill.inherits("EquipSkill")
+        return eventHander.isEquipSkill && !other.eventHander.isEquipSkill
     }
 
     function toList() {
@@ -76,7 +76,7 @@ QtObject {
             for (var i = 1; i < 4; i++)
                 result.push("");
         } else {
-            result.push(triggerSkill.objectName);
+            result.push(eventHander.objectName);
             result.push(skillOwner.objectName);
             result.push(skillInvoker.objectName);
             result.push(preferredTarget.objectName)

@@ -7,6 +7,8 @@ QtObject {
     //property EventType e;
     property var eventHander;
 
+    property LogicMain m_logic;
+
     property ServerPlayer skillOwner;
     property ServerPlayer skillInvoker;
     property var m_targets;
@@ -18,7 +20,8 @@ QtObject {
 
     property var tag;
 
-    function init(skill,owner,invoker,targets,is_compulsory,preferred_target) {
+    function init(logic,skill,owner,invoker,targets,is_compulsory,preferred_target) {
+        m_logic = logic;
         eventHander = skill;    // TriggerSkill
 
         triggered = false;

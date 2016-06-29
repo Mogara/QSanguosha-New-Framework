@@ -10,7 +10,7 @@ QtObject {
     property bool isEquipSkill;
 
     function init(){
-        events = {};
+        events = new Array; // use an array to instead might be better......
         priority = 0;
         name = "";
         isEquipSkill = false;
@@ -26,7 +26,7 @@ QtObject {
     }
 
     function onCost(logic, eventType, eventValue, data, player){
-        return false;
+        return true;
     }
 
     function onEffect(logic, eventType, eventValue, data, player){

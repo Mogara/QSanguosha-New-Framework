@@ -176,7 +176,7 @@ EventHandler {
             case GameLogic.AskForPeachDone :
                 if (player.hp() <= 0 && player.isAlive()) {
                         //DeathValue *death = qobject_cast<DeathValue *>(data);
-                        deatg = data;//.......
+                        death = data;//.......
                         logic.killPlayer(player, death.damage);
                     }
                 break;

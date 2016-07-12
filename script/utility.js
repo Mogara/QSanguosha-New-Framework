@@ -8,11 +8,9 @@ Array.prototype.contains = function(element) {
     return false;
 }
 Array.prototype.removeOne = function(element){
-    var result = [];
     for (var i = 0; i < this.length; i++) {
-        if (this[i] === element)
-            continue;
-        result.push(this[i]);
+        if (this[i] === element) {
+            this.splice(i, 1);
+        }
     }
-    return result;
 }

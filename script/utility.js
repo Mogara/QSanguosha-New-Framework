@@ -14,3 +14,12 @@ Array.prototype.removeOne = function(element){
         }
     }
 }
+Array.prototype.shuffle = function(){
+    var result = [];
+    while (this.length > 0){
+        var ele = this[Math.floor(Math.random() * this.length)]
+        result.push(ele);
+        this.removeOne(ele);
+    }
+    return result;
+}

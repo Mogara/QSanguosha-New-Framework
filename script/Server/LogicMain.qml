@@ -233,4 +233,40 @@ QtObject {
                 result.removeOne(except);
         return result;
     }
+
+    function sortByActionOrder(ps){
+        var allp = allPlayers(true);
+        ps.sort(function (a,b){
+            return allp.indexOf(a) < allp.indexOf(b);
+        })
+    }
+
+    function reshuffleDrawPile(){
+        if (discardPile.ength() <= 0){
+            gameOver([]);
+        }
+        reshufflingCount++;
+        /*if (limit > 0 && times == limit)
+               gameOver(".");*/
+        var cards = discardPile.cards();
+        discardPile.clear();
+        cards = cards.shuffle();
+
+        for (var c in cards){
+            cardPosition[c.id] = drawPile;
+        }
+
+        drawPile.add(cards,CardArea.Bottom)
+    }
+
+    function getDrawPileCards(n){
+        if (drawPile.length() < n)
+            reshuffleDrawPile();
+        return drawPile.first(n);
+    }
+
+    function getDrawPileCard(){
+        return getDrawPileCards(1);
+    }
+
 }

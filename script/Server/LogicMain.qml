@@ -25,7 +25,7 @@ QtObject {
     property CardArea tablePile;
     property CardArea wuguPile;
 
-    property var cardPosition;
+    property var cardPosition; // use id for its index.
 
     function loadMode(modeName) // use C++?
     {
@@ -267,6 +267,59 @@ QtObject {
 
     function getDrawPileCard(){
         return getDrawPileCards(1);
+    }
+
+    function filterCardsMove(moves){
+
+    }
+
+    function moveCards(moves){
+        filterCardsMove(moves);
+        for (var p in allPlayers(false)){
+            trigger(GameLogic.BeforeCardsMove,p,moves);
+        }
+        filterCardsMove(moves);
+
+        for (var i = 0; i < moves.length; ++i){
+            var move = moves[i];
+            if (move.fromArea.contains(move.card, true)){
+                if (move.fromArea.remove(move.card)){
+                    move.toArea.add(move.card,move.toDirection);
+                    cardPosition[move.card.id] = move.toArea;
+                }
+            }
+        }
+
+        for (var i = 0; i < moves.virtualMoves.length; ++i) {
+            var move = moves.virtualMoves[i];
+            // there are cases each of which fromArea can be nullptr sometimes, so we shouldn't relay on the move.fromArea
+            // but if the move.fromArea != nullptr, the move.fromArea must be virtual card area
+            var flag = true;
+            if (move.fromArea){
+                // we should check the virtual card is actually in that area
+                if (move.fromArea.contains(move.card)){
+                    flag = move.fromArea.remove(move.card);
+                }
+                 // if move.fromArea has succeeded in removing the old card, we should judge whether the toPosition is virtual card area
+                if (flag && move.toArea.isVirtualCardArea()) {
+                    move.toArea.add(move.card);
+                    cardPosition[move.card.id] = move.toArea;
+                } else {
+                    cardPosition[move.card.id].remove(move.card);
+                }
+            }
+        }
+
+
+        for (var viewer in players){
+            var data = moves.toVariant(viewer);
+            viewer.agent().notify(MOVE_CARDS, data); // how to deal with this protcol......
+        }
+
+        for (var _p in allPlayers(false)){
+            trigger(GameLogic.AfterCardsMove,_p,moves);
+        }
+
     }
 
 }

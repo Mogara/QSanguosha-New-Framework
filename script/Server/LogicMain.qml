@@ -322,4 +322,84 @@ QtObject {
 
     }
 
+    function useCard(use){
+        if (!(use.card && use.from))
+            return false;
+
+        //    //Initialize isHandcard
+        use.isHandcard = true;
+        for (var c in use.card.realCards()) {
+            var area = cardPosition[c.id];
+            if (area === null || area.owner() !== use.from || area.type() !== CardArea.Hand){
+                use.isHandcard = false;
+                break;
+            }
+        }
+        if (!use.card.isVirtual()) // make a virtual card of it since all the card in the card using process is virtual card
+            use.card = use.card.makeVirtual();
+
+        if (use.from.phase() === Player.Play && use.addHistory)
+            use.from.addCardHistory(use.card.objectName());
+
+        try {
+            use.card.onUse(this, use);
+            trigger(EventHandler.CardUsed, use.from, use);
+
+            if (use.from) {
+                trigger(EventHandler.TargetChoosing, use.from, use);
+                var args = {};
+                args["from"] = use.from.id();
+                var tos = [];
+                for (var to in use.to)
+                   tos.push(to.id());
+                args["to"] = tos;
+
+                /*
+                since the use card is all virtual card, we can only use the args["card"]
+                if (!use.card->isVirtual())
+                    args["cardId"] = use.card->id();
+                else
+                */
+
+                args["card"] = use.card.toVariant();
+
+                room().broadcastNotification(S_COMMAND_USE_CARD, args); //How to deal with this function.
+
+                if (use.from) {
+                    if (!use.to.isEmpty()) {
+                        for (var _to in use.to) {
+                            if (!use.to.contains(_to))
+                                continue;
+                            trigger(EventHandler.TargetConfirming, _to, use);
+                        }
+
+                        if (use.from && !use.to.isEmpty()) {
+                            trigger(EventHandler.TargetChosen, use.from, use);
+
+                            if (use.from && !use.to.isEmpty()) {
+                                for (var tar in use.to) {
+                                    if (!use.to.contains(tar))
+                                        continue;
+                                    trigger(EventHandler.TargetConfirmed, tar, use);
+                                }
+
+                                use.card.use(this, use);
+                            }
+                        }
+                    } else if (use.target) {
+                        use.card.use(this, use);
+                    }
+                }
+            }
+
+            trigger(EventHandler.CardFinished, use.from, use);
+
+        } catch (e) {
+            //@to-do: handle TurnBroken and StageChange
+            throw e;
+        }
+
+        return true;
+    }
+
 }

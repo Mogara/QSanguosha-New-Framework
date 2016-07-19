@@ -343,10 +343,10 @@ QtObject {
 
         try {
             use.card.onUse(this, use);
-            trigger(EventHandler.CardUsed, use.from, use);
+            trigger(GameLogic.CardUsed, use.from, use);
 
             if (use.from) {
-                trigger(EventHandler.TargetChoosing, use.from, use);
+                trigger(GameLogic.TargetChoosing, use.from, use);
                 var args = {};
                 args["from"] = use.from.id();
                 var tos = [];
@@ -370,17 +370,17 @@ QtObject {
                         for (var _to in use.to) {
                             if (!use.to.contains(_to))
                                 continue;
-                            trigger(EventHandler.TargetConfirming, _to, use);
+                            trigger(GameLogic.TargetConfirming, _to, use);
                         }
 
                         if (use.from && !use.to.isEmpty()) {
-                            trigger(EventHandler.TargetChosen, use.from, use);
+                            trigger(GameLogic.TargetChosen, use.from, use);
 
                             if (use.from && !use.to.isEmpty()) {
                                 for (var tar in use.to) {
                                     if (!use.to.contains(tar))
                                         continue;
-                                    trigger(EventHandler.TargetConfirmed, tar, use);
+                                    trigger(GameLogic.TargetConfirmed, tar, use);
                                 }
 
                                 use.card.use(this, use);
@@ -392,7 +392,7 @@ QtObject {
                 }
             }
 
-            trigger(EventHandler.CardFinished, use.from, use);
+            trigger(GameLogic.CardFinished, use.from, use);
 
         } catch (e) {
             //@to-do: handle TurnBroken and StageChange
@@ -400,6 +400,66 @@ QtObject {
         }
 
         return true;
+    }
+    function takeCardEffect (effect){
+        var canceled = false;
+        if (effect.to) {
+            if (effect.to.isAlive()) {
+                canceled = trigger(GameLogic.CardEffect, effect.to, effect);
+                if (!canceled) {
+                    canceled = trigger(GameLogic.CardEffected, effect.to, effect);
+                    if (!canceled) {
+                        effect.use.card.onEffect(this, effect);
+                        if (effect.to.isAlive() && !effect.isNullified())
+                            effect.use.card.effect(this, effect);
+                    }
+                }
+            }
+        } else if (effect.use.target) {
+            effect.use.card.onEffect(this, effect);
+            if (!effect.isNullified())
+                effect.use.card.effect(this, effect);
+        }
+        trigger(GameLogic.PostCardEffected, effect.to, effect);
+        return !canceled;
+    }
+    function invokeProactiveSkill(invoke) {
+        if (invoke) {
+            if (proactiveSkill.cost(this, invoke.player, invoke.targets, invoke.cards)) {
+                proactiveSkill.effect(this, invoke.player, invoke.targets, invoke.cards);
+                return true;
+            }
+        } else{
+            //throw   // we only throw it in debug mode @todo_Fs: find all the places which can cause an abnormal processing
+        }
+        return false;
+    }
+    function respondCard(response) {
+        // todo_Fs: make the responsed card a virtual card
+
+        var moves = new CardsMoveValue;
+        var move = new CardMove;
+        move.card = response.card;
+        move.toArea = m_table;
+        move.isOpen = true;
+        moves.moves.push(move);
+        moveCards(moves);
+
+        var broken = false;
+
+        broken = trigger(GameRule.CardResponded, response.from, response);
+
+        if (response.card && tablePile.contains(response.card)) {
+            var _moves = new CardsMoveValue;
+            var _move = new CardMove;
+            _move.card = response.card;
+            _move.toArea = discardPile;
+            _move.isOpen = true;
+            _moves.moves.append(_move);
+            moveCards(_moves);
+        }
+
+        return !broken;
     }
 
 }

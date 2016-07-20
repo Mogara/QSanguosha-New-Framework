@@ -2,6 +2,7 @@ import QtQuick 2.5
 import Sanguosha.CardArea 1.0
 import Sanguosha.Player 1.0
 import Sanguosha.GameLogic 1.0
+import Sanguosha.DataValues 1.0
 
 
 QtObject {
@@ -461,5 +462,37 @@ QtObject {
 
         return !broken;
     }
+    function judge(j){
+        if (trigger(GameLogic.StartJudge, j.who, j))
+            return;
+
+        j.card = getDrawPileCard();
+        j.updateResult();
+
+        var moves = new CardsMoveValue;
+        var move = new CardMove;
+        move.card = j.card;
+        move.toArea = j.who.judgeCards();
+        move.isOpen = true;
+        moves.moves.push(move);
+        moveCards(moves);
+
+        trigger(GameLogic.AskForRetrial, null, j);
+
+        trigger(GameLogic.FinishRetrial, j.who, j);
+        trigger(GameLogic.FinishJudge, j.who, j);
+
+        var judgeCards = j.who.judgeCards();
+        if (judgeCards.contains(j.card)) {
+            var _moves = new CardsMoveValue;
+            var _move = CardMove;
+            _move.card = j.card;
+            _move.toArea = discardPile;
+            _move.isOpen = true;
+            _moves.moves.push(_move);
+            moveCards(_moves);
+        }
+    }
+
 
 }
